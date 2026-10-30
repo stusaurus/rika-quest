@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Validate game fragments and inline scripts
+        run: node scripts/check-game.mjs
       - name: Prepare static site
         run: |
           mkdir -p _site
