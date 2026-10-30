@@ -59,12 +59,23 @@
   const angles=[angle1,angle2,angle3],labels=['動かす','同じ周期','異なる周期'];
   const highlightAge=(now-flashStart)/1000,burst=highlightAge>=0&&highlightAge<1.1?Math.exp(-highlightAge*3):0;
   c.save();
-  // Floating mounting rail makes each bob clearly a separate front-of-scene mechanism.
+  // A freestanding brass frame anchors the model to the floor of the hall.
   const railY=top-12;
   const aX=w*xs[0]-r*2,bX=w*xs[2]+r*2;
-  c.strokeStyle='rgba(255,218,139,.77)';c.lineWidth=mobile?2:3;
-  c.shadowColor='rgba(254,201,102,.78)';c.shadowBlur=9;
-  c.beginPath();c.moveTo(aX,railY);c.lineTo(bX,railY);c.stroke();
+  const baseY=top+L+r+(mobile?15:22), post=mobile?5:8;
+  c.save();
+  c.fillStyle='rgba(3,15,25,.35)';c.beginPath();c.ellipse((aX+bX)/2,baseY+7,(bX-aX)*.58,mobile?7:11,0,0,Math.PI*2);c.fill();
+  const metal=c.createLinearGradient(aX,0,aX+post*2,0);
+  metal.addColorStop(0,'#3a3025');metal.addColorStop(.32,'#e9c780');metal.addColorStop(.62,'#8d6335');metal.addColorStop(1,'#382a20');
+  c.fillStyle=metal;c.strokeStyle='rgba(255,227,160,.75)';c.lineWidth=1;
+  for(const px of [aX,bX]){c.beginPath();c.rect(px-post/2,railY,post,baseY-railY);c.fill();c.stroke();
+   c.beginPath();c.ellipse(px,railY,post*.8,post*.65,0,0,Math.PI*2);c.fill();c.stroke();}
+  const beam=c.createLinearGradient(0,railY-5,0,railY+6);
+  beam.addColorStop(0,'#fff0bc');beam.addColorStop(.35,'#b88645');beam.addColorStop(1,'#59412b');
+  c.fillStyle=beam;c.fillRect(aX-post,railY-4,bX-aX+post*2,8);
+  c.fillStyle='#927044';c.fillRect(aX-post*2,baseY-2,bX-aX+post*4,5);
+  c.fillStyle='#f4dca0';c.fillRect(aX-post*2,baseY-2,bX-aX+post*4,1);
+  c.restore();
   for(let i=0;i<3;i++){
     const pivot=w*xs[i],theta=angles[i],lengthPx=(i===2?L*.6241:L),x=pivot+lengthPx*Math.sin(theta),y=top+lengthPx*Math.cos(theta);
     const resonance=i===1;
