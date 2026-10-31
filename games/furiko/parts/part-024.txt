@@ -336,4 +336,11 @@
 </style><style id="v036-clear-overlay-fix">
 /* The full-screen success dialog must remain legible above the progress HUD. */
 .v030-room:has(.v030-reward:not([hidden])) .v035-restoration{opacity:0!important;visibility:hidden!important;}
+
+/* Provisional 4-pose walk: the crop keeps a shared foot anchor at y=113/116. */
+.exp22-character{aspect-ratio:106/116!important;height:auto!important}
+.exp22-character .tiranon-sprite{position:absolute;left:0;bottom:-2.59%;width:100%;height:100%;background-image:url('./assets/tiranon-walk-prototype.webp');background-size:800% 100%;background-position:0 0;background-repeat:no-repeat;animation:none!important;transform:none!important}
+.exp22-character .exp22-shadow{bottom:-2px!important;left:24%!important;width:54%!important;animation:none!important}
+.exp22-character.walking:after{display:none!important}
+.exp25-lab-actor .tiranon-sprite,.exp25-win-actor .tiranon-sprite{display:block;width:100%;height:100%;background:url('./assets/tiranon-walk-prototype.webp') left center / 800% 100% no-repeat;animation:none!important}
 </style></body></html>
