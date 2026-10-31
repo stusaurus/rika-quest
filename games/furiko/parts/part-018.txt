@@ -395,7 +395,7 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
  function isNear(){return Math.hypot((player.x-machine.x)*1.05,(player.z-machine.z)*1.35)<.18}
  function updateVisual(moving){if(!current)return;
   const near=isNear(),done=!!(state.progress&&state.progress.s01);
-  const scale=.74+player.z*.44;
+  const scale=1.10-player.z*.40; // 奥へ進むほど小さく見せる
   const av=current.avatar;
   // The camera follows the player, rather than pinning the sprite to a static background.
   av.style.left=(50+(player.x-.5)*54)+'%';av.style.bottom=(23+player.z*19)+'%';
