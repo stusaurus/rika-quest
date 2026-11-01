@@ -7,14 +7,10 @@ async function lab(page){
  const apparatus=page.locator('.exp22-apparatus');
  await expect(apparatus).toBeVisible();
  await apparatus.click();
- // The apparatus may first initiate walking toward it; retry through the UI
- // only if the world has not entered the experiment after that movement.
- const entered=await page.locator('.stage-viewport.exp23-experiment').waitFor({state:'visible',timeout:3500}).then(()=>true).catch(()=>false);
- if(!entered){
-  await expect(page.locator('.exp22-interact[data-near="true"]')).toBeVisible({timeout:12000});
-  await page.locator('#exp22Interact').click();
- }
- await expect(page.locator('.stage-viewport')).toHaveClass(/exp23-experiment/);
+ // World-to-lab transition can include character movement and animation.
+ // Do not click the changing interaction button: it becomes "return to explore"
+ // once the laboratory opens and a second click would undo the transition.
+ await expect(page.locator('.stage-viewport')).toHaveClass(/exp23-experiment/,{timeout:20000});
  await expect(page.locator('[data-rq-measure]')).toBeVisible();
 }
 async function measure(page){const n=(await history(page)).length;await page.locator('[data-rq-measure]').click();await expect.poll(async()=> (await history(page)).length,{timeout:15000}).toBe(n+1);await expect(page.locator('[data-rq-result]')).not.toContainText('観察中');}
