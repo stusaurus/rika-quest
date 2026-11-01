@@ -2,6 +2,17 @@
 
 Rika Questの独立ゲーム。公開中のフリコ・クエストとは実装を分離する。
 
+## スマホ試遊URL（開発用）
+
+- **暫定プレビュー**：https://raw.githack.com/stusaurus/rika-quest/magnet-preview/games/magnet/index.html
+- **GitHub Draft PR**：https://github.com/stusaurus/rika-quest/pull/5
+- **保存先**：ブランチ `magnet-preview`（本番の `main` ではない）。
+- **公開方法**：第三者サービス raw.githack.com がGitHubの公開ブランチをキャッシュ配信する。自動反映には数分の遅れがあり、初回はそのサービスの確認画面が出る場合がある。
+- **用途**：一時的なスマホ試遊のみ。正式公開サイトや恒久ホスティングとして使わない。
+- **検証**：CIでは外部プレビューをHTTPSからChromiumで読み込み、モジュールと開始操作をテストする。実際のiPhone Safari操作品質はまだ未検証。
+- **個人情報**：試遊用のセーブ情報はブラウザのローカルストレージのみ。名前、メール、写真などの入力は求めない。
+- **注意**：raw.githack.comはGitHub・Rika Quest公式サイトではない。第三者サービスの利用を避けたい場合はDraft PRのコードとCI証跡を確認する。
+
 ## ステージ1「ねむれる磁力の門」— Draft試作
 
 1. 棒磁石の5か所に鉄片を近づける操作を行い、左右の端・中央の3か所以上の結果を比較する。
