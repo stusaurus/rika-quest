@@ -227,6 +227,65 @@ function setMessage(message){state.message=message;save();status.textContent=mes
 function phaseTo(n,message){
  state.phase=n;state.message=message;save();render();el('task').focus({preventScroll:true});
 }
+// Small fragments of iron respond as a *qualitative illustration*, not a force calculation.
+const filings=Array.from({length:24},(_,index)=>{
+ const node=document.createElementNS('http://www.w3.org/2000/svg','path');
+ node.setAttribute('class','filing');
+ el('filing-dots').append(node);
+ return node;
+});
+let probeX=390, referenceX=215, gateX=527.5;
+function setProbeVisual(x){
+ probeX=clamp(x,390,591);
+ el('probe-lens').setAttribute('transform','translate('+probeX.toFixed(1)+' 0)');
+ const id=probeFromX(probeX),stop=PROBE_STOPS.find(p=>p.id===id);
+ el('probe-lens').setAttribute('aria-valuenow',String(PROBE_STOPS.indexOf(stop)+1));
+ el('probe-lens').setAttribute('aria-valuetext',POSITIONS.find(p=>p.id===id).label);
+ const level=inspectBar(id).response;
+ filings.forEach((node,i)=>{
+   const visible=i<(level===5?24:level===3?15:7);
+   const radial=8+(i%7)*3.1, angle=i*2.399963+Math.floor(i/8)*.27;
+   const xx=probeX+Math.cos(angle)*radial;
+   const yy=407+Math.sin(angle)*Math.min(radial*.43,10);
+   const tilt=Math.sin(angle)*5;
+   node.setAttribute('d','M'+(xx-2.1).toFixed(1)+' '+(yy-tilt).toFixed(1)+'l4.2 '+(2*tilt).toFixed(1));
+   node.setAttribute('opacity',visible?(.5+(i%4)*.12).toFixed(2):'0');
+ });
+}
+function setReferenceVisual(x){
+ referenceX=clamp(x,195,660);
+ el('reference-magnet').setAttribute('transform','translate('+referenceX.toFixed(1)+' 420)');
+}
+function setGateVisual(x){
+ gateX=clamp(x,470,700);
+ const distance=distanceFromX(gateX);
+ el('gate-magnet').setAttribute('transform','translate('+gateX.toFixed(1)+' 0)');
+ el('gate-magnet').setAttribute('aria-valuenow',String(distance));
+ el('gate-magnet').setAttribute('aria-valuetext',distance+'cm');
+ el('gate-magnet-pole').textContent=state.pole||'?';
+ el('gate-magnet-shell').setAttribute('fill',state.pole==='N'?'#a73b54':state.pole==='S'?'#287caa':'#516f83');
+ el('force-waves').dataset.reaction=state.pole==='N'?'repel':state.pole==='S'?'attract':'neutral';
+ const range=el('distance');
+ if(range)range.value=String(distance);
+ const output=el('distance-value');
+ if(output)output.textContent=distance+' cm';
+}
+function recordProbe(id){
+ if(state.phase!==0)return;
+ if(!state.probes.includes(id))state.probes.push(id);
+ state.lastProbe=id;
+ const found=inspectBar(id);
+ setMessage(found.label+'では鉄片が「'+found.intensity+'」反応した。ほかの場所も比べよう。');
+ render();
+}
+function recordReference(side){
+ if(state.phase!==2)return;
+ if(!state.ref.includes(side))state.ref.push(side);
+ state.lastReference=side;
+ const response=referenceExperiment(side).reaction;
+ setMessage((side==='left'?'左端':'右端')+'にN極を近づけると、'+(response==='repel'?'反発した！':'引き合った！'));
+ render();
+}
 function render(){
  app.dataset.phase=String(state.phase);
  el('progress').innerHTML=Array.from({length:5},(_,i)=>'<i class="'+(i<=state.phase?'done':'')+'"></i>').join('');
@@ -309,6 +368,76 @@ controls.addEventListener('input',event=>{
  if(event.target.id==='distance'&&state.phase===3){
   state.distance=Number(event.target.value);el('distance-value').textContent=state.distance+' cm';setGateVisual(xFromDistance(state.distance));save();
  }
+});
+const targets=[
+ {id:'probe-lens',phase:0,kind:'probe'},
+ {id:'reference-magnet',phase:2,kind:'reference'},
+ {id:'gate-magnet',phase:3,kind:'gate'}
+];
+let gesture=null;
+function moveGesture(x){
+ if(!gesture)return;
+ if(gesture.kind==='probe')setProbeVisual(x);
+ else if(gesture.kind==='reference')setReferenceVisual(x-47);
+ else if(gesture.kind==='gate')setGateVisual(x-50);
+}
+function commitGesture(kind){
+ if(kind==='probe'){
+  recordProbe(probeFromX(probeX));
+ }else if(kind==='reference'){
+  if(referenceX<=325)recordReference('left');
+  else if(referenceX>=565)recordReference('right');
+  else {setMessage('磁石の左端か右端へ近づけて、反応を比べよう。');render();}
+ }else if(kind==='gate'){
+  state.distance=distanceFromX(gateX);
+  setMessage('門との距離は'+state.distance+' cm。磁石の極を選んで「磁力を試す」を押そう。');
+  render();
+ }
+}
+targets.forEach(({id,phase,kind})=>{
+ const target=el(id);
+ target.addEventListener('pointerdown',event=>{
+  if(state.phase!==phase||gesture||event.button!==0)return;
+  event.preventDefault();
+  gesture={id,kind,pointerId:event.pointerId};
+  try{target.setPointerCapture(event.pointerId);}catch(e){gesture=null;return;}
+  app.classList.add('dragging');
+ });
+ target.addEventListener('pointermove',event=>{
+  if(!gesture||gesture.id!==id||gesture.pointerId!==event.pointerId)return;
+  try{moveGesture(svgXFromClient(svg,event.clientX,event.clientY));}catch(e){console.warn('Pointer coordinate unavailable',e);}
+ });
+ target.addEventListener('pointerup',event=>{
+  if(!gesture||gesture.id!==id||gesture.pointerId!==event.pointerId)return;
+  try{moveGesture(svgXFromClient(svg,event.clientX,event.clientY));}catch(e){}
+  gesture=null;app.classList.remove('dragging');
+  try{target.releasePointerCapture(event.pointerId);}catch(e){}
+  commitGesture(kind);
+ });
+ target.addEventListener('pointercancel',()=>{
+  if(gesture?.id===id){gesture=null;app.classList.remove('dragging');render();}
+ });
+ target.addEventListener('keydown',event=>{
+  if(state.phase!==phase)return;
+  if(kind==='probe'){
+    const index=PROBE_STOPS.findIndex(p=>p.id===probeFromX(probeX));
+    if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+      event.preventDefault();
+      const n=clamp(index+(event.key==='ArrowRight'?1:-1),0,4);
+      setProbeVisual(PROBE_STOPS[n].x);
+    }else if(event.key==='Enter'||event.key===' '){event.preventDefault();recordProbe(probeFromX(probeX));}
+  }else if(kind==='reference'){
+    if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
+      event.preventDefault();setReferenceVisual(event.key==='ArrowLeft'?265:625);
+    }else if(event.key==='Enter'||event.key===' '){event.preventDefault();commitGesture(kind);}
+  }else if(kind==='gate'){
+    if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+      event.preventDefault();
+      state.distance=clamp(state.distance+(event.key==='ArrowLeft'?1:-1),1,5);
+      save();setGateVisual(xFromDistance(state.distance));
+    }
+  }
+ });
 });
 render();
 </script>
