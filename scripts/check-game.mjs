@@ -18,7 +18,7 @@ assert.ok(html.startsWith('<!doctype html>'));
 assert.ok(html.trimEnd().endsWith('</html>'));
 
 const blocks = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];
-assert.equal(blocks.length, 20, 'Unexpected number of inline scripts');
+assert.equal(blocks.length, 21, 'Unexpected number of inline scripts');
 for (const [index, block] of blocks.entries()) {
   new vm.Script(block[1], { filename: 'game-script-' + (index + 1) + '.js' });
 }
@@ -28,4 +28,4 @@ const launcher = fs.readFileSync(new URL('../games/furiko/index.html', import.me
 assert.ok(homepage.includes('href="games/furiko/"'));
 assert.ok(launcher.includes('manifest.json'));
 assert.ok(launcher.includes('document.write(game)'));
-console.log('PASS: 24 game fragments, 20 scripts, homepage and launcher validated.');
+console.log('PASS: 24 game fragments, 21 script tags, homepage and launcher validated.');

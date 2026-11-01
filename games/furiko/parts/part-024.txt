@@ -358,4 +358,4 @@
 .exp22-world .exp22-apparatus:after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px}
 .exp22-world .exp28-object{min-width:44px;min-height:44px}
 .rq-explore-help summary:focus-visible{outline:3px solid #ffe2a1;outline-offset:2px}
-</style></body></html>
+</style><script src="./assets/experiment-records.js"></script></body></html>

@@ -665,9 +665,9 @@ body[data-scene="world"] .exp22-world{
   {id:'mass',title:'真ちゅうのおもり',label:'おもり',x:.41,z:.72,
    q:'糸の長さをそのままにして、おもりだけ重くしたら？',options:['1往復の時間はほぼ変わらない','必ず速く振れる'],answer:0,
    explain:'空気抵抗などの影響が小さく、振れ幅も小さいとき、周期はおもりの重さにほぼ左右されない。',detail:'条件をそろえると、重さを変えても周期はほぼ一定。',icon:'weight'},
-  {id:'record',title:'時計師の記録帳',label:'記録帳',x:.61,z:.33,
-   q:'振り子が10往復するのに10秒。1往復の時間は？',options:['10秒','1.0秒'],answer:1,
-   explain:'10往復の時間を10で割ると、1往復の時間を求められる。何往復かまとめて測ると測定誤差を小さくしやすい。',detail:'10往復の時間 ÷ 10 ＝ 1往復の時間。',icon:'book'}
+  {id:'record',title:'振れ幅の記録帳',label:'振れ幅',x:.61,z:.33,
+   q:'小さな振れ幅だけを変えたら、1往復の時間は？',options:['ほぼ同じ','大きく変わる'],answer:0,
+   explain:'小さな振れ幅（5〜15°）では、振れ幅だけ変えても周期はほぼ同じ。大きな振れ幅では少し長くなる。',detail:'小さな振れ幅で条件をそろえて比べよう。旧版の取得済み記録も引き継いでいるよ。',icon:'book'}
  ];
  const icon={
   pend:`<svg viewBox="0 0 56 62" aria-hidden="true"><path d="M8 9H48M28 11V35" fill="none" stroke="#e9cc8f" stroke-width="4" stroke-linecap="round"/><path d="M28 12L39 40" fill="none" stroke="#a6edf0" stroke-width="2.5"/><circle cx="39" cy="44" r="9" fill="#a4e6db" stroke="#ffe1a3" stroke-width="3"/><path d="M9 52H48" stroke="#f4ddaa" stroke-width="4" stroke-linecap="round"/><path d="M12 16L5 22M45 16L51 22" stroke="#f2d7a9" stroke-width="3"/></svg>`,
@@ -724,15 +724,9 @@ body[data-scene="world"] .exp22-world{
   if(found[id]){show(closer+`<div class="exp28-kicker">DISCOVERY / REVISIT</div><h3>${esc(p.title)}</h3><p class="exp28-body">✦ 発見済み：${esc(p.explain)}</p><div class="exp28-foot"><button class="exp28-continue" data-exp28-action="experiment" type="button">振り子を試しに行く →</button></div>`);return;}
   show(closer+`<div class="exp28-kicker">CLOCKTOWER / INVESTIGATION</div><h3>${esc(p.title)}</h3><p class="exp28-question">${esc(p.q)}</p><div class="exp28-choices">${p.options.map((o,i)=>`<button type="button" data-exp28-option="${i}">${esc(o)}</button>`).join('')}</div><div class="exp28-feedback" role="status" aria-live="polite">予想を選んでみよう。</div>`);
  }
- function answer(choice){const p=lookup(active);if(!p||found[p.id])return;
-  const msg=panel.querySelector('.exp28-feedback');if(!msg)return;
-  if(choice!==p.answer){wrong++;msg.textContent=wrong===1?'おしい！ もう一方の考えも試してみよう。':'もう一度予想してみよう。実際の実験でも確かめられるよ。';return;}
-  found[p.id]=true;persist();updateStatus();
-  panel.querySelectorAll('[data-exp28-option]').forEach(b=>{b.disabled=true;b.dataset.correct=String(Number(b.dataset.exp28Option)===choice)});
-  msg.classList.add('success');msg.textContent='✦ 発見！ '+p.explain;
-  panel.insertAdjacentHTML('beforeend',`<div class="exp28-foot"><span class="exp28-kicker">探索記録 ${learned()}/3</span><button type="button" class="exp28-continue" data-exp28-action="close">${learned()===3?'探索完了！':'冒険にもどる'} →</button></div>`);
-  notify(learned()===3?'✦ 時計塔の法則を解き明かした！':'✦ 理科の知識を発見！');
- }
+ function answer(choice){const msg=panel.querySelector('.exp28-feedback');if(msg)msg.textContent='予想は実験で確かめよう。装置で条件を1つずつ変えて測り、記録を2件比較すると発見になるよ。';if(!panel.querySelector('[data-exp28-action="experiment"]'))panel.insertAdjacentHTML('beforeend','<button type="button" class="exp28-continue" data-exp28-action="experiment">実験で確かめる →</button>');}
+ document.addEventListener('rika:discovery',()=>{try{found=JSON.parse(localStorage.getItem(STORE)||'{}')}catch(_){}updateStatus();});
+
  function openNotebook(){if(!alive()||!panel)return;
   if(!panel.hidden){close();return;}
   active='notebook';
