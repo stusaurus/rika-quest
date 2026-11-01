@@ -390,4 +390,10 @@
 body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-interact{
  top:12px!important;bottom:auto!important;z-index:42!important;
 }
+
+/* Exploration guidance belongs to exploration, not the pendulum laboratory.
+   Restore it automatically when returning to the world. */
+body[data-scene="world"] .stage-viewport.exp23-experiment .rq-explore-help{
+ display:none!important;
+}
 </style><script src="./assets/experiment-records.js"></script></body></html>
