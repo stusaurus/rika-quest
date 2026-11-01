@@ -258,7 +258,7 @@ controls.addEventListener('click',event=>{
   if(val==='N')phaseTo(3,'正解！ 同じ極が反発するので、左はN極・右はS極だ。');
   else setMessage('N極を近づけたとき、反発したのはどちらだったかな？');
  }else if(action==='pick'&&state.phase===3){
-  state.pole=val;setMessage((val==='N'?'N極':'S極')を選択。距離を変えて門で実験しよう。');render();
+  state.pole=val;setMessage((val==='N'?'N極':'S極')+'を選択。距離を変えて門で実験しよう。');render();
  }else if(action==='gate'&&state.phase===3){
   state.attempts++;
   const result=tryGate(state.pole,state.distance);
