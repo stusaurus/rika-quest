@@ -52,10 +52,17 @@ try{
   };
   await page.goto(url,{waitUntil:'networkidle'});
   assert.equal(await phase(page),'0');
+  if(mode==='touch')await page.evaluate(()=>{
+    window.__gestures=[];
+    ['pointerdown','pointermove','pointerup','pointercancel','touchstart','touchmove','touchend'].forEach(type=>{
+      document.querySelector('svg').addEventListener(type,e=>window.__gestures.push({type,target:e.target.id,x:e.clientX,y:e.clientY,scroll:scrollY}),true);
+    });
+  });
   assert.equal(await page.locator('#filing-dots .filing').count(),24);
   await drag(390,366,390,366);
   assert.equal(await page.locator('.observations .obs').count(),1,'first finger/mouse probe');
   await drag(390,366,491,366);
+  if(mode==='touch')console.log('TOUCH_DIAGNOSTIC',JSON.stringify(await page.evaluate(()=>({events:window.__gestures,transform:document.getElementById('probe-lens').getAttribute('transform'),scrollY,observations:document.querySelectorAll('.observations .obs').length}))));
   assert.equal(await page.locator('.observations .obs').count(),2,'probe at center');
   const centerDots=await page.locator('#filing-dots .filing').evaluateAll(nodes=>nodes.filter(e=>e.getAttribute('opacity')!=='0').length);
   assert.equal(centerDots,7,'weak iron filing display at center');
