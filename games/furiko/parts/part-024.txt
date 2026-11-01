@@ -336,4 +336,78 @@
 </style><style id="v036-clear-overlay-fix">
 /* The full-screen success dialog must remain legible above the progress HUD. */
 .v030-room:has(.v030-reward:not([hidden])) .v035-restoration{opacity:0!important;visibility:hidden!important;}
-</style></body></html>
+
+/* Provisional 4-pose walk: the crop keeps a shared foot anchor at y=113/116. */
+.exp22-character{aspect-ratio:106/116!important;height:auto!important}
+.exp22-character .tiranon-sprite{position:absolute;left:0;bottom:-2.59%;width:100%;height:100%;background-image:url('./assets/tiranon-walk-prototype.webp');background-size:800% 100%;background-position:0 0;background-repeat:no-repeat;animation:none!important;transform:none!important}
+.exp22-character .exp22-shadow{bottom:-2px!important;left:24%!important;width:54%!important;animation:none!important}
+.exp22-character.walking:after{display:none!important}
+.exp25-lab-actor .tiranon-sprite,.exp25-win-actor .tiranon-sprite{display:block;width:100%;height:100%;background:url('./assets/tiranon-walk-prototype.webp') left center / 800% 100% no-repeat;animation:none!important}
+
+/* Stage 1: keep the world clear; native details preserves keyboard access. */
+.exp22-world .rq-explore-help{position:absolute;right:12px;top:24%;z-index:20;pointer-events:auto;color:#fff0ce;font-size:12px;max-width:calc(100% - 24px)}
+.rq-explore-help summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:8px 12px;border:1px solid #cfba8870;border-radius:12px;background:#102738d9;list-style:revert}
+.rq-explore-help[open]{width:min(300px,calc(100% - 24px));border:1px solid #cfba8870;border-radius:12px;background:#102738f5;max-height:60%;overflow:auto}
+.rq-help-content{padding:12px;line-height:1.6}
+.exp22-world .rq-help-content .exp22-guide,.exp22-world .rq-help-content .exp22-note,.exp22-world .rq-help-content .exp22-foot-controls{position:static!important;transform:none!important;width:auto!important;max-width:none!important;margin:8px 0!important}
+.exp22-world .rq-help-content .exp22-foot-controls{width:max-content!important;gap:4px!important}
+.exp22-world .rq-help-content .exp22-foot-controls button{width:44px!important;height:44px!important}
+.exp22-world .exp23-world-chip{display:none!important}
+.exp23-exploring .exp22-interact[data-near="false"]{visibility:hidden!important;pointer-events:none!important}
+.exp23-exploring .exp22-interact[data-near="true"]{animation:none!important}
+.exp22-world .exp22-apparatus:after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px}
+.exp22-world .exp28-object{min-width:44px;min-height:44px}
+.rq-explore-help summary:focus-visible{outline:3px solid #ffe2a1;outline-offset:2px}
+
+/* Stage 1 narrow-screen lab: reserve the upper viewport for observing the pendulum.
+   Keep the existing controls scrollable rather than covering the instrument. */
+@media(max-width:480px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel{
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  right:8px!important;left:8px!important;width:auto!important;
+  max-height:38svh!important;overflow-y:auto!important;
+  padding:8px!important;overscroll-behavior:contain;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment .stage-scene .visual-frame{
+  width:calc(100% - 8px)!important;
+ }
+}
+
+/* Mobile laboratory: keep exploration-only guidance out of the observation area.
+   The instructions remain available in the existing help disclosure. */
+@media(max-width:480px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-guide,
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-note,
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-foot-controls{
+  display:none!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .range-label{
+  font-size:clamp(12px,3.4vw,14px)!important;line-height:1.4!important;
+ }
+}
+
+/* The return-to-exploration control must not sit beneath the experiment sheet. */
+body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-interact{
+ top:72px!important;bottom:auto!important;z-index:42!important;
+}
+
+/* Exploration guidance belongs to exploration, not the pendulum laboratory.
+   Restore it automatically when returning to the world. */
+body[data-scene="world"] .stage-viewport.exp23-experiment .rq-explore-help{
+ display:none!important;
+}
+
+/* Readable and touch-friendly experiment controls on narrow phones. */
+@media(max-width:480px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .mission-actions{
+  gap:8px!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .mission-actions .btn{
+  min-height:44px!important;font-size:clamp(13px,3.6vw,15px)!important;
+  line-height:1.4!important;padding:9px 7px!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel input[type="range"]{
+  min-height:32px;touch-action:pan-y;
+ }
+}
+</style><script src="./assets/experiment-records.js"></script></body></html>

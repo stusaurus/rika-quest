@@ -1,0 +1,30 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const api=require('../games/furiko/assets/experiment-records.js');
+const html=fs.readdirSync('games/furiko/parts').sort().map(f=>fs.readFileSync('games/furiko/parts/'+f,'utf8')).join('');
+const formula=html.match(/const period=(.*?);\n/)[1];const period=vm.runInNewContext(formula);
+const r=(order,length=60,mass=20,amp=10)=>({order,length,mass,amp,period:period(length,amp)});
+assert.equal(api.compare(r(1),r(2,30)).id,'length');
+assert.equal(api.compare(r(1),r(2,60,40)).id,'mass');
+assert.equal(api.compare(r(1),r(2,60,20,15)).id,'record');
+assert.equal(api.compare(r(1),r(2,30,40)).id,undefined);
+assert.equal(api.compare(r(1),r(2)).id,undefined);
+assert.equal(api.compare(r(1),r(2,60,20,30)).id,undefined);
+assert.ok(period(60,30)>period(60,10));
+const records=[r(1),r(2),r(3,30)];assert.deepEqual(api.restore(JSON.stringify({version:1,records})),records);assert.deepEqual(api.restore('{'),[]);assert.deepEqual(api.restore('{"version":9,"records":[]}'),[]);
+const answer=html.slice(html.indexOf(' function answer(choice){'),html.indexOf('\n function openNotebook()',html.indexOf(' function answer(choice){')));
+assert.ok(!answer.includes('found[p.id]=true'));
+const gate=html.slice(html.indexOf(' const DISCOVER_STORE='));
+assert.ok(gate.includes('const canOpen=()=>powered()&&clues()===3;'));
+assert.ok(gate.includes('const unlocked=()=>opened&&canOpen();'));
+const unlock=gate.match(/ function unlock\(\)\{([\s\S]*?)\n \}/)[1];
+for(const powered of [false,true])for(const n of [0,1,2,3])for(const correct of [false,true]){
+ const context={powered:()=>powered,clues:()=>n,reading:()=>correct,openGate:()=>{},opened:false,localStorage:{setItem:()=>{}},GATE_STORE:'test',mark:()=>{},show:()=>{}};vm.runInNewContext('(function(){'+unlock+'})()',context);assert.equal(context.opened,powered&&n===3&&correct);
+}
+const legacy={length:true,mass:true,record:true};const before=JSON.stringify(legacy);api.restore(JSON.stringify({version:1,records}));assert.equal(JSON.stringify(legacy),before);
+console.log('PASS: comparisons, repeated conditions, amplitude physics, restore, prediction guard, actual gate unlock branch (16 cases). Legacy data preservation is structural; browser storage integration remains unverified.');
+assert.deepEqual(api.previousPair(records),records.slice(-2));assert.equal(api.previousPair([r(1)]),null);
+let store={};const storage={getItem:k=>store[k]||null,setItem:(k,v)=>store[k]=v};
+store[api.DISC]=JSON.stringify({length:true,legacyNote:'keep'});
+assert.equal(api.award(storage,'length'),false);assert.equal(api.award(storage,'mass'),true);assert.equal(api.award(storage,'mass'),false);assert.equal(JSON.parse(store[api.DISC]).legacyNote,'keep');
+assert.equal(JSON.parse(store[api.DISC]).mass,true);
+console.log('PASS: previous pair selection, manual comparison API, duplicate discovery prevention and persisted legacy fields.');

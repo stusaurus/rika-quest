@@ -319,31 +319,16 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
  const machine={x:.76,z:.43};
  const held=new Set();let current=null,target=null,last=0,nearBefore=null,activeBefore=false;
   let stationOpen=false,pendingInteract=false,cameraX=0,cameraY=0,lastDirection='down';
- let exp28Destination=null,exp28LastBroadcast=0;
+ let exp28Destination=null,exp28LastBroadcast=0, walkDistance=0;
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const isActive=()=>document.body.dataset.scene==='world'&&typeof state!=='undefined'&&state.sid==='s01';
- function makeAvatar(){return `<div class="exp22-shadow"></div><div class="exp22-figure"><svg viewBox="0 0 112 165" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
- <defs>
-  <linearGradient id="exp23-cloth" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#b5d8d1"/><stop offset=".38" stop-color="#51747c"/><stop offset="1" stop-color="#162b43"/></linearGradient>
-  <linearGradient id="exp23-cape" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a2bdc6"/><stop offset=".52" stop-color="#345165"/><stop offset="1" stop-color="#101d32"/></linearGradient>
-  <linearGradient id="exp23-metal" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#fff2c1"/><stop offset=".38" stop-color="#dcb66a"/><stop offset="1" stop-color="#815c3d"/></linearGradient>
-  <radialGradient id="exp23-lantern"><stop stop-color="#fffde3"/><stop offset=".24" stop-color="#ffdf8e"/><stop offset="1" stop-color="#f0ac4c" stop-opacity="0"/></radialGradient>
- </defs>
- <g class="exp23-cloak"><path d="M37 75 Q20 80 12 135 L36 138 Q45 122 51 98Z" fill="url(#exp23-cape)" stroke="#bbd2d4" stroke-opacity=".65" stroke-width="2"/><path d="M71 75 Q93 84 102 135 L73 138 L62 96Z" fill="#142a42" stroke="#b4bbbe" stroke-opacity=".5" stroke-width="2"/></g>
- <g class="exp23-leg exp23-leg-back"><path d="M52 108 L51 139 L65 140 L70 114Z" fill="#1a2c40" stroke="#97a3a0" stroke-width="1.8"/><path d="M48 135 L67 136 L74 148 Q63 151 46 144Z" fill="#56453c" stroke="#e0b96b" stroke-width="2"/></g>
- <g class="exp23-leg exp23-leg-front"><path d="M35 111 L37 138 L50 141 L56 115Z" fill="#1b3448" stroke="#96b5b7" stroke-width="1.8"/><path d="M34 134 L51 137 L55 148 Q42 151 30 144Z" fill="#5b493c" stroke="#e2c07e" stroke-width="2"/></g>
- <g class="exp23-arm exp23-arm-back"><path d="M32 82 Q16 89 16 112 L29 116 L43 94Z" fill="#34596d" stroke="#d5bd86" stroke-width="2"/><path d="M18 109 L18 119 L29 121 L32 112Z" fill="#f0c7a0" stroke="#c2936c" stroke-width="1.5"/></g>
- <g class="exp23-body"><path d="M31 80 Q53 71 79 80 L85 118 Q57 133 27 116Z" fill="url(#exp23-cloth)" stroke="#f4d89e" stroke-width="2.7"/><path d="M36 85 Q57 99 76 84" stroke="#d7dfd2" stroke-width="3" fill="none"/><path d="M29 108 L81 110 L82 117 L29 115Z" fill="#684f3c" stroke="#f2cf81" stroke-width="2"/><circle cx="55" cy="113" r="5.4" fill="url(#exp23-metal)"/><path d="M43 89 L56 102 L70 87" stroke="url(#exp23-metal)" stroke-width="4" fill="none"/><path d="M50 103 L57 107 L63 101 L58 115 L54 119Z" fill="#f1d98b"/></g>
- <g class="exp23-head"><path d="M42 67 L38 87 Q57 96 73 83 L69 65Z" fill="#e6bb95"/><path d="M30 43 Q27 17 55 17 Q83 19 82 48 L77 68 Q67 83 50 79 Q31 71 30 43Z" fill="#f2c7a6" stroke="#a47c62" stroke-width="1.5"/><path d="M30 43 Q20 7 55 9 Q89 7 85 52 Q80 46 76 30 Q52 37 39 33 L34 58Z" fill="#30364b" stroke="#b69f8a" stroke-width="2"/><path d="M32 35 Q43 9 76 20 L74 28 Q51 25 37 46Z" fill="#586476"/><path d="M55 49 Q60 47 63 50" stroke="#5d5149" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M71 46 L75 48" stroke="#5d5149" stroke-width="2.1" stroke-linecap="round"/><path d="M61 65 Q68 69 73 64" stroke="#945f4b" stroke-width="1.6" fill="none"/><ellipse cx="38" cy="60" rx="5" ry="3" fill="#f4a78c" opacity=".32"/></g>
- <g class="exp23-arm exp23-arm-front"><path d="M75 82 Q94 86 92 111 L83 117 L69 93Z" fill="#2e475a" stroke="#f1cf8d" stroke-width="2"/><path d="M83 109 L84 121 L95 118 L95 108Z" fill="#eac09f" stroke="#ab8366" stroke-width="1.5"/>
- <g class="exp23-hand-lamp"><circle cx="94" cy="126" r="26" fill="url(#exp23-lantern)"/><path d="M89 116 L100 116 L101 133 L88 133Z" fill="#473e38" stroke="#ffe0a0" stroke-width="2.5"/><path d="M91 114 Q93 107 98 113" stroke="#e8d39d" stroke-width="2.3" fill="none"/><rect x="91" y="120" width="8" height="10" rx="1" fill="#ffe9a5"/><circle cx="94" cy="125" r="3" fill="#fffce2"/></g></g>
- </svg></div>`;}
+ function makeAvatar(){return `<div class="exp22-shadow"></div><div class="exp22-figure tiranon-sprite" aria-hidden="true"></div>`;}
  function install(viewport){
   const sc=viewport.querySelector('.stage-scene');if(!sc)return;
   const layer=document.createElement('div');layer.className='exp22-world';
   layer.setAttribute('aria-label','時計塔の探索エリア');
   layer.innerHTML=`<div class="exp23-background" aria-hidden="true"><span class="exp23-mist"></span><span class="exp23-light exp23-light-a"></span><span class="exp23-light exp23-light-b"></span><span class="exp23-columns"></span><span class="exp23-floor"></span><span class="exp23-embers"></span></div><div class="exp22-guide" id="exp22Guide" role="status">時計塔の奥にある振り子装置へ行こう</div>
-  <div class="exp22-character" role="img" aria-label="時計塔を探検する主人公">${makeAvatar()}</div>
+  <div class="exp22-character" role="img" aria-label="時計塔を探検するティラノン">${makeAvatar()}</div>
   <button type="button" class="exp22-apparatus" aria-label="振り子の制御装置へ向かう"><span class="exp22-sigil" aria-hidden="true">⚙</span><span>振り子制御装置</span></button>
   <div class="exp22-foot-controls" role="group" aria-label="キャラクターの移動操作">
    <button type="button" data-expdir="up" aria-label="奥へ歩く">▲</button>
@@ -379,6 +364,16 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
   };
   // The existing HUD remains usable without requiring a second interaction route.
   layer.addEventListener('click',e=>{if(e.target.closest('.exp23-return'))setStation(false)});
+  // Empty floor taps share the same destination system as discovery objects.
+  viewport.addEventListener('click',e=>{
+   if(!isActive()||stationOpen||viewport.classList.contains('exp28-world-fixed')||viewport.classList.contains('exp29-gate-world-locked'))return;
+   if(e.target.closest('button,a,input,select,textarea,details,[role="dialog"],.exp22-character'))return;
+   const r=sc.getBoundingClientRect(); if(!r.width||!r.height)return;
+   const px=(e.clientX-r.left)/r.width*100, bottom=(r.bottom-e.clientY)/r.height*100;
+   if(bottom<23.5||bottom>39||px<20||px>80)return;
+   pendingInteract=false;exp28Destination=null;held.clear();
+   target={x:clamp(.5+(px-50)/54,.07,.93),z:clamp((bottom-23)/19,.04,.82)};
+  });
   layer.querySelector('.exp22-interact').addEventListener('click',doInteract);
   layer.querySelector('.exp22-apparatus').addEventListener('click',doInteract);
   for(const btn of layer.querySelectorAll('[data-expdir]')){
@@ -388,8 +383,13 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
    btn.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(ev=>btn.addEventListener(ev,up));
    btn.addEventListener('blur',up);
   }
+  const help=document.createElement('details');help.className='rq-explore-help';
+  help.innerHTML='<summary>操作ガイド</summary><div class="rq-help-content"><p>床をタップして移動。装置・手がかり・扉をタップすると近づいて調べます。</p></div>';
+  layer.append(help);
+  const helpContent=help.querySelector('.rq-help-content');
+  ['.exp22-guide','.exp22-note','.exp22-foot-controls'].forEach(selector=>helpContent.append(layer.querySelector(selector)));
   current={viewport,layer,avatar:layer.querySelector('.exp22-character'),beacon:layer.querySelector('.exp22-apparatus'),action:layer.querySelector('#exp22Interact'),guide:layer.querySelector('#exp22Guide')};
-  player.x=.49;player.z=.12;player.face=1;target=null;exp28Destination=null;held.clear();nearBefore=null;activeBefore=false;
+  player.x=.49;player.z=.12;player.face=1;walkDistance=0;target=null;exp28Destination=null;held.clear();nearBefore=null;activeBefore=false;
   stationOpen=viewport.classList.contains('commands-open');pendingInteract=false;cameraX=0;cameraY=0;lastDirection='down';
   viewport.classList.toggle('exp23-exploring',!stationOpen);
   viewport.classList.toggle('exp23-experiment',stationOpen);
@@ -400,7 +400,7 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
  function isNear(){return Math.hypot((player.x-machine.x)*1.05,(player.z-machine.z)*1.35)<.18}
  function updateVisual(moving){if(!current)return;
   const near=isNear(),done=!!(state.progress&&state.progress.s01);
-  const scale=.74+player.z*.44;
+  const scale=1.10-player.z*.40; // 奥へ進むほど小さく見せる
   const av=current.avatar;
   // The camera follows the player, rather than pinning the sprite to a static background.
   av.style.left=(50+(player.x-.5)*54)+'%';av.style.bottom=(23+player.z*19)+'%';
@@ -408,6 +408,8 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
   current.beacon.style.bottom=(30+(.5-player.z)*3)+'%';
   av.style.setProperty('--exp22-scale',String(scale));av.style.setProperty('--exp22-facing',String(player.face));
   av.dataset.direction=lastDirection;
+  const sprite=av.querySelector('.tiranon-sprite');
+  if(sprite)sprite.style.backgroundPosition=((moving&&!stationOpen ? Math.floor(walkDistance/.022)%8 : 0)*100/7)+'% 0';
   av.classList.toggle('walking',moving&&!stationOpen);av.classList.toggle('near',near);
   current.viewport.style.setProperty('--exp-cam-x',cameraX.toFixed(1)+'px');
   current.viewport.style.setProperty('--exp23-camera',cameraX.toFixed(1)+'px');
@@ -453,6 +455,7 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
     if(moving){const speed=.33*dt;const vx=dx/norm*speed,vz=dz/norm*speed;
       const oldx=player.x,oldz=player.z;
       player.x=clamp(player.x+vx,.07,.93);player.z=clamp(player.z+vz,.04,.82);
+      walkDistance+=Math.hypot(player.x-oldx,player.z-oldz);
       if(target&&Math.hypot(player.x-target.x,player.z-target.z)<.018)target=null;
       if(Math.abs(player.x-oldx)>.0001)player.face=player.x>oldx?1:-1;
       if(Math.abs(dx)>Math.abs(dz))lastDirection=dx>0?'right':'left';
