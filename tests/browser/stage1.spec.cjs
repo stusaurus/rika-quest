@@ -9,7 +9,8 @@ async function lab(page){
  await apparatus.click();
  // The apparatus may first initiate walking toward it; retry through the UI
  // only if the world has not entered the experiment after that movement.
- if(!await page.locator('.stage-viewport.exp23-experiment').isVisible({timeout:3000}).catch(()=>false)){
+ const entered=await page.locator('.stage-viewport.exp23-experiment').waitFor({state:'visible',timeout:3500}).then(()=>true).catch(()=>false);
+ if(!entered){
   await expect(page.locator('.exp22-interact[data-near="true"]')).toBeVisible({timeout:12000});
   await page.locator('#exp22Interact').click();
  }
