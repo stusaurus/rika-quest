@@ -358,4 +358,18 @@
 .exp22-world .exp22-apparatus:after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px}
 .exp22-world .exp28-object{min-width:44px;min-height:44px}
 .rq-explore-help summary:focus-visible{outline:3px solid #ffe2a1;outline-offset:2px}
+
+/* Stage 1 narrow-screen lab: reserve the upper viewport for observing the pendulum.
+   Keep the existing controls scrollable rather than covering the instrument. */
+@media(max-width:360px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel{
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  right:8px!important;left:8px!important;width:auto!important;
+  max-height:38svh!important;overflow-y:auto!important;
+  padding:8px!important;overscroll-behavior:contain;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment .stage-scene .visual-frame{
+  width:calc(100% - 8px)!important;
+ }
+}
 </style><script src="./assets/experiment-records.js"></script></body></html>
