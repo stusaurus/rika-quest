@@ -9,6 +9,16 @@ for(const width of [320,390,430,1440])test('stage one complete '+width,async({pa
  await page.setViewportSize({width,height:width===1440?900:844});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const shots=async name=>{await page.screenshot({path:info.outputPath(name+'.png'),fullPage:true});const layout=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,controls:[...document.querySelectorAll('.exp22-apparatus,#runStage,[data-rq-measure],#exp29-length,[data-exp29-go]')].map(e=>{const r=e.getBoundingClientRect();return {label:e.getAttribute('aria-label')||e.textContent.slice(0,60),x:r.x,y:r.y,width:r.width,height:r.height}})}));await info.attach(name+'-layout',{body:JSON.stringify(layout),contentType:'application/json'});expect(layout.scrollWidth).toBeLessThanOrEqual(width);};
  test.info().annotations.push({type:'save-setup',description:'Fresh browser context; no localStorage or game-state injection'});const started=Date.now();await enter(page);await shots('explore');await lab(page);
+ // Capture the actual open laboratory before any measurement; previous screenshots
+ // were taken only after experiments and could not establish panel occlusion.
+ await shots('lab-open');
+ const labGeometry=await page.evaluate(()=>{
+  const box=selector=>{const el=document.querySelector(selector);if(!el)return null;const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,visible:getComputedStyle(el).display!=='none'};};
+  return {viewport:{width:innerWidth,height:innerHeight},panel:box('.stage-command-panel'),visual:box('.stage-scene .visual-frame'),canvas:box('.stage-scene canvas'),measure:box('[data-rq-measure]')};
+ });
+ await info.attach('lab-open-geometry',{body:JSON.stringify(labGeometry,null,2),contentType:'application/json'});
+ expect(labGeometry.visual).not.toBeNull();
+ expect(labGeometry.panel).not.toBeNull();
  // A fresh browser context provides a new save without injecting progress.
  await measure(page);await range(page,'#rng-length',25,10);await measure(page);expect((await found(page)).length).toBe(true);await shots('length-discovery');
  await page.reload();await enterAfterReload(page);await lab(page);expect((await found(page)).length).toBe(true);expect((await history(page)).length).toBe(2);
