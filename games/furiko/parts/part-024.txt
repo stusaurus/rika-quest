@@ -396,4 +396,18 @@ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-interact{
 body[data-scene="world"] .stage-viewport.exp23-experiment .rq-explore-help{
  display:none!important;
 }
+
+/* Readable and touch-friendly experiment controls on narrow phones. */
+@media(max-width:480px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .mission-actions{
+  gap:8px!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .mission-actions .btn{
+  min-height:44px!important;font-size:clamp(13px,3.6vw,15px)!important;
+  line-height:1.4!important;padding:9px 7px!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel input[type="range"]{
+  min-height:32px;touch-action:pan-y;
+ }
+}
 </style><script src="./assets/experiment-records.js"></script></body></html>
