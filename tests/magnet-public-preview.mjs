@@ -7,7 +7,7 @@ try {
   const context = await browser.newContext({viewport:{width:390,height:844},locale:'ja-JP'});
   // raw.githack.com explicitly documents this opt-in cookie for automated browsing.
   // Human visitors may see a one-time confirmation interstitial.
-  await context.addCookies([{name:'__Http-phish',value:'1',domain:'raw.githack.com',path:'/',secure:true}]);
+  await context.addCookies([{name:'__Http-phish',value:'1',domain:'raw.githack.com',path:'/',secure:true,httpOnly:true}]);
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));
   const responses=[];page.on('response',res=>{
