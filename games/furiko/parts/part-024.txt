@@ -372,4 +372,17 @@
   width:calc(100% - 8px)!important;
  }
 }
+
+/* Mobile laboratory: keep exploration-only guidance out of the observation area.
+   The instructions remain available in the existing help disclosure. */
+@media(max-width:480px){
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-guide,
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-note,
+ body[data-scene="world"] .stage-viewport.exp23-experiment .exp22-foot-controls{
+  display:none!important;
+ }
+ body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel .range-label{
+  font-size:clamp(12px,3.4vw,14px)!important;line-height:1.4!important;
+ }
+}
 </style><script src="./assets/experiment-records.js"></script></body></html>
