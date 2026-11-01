@@ -11,7 +11,7 @@ async function lab(page){
  // only if the world has not entered the experiment after that movement.
  if(!await page.locator('.stage-viewport.exp23-experiment').isVisible({timeout:3000}).catch(()=>false)){
   await expect(page.locator('.exp22-interact[data-near="true"]')).toBeVisible({timeout:12000});
-  await apparatus.click();
+  await page.locator('#exp22Interact').click();
  }
  await expect(page.locator('.stage-viewport')).toHaveClass(/exp23-experiment/);
  await expect(page.locator('[data-rq-measure]')).toBeVisible();
