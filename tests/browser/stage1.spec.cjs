@@ -3,7 +3,19 @@ const history=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('furiko-ex
 const found=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('furiko-clocktower-discoveries-v028')||'{}'));
 async function range(page,id,value,min){const el=page.locator(id);await el.focus();await el.press('Home');const step=Number(await el.getAttribute('step'))||1;for(let i=min;i<value;i+=step)await el.press('ArrowRight');await expect(el).toHaveValue(String(value));}
 async function enter(page){await page.goto('/games/furiko/');await page.locator('#heroStartGame').click();await expect(page.locator('.exp22-apparatus')).toBeVisible();}
-async function lab(page){await page.locator('.exp22-apparatus').click();await expect(page.locator('.stage-viewport')).toHaveClass(/exp23-experiment/);await expect(page.locator('[data-rq-measure]')).toBeVisible();}
+async function lab(page){
+ const apparatus=page.locator('.exp22-apparatus');
+ await expect(apparatus).toBeVisible();
+ await apparatus.click();
+ // The apparatus may first initiate walking toward it; retry through the UI
+ // only if the world has not entered the experiment after that movement.
+ if(!await page.locator('.stage-viewport.exp23-experiment').isVisible({timeout:3000}).catch(()=>false)){
+  await expect(page.locator('.exp22-interact[data-near="true"]')).toBeVisible({timeout:12000});
+  await apparatus.click();
+ }
+ await expect(page.locator('.stage-viewport')).toHaveClass(/exp23-experiment/);
+ await expect(page.locator('[data-rq-measure]')).toBeVisible();
+}
 async function measure(page){const n=(await history(page)).length;await page.locator('[data-rq-measure]').click();await expect.poll(async()=> (await history(page)).length,{timeout:15000}).toBe(n+1);await expect(page.locator('[data-rq-result]')).not.toContainText('観察中');}
 for(const width of [320,390,430,1440])test('stage one complete '+width,async({page},info)=>{
  await page.setViewportSize({width,height:width===1440?900:844});const errors=[];page.on('pageerror',e=>errors.push(e.message));
