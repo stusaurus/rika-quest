@@ -361,7 +361,7 @@
 
 /* Stage 1 narrow-screen lab: reserve the upper viewport for observing the pendulum.
    Keep the existing controls scrollable rather than covering the instrument. */
-@media(max-width:360px){
+@media(max-width:480px){
  body[data-scene="world"] .stage-viewport.exp23-experiment.commands-open .stage-command-panel{
   bottom:max(8px,env(safe-area-inset-bottom))!important;
   right:8px!important;left:8px!important;width:auto!important;
