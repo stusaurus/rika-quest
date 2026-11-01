@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {POSITIONS,inspectBar,comparePoles,unknownPole,referenceExperiment,tryGate,STAGE} from '../games/magnet/engine.mjs';
+
+assert.equal(POSITIONS.length,5);
+assert.equal(inspectBar('left').intensity,'つよい');
+assert.equal(inspectBar('right').response,5);
+assert.equal(inspectBar('center').intensity,'よわい');
+assert.equal(inspectBar('innerLeft').response,3);
+assert.equal(inspectBar('innerRight').response,3);
+assert.throws(()=>inspectBar('not-a-position'),/Unknown probe position/);
+assert.equal(comparePoles('N','N'),'repel');
+assert.equal(comparePoles('S','S'),'repel');
+assert.equal(comparePoles('N','S'),'attract');
+assert.equal(comparePoles('S','N'),'attract');
+assert.throws(()=>comparePoles('X','N'),/Poles must/);
+assert.equal(unknownPole('left'),'N');
+assert.equal(unknownPole('right'),'S');
+assert.throws(()=>unknownPole('middle'),/Unknown side/);
+assert.equal(referenceExperiment('left').reaction,'repel');
+assert.equal(referenceExperiment('right').reaction,'attract');
+assert.equal(tryGate('S',1),'open');
+assert.equal(tryGate('S',3),'open');
+assert.equal(tryGate('S',4),'far');
+assert.equal(tryGate('N',2),'repel');
+assert.equal(tryGate('N',5),'far');
+for(const [pole,distance] of [['','2'],['S','6'],['N','0'],['N','NaN']])assert.equal(tryGate(pole,distance),'invalid');
+assert.deepEqual(STAGE.requiredProbes,['left','center','right']);
+const html=fs.readFileSync(new URL('../games/magnet/index.html',import.meta.url),'utf8');
+assert.ok(html.startsWith('<!doctype html>'));
+assert.ok(html.trimEnd().endsWith('</html>'));
+assert.ok(html.includes("from './engine.mjs'"));
+for(const needle of ['name="viewport"','aria-live="polite"','data-action="gate"','STAGE 01 / 07','prefers-reduced-motion','localStorage','type="range"','data-phase="0"']) {
+ assert.ok(html.includes(needle),'Missing UI feature: '+needle);
+}
+const scripts=[...html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)];
+assert.equal(scripts.length,1);
+const code=scripts[0][1].replace(/^\s*import[^\n]*\n/m,'');
+new vm.Script(code,{filename:'magnet-stage1-inline.js'});
+console.log('PASS: Magnet Quest stage 1 science model, basic accessibility, save and JavaScript syntax');
