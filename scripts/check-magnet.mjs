@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {POSITIONS,inspectBar,comparePoles,unknownPole,referenceExperiment,tryGate,STAGE} from '../games/magnet/engine.mjs';
+import {PROBE_STOPS,probeFromX,distanceFromX,xFromDistance} from '../games/magnet/interaction.mjs';
 
 assert.equal(POSITIONS.length,5);
 assert.equal(inspectBar('left').intensity,'つよい');
@@ -27,15 +28,26 @@ assert.equal(tryGate('N',2),'repel');
 assert.equal(tryGate('N',5),'far');
 for(const [pole,distance] of [['','2'],['S','6'],['N','0'],['N','NaN']])assert.equal(tryGate(pole,distance),'invalid');
 assert.deepEqual(STAGE.requiredProbes,['left','center','right']);
+assert.equal(PROBE_STOPS.length,5);
+assert.equal(probeFromX(390),'left');
+assert.equal(probeFromX(491),'center');
+assert.equal(probeFromX(591),'right');
+assert.equal(probeFromX(415),'left');
+assert.equal(probeFromX(416),'innerLeft');
+for(let i=1;i<=5;i++)assert.equal(distanceFromX(xFromDistance(i)),i);
+assert.equal(distanceFromX(-400),5);
+assert.equal(distanceFromX(1200),1);
 const html=fs.readFileSync(new URL('../games/magnet/index.html',import.meta.url),'utf8');
 assert.ok(html.startsWith('<!doctype html>'));
 assert.ok(html.trimEnd().endsWith('</html>'));
 assert.ok(html.includes("from './engine.mjs'"));
+assert.ok(html.includes("from './interaction.mjs'"));
+for(const id of ['probe-lens','reference-magnet','gate-magnet','iron-filings'])assert.ok(html.includes('id="'+id+'"'),'missing draggable tool '+id);
 for(const needle of ['name="viewport"','aria-live="polite"','data-action="gate"','STAGE 01 / 07','prefers-reduced-motion','localStorage','type="range"','data-phase="0"']) {
  assert.ok(html.includes(needle),'Missing UI feature: '+needle);
 }
 const scripts=[...html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,1);
-const code=scripts[0][1].replace(/^\s*import[^\n]*\n/m,'');
+const code=scripts[0][1].replace(/^\s*import[^\n]*\n/gm,'');
 new vm.Script(code,{filename:'magnet-stage1-inline.js'});
 console.log('PASS: Magnet Quest stage 1 science model, basic accessibility, save and JavaScript syntax');
