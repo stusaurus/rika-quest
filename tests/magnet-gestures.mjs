@@ -34,8 +34,10 @@ const doMouse=async(page,a,b)=>{
 };
 const doTouch=async(page,session,a,b)=>{
  await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:a.x,y:a.y,id:1}]});
- for(let i=1;i<=10;i++){const t=i/10;await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,id:1}]});}
+ await page.waitForTimeout(35);
+ for(let i=1;i<=10;i++){const t=i/10;await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,id:1}]});await page.waitForTimeout(35);}
  await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await page.waitForTimeout(55);
 };
 const phase=page=>page.locator('#app').getAttribute('data-phase');
 try{
