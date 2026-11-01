@@ -42,7 +42,7 @@ function measure(runExperiment){if(busy)return;const run=document.getElementById
  busy=true;lastResult='振り子の2往復を観察中…';render();
  const inputs=[...document.querySelectorAll('#rng-length,#rng-mass,#rng-amp')];const disabled=inputs.map(e=>e.disabled);inputs.forEach(e=>e.disabled=true);const runDisabled=run.disabled;run.disabled=true;
  setTimeout(()=>{busy=false;inputs.forEach((e,i)=>e.disabled=disabled[i]);run.disabled=runDisabled;
- if(!active()||!run.isConnected){lastResult='画面を移動したため測定を中止したよ。';render();return;}
+ if(!active()||!run.isConnected||!run.closest('.stage-viewport')?.classList.contains('exp23-experiment')||document.visibilityState==='hidden'){lastResult='画面を移動したため測定を中止したよ。';render();return;}
  records.push(r);const saved=save();lastResult='記録 #'+r.order+'：'+r.period.toFixed(3)+'秒。条件を1つだけ変えて、もう一度試そう。';const pair=previousPair(records);if(pair)showComparison(pair);if(!saved)lastResult+='（履歴を保存できませんでした）';render();if(runExperiment)runStage();
  },r.period*2000);
 }

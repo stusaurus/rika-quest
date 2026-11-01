@@ -1,0 +1,5 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync('games/furiko/assets/experiment-records.js','utf8');
+const body=source.slice(source.indexOf('function measure('),source.indexOf('\nfunction mount('));
+function simulate(close){let callback,open=true;const run={disabled:false,isConnected:true,closest:()=>({classList:{contains:()=>open}})};const context={busy:false,state:{pValues:{length:60,mass:20,amp:12}},records:[],period:()=>1,valid:()=>true,render:()=>{},document:{visibilityState:'visible',getElementById:()=>run,querySelectorAll:()=>[]},setTimeout:fn=>callback=fn,active:()=>true,save:()=>true,previousPair:()=>null,runStage:()=>{},lastResult:''};vm.createContext(context);vm.runInContext(body+';measure(false)',context);if(close)open=false;callback();return context.records.length;}
+assert.equal(simulate(false),1);assert.equal(simulate(true),0,'Closing experiment must cancel pending record');console.log('PASS: actual measure callback records active experiment and cancels closed panel');
