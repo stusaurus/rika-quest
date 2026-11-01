@@ -367,7 +367,7 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
   // Empty floor taps share the same destination system as discovery objects.
   viewport.addEventListener('click',e=>{
    if(!isActive()||stationOpen||viewport.classList.contains('exp28-world-fixed')||viewport.classList.contains('exp29-gate-world-locked'))return;
-   if(e.target.closest('button,a,input,select,textarea,[role="dialog"],.exp22-character'))return;
+   if(e.target.closest('button,a,input,select,textarea,details,[role="dialog"],.exp22-character'))return;
    const r=sc.getBoundingClientRect(); if(!r.width||!r.height)return;
    const px=(e.clientX-r.left)/r.width*100, bottom=(r.bottom-e.clientY)/r.height*100;
    if(bottom<23.5||bottom>39||px<20||px>80)return;
@@ -383,6 +383,11 @@ body[data-scene="world"] .exp22-enabled .v021-direct-note,body[data-scene="world
    btn.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(ev=>btn.addEventListener(ev,up));
    btn.addEventListener('blur',up);
   }
+  const help=document.createElement('details');help.className='rq-explore-help';
+  help.innerHTML='<summary>操作ガイド</summary><div class="rq-help-content"><p>床をタップして移動。装置・手がかり・扉をタップすると近づいて調べます。</p></div>';
+  layer.append(help);
+  const helpContent=help.querySelector('.rq-help-content');
+  ['.exp22-guide','.exp22-note','.exp22-foot-controls'].forEach(selector=>helpContent.append(layer.querySelector(selector)));
   current={viewport,layer,avatar:layer.querySelector('.exp22-character'),beacon:layer.querySelector('.exp22-apparatus'),action:layer.querySelector('#exp22Interact'),guide:layer.querySelector('#exp22Guide')};
   player.x=.49;player.z=.12;player.face=1;walkDistance=0;target=null;exp28Destination=null;held.clear();nearBefore=null;activeBefore=false;
   stationOpen=viewport.classList.contains('commands-open');pendingInteract=false;cameraX=0;cameraY=0;lastDirection='down';
