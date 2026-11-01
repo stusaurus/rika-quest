@@ -19,6 +19,11 @@ for(const width of [320,390,430,1440])test('stage one complete '+width,async({pa
  await info.attach('lab-open-geometry',{body:JSON.stringify(labGeometry,null,2),contentType:'application/json'});
  expect(labGeometry.visual).not.toBeNull();
  expect(labGeometry.panel).not.toBeNull();
+ // On phones, the scrollable command sheet must start below the pendulum visual.
+ if(width<=480){
+  expect(labGeometry.panel.y).toBeGreaterThanOrEqual(labGeometry.visual.y+labGeometry.visual.height);
+  expect(labGeometry.panel.y+labGeometry.panel.height).toBeLessThanOrEqual(844+1);
+ }
  // A fresh browser context provides a new save without injecting progress.
  await measure(page);await range(page,'#rng-length',25,10);await measure(page);expect((await found(page)).length).toBe(true);await shots('length-discovery');
  await page.reload();await enterAfterReload(page);await lab(page);expect((await found(page)).length).toBe(true);expect((await history(page)).length).toBe(2);
