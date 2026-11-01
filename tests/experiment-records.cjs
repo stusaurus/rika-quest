@@ -22,3 +22,9 @@ for(const powered of [false,true])for(const n of [0,1,2,3])for(const correct of 
 }
 const legacy={length:true,mass:true,record:true};const before=JSON.stringify(legacy);api.restore(JSON.stringify({version:1,records}));assert.equal(JSON.stringify(legacy),before);
 console.log('PASS: comparisons, repeated conditions, amplitude physics, restore, prediction guard, actual gate unlock branch (16 cases). Legacy data preservation is structural; browser storage integration remains unverified.');
+assert.deepEqual(api.previousPair(records),records.slice(-2));assert.equal(api.previousPair([r(1)]),null);
+let store={};const storage={getItem:k=>store[k]||null,setItem:(k,v)=>store[k]=v};
+store[api.DISC]=JSON.stringify({length:true,legacyNote:'keep'});
+assert.equal(api.award(storage,'length'),false);assert.equal(api.award(storage,'mass'),true);assert.equal(api.award(storage,'mass'),false);assert.equal(JSON.parse(store[api.DISC]).legacyNote,'keep');
+assert.equal(JSON.parse(store[api.DISC]).mass,true);
+console.log('PASS: previous pair selection, manual comparison API, duplicate discovery prevention and persisted legacy fields.');
