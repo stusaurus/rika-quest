@@ -20,7 +20,7 @@ jobs:
         working-directory: tests/browser
       - run: npx playwright install --with-deps chromium
         working-directory: tests/browser
-      - run: npx playwright test
+      - run: timeout --signal=TERM --kill-after=15s 180s npx playwright test --config=playwright.config.cjs --max-failures=1
         working-directory: tests/browser
       - uses: actions/upload-artifact@v4
         if: always()
