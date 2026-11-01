@@ -7,8 +7,8 @@ async function lab(page){await page.locator('.exp22-apparatus').click();await ex
 async function measure(page){const n=(await history(page)).length;await page.locator('[data-rq-measure]').click();await expect.poll(async()=> (await history(page)).length,{timeout:15000}).toBe(n+1);await expect(page.locator('[data-rq-result]')).not.toContainText('観察中');}
 for(const width of [320,390,430,1440])test('stage one complete '+width,async({page},info)=>{
  await page.setViewportSize({width,height:width===1440?900:844});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const shots=async name=>{await page.screenshot({path:info.outputPath(name+'.png'),fullPage:true});};
- const started=Date.now();await enter(page);await shots('explore');await lab(page);
+ const shots=async name=>{await page.screenshot({path:info.outputPath(name+'.png'),fullPage:true});const layout=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,controls:[...document.querySelectorAll('.exp22-apparatus,#runStage,[data-rq-measure],#exp29-length,[data-exp29-go]')].map(e=>{const r=e.getBoundingClientRect();return {label:e.getAttribute('aria-label')||e.textContent.slice(0,60),x:r.x,y:r.y,width:r.width,height:r.height}})}));await info.attach(name+'-layout',{body:JSON.stringify(layout),contentType:'application/json'});expect(layout.scrollWidth).toBeLessThanOrEqual(width);};
+ test.info().annotations.push({type:'save-setup',description:'Fresh browser context; no localStorage or game-state injection'});const started=Date.now();await enter(page);await shots('explore');await lab(page);
  // A fresh browser context provides a new save without injecting progress.
  await measure(page);await range(page,'#rng-length',25,10);await measure(page);expect((await found(page)).length).toBe(true);await shots('length-discovery');
  await page.reload();await enterAfterReload(page);await lab(page);expect((await found(page)).length).toBe(true);expect((await history(page)).length).toBe(2);

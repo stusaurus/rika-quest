@@ -2,8 +2,9 @@ name: Stage 1 browser QA
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [work/stage1-25d-integration]
+concurrency:
+  group: stage1-qa-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -12,6 +13,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - run: git rev-parse HEAD
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -20,13 +24,22 @@ jobs:
         working-directory: tests/browser
       - run: npx playwright install --with-deps chromium
         working-directory: tests/browser
-      - run: timeout --signal=TERM --kill-after=15s 180s npx playwright test --config=playwright.config.cjs --max-failures=1
+      - name: Minimal Chromium startup
+        run: timeout --kill-after=15s 90s npx playwright test --config=playwright.config.cjs --grep 'minimal Chromium'
         working-directory: tests/browser
+        env:
+          QA_PHASE: smoke
+      - name: Complete stage across four widths
+        run: timeout --kill-after=15s 420s npx playwright test --config=playwright.config.cjs --grep 'stage one complete'
+        working-directory: tests/browser
+        env:
+          QA_PHASE: complete
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: stage1-browser-evidence-${{ github.sha }}
           path: |
+            tests/browser/reports/
             tests/browser/test-results/
             tests/browser/playwright-report/
           retention-days: 14
