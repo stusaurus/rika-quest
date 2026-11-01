@@ -1,0 +1,36 @@
+name: Magnet Quest Stage 1 QA
+on:
+  pull_request:
+    paths:
+      - 'games/magnet/**'
+      - 'scripts/check-magnet.mjs'
+      - 'tests/magnet-stage1.mjs'
+      - '.github/workflows/magnet-stage1-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  magnet-stage1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify science rules and JavaScript syntax
+        run: node scripts/check-magnet.mjs
+      - name: Install Chromium test environment
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Play through stage 1 at four viewport widths
+        run: node tests/magnet-stage1.mjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magnet-stage1-browser-evidence
+          path: tests/.evidence/magnet/
+          if-no-files-found: ignore
+          retention-days: 14
