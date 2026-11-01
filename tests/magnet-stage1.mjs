@@ -35,6 +35,17 @@ try{
   assert.equal(await phase(page),'0','new state phase');
   const initOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   assert.ok(initOverflow<=2,'Initial horizontal overflow '+width+': '+initOverflow);
+  const layout=await page.evaluate(()=>{
+    const chapter=document.querySelector('.chapter').getBoundingClientRect();
+    const hud=document.querySelector('.hud-title').getBoundingClientRect();
+    const magnet=document.querySelector('svg rect[x="360"][y="410"]').getBoundingClientRect();
+    const caption=document.querySelector('.field-caption').getBoundingClientRect();
+    return {chapterRight:chapter.right,hudRight:hud.right,magnetBottom:magnet.bottom,captionTop:caption.top,viewport:innerWidth};
+  });
+  assert.ok(layout.chapterRight<=layout.viewport-4,'Chapter indicator clipped at '+width+': '+JSON.stringify(layout));
+  assert.ok(layout.hudRight<layout.chapterRight,'HUD title overlapping chapter at '+width);
+  assert.ok(layout.captionTop>=layout.magnetBottom+4,'Caption overlaps experimental magnet at '+width+': '+JSON.stringify(layout));
+  await page.screenshot({path:resolve(proofDir,'initial-'+width+'.png'),fullPage:true});
   for(const spot of ['left','center','right'])await click(page,'probe',spot);
   assert.equal(await page.locator('.observations .obs').count(),3,'all mandatory probes were recorded');
   await page.locator('button[data-action="next"]').click();
@@ -47,6 +58,7 @@ try{
   assert.equal(await page.locator('.observations .obs').count(),2,'save/reload reference results');
   await click(page,'identify','S');assert.equal(await phase(page),'2','wrong identification rejected');
   await click(page,'identify','N');assert.equal(await phase(page),'3');
+  await page.screenshot({path:resolve(proofDir,'gate-'+width+'.png'),fullPage:true});
   await click(page,'pick','N');
   const distance=page.locator('#distance');
   await distance.focus();await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowLeft');
