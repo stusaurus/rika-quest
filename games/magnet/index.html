@@ -31,7 +31,23 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
 .drift{animation:float 4.4s ease-in-out infinite;transform-origin:center}
 #gate-door{transform-origin:center;transition:transform 1.2s cubic-bezier(.18,.68,.18,1),opacity .8s}
 .app[data-phase="4"] #gate-door{transform:translateY(-136px);opacity:.35}
-#probe-lens{transition:transform .35s ease,opacity .35s;opacity:0}
+#probe-lens{transition:transform .16s ease-out,opacity .25s;opacity:0}
+.touch-handle{touch-action:none;cursor:grab;outline:none}
+.touch-handle:active{cursor:grabbing}
+.touch-handle:focus-visible{filter:drop-shadow(0 0 12px #ffe5a2)}
+.app.dragging .touch-handle{transition:none!important}
+#iron-filings{transition:opacity .2s}
+#iron-filings .filing{transition:opacity .16s}
+#gate-magnet{opacity:0;transition:transform .16s ease-out,opacity .3s;pointer-events:none}
+.app[data-phase="3"] #gate-magnet{opacity:1;pointer-events:all}
+.app[data-phase="2"] #reference-magnet,.app[data-phase="0"] #probe-lens{pointer-events:all}
+.app:not([data-phase="2"]) #reference-magnet,.app:not([data-phase="0"]) #probe-lens{pointer-events:none}
+.app[data-phase="0"] #iron-filings{opacity:1}
+.app:not([data-phase="0"]) #iron-filings{opacity:0}
+#gate-rail{opacity:0;transition:opacity .2s}
+.app[data-phase="3"] #gate-rail{opacity:1}
+.app[data-phase="3"] #force-waves[data-reaction="repel"]{stroke:#ffc8ab}
+.app[data-phase="3"] #force-waves[data-reaction="attract"]{stroke:#a4f0d8}
 .app[data-phase="0"] #probe-lens{opacity:1}
 #reference-magnet{opacity:0;transition:opacity .3s}
 .app[data-phase="2"] #reference-magnet{opacity:1}
@@ -139,8 +155,25 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
  <text x="593" y="447" font-size="27" font-weight="900" text-anchor="middle" fill="#f8f4df" id="pole-right">?</text>
  <rect x="471" y="420" width="46" height="30" rx="8" fill="#102f4c" stroke="#adcfce" stroke-width="2"/>
  <path d="M473 435h40M494 422v26" stroke="#9fd6db" stroke-width="2" opacity=".45"/>
- <g id="probe-lens" transform="translate(390 0)"><path d="M0 393V379" stroke="#ffe8ae" stroke-width="5" stroke-linecap="round"/><circle cy="366" r="14" fill="#10354f" stroke="#ffe5a0" stroke-width="5" filter="url(#glow)"/><path d="M-16 395Q0 385 16 395" fill="none" stroke="#fbe3b3" stroke-width="3"/></g>
- <g id="reference-magnet" transform="translate(215 420)"><rect width="95" height="38" rx="10" fill="#ad394b" stroke="#ffb7a5" stroke-width="3"/><text x="47" y="27" font-size="22" fill="#fff2db" text-anchor="middle" font-weight="900">N</text><path d="M95 17L128 17" stroke="#ffe9ba" stroke-width="3" stroke-dasharray="7 5"/></g>
+ <g id="iron-filings" pointer-events="none" aria-hidden="true">
+ <g id="filing-dots" stroke="#f7dba8" stroke-linecap="round" stroke-width="2.2"></g>
+</g>
+<g id="probe-lens" class="touch-handle" transform="translate(390 0)" role="slider" tabindex="0" aria-label="鉄片の検査位置。左右キーで移動しEnterで記録。指でも動かせます。" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" aria-valuetext="ひだりのはし">
+ <rect x="-30" y="325" width="60" height="94" rx="27" fill="#c6e9fc" fill-opacity=".01"/>
+ <path d="M0 393V379" stroke="#ffe8ae" stroke-width="5" stroke-linecap="round"/><circle cy="366" r="18" fill="#10354f" stroke="#ffe5a0" stroke-width="5" filter="url(#glow)"/><path d="M-16 395Q0 385 16 395" fill="none" stroke="#fbe3b3" stroke-width="3"/>
+ <path d="M-9 365H9M0 356V374" stroke="#e6fdff" stroke-width="2" stroke-linecap="round"/>
+</g>
+ <g id="reference-magnet" class="touch-handle" transform="translate(215 420)" role="button" tabindex="-1" aria-label="基準のN極磁石。左右どちらかの端にドラッグして実験。左右キーとEnterにも対応。">
+ <rect width="95" height="38" rx="10" fill="#ad394b" stroke="#ffb7a5" stroke-width="3"/>
+ <text x="47" y="27" font-size="22" fill="#fff2db" text-anchor="middle" font-weight="900" pointer-events="none">N</text>
+ <path d="M95 17L128 17" stroke="#ffe9ba" stroke-width="3" stroke-dasharray="7 5" pointer-events="none"/>
+</g>
+<g id="gate-rail" aria-hidden="true" pointer-events="none"><path d="M500 391H747" stroke="#a0d9e5" stroke-width="4" stroke-dasharray="8 10" opacity=".6"/><circle cx="535" cy="391" r="5" fill="#ffe3ae"/><circle cx="730" cy="391" r="5" fill="#a4ffdc"/></g>
+<g id="gate-magnet" class="touch-handle" transform="translate(527.5 0)" role="slider" tabindex="-1" aria-label="門に近づける磁石。左右にドラッグまたは方向キーで距離を調整。" aria-valuemin="1" aria-valuemax="5" aria-valuenow="4" aria-valuetext="4cm">
+ <rect x="0" y="320" width="100" height="45" rx="12" fill="#536c81" stroke="#ffe9bb" stroke-width="4" id="gate-magnet-shell"/>
+ <text id="gate-magnet-pole" x="50" y="351" font-size="28" text-anchor="middle" font-weight="950" fill="#fff9e1" pointer-events="none">?</text>
+ <path d="M17 371L82 371" stroke="#ffefc4" stroke-width="3" opacity=".65" pointer-events="none"/>
+</g>
  <g id="force-waves" fill="none" stroke="#a7e9f0" stroke-width="2" opacity=".8"><path d="M639 397Q705 364 753 396"/><path d="M641 387Q701 324 758 379"/><path d="M640 408Q706 445 755 414"/></g>
  <g class="drift"><circle cx="483" cy="274" r="27" fill="#baf0e8" opacity=".17" filter="url(#glow)"/><circle cx="483" cy="274" r="16" fill="#8cd8d5"/><circle cx="477" cy="270" r="3" fill="#0b3550"/><circle cx="489" cy="270" r="3" fill="#0b3550"/><path d="M476 279Q483 286 490 279" stroke="#1b5361" stroke-width="2" fill="none"/><path d="M483 247v-15" stroke="#9ce9e0" stroke-width="3"/><circle cx="483" cy="230" r="4" fill="#ffe4a5"/></g>
 </g>
@@ -162,9 +195,10 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
 </div>
 <script type="module">
 import {POSITIONS, inspectBar, referenceExperiment, tryGate, STAGE} from './engine.mjs';
+import {PROBE_STOPS, clamp, probeFromX, distanceFromX, xFromDistance, svgXFromClient} from './interaction.mjs';
 const KEY = 'rika-quest-magnet-stage1-v1';
 const el = id => document.getElementById(id);
-const app = el('app'), controls = el('controls'), status = el('status');
+const app = el('app'), controls = el('controls'), status = el('status'), svg=app.querySelector('svg.scenery');
 const initial = () => ({phase:0,probes:[],ref:[],pole:null,distance:4,attempts:0,message:'まずは棒磁石の3か所を調べよう。'});
 let state = initial();
 try {
@@ -197,10 +231,10 @@ function render(){
  app.dataset.phase=String(state.phase);
  el('progress').innerHTML=Array.from({length:5},(_,i)=>'<i class="'+(i<=state.phase?'done':'')+'"></i>').join('');
  const texts=[
-  ['MISSION 01 · かんさつ','磁石のどこに鉄片が集まる？','棒磁石の場所を変え、鉄片が集まるようすを観察しよう。'],
+  ['MISSION 01 · かんさつ','磁石のどこに鉄片が集まる？','光る検査器を左右へドラッグして、鉄片の反応の違いを調べよう。下のボタンでも操作できます。'],
   ['MISSION 02 · 発見','観察から「極」を見つけよう','調べた結果をもとに、鉄片が最もよく集まる場所を選ぼう。'],
-  ['MISSION 03 · じっけん','「N極」を手がかりに見分けよう','印のない磁石の左右に、N極と分かっている磁石を近づけてみよう。'],
-  ['MISSION 04 · 応用','磁力の門をひらこう','門の中央にはN極がある。使う磁石の極と距離を調整しよう。'],
+  ['MISSION 03 · じっけん','「N極」を手がかりに見分けよう','赤いN極磁石をドラッグして左右の端へ。引き合うか反発するか調べよう。下のボタンでも操作できます。'],
+  ['MISSION 04 · 応用','磁力の門をひらこう','極を選び、門の前の磁石をドラッグして近づけよう。距離スライダーでも調整できます。'],
   ['STAGE 01 · CLEAR','磁力の門が目覚めた！','観察と実験で発見したことが、扉を動かす力になった。']
  ][state.phase];
  el('kicker').textContent=texts[0];el('task').textContent=texts[1];el('prompt').textContent=texts[2];
@@ -208,7 +242,12 @@ function render(){
  el('pole-left').textContent=state.phase>=3?'N':'?';
  el('pole-right').textContent=state.phase>=3?'S':'?';
  el('field-caption').textContent=state.phase===0?'中央の棒磁石には、まだ N・S の印がない':state.phase===2?'N極を左右へ近づけ、引力と反発を比べよう':state.phase>=3?'門の赤い印はN極。どちらを向ければよい？':'棒磁石の両端に、鉄片が多く集まった';
- el('probe-lens').setAttribute('transform','translate('+({left:390,innerLeft:440,center:491,innerRight:540,right:591}[state.lastProbe]||390)+' 0)');
+ setProbeVisual(PROBE_STOPS.find(p=>p.id===state.lastProbe)?.x ?? PROBE_STOPS[0].x);
+ setReferenceVisual(state.lastReference==='left'?265:state.lastReference==='right'?625:215);
+ setGateVisual(xFromDistance(state.distance));
+ el('probe-lens').setAttribute('tabindex',state.phase===0?'0':'-1');
+ el('reference-magnet').setAttribute('tabindex',state.phase===2?'0':'-1');
+ el('gate-magnet').setAttribute('tabindex',state.phase===3?'0':'-1');
  let body='';
  if(state.phase===0){
    body='<div class="action-grid">'+POSITIONS.map(p=>choice(p.label, 'probe',p.id,seen(p.id),seen(p.id)?'記録ずみ':'調べる')).join('')+'</div>'+
@@ -242,18 +281,14 @@ controls.addEventListener('click',event=>{
  const button=event.target.closest('button[data-action]');if(!button||button.disabled)return;
  const action=button.dataset.action,val=button.dataset.value;
  if(action==='probe'&&state.phase===0){
-  if(!seen(val))state.probes.push(val);state.lastProbe=val;
-  const found=inspectBar(val);
-  setMessage(found.label+'では、鉄片の反応が「'+found.intensity+'」だった。ほかも確かめよう。');render();
+  recordProbe(val);
  }else if(action==='next'&&state.phase===0&&probesComplete()){
   phaseTo(1,'結果がそろった。両端と中央を比べてみよう。');
  }else if(action==='answer'&&state.phase===1){
   if(val==='both')phaseTo(2,'正解！ 両端を「極（磁極）」という。鉄片の集まり方だけではN・Sは区別できない。');
   else setMessage('結果をもう一度見てみよう。棒磁石の左右の端には同じように鉄片が集まったね。');
  }else if(action==='reference'&&state.phase===2){
-  if(!state.ref.includes(val))state.ref.push(val);
-  const r=referenceExperiment(val);
-  setMessage((val==='left'?'左端':'右端')+'にN極を近づけると、'+(r.reaction==='repel'?'反発した！':'引き合った！'));render();
+  recordReference(val);
  }else if(action==='identify'&&state.phase===2&&referenceComplete()){
   if(val==='N')phaseTo(3,'正解！ 同じ極が反発するので、左はN極・右はS極だ。');
   else setMessage('N極を近づけたとき、反発したのはどちらだったかな？');
@@ -272,7 +307,7 @@ controls.addEventListener('click',event=>{
 });
 controls.addEventListener('input',event=>{
  if(event.target.id==='distance'&&state.phase===3){
-  state.distance=Number(event.target.value);el('distance-value').textContent=state.distance+' cm';save();
+  state.distance=Number(event.target.value);el('distance-value').textContent=state.distance+' cm';setGateVisual(xFromDistance(state.distance));save();
  }
 });
 render();
