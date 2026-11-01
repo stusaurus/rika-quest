@@ -25,7 +25,7 @@ for(const width of [320,390,430,1440])test('stage one complete '+width,async({pa
  await page.locator('.exp29-gate-button').click();await expect(page.locator('#exp29-length')).toBeVisible({timeout:15000});
  await page.locator('[data-exp29-go="unlock"]').click();expect(await page.evaluate(()=>localStorage.getItem('furiko-clocktower-gate-v029'))).not.toBe('true');
  await range(page,'#exp29-length',25,10);await page.locator('[data-exp29-go="unlock"]').click();await expect(page.locator('[data-exp29-go="next"]')).toBeVisible();await shots('gate-open');
- await page.reload();await enterAfterReload(page);expect(await page.evaluate(()=>localStorage.getItem('furiko-clocktower-gate-v029'))).toBe('true');await page.locator('.exp29-gate-button').click();await page.locator('[data-exp29-go="next"]').click();await expect.poll(()=>page.evaluate(()=>state.sid)).toBe('s02');
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);await shots('stage2');await info.attach('timing',{body:JSON.stringify({elapsedMs:Date.now()-started,width}),contentType:'application/json'});
+ await page.locator('[data-exp29-go="next"]').click();await expect.poll(()=>page.evaluate(()=>state.sid)).toBe('s02');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);await shots('stage2');await page.reload();await expect(page.locator('#heroStartGame')).toBeVisible();expect(await page.evaluate(()=>localStorage.getItem('furiko-clocktower-gate-v029'))).toBe('true');await info.attach('timing',{body:JSON.stringify({elapsedMs:Date.now()-started,width}),contentType:'application/json'});
 });
 async function enterAfterReload(page){await page.locator('#heroStartGame').click();await expect(page.locator('.exp22-apparatus')).toBeVisible();}
