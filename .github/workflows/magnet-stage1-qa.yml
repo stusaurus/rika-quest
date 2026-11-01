@@ -5,6 +5,7 @@ on:
       - 'games/magnet/**'
       - 'scripts/check-magnet.mjs'
       - 'tests/magnet-stage1.mjs'
+      - 'tests/magnet-public-preview.mjs'
       - '.github/workflows/magnet-stage1-qa.yml'
   workflow_dispatch:
 permissions:
@@ -26,6 +27,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Play through stage 1 at four viewport widths
         run: node tests/magnet-stage1.mjs
+      - name: Verify independently hosted iPhone preview
+        run: node tests/magnet-public-preview.mjs
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
