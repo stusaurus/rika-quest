@@ -1,0 +1,32 @@
+name: Stage 1 browser QA
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [work/stage1-25d-integration]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/check-game.mjs && node tests/experiment-records.cjs && node tests/measurement-lifecycle.cjs
+      - run: npm install --ignore-scripts --no-audit --no-fund
+        working-directory: tests/browser
+      - run: npx playwright install --with-deps chromium
+        working-directory: tests/browser
+      - run: npx playwright test
+        working-directory: tests/browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stage1-browser-evidence-${{ github.sha }}
+          path: |
+            tests/browser/test-results/
+            tests/browser/playwright-report/
+          retention-days: 14

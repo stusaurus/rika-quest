@@ -1,0 +1,2 @@
+const {defineConfig}=require('@playwright/test');
+module.exports=defineConfig({testDir:'.',timeout:180000,workers:1,retries:0,reporter:[['list'],['html',{open:'never'}]],use:{baseURL:'http://127.0.0.1:8765',browserName:'chromium',trace:'retain-on-failure',video:'retain-on-failure'},webServer:{command:'python3 -m http.server 8765 --directory ../..',url:'http://127.0.0.1:8765',reuseExistingServer:false}});
