@@ -7,7 +7,7 @@ function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
  return source.replace(what,withText);
 }
-function inlineScript(source){return "<script>\n"+source.replace(/<\\/script/gi,"<\\/script")+"\n</script>";}
+function inlineScript(source){return "<script>\\n"+source+"\\n</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
