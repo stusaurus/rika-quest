@@ -87,7 +87,7 @@ function renderWire(){
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
  +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
  +'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
- +'<div class="circuit-help">2つの端子を順にタップ。線を外すには「×」。拡大中は電池・電球ボタンで移動。</div></div>';
+ +'<div class="circuit-help">2つの端子を順にタップ。線を外すには「×」。拡大中は電池・電球ボタンで移動。</div></div><div class="circuit-legend"><span>🔋 <b>乾電池</b><small>＋極・−極</small></span><span>💡 <b>豆電球</b><small>金属の横・底の接点</small></span></div>';
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
 function renderExplore(){let selected=inspectedItems.find(x=>x.id===ui.chosen);
