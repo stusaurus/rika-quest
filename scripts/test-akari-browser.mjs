@@ -29,6 +29,14 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
+   assert.equal(await page.locator("#characterArt .tiranon-svg").count(),1,"Dinosaur guide must render as an SVG");
+   const crowded=await page.evaluate(()=>{
+     const c=document.querySelector("#sceneCharacter").getBoundingClientRect();
+     const t=document.querySelector(".scene-caption").getBoundingClientRect();
+     return c.left<t.right&&c.right>t.left&&c.top<t.bottom&&c.bottom>t.top;
+   });
+   assert.equal(crowded,false,"Character must remain visible outside the mission caption");
+
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
    const overlap=await page.evaluate(()=>{
@@ -51,14 +59,28 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
+   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"danger","Short should trigger worried reaction");
+   assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-danger.png",fullPage:true});
+
    await page.locator('[data-unwire="0"]').click();
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
+   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"celebrate","Safe success should cheer");
+   assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
+   assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
+
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
    await page.locator("#nextBtn").click();
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
+   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"idle","Next mission resets the expression");
+   assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Victory badge must not leak to next stage");
+
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道","Progress must be restored after reload");
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
@@ -93,6 +115,9 @@ try{
    await page.locator('[data-final="contact"][data-value="true"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
+   assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
+   assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
+
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-after.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
