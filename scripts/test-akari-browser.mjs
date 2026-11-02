@@ -28,6 +28,10 @@ try{
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
+   assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
+   await page.locator("[data-zoom]").click();
+   assert.equal(await page.locator(".circuit-board.zoomed").count(),1,"Zoom should enlarge the interactive circuit");
+   await page.locator("[data-zoom]").click();
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-start.png",fullPage:true});
