@@ -43,7 +43,7 @@ function material(id){
  iron:'<path d="M90 46 152 111 143 120 79 59Z" fill="url(#metal)" stroke="#c9e1e7" stroke-width="3"/><path d="M150 108 188 149 179 158 140 118Z" fill="#829caa"/><ellipse cx="82" cy="50" rx="17" ry="9" transform="rotate(45 82 50)" fill="#b5d2d7" stroke="#e5eff4" stroke-width="3"/>'
  }[id]||'';
  return wrap("0 0 250 205",defs+plate(3,3,244,198)+obj,
- {clip:"鉄のクリップ",foil:"アルミはく",wood:"木の棒",plastic:"プラスチック",iron:"鉄のくぎ"}[id]||"材料の見本","material-art");
+ {clip:"鉄のクリップ",foil:"アルミはく",wood:"木の棒",plastic:"プラスチックの定規",iron:"鉄のくぎ"}[id]||"材料の見本","material-art");
 }
 function circuit(design,a,b){
  const parallel=design==="parallel",on=parallel?(a||b):(a&&b);
