@@ -108,6 +108,8 @@ function success(){const firstClear=!state.completed[current().id];const stars=M
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
  $("missionList").innerHTML=M.map(m=>{let done=!!state.completed[m.id],allow=m.id<=unlocked()||done,active=m.id===state.active;return'<button type="button" class="mission-item'+(active?' current':'')+(done?' done':'')+'" data-mission="'+m.id+'" '+(!allow?'disabled':'')+' '+(active?'aria-current="step"':'')+'><span class="mission-index">'+(done?'★':allow?m.id:'🔒')+'</span><span class="mission-label"><strong>'+m.name+'</strong><small>'+icon(m.place)+' '+m.placeName+'</small></span></button>'}).join("");
+ const lampMap=$("mapLights");
+ if(lampMap)lampMap.innerHTML=M.map(m=>'<span class="map-lamp'+(state.completed[m.id]?' lit':'')+(m.id===state.active?' active':'')+'" title="'+m.id+'：'+escapeHtml(m.name)+'"><span></span></span>').join("");
  const count=Object.keys(state.completed).length;$("starCount").textContent=Object.values(state.completed).reduce((n,x)=>n+(+x||0),0);
  $("summaryNote").textContent=count===14?"すべてのあかりを取り戻した！ 14ミッションクリア！":count+" / 14 ミッションクリア。次のひみつを見つけよう！";
 }
