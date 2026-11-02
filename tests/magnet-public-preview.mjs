@@ -18,7 +18,11 @@ try {
   assert.ok((await page.title()).includes('マグネット・クエスト'),'HTML must render, not appear as plaintext');
   assert.equal(await page.locator('#app').getAttribute('data-phase'),'0','Initial game state must render');
   const module=responses.find(x=>x.url.endsWith('engine.mjs'));
-  assert.equal(module?.status,200,'Game module should be loaded');
+  assert.equal(module?.status,200,'Game model should be loaded');
+  const gestures=responses.find(x=>x.url.endsWith('interaction.mjs'));
+  assert.equal(gestures?.status,200,'New magnet drag module must be loaded from preview');
+  assert.equal(await page.locator('#filing-dots .filing').count(),24,'iron filings draw on preview');
+  assert.equal(await page.locator('#gate-magnet').count(),1,'gate drag control exists on preview');
   assert.deepEqual(errors,[],'No JavaScript errors on preview');
   for(const value of ['left','center','right']){
     await page.locator('button[data-action="probe"][data-value="'+value+'"]').click();
