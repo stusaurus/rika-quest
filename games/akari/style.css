@@ -93,3 +93,13 @@
  .circuit-inner .terminal{width:29px;height:29px;font-size:12px;border-width:2px}
  .circuit-help{font-size:11.5px;line-height:1.7;bottom:12px}
 }
+
+
+/* Interactive magnifier. The large board scrolls horizontally while taps remain accurate. */
+.circuit-zoom-btn{position:absolute;z-index:8;left:13px;top:45px;background:#f7e5b0;border:2px solid #ffdb81;color:#5b4724;border-radius:11px;padding:7px 11px;font-size:12px;font-weight:900;box-shadow:0 3px 0 #8d7949}
+.circuit-board.zoomed{min-height:555px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-color:#9be6d2 #183952}
+.circuit-board.zoomed .circuit-inner{position:relative;left:auto;top:auto;transform:none;margin:95px 12px 60px;width:640px;max-width:none;aspect-ratio:400/250}
+.circuit-board.zoomed .terminal{width:43px;height:43px;font-size:15px}
+.circuit-board.zoomed .terminal-label{display:block;font-size:12px}
+.circuit-board.zoomed .circuit-help{position:sticky;left:10px;max-width:410px}
+@media(max-width:740px){.circuit-board.zoomed{min-height:555px}.circuit-board.zoomed .terminal{width:44px;height:44px;font-size:15px}.circuit-board.zoomed .circuit-inner{width:620px;margin-top:95px}.circuit-board.zoomed .circuit-help{font-size:12px}}
