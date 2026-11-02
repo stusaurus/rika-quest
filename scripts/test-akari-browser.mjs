@@ -130,10 +130,32 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-choice="clip"]').click();
    await page.locator("#checkBtn").click();
+   assert.match(await page.locator("#feedbackText").textContent(),/予想/,"Material test requires an explicit hypothesis");
+   await page.locator('[data-predict="dark"]').click();
+   await page.locator("#checkBtn").click();
    assert.equal(await page.locator(".test-circuit-art").count(),1,"Material test must show the complete circuit");
+   assert.match(await page.locator(".prediction-panel").textContent(),/予想.*消灯.*実際.*点灯/s,"A mistaken prediction should be compared to real evidence");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===4&&n.text.includes("予想は消灯"))),"Observation journal should retain scientific hypotheses");
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Material circuit overflow");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-materials.png",fullPage:true});
+
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     for(let i=1;i<=6;i++)s.completed[i]=3;
+     s.active=7;localStorage.setItem(key,JSON.stringify(s));
+   });
+   await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="a"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="b"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="a"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator('.science-conclusion').count(),1,"Four switch trials must require a conclusion");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Filling all four switch outcomes cannot auto-clear");
+   await page.locator('[data-conclude="both"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-backed switch inference should clear");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-conclusion.png",fullPage:true});
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
@@ -148,6 +170,12 @@ try{
    await page.locator('[data-final="direction"][data-value="same"]').click();
    await page.locator('[data-final="material"][data-value="clip"]').click();
    await page.locator('[data-final="contact"][data-value="true"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator(".story-scene.restored").count(),0,"Selecting three answers must not bypass diagnostic experiments");
+   for(const key of ["direction","material","contact"]){
+     await page.locator('[data-verify="'+key+'"]').click();
+   }
+   assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
