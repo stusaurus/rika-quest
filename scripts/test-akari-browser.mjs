@@ -30,6 +30,7 @@ try{
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
    assert.equal(await page.locator("#characterArt .tiranon-sprite-strip").count(),1,"Canonical dinosaur guide must render");
+   assert.equal(await page.locator("#characterArt .tiranon-emote-fx").count(),1,"Character should have independent nonwarping expressive effects");
    await page.locator(".tiranon-sprite-strip").evaluate(async img=>{await img.decode();if(img.naturalWidth<100)throw Error("Walk sprite missing");});
    const spriteGeometry=await page.evaluate(()=>{
      const img=document.querySelector(".tiranon-sprite-strip"),frame=document.querySelector(".tiranon-sprite-frame");
@@ -69,6 +70,8 @@ try{
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"danger","Short should trigger worried reaction");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
+   assert.equal(await page.locator(".fx-danger").evaluate(e=>getComputedStyle(e).visibility),"visible","Short must show a distinct caution symbol");
+   assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Short must not light the town");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-danger.png",fullPage:true});
 
@@ -80,6 +83,7 @@ try{
    assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"celebrate","Safe success should cheer");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
+   assert.equal(await page.locator(".story-scene.energizing").count(),1,"First successful experiment should trigger the town restoration pulse");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
 
@@ -93,9 +97,17 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
    assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"walk","Next mission triggers a natural short walk");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Victory badge must not leak to next stage");
+   assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Restoration pulse must not leak to next mission");
 
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道","Progress must be restored after reload");
+   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=1;localStorage.setItem(k,JSON.stringify(s))});
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".story-scene.restored").count(),1,"Previously restored town must remain illuminated after return and reload");
+   assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Saved town lights must not fake a closed experiment circuit");
+   assert.match(await page.locator("#missionStory").textContent(),/前の冒険/,"Revisited stage must explain that town was already restored");
+   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
+   await page.reload({waitUntil:"domcontentloaded"});
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("#missionTitle").textContent(),"電池の向きのひみつ");
