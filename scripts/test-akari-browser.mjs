@@ -54,6 +54,13 @@ try{
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery overflow: "+JSON.stringify(dimensions));
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery.png",fullPage:true});
+   await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.active=4;localStorage.setItem(key,JSON.stringify(s))});
+   await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator('[data-choice="clip"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator(".test-circuit-art").count(),1,"Material test must show the complete circuit");
+   dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Material circuit overflow");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-materials.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
    console.log("PASS",engine,width+"px","circuit tap, short warning, save, battery art, overflow");
    await context.close();count++;
