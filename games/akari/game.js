@@ -67,14 +67,21 @@ function reactCharacter(mood,text){
  const token=++reactionToken;
  character.dataset.mood=mood;
  const spoken=text||(window.AkariCharacter?.message(mood)||"");
- bubble.textContent=spoken;bubble.hidden=!spoken;
+ bubble.textContent=spoken;bubble.hidden=!spoken||mood==="celebrate";
  if(mood==="idle"||mood==="celebrate")return;
  setTimeout(()=>{if(token===reactionToken){character.dataset.mood="idle";bubble.hidden=true;}},mood==="danger"?2300:mood==="walk"?940:1700);
 }
 function showCelebration(stars){
  const banner=$("stageCelebration");if(!banner)return;
  const token=++celebrationToken;
- $("celebrationTitle").textContent=current().id===14?"灯台の光が戻った！":"あかりがともった！";
+ const titles=[
+  "小屋にあかりがともった！","街灯がふたたび光った！","橋のあかりが戻った！",
+  "庭の工房が明るくなった！","材料のひみつを発見！","時計塔が動き出した！",
+  "2つの合図に成功！","港のあかりをつけた！","乾電池のなぞを解いた！",
+  "博物館の展示が光った！","乾電池の向きを解決！","危険な近道を取り除いた！",
+  "灯台の故障を修理！","灯台の光が戻った！"
+ ];
+ $("celebrationTitle").textContent=titles[current().id-1]||"あかりがともった！";
  $("celebrationStars").textContent="★".repeat(stars);
  banner.hidden=false;banner.classList.remove("active");
  void banner.offsetWidth;banner.classList.add("active");
