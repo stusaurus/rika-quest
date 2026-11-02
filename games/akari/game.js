@@ -19,6 +19,7 @@ const M=[
 ];
 const $=id=>document.getElementById(id), storageKey="rika-akari-quest-v2";
 let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturnFocus=null,soundCtx=null;
+let reactionToken=0,celebrationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 const inspectedItems=[{id:"wood",name:"木の板",description:"木は電気を通しにくそうだね。",correct:false},{id:"iron",name:"鉄のくぎ",description:"鉄は金属！ 電気を通しそうだ。",correct:true},{id:"plastic",name:"プラスチックの定規",description:"プラスチックは電気を通しにくい。",correct:false}];
 function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,notes:[]};}
@@ -46,6 +47,39 @@ function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.a
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function setFeedback(t,type=""){const e=$("feedback");e.className="feedback"+(type?" "+type:"");$("feedbackText").textContent=t;}
 function playTone(ok){if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;soundCtx=soundCtx||new C();const now=soundCtx.currentTime;(ok?[523,659,784,1046]:[220,175]).forEach((freq,i)=>{const oscillator=soundCtx.createOscillator(),gain=soundCtx.createGain(),start=now+i*.12;oscillator.type=ok?"sine":"triangle";oscillator.frequency.value=freq;oscillator.connect(gain);gain.connect(soundCtx.destination);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.065,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.22);oscillator.start(start);oscillator.stop(start+.23);});}catch(e){}}
+
+function initializeCharacter(){
+ const art=$("characterArt");
+ if(art&&window.AkariCharacter)art.innerHTML=window.AkariCharacter.render();
+ resetPresentation();
+}
+function resetPresentation(){
+ reactionToken++;celebrationToken++;
+ const character=$("sceneCharacter"),bubble=$("characterSpeech"),victory=$("stageCelebration");
+ if(character)character.dataset.mood="idle";
+ if(bubble){bubble.hidden=true;bubble.textContent="";}
+ if(victory){victory.hidden=true;victory.classList.remove("active");}
+}
+function reactCharacter(mood,text){
+ const character=$("sceneCharacter"),bubble=$("characterSpeech");if(!character||!bubble)return;
+ const known=window.AkariCharacter?.moods||["idle","inspect","discover","think","danger","celebrate"];
+ if(!known.includes(mood))return;
+ const token=++reactionToken;
+ character.dataset.mood=mood;
+ const spoken=text||(window.AkariCharacter?.message(mood)||"");
+ bubble.textContent=spoken;bubble.hidden=!spoken;
+ if(mood==="idle"||mood==="celebrate")return;
+ setTimeout(()=>{if(token===reactionToken){character.dataset.mood="idle";bubble.hidden=true;}},mood==="danger"?2300:1700);
+}
+function showCelebration(stars){
+ const banner=$("stageCelebration");if(!banner)return;
+ const token=++celebrationToken;
+ $("celebrationTitle").textContent=current().id===14?"灯台の光が戻った！":"あかりがともった！";
+ $("celebrationStars").textContent="★".repeat(stars);
+ banner.hidden=false;banner.classList.remove("active");
+ void banner.offsetWidth;banner.classList.add("active");
+ setTimeout(()=>{if(token===celebrationToken){banner.hidden=true;banner.classList.remove("active");}},2800);
+}
 function fail(message,short=false){failures++;setFeedback(message,"warning");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
 function success(){const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
