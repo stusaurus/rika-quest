@@ -66,7 +66,7 @@ function shortDiagram(){
  '<path d="M65 85 160 77 225 163 65 150" stroke="#ff7058" stroke-width="6" stroke-dasharray="10 7" fill="none"/>'+
  '<path d="M65 85 65 150" stroke="#ff7058" stroke-width="5" stroke-dasharray="6 7"/>'+
  '<text x="190" y="33" fill="#dcf4f2" font-size="13" text-anchor="middle">正しい通り道</text>'+
- '<text x="212" y="213" fill="#ff9b91" font-size="13" text-anchor="middle">赤い近道は危険！</text>',
+ '<text x="155" y="103" fill="#fff0b0" font-weight="900" font-size="21">X</text><text x="38" y="122" fill="#fff0b0" font-weight="900" font-size="21">Y</text><text x="212" y="213" fill="#ff9b91" font-size="13" text-anchor="middle">赤い近道は危険！</text>',
  "乾電池から電球を通る正常な導線とショートする赤い導線","short-art");
 }
 window.AkariArt={battery,bulb,material,circuit,shortDiagram};
