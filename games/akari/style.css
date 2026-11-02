@@ -138,3 +138,26 @@
 .story-scene[data-stage="14"]{background:linear-gradient(#2f507c,#7390ad 69%,#4e7792)}
 
 .science-spotlight.circuit-rig{max-width:100%;max-height:230px}.circuit-rig svg{width:100%;max-height:225px}.circuit-rig+.test-light{display:none}
+
+
+/* Stage art pass: keep controls outside the illustration, never over a terminal. */
+.workspace:has(>.circuit-toolbar){display:block}
+.circuit-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 9px;padding:10px 12px;border-radius:15px;background:#d7eceb;border:1px solid #a9d1d0}
+.circuit-toolbar>strong{font-size:13px;color:#28556a;letter-spacing:.01em}
+.circuit-toolbar .circuit-zoom-btn{position:static;z-index:auto;margin-left:auto;box-shadow:0 2px 0 #ba995e;padding:7px 11px;font-size:12px;white-space:nowrap}
+.circuit-quicknav{display:flex;gap:7px;width:100%;justify-content:space-between}
+.circuit-quicknav button{background:#25576a;border:1px solid #5f9bab;border-radius:10px;color:#fff;font-weight:900;padding:8px 13px;min-height:43px;flex:1}
+.circuit-quicknav button:hover{background:#347a83}
+.circuit-board.zoomed{min-height:460px}
+.circuit-board.zoomed .circuit-inner{margin:38px 12px 36px;width:620px}
+.circuit-board.zoomed .circuit-help{position:sticky;left:12px;max-width:360px}
+.circuit-board .terminal:focus-visible{outline:3px solid #ffe499;outline-offset:5px}
+.circuit-inner .terminal{min-width:35px;min-height:35px}
+@media(max-width:740px){
+ .circuit-board.zoomed{min-height:445px}
+ .circuit-board.zoomed .circuit-inner{width:620px;margin-top:38px}
+ .circuit-inner .terminal{width:38px;height:38px;font-size:14px;border-width:2px}
+ .circuit-board .circuit-help{padding:0 5px;font-size:11px;line-height:1.65}
+ .circuit-toolbar>strong{font-size:12px}
+ .circuit-toolbar .circuit-zoom-btn{font-size:12px}
+}
