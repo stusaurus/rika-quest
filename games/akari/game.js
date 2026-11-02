@@ -152,7 +152,8 @@ function check(){
 }
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
- if(target.hasAttribute("data-t")){const t=target.dataset.t;if(ui.selected===null){ui.selected=t;setFeedback(labels[t]+"を選んだよ。次につなぐ端子を選ぼう。");}
+ if(target.hasAttribute("data-zoom")){ui.zoomed=!ui.zoomed;renderWorkspace();setFeedback(ui.zoomed?"拡大中。左右にスクロールして配線できるよ。":"縮小したよ。");return;}
+  if(target.hasAttribute("data-t")){const t=target.dataset.t;if(ui.selected===null){ui.selected=t;setFeedback(labels[t]+"を選んだよ。次につなぐ端子を選ぼう。");}
  else if(ui.selected===t){ui.selected=null;setFeedback("端子の選択を解除したよ。");}
  else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");}}else setFeedback("その2つはもうつながっているよ。");}
  renderWorkspace();return;}
