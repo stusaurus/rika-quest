@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="./style.css">
 <script src="./art.js" defer></script>
 <script src="./scenes.js" defer></script>
+<script src="./character.js" defer></script>
 <script src="./game.js" defer></script>
 </head>
 <body>
@@ -36,7 +37,9 @@
       <div id="sceneProps" class="scene-props" aria-hidden="true"></div><div id="landmark" class="landmark" aria-hidden="true"></div>
       <div class="scene-floor"></div><div class="scene-lights" id="sceneLights" aria-hidden="true"></div>
       <div class="scene-glow" aria-hidden="true"></div>
-      <div class="scene-character"><div class="character-body"><span class="character-face">•ᴗ•</span></div><span class="char-speech-icon">⚡</span></div>
+      <div id="sceneCharacter" class="scene-character" data-mood="idle" aria-hidden="true"><div id="characterSpeech" class="character-speech" hidden></div><div id="characterArt" class="character-art"></div></div>
+      <div id="sceneProgress" class="scene-progress" aria-label="あかりを取り戻した場所">✦ <span id="litPlaceCount">0</span> / 14 か所</div>
+      <div id="stageCelebration" class="stage-celebration" hidden aria-hidden="true"><span class="celebration-sparks">✦ ★ ✦</span><strong id="celebrationTitle">あかりがともった！</strong><span class="celebration-stars" id="celebrationStars">★★★</span></div>
       <div class="scene-caption"><span class="place-chip" id="placeLabel">ひかりの村</span><h1 id="missionTitle">あかりをつけよう</h1><p id="missionStory"></p></div>
       <div id="spark" class="spark" aria-live="polite"></div>
     </section>
