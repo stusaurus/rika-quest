@@ -67,13 +67,14 @@ function circuitStatus(wires){
 function renderWire(){
  const stat=circuitStatus(ui.wires),lit=stageComplete||stat.lit;
  const wires=ui.wires.map(([a,b])=>'<line x1="'+pts[a][0]+'" y1="'+pts[a][1]+'" x2="'+pts[b][0]+'" y2="'+pts[b][1]+'" class="wire'+(lit?' lit':'')+(edgeKey(a,b)==="N-P"?' danger':'')+'"/>').join("");
- const svg='<svg class="circuit-svg" viewBox="0 0 400 250" preserveAspectRatio="none" aria-hidden="true"><defs><radialGradient id="akbulb"><stop stop-color="#fff8c4"/><stop offset="1" stop-color="#f5bd65"/></radialGradient></defs>'
- +'<rect x="46" y="85" width="68" height="78" rx="14" fill="#c57b55" stroke="#f8d6a6" stroke-width="4"/><rect x="52" y="95" width="56" height="41" rx="7" fill="#d9574d"/><path d="M80 85V70M80 163V174" stroke="#d3d9d1" stroke-width="7"/><text x="80" y="111" text-anchor="middle" font-weight="900" fill="#fff" font-size="12">1.5V</text><text x="80" y="129" text-anchor="middle" fill="#fff6de" font-size="13">＋ / −</text><text x="80" y="203" text-anchor="middle" fill="#c9eff8" font-size="12">乾電池</text>'
- +'<path d="M260 121L285 145M310 145V174" stroke="#dadbc7" stroke-width="6" fill="none"/><circle cx="310" cy="111" r="36" fill="'+(lit?'#ffe6a0':'#80a9bb')+'" opacity="'+(lit?".95":".4")+'" class="lamp-glow"/><circle cx="310" cy="111" r="27" fill="'+(lit?'url(#akbulb)':'#567e91')+'" stroke="#c1dce0" stroke-width="4"/><path d="M300 106 307 114 316 102 325 110" stroke="'+(lit?'#fff':'#e2c88d')+'" stroke-width="3" fill="none"/><rect x="293" y="135" width="34" height="16" rx="4" fill="#bdc8c9" stroke="#e6d5a7" stroke-width="2"/><path d="M296 141h28M296 146h28" stroke="#718798" stroke-width="2"/><text x="315" y="202" text-anchor="middle" font-size="12" fill="#c7edf6">豆電球</text>'
+ const svg='<svg class="circuit-svg" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><radialGradient id="akbulb"><stop stop-color="#fff8c4"/><stop offset="1" stop-color="#f5bd65"/></radialGradient></defs>'
+ +'<rect x="46" y="85" width="68" height="78" rx="14" fill="#c57b55" stroke="#f8d6a6" stroke-width="4"/><rect x="52" y="95" width="56" height="41" rx="7" fill="#d9574d"/><path d="M80 85V70M80 163V174" stroke="#d3d9d1" stroke-width="7"/><text x="80" y="111" text-anchor="middle" font-weight="900" fill="#fff" font-size="12">1.5V</text><text x="80" y="129" text-anchor="middle" fill="#fff6de" font-size="13">乾電池</text><text x="80" y="229" text-anchor="middle" fill="#c9eff8" font-size="12">乾電池</text>'
+ +'<path d="M260 121L285 145M310 145V174" stroke="#dadbc7" stroke-width="6" fill="none"/><circle cx="310" cy="111" r="36" fill="'+(lit?'#ffe6a0':'#80a9bb')+'" opacity="'+(lit?".95":".4")+'" class="lamp-glow"/><circle cx="310" cy="111" r="27" fill="'+(lit?'url(#akbulb)':'#567e91')+'" stroke="#c1dce0" stroke-width="4"/><path d="M300 106 307 114 316 102 325 110" stroke="'+(lit?'#fff':'#e2c88d')+'" stroke-width="3" fill="none"/><rect x="293" y="135" width="34" height="16" rx="4" fill="#bdc8c9" stroke="#e6d5a7" stroke-width="2"/><path d="M296 141h28M296 146h28" stroke="#718798" stroke-width="2"/><text x="315" y="229" text-anchor="middle" font-size="12" fill="#c7edf6">豆電球</text>'
  +wires+'</svg>';
- return'<div class="circuit-board'+(stageComplete?' is-lit':'')+'"><span class="circuit-label">⚡ 電気の通り道をつくろう</span>'+svg+'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
+ return'<div class="circuit-board'+(stageComplete?' is-lit':'')+'"><span class="circuit-label">⚡ 電気の通り道をつくろう</span><div class="circuit-inner">'+svg
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
- +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div>'
+ +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
+ +'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
  +'<div class="circuit-help">丸い端子を2つ順番にタップして接続。線を外すには上の「×」。</div></div>';
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
@@ -142,7 +143,7 @@ function handleWorkspace(e){
  if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
  if(current().mode==="explore"){ui.chosen=id;if(!ui.inspected.includes(id))ui.inspected.push(id);const x=inspectedItems.find(x=>x.id===id);setFeedback("🔎 "+x.description);}
- else{setFeedback("「"+(materials.find(x=>x.id===id)?.name||batteryOptions().find(x=>x.id===id)?.name||id)+"」をセットしたよ。通電チェックしてみよう。");}
+ else{setFeedback("「"+(materials.find(x=>x.id===id)?.name||batteryOptions().find(x=>x.id===id)?.name||({same:"2個を同じ向き",reverse:"2個を逆向き"}[id])||id)+"」をセットしたよ。通電チェックしてみよう。");}
  renderWorkspace();return;}
  if(target.hasAttribute("data-inspect")){let id=target.dataset.inspect;if(!ui.inspected.includes(id))ui.inspected.push(id);let part=repairParts().find(x=>x.id===id);setFeedback(part.name+"："+part.detail,part.broken?"warning":"");renderWorkspace();return;}
  if(target.hasAttribute("data-fix")){let id=target.dataset.fix;if(!ui.fixed.includes(id))ui.fixed.push(id);setFeedback("🔧 修理完了！ ほかにも故障がないか調べよう。","success");renderWorkspace();return;}
@@ -168,6 +169,6 @@ function bind(){
  $("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))modal(false)});
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)modal(false);if(e.key==="Tab"&&!$("helpModal").hidden){const focusable=[...$("helpModal").querySelectorAll("button")],first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 }
-function boot(){ui=initial(current());bind();persist();renderAll();}
+function boot(){ui=initial(current());bind();persist();renderAll();window.scrollTo(0,0);}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
