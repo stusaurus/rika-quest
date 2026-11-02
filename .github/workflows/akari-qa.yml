@@ -22,6 +22,7 @@ jobs:
         run: |
           node --check games/akari/game.js
           node --check games/akari/art.js
+          node --check games/akari/scenes.js
           node --check scripts/test-akari-browser.mjs
           node --check scripts/build-akari-preview.mjs
       - name: Run full 14-mission simulation
