@@ -129,8 +129,11 @@ function renderFinale(){
  return'<div class="experiment-layout"><div class="lab-panel"><h3>🌟 灯台の最終修理</h3><div class="science-spotlight">'+Art.battery(ui.direction==="same"?"series":"reverse")+'</div><div class="science-spotlight">'+Art.bulb(stageComplete)+'</div></div><div class="lab-panel"><h3>🛠 3つのチェック</h3>'+opts.map(([key,title,options])=>'<div class="final-question"><strong>'+title+'</strong><div class="toggle-row">'+options.map(([value,label])=>'<button class="toggle'+(ui[key]===value?' on':'')+'" data-final="'+key+'" data-value="'+String(value)+'" aria-pressed="'+(ui[key]===value)+'">'+label+'</button>').join("")+'</div></div>').join("")+'</div></div>';
 }
 function renderWorkspace(){
- const mode=current().mode;
- $("workspace").innerHTML=mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
+ const position=old?old.scrollLeft:0,mode=current().mode;
+ root.innerHTML=mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
+ if(board&&ui.zoomed)board.scrollLeft=position;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
