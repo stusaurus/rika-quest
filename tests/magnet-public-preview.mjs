@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
-const url = 'https://raw.githack.com/stusaurus/rika-quest/magnet-preview/games/magnet/index.html';
+const url = 'https://raw.githack.com/stusaurus/rika-quest/34783e39b875f52529d2c9dbb0c7c5e61dde3070/games/magnet/index.html';
 const browser = await chromium.launch();
 try {
   const context = await browser.newContext({viewport:{width:390,height:844},locale:'ja-JP'});
