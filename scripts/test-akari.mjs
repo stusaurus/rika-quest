@@ -18,6 +18,7 @@ const localStorage={getItem(k){return stored[k]||null},setItem(k,v){stored[k]=v}
 const context=vm.createContext({window,document,localStorage,setTimeout(){},console});
 vm.runInContext(readFileSync("games/akari/art.js","utf8"),context,{filename:"art.js"});
 vm.runInContext(readFileSync("games/akari/scenes.js","utf8"),context,{filename:"scenes.js"});
+vm.runInContext(readFileSync("games/akari/character.js","utf8"),context,{filename:"character.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -28,7 +29,12 @@ const done=i=>assert.ok(saved().completed?.[i],"Mission "+i+" should be complete
 const wire=(a,b)=>{click({t:a});click({t:b})};
 move(14);assert.equal(saved().active,1,"Locked final mission cannot be opened");
 wire("P","N");check();assert.match(el("feedbackText").textContent,/ショート/);
+assert.equal(el("sceneCharacter").dataset.mood,"danger","Danger should visibly warn without celebrating");
+assert.equal(el("stageCelebration").hidden,true,"Short must never trigger victory visuals");
 click({unwire:"0"});wire("P","L");wire("N","R");check();done(1);
+assert.equal(el("sceneCharacter").dataset.mood,"celebrate","Completing a safe circuit should trigger a cheer");
+assert.equal(el("stageCelebration").hidden,false,"Clear should show nonblocking celebration");
+assert.match(el("characterArt").innerHTML,/tiranon-svg/,"Original dinosaur SVG should mount");
 move(2);wire("N","R");check();done(2);
 move(3);for(const choice of ["wood","plastic","iron"])click({choice});check();done(3);
 move(4);for(const choice of ["clip","foil","wood"]){click({choice});check()}done(4);
@@ -53,4 +59,6 @@ assert.ok(landmarks.every(svg=>svg.includes("class=\"window\"")),"Each landmark 
 assert.ok(window.AkariArt.material("clip").includes("<svg"));
 assert.ok(window.AkariArt.circuit("series",false,false).includes("<svg"));
 assert.ok(window.AkariArt.bulb(true).includes("<svg"));
+assert.ok(window.AkariCharacter.render().includes("tiranon-mouth-happy"));
+assert.equal(el("litPlaceCount").textContent,14,"Restoration progress should reach 14 regions");
 console.log("Akari Quest: 14/14 missions passed; dangerous battery short rejected; art templates rendered.");
