@@ -19,7 +19,7 @@ const M=[
 ];
 const $=id=>document.getElementById(id), storageKey="rika-akari-quest-v2";
 let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturnFocus=null,soundCtx=null;
-let reactionToken=0,celebrationToken=0;
+let reactionToken=0,celebrationToken=0,restorationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 const inspectedItems=[{id:"wood",name:"木の板",description:"木は電気を通しにくそうだね。",correct:false},{id:"iron",name:"鉄のくぎ",description:"鉄は金属！ 電気を通しそうだ。",correct:true},{id:"plastic",name:"プラスチックの定規",description:"プラスチックは電気を通しにくい。",correct:false}];
 function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,notes:[]};}
@@ -54,7 +54,10 @@ function initializeCharacter(){
  resetPresentation();
 }
 function resetPresentation(){
- reactionToken++;celebrationToken++;
+ reactionToken++;celebrationToken++;restorationToken++;
+ const scene=$("storyScene"),trail=$("restorationTrail");
+ if(scene)scene.classList.remove("energizing");
+ if(trail)trail.hidden=true;
  const character=$("sceneCharacter"),bubble=$("characterSpeech"),victory=$("stageCelebration");
  if(character)character.dataset.mood="idle";
  if(bubble){bubble.hidden=true;bubble.textContent="";}
@@ -87,8 +90,21 @@ function showCelebration(stars){
  void banner.offsetWidth;banner.classList.add("active");
  setTimeout(()=>{if(token===celebrationToken){banner.hidden=true;banner.classList.remove("active");}},2800);
 }
+function startRestorationPulse(firstClear){
+ const scene=$("storyScene"),trail=$("restorationTrail");
+ if(!scene||!trail)return;
+ const token=++restorationToken;
+ scene.classList.remove("energizing");trail.hidden=true;
+ if(!firstClear)return;
+ void scene.offsetWidth;
+ scene.classList.add("energizing");trail.hidden=false;
+ setTimeout(()=>{
+   if(token!==restorationToken)return;
+   scene.classList.remove("energizing");trail.hidden=true;
+ },1300);
+}
 function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
-function success(){const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");reactCharacter("celebrate");showCelebration(stars);playTone(true);}
+function success(){const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
  $("missionList").innerHTML=M.map(m=>{let done=!!state.completed[m.id],allow=m.id<=unlocked()||done,active=m.id===state.active;return'<button type="button" class="mission-item'+(active?' current':'')+(done?' done':'')+'" data-mission="'+m.id+'" '+(!allow?'disabled':'')+' '+(active?'aria-current="step"':'')+'><span class="mission-index">'+(done?'★':allow?m.id:'🔒')+'</span><span class="mission-label"><strong>'+m.name+'</strong><small>'+icon(m.place)+' '+m.placeName+'</small></span></button>'}).join("");
