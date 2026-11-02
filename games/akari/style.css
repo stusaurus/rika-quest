@@ -270,3 +270,28 @@
  .stage-celebration{animation:none!important}
  .stage-celebration{opacity:1}
 }
+
+
+/* Canonical Tiranon sprite integration: use eight untouched walking frames.
+   The face, teeth, spikes and cape are never procedurally redrawn. */
+.scene-character{right:27%;width:113px;height:120px;bottom:12px;transform:none}
+.tiranon-sprite-frame{display:block;position:relative;width:100%;height:100%;overflow:hidden;user-select:none}
+.tiranon-sprite-strip{
+ display:block;position:absolute;left:0;top:0;
+ width:800%;height:100%;max-width:none;object-fit:fill;
+ pointer-events:none;user-select:none;-webkit-user-drag:none;
+ transform:translateX(0);
+}
+.scene-character[data-mood="walk"] .tiranon-sprite-strip{
+ animation:tiranonWalkFrames .86s steps(7,end) 1 both;
+}
+@keyframes tiranonWalkFrames{from{transform:translateX(0)}to{transform:translateX(-87.5%)}}
+@media(max-width:740px){
+ .scene-character{right:2%;bottom:10px;width:clamp(92px,25vw,107px);height:auto;aspect-ratio:106/112}
+}
+@media(max-width:375px){
+ .scene-character{right:2%;bottom:10px;width:92px;height:97px}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene-character[data-mood="walk"] .tiranon-sprite-strip{animation:none!important}
+}
