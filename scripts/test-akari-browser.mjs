@@ -47,6 +47,7 @@ try{
    assert.ok(Math.abs(before.left-scrollAfter)<5,"Pan position must survive selecting a terminal");
    await page.locator('[data-t="L"]').click();
    await page.locator('[data-view="battery"]').click();
+   await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
@@ -74,6 +75,7 @@ try{
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator(".test-circuit-art").count(),1,"Material test must show the complete circuit");
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Material circuit overflow");
+   await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-materials.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
    console.log("PASS",engine,width+"px","circuit tap, short warning, save, battery art, overflow");
