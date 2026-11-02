@@ -34,6 +34,7 @@ assert.equal(el("stageCelebration").hidden,true,"Short must never trigger victor
 click({unwire:"0"});wire("P","L");wire("N","R");check();done(1);
 assert.equal(el("sceneCharacter").dataset.mood,"celebrate","Completing a safe circuit should trigger a cheer");
 assert.equal(el("stageCelebration").hidden,false,"Clear should show nonblocking celebration");
+assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).length,1,"First light should update the map");
 assert.equal(el("restorationTrail").hidden,false,"First clear should send a short pulse to the town");
 assert.match(el("characterArt").innerHTML,/tiranon-sprite-strip/,"Canonical dinosaur walk sprite should mount");
 move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel old light trail");wire("N","R");check();done(2);
@@ -50,6 +51,7 @@ move(12);click({cut:"x"});click({cut:"y"});check();done(12);
 move(13);for(const key of ["wire","bulb"]){click({inspect:key});click({fix:key})}check();done(13);
 move(14);click({final:"direction",value:"same"});click({final:"material",value:"clip"});click({final:"contact",value:"true"});check();done(14);
 assert.equal(Object.keys(saved().completed).length,14,"All 14 missions must be completed");
+assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).length,14,"All 14 map lights must persist");
 assert.equal(saved().active,14);
 assert.ok(window.AkariCharacter.moods.includes("walk"),"Mission travel should animate the canonical walk");
 assert.ok(saved().notes.length>=14,"Observation journal should retain a discovery for each completed mission");
