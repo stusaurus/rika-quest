@@ -25,5 +25,5 @@ const designs=[
  ()=>rope(193,308)+lamp(345,310,140),
  ()=>beacon(120,314)+lamp(332,319,138)+lamp(430,319,110)
 ];
-window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));return '<svg class="scene-prop-svg" viewBox="0 0 900 340" preserveAspectRatio="none" aria-hidden="true">'+designs[index]()+'</svg>'}};
+window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const box=phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg" viewBox="'+box+'" preserveAspectRatio="none" aria-hidden="true">'+designs[index]()+'</svg>'}};
 })();
