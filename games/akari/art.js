@@ -88,5 +88,44 @@ function testCircuit(id,lit){
  '<text x="355" y="212" text-anchor="middle" fill="#cfe9f2" font-size="12">豆電球</text>',
  "材料を入れて乾電池と豆電球をつなぐ実験回路","test-circuit-art");
 }
-window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit};
+
+function workbench(wires,lit){
+ const points={P:[80,70],N:[80,174],L:[260,121],R:[310,174]};
+ const leads=wires.map(([a,b])=>{
+  const p=points[a],q=points[b];if(!p||!q)return "";
+  const danger=(a==="P"&&b==="N")||(a==="N"&&b==="P");
+  return '<path d="M'+p[0]+' '+p[1]+'L'+q[0]+' '+q[1]+'" fill="none" class="wire'+(lit?' lit':'')+(danger?' danger':'')+'" stroke-linecap="round" stroke-width="7"/>';
+ }).join("");
+ return '<svg class="circuit-svg" viewBox="0 0 400 250" aria-label="乾電池と豆電球を導線でつなぐ実験回路" role="img">'+
+ '<defs><linearGradient id="workCell" x1="0" y1="0" x2=".95" y2="1"><stop stop-color="#e7a361"/><stop offset=".32" stop-color="#c97255"/><stop offset=".65" stop-color="#b9574b"/><stop offset="1" stop-color="#803d42"/></linearGradient>'+
+ '<linearGradient id="workMetal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#788e99"/><stop offset=".32" stop-color="#f0f7ed"/><stop offset=".65" stop-color="#9fbdc3"/><stop offset="1" stop-color="#577080"/></linearGradient>'+
+ '<radialGradient id="workGlass" cx=".36" cy=".26" r=".85"><stop stop-color="'+(lit?'#fff9d7':'#b7e5ea')+'" stop-opacity="'+(lit?'.99':'.68')+'"/><stop offset=".8" stop-color="'+(lit?'#f6c765':'#709cae')+'" stop-opacity="'+(lit?'.88':'.5')+'"/><stop offset="1" stop-color="#31516c" stop-opacity=".45"/></radialGradient></defs>'+
+ (lit?'<ellipse cx="310" cy="96" rx="66" ry="67" fill="#ffdf86" opacity=".24" filter="url(#glow)"/>':'')+
+ '<ellipse cx="82" cy="178" rx="62" ry="10" fill="#061a32" opacity=".35"/><ellipse cx="310" cy="181" rx="53" ry="8" fill="#061a32" opacity=".25"/>'+
+ leads+
+ '<g class="battery-model"><rect x="32" y="83" width="98" height="83" rx="19" fill="url(#workCell)" stroke="#ffdfac" stroke-width="4"/>'+
+ '<rect x="39" y="91" width="85" height="64" rx="13" fill="#e3a065" opacity=".23"/>'+
+ '<path d="M46 91Q38 116 47 152" stroke="#ffe3b0" stroke-width="8" opacity=".35" fill="none"/>'+
+ '<path d="M80 83V70M80 166V174" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
+ '<rect x="64" y="77" width="32" height="9" rx="4" fill="url(#workMetal)" stroke="#d9eced" stroke-width="2"/>'+
+ '<rect x="49" y="161" width="62" height="7" rx="3" fill="url(#workMetal)"/>'+
+ '<text x="81" y="116" text-anchor="middle" fill="#fff9e7" font-size="21" font-weight="900">1.5V</text>'+
+ '<text x="81" y="140" text-anchor="middle" fill="#fff2da" font-size="13" font-weight="800">乾電池</text></g>'+
+ '<g class="bulb-model">'+
+ '<path d="M260 121L286 141" stroke="#e3ca8f" stroke-width="8" stroke-linecap="round"/>'+
+ '<path d="M310 159V174" stroke="url(#workMetal)" stroke-width="8" stroke-linecap="round"/>'+
+ '<path d="M284 132C271 117 265 102 268 83C273 47 294 35 312 36C339 36 356 57 356 85C356 109 344 123 333 136Z" fill="url(#workGlass)" stroke="'+(lit?'#fff1af':'#c1e9ed')+'" stroke-width="4"/>'+
+ '<path d="M284 82C288 59 299 52 306 53" fill="none" stroke="#fff" opacity=".62" stroke-width="7" stroke-linecap="round"/>'+
+ '<path d="M296 126L296 102L302 98L310 105L318 98L325 103L325 126" fill="none" stroke="'+(lit?'#fff8be':'#dfb98d')+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'+
+ '<path d="M296 103L296 132M325 103L325 132" stroke="#c2d9d2" stroke-width="3"/>'+
+ '<rect x="285" y="127" width="51" height="34" rx="7" fill="url(#workMetal)" stroke="#d2e4de" stroke-width="3"/>'+
+ '<path d="M289 137H331M289 145H331M289 153H331" stroke="#58788a" stroke-width="3"/>'+
+ '<rect x="298" y="161" width="24" height="11" rx="4" fill="#ddb779" stroke="#fff5d1" stroke-width="2"/></g>'+
+ '<text x="80" y="212" text-anchor="middle" fill="#f8e6b9" font-size="15" font-weight="900">乾電池</text>'+
+ '<text x="310" y="212" text-anchor="middle" fill="#f8e6b9" font-size="15" font-weight="900">豆電球</text>'+
+ '<text x="80" y="235" text-anchor="middle" fill="#b8dae2" font-size="11">＋／− の接点</text>'+
+ '<text x="309" y="235" text-anchor="middle" fill="#b8dae2" font-size="11">横と底に金属の接点</text></svg>';
+}
+
+window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit,workbench};
 })();
