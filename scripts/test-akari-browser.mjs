@@ -42,6 +42,7 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
    await page.locator("#nextBtn").click();
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
    await page.reload({waitUntil:"domcontentloaded"});
