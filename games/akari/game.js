@@ -155,8 +155,24 @@ function renderExplore(){let selected=inspectedItems.find(x=>x.id===ui.chosen);
 }
 function renderMaterial(){
  const selected=materials.find(x=>x.id===ui.selected),tried=ui.tried;
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🧪 材料で実験</h3><p class="lab-sub">導線のすき間に材料をはさんで豆電球がつくか調べるよ。</p><div class="choices two">'+materials.map(x=>choice(x.id,x.name,Art.material(x.id),ui.selected===x.id,tried.includes(x.id)?"tried":"")).join("")+'</div></div>'
- +'<div class="lab-panel"><h3>🔬 電気の通り道</h3><div class="science-spotlight">'+Art.testCircuit(selected?.id,selected&&tried.includes(selected.id)&&selected.conductive)+'</div><div class="test-light'+(selected&&tried.includes(selected.id)&&selected.conductive?' on':'')+'">'+(selected&&tried.includes(selected.id)&&selected.conductive?'💡':'◯')+'</div><p class="test-caption">'+(selected&&tried.includes(selected.id)?selected.conductive?"電気を通した！ 豆電球が点灯。":"電気を通さない。豆電球は消えたまま。":"材料を選んで通電チェック！")+'</p><div class="lab-reading">実験済み：'+tried.length+' / 4<br>'+tried.map(t=>{let x=materials.find(z=>z.id===t);return x.name+"："+(x.conductive?"点灯":"消灯")}).join(" ／ ")+'</div></div></div>';
+ const tested=!!selected&&tried.includes(selected.id);
+ const predicted=selected&&(ui.predictions[selected.id]||ui.prediction);
+ const predictions=[["lit","💡 つくと思う"],["dark","◯ つかないと思う"]];
+ let predictPanel='<div class="prediction-panel">';
+ if(!selected){
+  predictPanel+='<p>① 材料を選ぼう → ② 点灯を予想しよう → ③ 通電して比べよう</p>';
+ }else if(!tested){
+  predictPanel+='<strong>🔮 予想：'+escapeHtml(selected.name)+'をはさむと？</strong>'+
+  '<div class="prediction-buttons">'+predictions.map(([id,label])=>'<button class="prediction-option'+(ui.prediction===id?' chosen':'')+'" data-predict="'+id+'" aria-pressed="'+(ui.prediction===id)+'">'+label+'</button>').join("")+'</div>'+
+  '<p>予想ははずれても減点なし。実験で確かめよう！</p>';
+ }else{
+  const actual=selected.conductive?"lit":"dark";
+  predictPanel+='<strong>🔍 予想と実験をくらべよう</strong><p>予想：'+(predicted==="lit"?"点灯":"消灯")+' ／ 実際：'+(actual==="lit"?"点灯":"消灯")+
+  (predicted===actual?' <b>✓ 予想どおり！</b>':' <b>✦ 新しい発見！</b>')+'</p>';
+ }
+ predictPanel+='</div>';
+ return'<div class="experiment-layout"><div class="lab-panel"><h3>🧪 材料で実験</h3><p class="lab-sub">導線のすき間に材料をはさんで、豆電球がつくか予想しよう。</p><div class="choices two">'+materials.map(x=>choice(x.id,x.name,Art.material(x.id),ui.selected===x.id,tried.includes(x.id)?"tried":"")).join("")+'</div>'+predictPanel+'</div>'
+ +'<div class="lab-panel"><h3>🔬 電気の通り道</h3><div class="science-spotlight">'+Art.testCircuit(selected?.id,selected&&tested&&selected.conductive)+'</div><div class="test-light'+(selected&&tested&&selected.conductive?' on':'')+'">'+(selected&&tested&&selected.conductive?'💡':'◯')+'</div><p class="test-caption">'+(selected&&tested?selected.conductive?"電気を通した！ 豆電球が点灯。":"電気を通さない。豆電球は消えたまま。":"予想を決めたら電気を流してみよう")+'</p><div class="lab-reading">実験済み：'+tried.length+' / 4<br>'+tried.map(t=>{let x=materials.find(z=>z.id===t);return x.name+"："+(x.conductive?"点灯":"消灯")}).join(" ／ ")+'</div></div></div>';
 }
 function repairParts(){return current().id===6?[{id:"battery",name:"乾電池",broken:false,detail:"1.5V・残量あり。問題なし。"},{id:"wire",name:"導線のつなぎ目",broken:true,detail:"接触がはずれている！"},{id:"bulb",name:"豆電球",broken:false,detail:"フィラメントは切れていない。"}]:[{id:"wire",name:"導線",broken:true,detail:"途中で切れていた！"},{id:"bulb",name:"豆電球の接点",broken:true,detail:"底が端子に触れていない！"},{id:"battery",name:"乾電池",broken:false,detail:"十分な電気がある。"}];}
 function renderRepair(){
