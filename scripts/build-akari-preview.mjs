@@ -2,6 +2,7 @@ import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
 const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
+const scenes=readFileSync("games/akari/scenes.js","utf8");
 const game=readFileSync("games/akari/game.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
