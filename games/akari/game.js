@@ -25,13 +25,29 @@ function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"nu
 function current(){return M[state.active-1]}
 function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[]};case"repair":return{inspected:[],fixed:[]};case"logic":return{design:"series",a:false,b:false,trials:{}};case"battery":case"polarity":return{selected:null,tried:[],answer:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
+
+function recordObservation(key,description){
+ const id=current().id;
+ if(!state.notes.some(n=>n.mission===id&&n.key===key)){
+ state.notes.push({mission:id,key,text:description});state.notes=state.notes.slice(-100);persist();
+ }
+ renderJournal();
+}
+function renderJournal(){
+ const panel=$("journalPanel");if(!panel)return;
+ const notes=state.notes.filter(n=>n.mission===current().id);
+ const rows=panel.querySelector(".journal-rows"),counter=panel.querySelector(".journal-count");
+ if(!rows||!counter)return;counter.textContent=notes.length+"件の記録";rows.replaceChildren();
+ const entries=notes.length?notes.map(n=>n.text):["実験をすると、ここに発見が残るよ。"];
+ entries.forEach(message=>{const p=document.createElement("p");p.className="journal-entry";p.textContent="✦ "+message;rows.appendChild(p)});
+}
 function unlocked(){let id=1;while(id<=14&&state.completed[id])id++;return Math.min(id,14)}
 function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=initial(current());hintIndex=0;failures=0;stageComplete=false;persist();renderAll();window.scrollTo({top:0,behavior:"smooth"});}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function setFeedback(t,type=""){const e=$("feedback");e.className="feedback"+(type?" "+type:"");$("feedbackText").textContent=t;}
 function playTone(ok){if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;soundCtx=soundCtx||new C();const now=soundCtx.currentTime;(ok?[523,659,784,1046]:[220,175]).forEach((freq,i)=>{const oscillator=soundCtx.createOscillator(),gain=soundCtx.createGain(),start=now+i*.12;oscillator.type=ok?"sine":"triangle";oscillator.frequency.value=freq;oscillator.connect(gain);gain.connect(soundCtx.destination);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.065,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.22);oscillator.start(start);oscillator.stop(start+.23);});}catch(e){}}
 function fail(message,short=false){failures++;setFeedback(message,"warning");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
-function success(){const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");playTone(true);}
+function success(){const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
  $("missionList").innerHTML=M.map(m=>{let done=!!state.completed[m.id],allow=m.id<=unlocked()||done,active=m.id===state.active;return'<button type="button" class="mission-item'+(active?' current':'')+(done?' done':'')+'" data-mission="'+m.id+'" '+(!allow?'disabled':'')+' '+(active?'aria-current="step"':'')+'><span class="mission-index">'+(done?'★':allow?m.id:'🔒')+'</span><span class="mission-label"><strong>'+m.name+'</strong><small>'+icon(m.place)+' '+m.placeName+'</small></span></button>'}).join("");
@@ -120,7 +136,7 @@ function renderWorkspace(){
  const mode=current().mode;
  $("workspace").innerHTML=mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
 }
-function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
+function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
  if(stageComplete)return;const m=current();
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
