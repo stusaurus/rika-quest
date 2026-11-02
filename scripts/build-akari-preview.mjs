@@ -12,6 +12,7 @@ function inlineScript(source){return "<script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
+output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
 output=output.replace('href="../../index.html"','href="https://stusaurus.github.io/rika-quest/"');
 output=output.replace("<title>あかりクエスト | Rika Quest</title>","<title>あかりクエスト｜試遊版</title>");
 mkdirSync("artifacts",{recursive:true});
