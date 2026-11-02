@@ -77,6 +77,24 @@ try{
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Material circuit overflow");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-materials.png",fullPage:true});
+
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     for(let i=1;i<=13;i++)s.completed[i]=3;
+     s.active=14;localStorage.setItem(key,JSON.stringify(s));
+   });
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("#missionTitle").textContent(),"ひかりを取り戻せ！");
+   assert.ok(await page.locator(".landmark .window").count()>0,"Lighthouse must show physical lighting");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-before.png",fullPage:true});
+   await page.locator('[data-final="direction"][data-value="same"]').click();
+   await page.locator('[data-final="material"][data-value="clip"]').click();
+   await page.locator('[data-final="contact"][data-value="true"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-after.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
    console.log("PASS",engine,width+"px","circuit tap, short warning, save, battery art, overflow");
    await context.close();count++;
