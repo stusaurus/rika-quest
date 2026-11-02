@@ -29,7 +29,8 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
-   assert.equal(await page.locator("#characterArt .tiranon-svg").count(),1,"Dinosaur guide must render as an SVG");
+   assert.equal(await page.locator("#characterArt .tiranon-sprite-strip").count(),1,"Canonical dinosaur guide must render");
+   await page.locator(".tiranon-sprite-strip").evaluate(async img=>{await img.decode();if(img.naturalWidth<100)throw Error("Walk sprite missing");});
    const crowded=await page.evaluate(()=>{
      const c=document.querySelector("#sceneCharacter").getBoundingClientRect();
      const t=document.querySelector(".scene-caption").getBoundingClientRect();
@@ -78,7 +79,7 @@ try{
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
    await page.locator("#nextBtn").click();
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
-   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"idle","Next mission resets the expression");
+   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"walk","Next mission triggers a natural short walk");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Victory badge must not leak to next stage");
 
    await page.reload({waitUntil:"domcontentloaded"});
