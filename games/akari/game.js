@@ -254,7 +254,11 @@ function check(){
  }setFeedback("記録したよ！ 残り "+(4-Object.keys(ui.trials).length)+" 通りのスイッチを試そう。","success");return;}
  if(m.mode==="battery"||m.mode==="polarity"){if(!ui.selected){setFeedback("まず乾電池を選んでね。","warning");return;}if(!ui.tried.includes(ui.selected)){ui.tried.push(ui.selected);recordObservation("battery:"+ui.selected,(m.mode==="polarity"?(ui.selected==="same"?"2個同じ向き：点灯":"2個逆向き：消灯"):(ui.selected==="series"?"2個直列：約3V":"1個または単1・単4形：公称1.5V")));renderWorkspace();setFeedback("実験結果を記録したよ。もう一方も試そう！","success");return;}if(ui.tried.length<2){setFeedback("もう一方も実験して比べてみよう。","warning");return;}if(ui.answer==null){setFeedback("実験結果を見比べて、右側の答えを選ぼう。","warning");return;}if((m.mode==="battery"&&ui.answer==="correct")||(m.mode==="polarity"&&ui.answer==="same")){success();return;}fail("結果をもう一度比べてみよう。");return;}
  if(m.mode==="cut"){if(ui.removed.includes("x")&&ui.removed.includes("y")&&!ui.removed.includes("normal")){success();return;}if(!ui.removed.includes("x")||!ui.removed.includes("y")){fail("⚠ ショートする近道がまだ残っているよ。実物ではとても危険！",true);return;}fail("必要な導線まで外してしまった。豆電球につながる道は残そう。");return;}
- if(m.mode==="finale"){if(ui.direction==="same"&&ui.material==="clip"&&ui.contact){success();return;}fail("あと少し！ 電池の向き・電気を通す材料・豆電球の接点を調べてみよう。");return;}
+ if(m.mode==="finale"){
+  if(ui.verified.length!==3){setFeedback("灯台を点灯する前に、乾電池・材料・豆電球の3か所をすべて調べて ✓ にしよう。","warning");return;}
+  if(ui.direction==="same"&&ui.material==="clip"&&ui.contact){success();return;}
+  fail("部品の設定が変わっているみたい。3か所をもう一度確かめよう。");return;
+ }
 }
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
@@ -287,7 +291,32 @@ function handleWorkspace(e){
  }
  if(target.hasAttribute("data-answer")){ui.answer=target.dataset.answer;renderWorkspace();setFeedback("答えを選んだよ。通電チェックで確かめよう。");return;}
  if(target.hasAttribute("data-cut")){let key=target.dataset.cut;if(ui.removed.includes(key))ui.removed=ui.removed.filter(x=>x!==key);else ui.removed.push(key);renderWorkspace();setFeedback(key==="normal"?"正常な導線まで外すと電気が流れないよ。":"選んだ導線を外したよ。2本の近道を確認しよう。",key==="normal"?"warning":"");return;}
- if(target.hasAttribute("data-final")){const key=target.dataset.final,raw=target.dataset.value;ui[key]=key==="contact"?raw==="true":raw;renderWorkspace();setFeedback("設定を変更したよ。3つの箇所を確認しよう。");}
+ if(target.hasAttribute("data-verify")){
+  if(current().mode!=="finale")return;
+  const key=target.dataset.verify;if(!["direction","material","contact"].includes(key))return;
+  const ok=key==="direction"?ui.direction==="same":key==="material"?ui.material==="clip":ui.contact;
+  ui.checked[key]=ok;
+  if(ok&&!ui.verified.includes(key)){
+   ui.verified.push(key);
+   const observation={
+    direction:"乾電池2個を同じ向きに直列接続：電圧が加わる。",
+    material:"すき間に鉄のクリップを接続：電気が通る。",
+    contact:"豆電球の底と横の金属部分を接続：電気の通り道がつながる。"
+   }[key];
+   recordObservation("final:"+key,observation);
+  }
+  renderWorkspace();
+  setFeedback(ok?"✓ 動作確認 OK！ "+ui.verified.length+" / 3 か所を修理したよ。":"⚠ この部分はまだ直っていない。選び直して再確認しよう。",ok?"success":"warning");
+  if(ok)reactCharacter("discover");else reactCharacter("think");
+  return;
+ }
+ if(target.hasAttribute("data-final")){
+  const key=target.dataset.final,raw=target.dataset.value;
+  if(!["direction","material","contact"].includes(key))return;
+  const value=key==="contact"?raw==="true":raw;
+  if(ui[key]!==value){ui.checked={...ui.checked};delete ui.checked[key];ui.verified=ui.verified.filter(x=>x!==key);}
+  ui[key]=value;renderWorkspace();setFeedback("設定を変更したよ。この部分を調べて確かめよう。");return;
+ }
 }
 function modal(open){const box=$("helpModal");box.hidden=!open;if(open){helpReturnFocus=document.activeElement;$("closeHelpBtn").focus();}else if(helpReturnFocus&&typeof helpReturnFocus.focus==="function")helpReturnFocus.focus();}
 function bind(){
