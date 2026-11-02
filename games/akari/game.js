@@ -182,8 +182,12 @@ function renderRepair(){
 }
 function renderLogic(){
  const k=ui.a?"1":"0",l=ui.b?"1":"0",lit=ui.design==="series"?(ui.a&&ui.b):(ui.a||ui.b);
+ const complete=Object.keys(ui.trials).length===4;
+ const conclusion=complete?'<div class="science-conclusion"><strong>✦ 4通りから何がわかった？</strong><p>結果を見てから、当てはまる説明を選ぼう。</p><div class="conclusion-choices">'+
+  [["both","AもBもONのときだけ点灯"],["either","AかBのどちらかがONなら点灯"]].map(([id,label])=>'<button type="button" class="prediction-option'+(ui.conclusion===id?' chosen':'')+'" data-conclude="'+id+'" aria-pressed="'+(ui.conclusion===id)+'">'+label+'</button>').join("")+'</div></div>':
+  '<div class="lab-reading">4通りをすべて実験すると、最後に回路の特徴を考えられるよ。</div>';
  return'<div class="experiment-layout"><div class="lab-panel"><h3>🔌 回路を組み立てよう</h3><div class="toggle-row"><button class="toggle'+(ui.design==="series"?' on':'')+'" data-design="series" aria-pressed="'+(ui.design==="series")+'">直列</button><button class="toggle'+(ui.design==="parallel"?' on':'')+'" data-design="parallel" aria-pressed="'+(ui.design==="parallel")+'">並列</button></div>'+Art.circuit(ui.design,ui.a,ui.b)+'<div class="toggle-row"><button class="toggle'+(ui.a?' on':'')+'" data-switch="a">スイッチ A：'+(ui.a?"ON":"OFF")+'</button><button class="toggle'+(ui.b?' on':'')+'" data-switch="b">スイッチ B：'+(ui.b?"ON":"OFF")+'</button></div></div>'
- +'<div class="lab-panel"><h3>📊 実験記録</h3><p class="lab-sub">それぞれの組み合わせで「電気を流してみる」を押そう。</p><div class="light-status">'+(lit?"💡 点灯":"◯ 消灯")+'</div><table class="truth-table"><thead><tr><th>A</th><th>B</th><th>実験結果</th></tr></thead><tbody>'+[["0","0"],["0","1"],["1","0"],["1","1"]].map(([x,y])=>{let result=ui.trials[x+y];return'<tr><td>'+(x==="1"?"ON":"OFF")+'</td><td>'+(y==="1"?"ON":"OFF")+'</td><td>'+(result===undefined?"？":result?"💡 点灯":"○ 消灯")+'</td></tr>'}).join("")+'</tbody></table><p class="lab-reading">試した組み合わせ：'+Object.keys(ui.trials).length+' / 4</p></div></div>';
+  +'<div class="lab-panel"><h3>📊 実験記録</h3><p class="lab-sub">それぞれの組み合わせで「電気を流してみる」を押そう。</p><div class="light-status">'+(lit?"💡 点灯":"◯ 消灯")+'</div><table class="truth-table"><thead><tr><th>A</th><th>B</th><th>実験結果</th></tr></thead><tbody>'+[["0","0"],["0","1"],["1","0"],["1","1"]].map(([x,y])=>{let result=ui.trials[x+y];return'<tr><td>'+(x==="1"?"ON":"OFF")+'</td><td>'+(y==="1"?"ON":"OFF")+'</td><td>'+(result===undefined?"？":result?"💡 点灯":"○ 消灯")+'</td></tr>'}).join("")+'</tbody></table><p class="lab-reading">試した組み合わせ：'+Object.keys(ui.trials).length+' / 4</p>'+conclusion+'</div></div>';
 }
 function batteryOptions(){return current().id===9?[{id:"small",name:"単4形（1.5V）",kind:"small"},{id:"large",name:"単1形（1.5V）",kind:"large"}]:[{id:"single",name:"乾電池1個（1.5V）",kind:"small"},{id:"series",name:"2個を直列（3V）",kind:"series"}]}
 function renderBattery(){
