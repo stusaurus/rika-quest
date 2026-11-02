@@ -219,11 +219,26 @@ function check(){
  if(stageComplete)return;const m=current();
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){if(ui.inspected.length<3){fail("橋の材料を3種類とも観察してから決めよう。");return;}if(ui.chosen==="iron"){success();return;}fail("その材料では電気が通りにくいよ。金属の材料を選んでみよう。");return;}
- if(m.mode==="material"){if(!ui.selected){setFeedback("まず実験する材料を選んでね。","warning");return;}let x=materials.find(x=>x.id===ui.selected);if(!ui.tried.includes(x.id))ui.tried.push(x.id);recordObservation("material:"+x.id,x.name+"：豆電球が"+(x.conductive?"点灯。":"消灯。"));renderWorkspace();let conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
+ if(m.mode==="material"){
+ if(!ui.selected){setFeedback("まず実験する材料を選んでね。","warning");return;}
+ const x=materials.find(x=>x.id===ui.selected),newTrial=!ui.tried.includes(x.id);
+ if(newTrial&&!ui.prediction){setFeedback("💡 通電する前に「つく／つかない」を予想しよう。はずれても減点はないよ。","warning");return;}
+ if(newTrial){
+  ui.tried.push(x.id);ui.predictions[x.id]=ui.prediction;
+  recordObservation("material:"+x.id,x.name+"：予想は"+(ui.prediction==="lit"?"点灯":"消灯")+" → 実際は"+(x.conductive?"点灯":"消灯")+"。");
+ }
+ renderWorkspace();
+ const conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
  if(m.target==="conductor"?conductor>=2&&insulator>=1:insulator>=2&&conductor>=1){success();return;}setFeedback(x.name+"："+(x.conductive?"電気を通して光った！":"電気を通さず光らなかった。")+" ほかの材料とも比べてみよう。",x.conductive?"success":"");return;}
  if(m.mode==="repair"){const broken=repairParts().filter(x=>x.broken);if(broken.every(x=>ui.fixed.includes(x.id))){success();return;}fail("まだ直っていない場所があるよ。部品を一つずつ調べよう。");return;}
  if(m.mode==="logic"){const code=(ui.a?"1":"0")+(ui.b?"1":"0");ui.trials[code]=ui.design==="series"?(ui.a&&ui.b):(ui.a||ui.b);recordObservation("switch:"+ui.design+":"+code,(ui.trials[code]?"点灯":"消灯"));renderWorkspace();
- if(Object.keys(ui.trials).length===4){if(ui.design===m.target){success();return;}fail("4通りの結果を見よう。今回の条件に合う回路は、もう一方のつなぎ方だよ。");return;}setFeedback("記録したよ！ 残り "+(4-Object.keys(ui.trials).length)+" 通りのスイッチを試そう。","success");return;}
+ if(Object.keys(ui.trials).length===4){
+  if(!ui.conclusion){setFeedback("4つの実験結果がそろった！結果からわかることを選んで、もう一度通電チェックしよう。","success");return;}
+  const expected=ui.design==="series"?"both":"either";
+  if(ui.conclusion!==expected){fail("選んだ説明は、記録した点灯・消灯と合っているかな？表を見直そう。");return;}
+  if(ui.design!==m.target){fail("実験結果は正しくまとめられたね。でも今回の扉に必要なのは別のつなぎ方。");return;}
+  success();return;
+ }setFeedback("記録したよ！ 残り "+(4-Object.keys(ui.trials).length)+" 通りのスイッチを試そう。","success");return;}
  if(m.mode==="battery"||m.mode==="polarity"){if(!ui.selected){setFeedback("まず乾電池を選んでね。","warning");return;}if(!ui.tried.includes(ui.selected)){ui.tried.push(ui.selected);recordObservation("battery:"+ui.selected,(m.mode==="polarity"?(ui.selected==="same"?"2個同じ向き：点灯":"2個逆向き：消灯"):(ui.selected==="series"?"2個直列：約3V":"1個または単1・単4形：公称1.5V")));renderWorkspace();setFeedback("実験結果を記録したよ。もう一方も試そう！","success");return;}if(ui.tried.length<2){setFeedback("もう一方も実験して比べてみよう。","warning");return;}if(ui.answer==null){setFeedback("実験結果を見比べて、右側の答えを選ぼう。","warning");return;}if((m.mode==="battery"&&ui.answer==="correct")||(m.mode==="polarity"&&ui.answer==="same")){success();return;}fail("結果をもう一度比べてみよう。");return;}
  if(m.mode==="cut"){if(ui.removed.includes("x")&&ui.removed.includes("y")&&!ui.removed.includes("normal")){success();return;}if(!ui.removed.includes("x")||!ui.removed.includes("y")){fail("⚠ ショートする近道がまだ残っているよ。実物ではとても危険！",true);return;}fail("必要な導線まで外してしまった。豆電球につながる道は残そう。");return;}
  if(m.mode==="finale"){if(ui.direction==="same"&&ui.material==="clip"&&ui.contact){success();return;}fail("あと少し！ 電池の向き・電気を通す材料・豆電球の接点を調べてみよう。");return;}
