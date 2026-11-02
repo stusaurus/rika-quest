@@ -48,6 +48,7 @@ try{
    assert.equal(await page.locator(".battery-art").count(),2,"Compare two detailed battery orientations");
    await page.locator('[data-choice="reverse"]').click();
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery overflow: "+JSON.stringify(dimensions));
+   await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
    console.log("PASS",engine,width+"px","circuit tap, short warning, save, battery art, overflow");
