@@ -136,3 +136,5 @@
 .story-scene[data-stage="12"]{background:linear-gradient(#4c729c,#98acbe 69%,#5a829e)}
 .story-scene[data-stage="13"]{background:linear-gradient(#405e89,#8ca9b5 70%,#557a95)}
 .story-scene[data-stage="14"]{background:linear-gradient(#2f507c,#7390ad 69%,#4e7792)}
+
+.science-spotlight.circuit-rig{max-width:100%;max-height:230px}.circuit-rig svg{width:100%;max-height:225px}.circuit-rig+.test-light{display:none}
