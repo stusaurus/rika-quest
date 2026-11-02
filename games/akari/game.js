@@ -34,7 +34,7 @@ function recordObservation(key,description){
  renderJournal();
 }
 function renderJournal(){
- const panel=$("journalPanel");if(!panel)return;
+ const panel=$("journalPanel");if(!panel||typeof panel.querySelector!=="function")return;
  const notes=state.notes.filter(n=>n.mission===current().id);
  const rows=panel.querySelector(".journal-rows"),counter=panel.querySelector(".journal-count");
  if(!rows||!counter)return;counter.textContent=notes.length+"件の記録";rows.replaceChildren();
