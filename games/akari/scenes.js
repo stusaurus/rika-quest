@@ -124,7 +124,8 @@ const landmarks={
  '<circle cx="157" cy="212" r="2.5" fill="#f5d19a"/>'+
  '<path d="M117 63H182M119 129H187M119 194H191" stroke="#fff8e2" stroke-width="3" opacity=".65"/></g>'
 };
-window.AkariScenes.landmark=place=>landmarkDefs+(landmarks[place]||landmarks.village);
 
 window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const box=phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg" viewBox="'+box+'" preserveAspectRatio="none" aria-hidden="true">'+designs[index]()+'</svg>'}};
+window.AkariScenes.landmark=place=>landmarkDefs+(landmarks[place]||landmarks.village);
+
 })();
