@@ -373,3 +373,51 @@
  .sidebar.open .map-illustration{display:block;height:125px;margin:10px 0}
  .sidebar.open .map-light-grid{top:26px}
 }
+
+
+/* Discovery-first investigations. Each action has a visible scientific purpose. */
+.prediction-panel,.science-conclusion{
+ margin-top:14px;padding:13px 14px;border-radius:15px;
+ background:linear-gradient(145deg,#214a60,#183b54);
+ border:1px solid #709fa8;color:#f7f4e5;
+ box-shadow:inset 0 1px 0 #ffffff1b;
+}
+.prediction-panel>strong,.science-conclusion>strong{font-size:14px;line-height:1.5;display:block}
+.prediction-panel p,.science-conclusion p{font-size:12px;line-height:1.6;color:#d6e7e6;margin:6px 0 10px}
+.prediction-panel b{color:#ffe49d}
+.prediction-buttons,.conclusion-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.conclusion-choices{grid-template-columns:1fr}
+.prediction-option{
+ min-height:48px;padding:8px 10px;font-size:12px;font-weight:900;line-height:1.55;
+ color:#214e61;background:#f3faf5;border:2px solid #c0e5e4;
+ border-radius:12px;text-align:center;overflow-wrap:anywhere;
+}
+.prediction-option.chosen{background:#ffedae;color:#67501e;border-color:#ffd067;box-shadow:0 0 0 1px #fce6ac}
+.prediction-option:focus-visible,.verify-part:focus-visible{outline:3px solid #ffd67f;outline-offset:3px}
+.science-conclusion{background:linear-gradient(145deg,#285f66,#214a60)}
+.verification-step{
+ margin:10px 0;border:1px solid #66899c;background:#1b3f5c;
+ border-radius:14px;padding:12px;color:#e9f8fd;
+}
+.verification-step>strong{font-size:14px;display:block}
+.verification-step.ok{border-color:#85d3a8;background:#255d58}
+.verification-step.needs-fix{border-color:#eeb78b}
+.verification-step .toggle-row{margin:9px 0}
+.verification-step .toggle{font-size:12px;padding:10px 7px;min-height:46px}
+.verify-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.verify-part{
+ border-radius:11px;padding:9px 12px;border:2px solid #f0d99e;
+ background:#fce8ae;color:#67502b;font-size:12px;font-weight:900;min-height:42px;
+}
+.verification-step.ok .verify-part{background:#c1edcf;border-color:#9bdcb0;color:#226152}
+.verification-status{font-size:12px;color:#c4e0eb;font-weight:800;line-height:1.5}
+.verification-step.ok .verification-status{color:#cbffe2}
+.verification-step.needs-fix .verification-status{color:#ffd2ad}
+.finale-guidance{margin:10px 2px;font-size:12px;color:#d5eff2;line-height:1.6}
+@media(max-width:740px){
+ .prediction-panel,.science-conclusion{padding:11px;margin-top:10px}
+ .prediction-panel>strong,.science-conclusion>strong{font-size:13px}
+ .prediction-option{font-size:12px;min-height:50px}
+ .verification-step{padding:10px}
+ .verify-part{min-height:44px}
+}
