@@ -17,6 +17,7 @@ const stored={};
 const localStorage={getItem(k){return stored[k]||null},setItem(k,v){stored[k]=v}};
 const context=vm.createContext({window,document,localStorage,setTimeout(){},console});
 vm.runInContext(readFileSync("games/akari/art.js","utf8"),context,{filename:"art.js"});
+vm.runInContext(readFileSync("games/akari/scenes.js","utf8"),context,{filename:"scenes.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
