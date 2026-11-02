@@ -295,3 +295,15 @@
 @media(prefers-reduced-motion:reduce){
  .scene-character[data-mood="walk"] .tiranon-sprite-strip{animation:none!important}
 }
+
+
+/* On phones, danger labels must not conceal the character's warning pose. */
+@media(max-width:740px){
+ .story-scene .spark::after{
+  top:75%;left:39%;font-size:12px;
+  padding:7px 10px;max-width:72%;
+  text-align:center;white-space:normal;line-height:1.35;
+ }
+ .scene-character[data-mood="danger"]{z-index:10}
+ .scene-character[data-mood="danger"] .character-speech{bottom:102%}
+}
