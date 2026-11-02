@@ -43,7 +43,7 @@ function renderJournal(){
  entries.forEach(message=>{const p=document.createElement("p");p.className="journal-entry";p.textContent="✦ "+message;rows.appendChild(p)});
 }
 function unlocked(){let id=1;while(id<=14&&state.completed[id])id++;return Math.min(id,14)}
-function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=initial(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();window.scrollTo({top:0,behavior:"smooth"});}
+function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=initial(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();reactCharacter("walk");window.scrollTo({top:0,behavior:"smooth"});}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function setFeedback(t,type=""){const e=$("feedback");e.className="feedback"+(type?" "+type:"");$("feedbackText").textContent=t;}
 function playTone(ok){if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;soundCtx=soundCtx||new C();const now=soundCtx.currentTime;(ok?[523,659,784,1046]:[220,175]).forEach((freq,i)=>{const oscillator=soundCtx.createOscillator(),gain=soundCtx.createGain(),start=now+i*.12;oscillator.type=ok?"sine":"triangle";oscillator.frequency.value=freq;oscillator.connect(gain);gain.connect(soundCtx.destination);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.065,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.22);oscillator.start(start);oscillator.stop(start+.23);});}catch(e){}}
@@ -69,7 +69,7 @@ function reactCharacter(mood,text){
  const spoken=text||(window.AkariCharacter?.message(mood)||"");
  bubble.textContent=spoken;bubble.hidden=!spoken;
  if(mood==="idle"||mood==="celebrate")return;
- setTimeout(()=>{if(token===reactionToken){character.dataset.mood="idle";bubble.hidden=true;}},mood==="danger"?2300:1700);
+ setTimeout(()=>{if(token===reactionToken){character.dataset.mood="idle";bubble.hidden=true;}},mood==="danger"?2300:mood==="walk"?940:1700);
 }
 function showCelebration(stars){
  const banner=$("stageCelebration");if(!banner)return;
