@@ -307,3 +307,9 @@
  .scene-character[data-mood="danger"]{z-index:10}
  .scene-character[data-mood="danger"] .character-speech{bottom:102%}
 }
+
+
+/* Preserve the source WebP cell's measured 106x116 aspect ratio exactly. */
+.scene-character{width:113px;height:auto;aspect-ratio:106/116}
+@media(max-width:740px){.scene-character{height:auto;aspect-ratio:106/116}}
+@media(max-width:375px){.scene-character{width:92px;height:auto;aspect-ratio:106/116}}
