@@ -31,6 +31,8 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
 .drift{animation:float 4.4s ease-in-out infinite;transform-origin:center}
 #gate-door{transform-origin:center;transition:transform 1.2s cubic-bezier(.18,.68,.18,1),opacity .8s}
 .app[data-phase="4"] #gate-door{transform:translateY(-136px);opacity:.35}
+.app.repel-hit[data-phase="3"] #gate-door{animation:gate-repel .55s ease-out}
+@keyframes gate-repel{0%,100%{transform:translateX(0)}35%{transform:translateX(15px)}75%{transform:translateX(4px)}}
 #probe-lens{transition:transform .16s ease-out,opacity .25s;opacity:0}
 .touch-handle{touch-action:none;cursor:grab;outline:none}
 .touch-handle:active{cursor:grabbing}
@@ -52,6 +54,7 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
 #reference-magnet{opacity:0;transition:opacity .3s}
 .app[data-phase="2"] #reference-magnet{opacity:1}
 #force-waves{opacity:0;transition:opacity .5s}
+#reaction-indicator{transition:opacity .25s;filter:drop-shadow(0 2px 7px #071a32)}
 .app[data-phase="3"] #force-waves,.app[data-phase="4"] #force-waves{opacity:.9}
 .app.flash #force-waves{animation:flare .65s ease-out}
 #active-n,#active-s{opacity:0;transition:opacity .2s}
@@ -167,6 +170,10 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-vis
  <rect width="95" height="38" rx="10" fill="#ad394b" stroke="#ffb7a5" stroke-width="3"/>
  <text x="47" y="27" font-size="22" fill="#fff2db" text-anchor="middle" font-weight="900" pointer-events="none">N</text>
  <path d="M95 17L128 17" stroke="#ffe9ba" stroke-width="3" stroke-dasharray="7 5" pointer-events="none"/>
+</g>
+<g id="reaction-indicator" transform="translate(380 379)" opacity="0" pointer-events="none" aria-hidden="true">
+ <rect x="-58" y="-25" width="116" height="39" rx="17" fill="#113958" stroke="#f8e3a9" stroke-width="2"/>
+ <text id="reaction-label" x="0" y="0" text-anchor="middle" font-size="22" font-weight="900" fill="#fff5da">反発！</text>
 </g>
 <g id="gate-rail" aria-hidden="true" pointer-events="none"><path d="M500 391H747" stroke="#a0d9e5" stroke-width="4" stroke-dasharray="8 10" opacity=".6"/><circle cx="535" cy="391" r="5" fill="#ffe3ae"/><circle cx="730" cy="391" r="5" fill="#a4ffdc"/></g>
 <g id="gate-magnet" class="touch-handle" transform="translate(527.5 0)" role="slider" tabindex="-1" aria-label="門に近づける磁石。左右にドラッグまたは方向キーで距離を調整。" aria-valuemin="1" aria-valuemax="5" aria-valuenow="4" aria-valuetext="4cm">
@@ -303,6 +310,10 @@ function render(){
  el('field-caption').textContent=state.phase===0?'中央の棒磁石には、まだ N・S の印がない':state.phase===2?'N極を左右へ近づけ、引力と反発を比べよう':state.phase>=3?'門の赤い印はN極。どちらを向ければよい？':'棒磁石の両端に、鉄片が多く集まった';
  setProbeVisual(PROBE_STOPS.find(p=>p.id===state.lastProbe)?.x ?? PROBE_STOPS[0].x);
  setReferenceVisual(state.lastReference==='left'?265:state.lastReference==='right'?625:215);
+ const reaction=state.phase===2&&state.lastReference?referenceExperiment(state.lastReference).reaction:null;
+ el('reaction-indicator').setAttribute('opacity',reaction?'1':'0');
+ el('reaction-indicator').setAttribute('transform','translate('+(state.lastReference==='right'?672:310)+' 373)');
+ el('reaction-label').textContent=reaction==='repel'?'反発！':'引き合う！';
  setGateVisual(xFromDistance(state.distance));
  el('probe-lens').setAttribute('tabindex',state.phase===0?'0':'-1');
  el('reference-magnet').setAttribute('tabindex',state.phase===2?'0':'-1');
@@ -358,7 +369,11 @@ controls.addEventListener('click',event=>{
   const result=tryGate(state.pole,state.distance);
   if(result==='open'){app.classList.add('flash');phaseTo(4,'S極と門のN極が引き合い、門が開いた！');setTimeout(()=>app.classList.remove('flash'),750);}
   else if(result==='far')setMessage('距離があるので、門が動かなかった。もう少し近づけてみよう。');
-  else if(result==='repel')setMessage('同じN極どうしは反発！ 門の磁石は近づいてこなかった。');
+  else if(result==='repel'){
+    app.classList.remove('repel-hit');void app.offsetWidth;app.classList.add('repel-hit');
+    setMessage('同じN極どうしは反発！ 門の磁石は近づいてこなかった。');
+    setTimeout(()=>app.classList.remove('repel-hit'),650);
+  }
   else setMessage('磁石を選んで実験しよう。');
  }else if(action==='reset'){
   state=initial();try{localStorage.removeItem(KEY);}catch(e){};render();el('task').focus({preventScroll:true});
