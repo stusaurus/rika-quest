@@ -29,6 +29,14 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
+   assert.equal(await page.locator("#mapLights .map-lamp").count(),14,"Map must contain fourteen distinct lamps");
+   assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),0,"Fresh progress should start unlit");
+   if(width<740){
+     await page.locator("#mapToggle").click();
+     assert.equal(await page.locator(".sidebar.open .map-light-grid").isVisible(),true,"Mobile map must display light status");
+     await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-map.png",fullPage:true});
+     await page.locator("#mapToggle").click();
+   }
    assert.equal(await page.locator("#characterArt .tiranon-sprite-strip").count(),1,"Canonical dinosaur guide must render");
    assert.equal(await page.locator("#characterArt .tiranon-emote-fx").count(),1,"Character should have independent nonwarping expressive effects");
    await page.locator(".tiranon-sprite-strip").evaluate(async img=>{await img.decode();if(img.naturalWidth<100)throw Error("Walk sprite missing");});
@@ -83,6 +91,7 @@ try{
    assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"celebrate","Safe success should cheer");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
+   assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"First clear should illuminate one journey map lantern");
    assert.equal(await page.locator(".story-scene.energizing").count(),1,"First successful experiment should trigger the town restoration pulse");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
@@ -106,6 +115,7 @@ try{
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Previously restored town must remain illuminated after return and reload");
    assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Saved town lights must not fake a closed experiment circuit");
    assert.match(await page.locator("#missionStory").textContent(),/前の冒険/,"Revisited stage must explain that town was already restored");
+   assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"Revisiting should retain the first map light");
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
@@ -142,6 +152,7 @@ try{
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
+   assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),14,"Final restoration must illuminate every map lamp");
 
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-after.png",fullPage:true});
