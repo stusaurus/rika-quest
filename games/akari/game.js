@@ -252,14 +252,26 @@ function handleWorkspace(e){
  else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");reactCharacter("inspect","つながったノン！");}}else setFeedback("その2つはもうつながっているよ。");}
  renderWorkspace();return;}
  if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
+ if(target.hasAttribute("data-predict")){
+  if(current().mode!=="material"||!ui.selected)return;
+  const guess=target.dataset.predict;if(guess!=="lit"&&guess!=="dark")return;
+  ui.prediction=guess;ui.predictions[ui.selected]=guess;
+  renderWorkspace();setFeedback("予想を決めたよ！通電して確かめよう。はずれても減点なし。");return;
+ }
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
+ if(current().mode==="material")ui.prediction=ui.predictions[id]||null;
  if(current().mode==="explore"){ui.chosen=id;if(!ui.inspected.includes(id))ui.inspected.push(id);const x=inspectedItems.find(x=>x.id===id);setFeedback("🔎 "+x.description);}
  else{setFeedback("「"+(materials.find(x=>x.id===id)?.name||batteryOptions().find(x=>x.id===id)?.name||({same:"2個を同じ向き",reverse:"2個を逆向き"}[id])||id)+"」をセットしたよ。通電チェックしてみよう。");}
  renderWorkspace();reactCharacter("inspect");return;}
  if(target.hasAttribute("data-inspect")){let id=target.dataset.inspect;if(!ui.inspected.includes(id))ui.inspected.push(id);let part=repairParts().find(x=>x.id===id);setFeedback(part.name+"："+part.detail,part.broken?"warning":"");reactCharacter("inspect");renderWorkspace();return;}
  if(target.hasAttribute("data-fix")){let id=target.dataset.fix;if(!ui.fixed.includes(id))ui.fixed.push(id);setFeedback("🔧 修理完了！ ほかにも故障がないか調べよう。","success");reactCharacter("discover");renderWorkspace();return;}
- if(target.hasAttribute("data-design")){ui.design=target.dataset.design;ui.trials={};renderWorkspace();setFeedback("回路を"+(ui.design==="series"?"直列":"並列")+"に組み替えたよ。4通りを試そう。");return;}
+ if(target.hasAttribute("data-design")){ui.design=target.dataset.design;ui.trials={};ui.conclusion=null;renderWorkspace();setFeedback("回路を"+(ui.design==="series"?"直列":"並列")+"に組み替えたよ。4通りを試そう。");return;}
  if(target.hasAttribute("data-switch")){const key=target.dataset.switch;ui[key]=!ui[key];renderWorkspace();setFeedback("スイッチを切り替えたよ。通電して記録しよう。");return;}
+ if(target.hasAttribute("data-conclude")){
+  if(current().mode!=="logic"||Object.keys(ui.trials).length!==4)return;
+  const value=target.dataset.conclude;if(value!=="both"&&value!=="either")return;
+  ui.conclusion=value;renderWorkspace();setFeedback("まとめを選んだよ。実験の記録と合っているか通電チェック！");return;
+ }
  if(target.hasAttribute("data-answer")){ui.answer=target.dataset.answer;renderWorkspace();setFeedback("答えを選んだよ。通電チェックで確かめよう。");return;}
  if(target.hasAttribute("data-cut")){let key=target.dataset.cut;if(ui.removed.includes(key))ui.removed=ui.removed.filter(x=>x!==key);else ui.removed.push(key);renderWorkspace();setFeedback(key==="normal"?"正常な導線まで外すと電気が流れないよ。":"選んだ導線を外したよ。2本の近道を確認しよう。",key==="normal"?"warning":"");return;}
  if(target.hasAttribute("data-final")){const key=target.dataset.final,raw=target.dataset.value;ui[key]=key==="contact"?raw==="true":raw;renderWorkspace();setFeedback("設定を変更したよ。3つの箇所を確認しよう。");}
