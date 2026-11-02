@@ -28,3 +28,39 @@
 @media(max-width:740px){.topbar{height:65px;gap:10px}.brand{min-width:0;font-size:14px}.brand small{font-size:8px}.brand-symbol{font-size:25px;margin-right:6px}.game-title{font-size:15px;gap:0}.star-count{padding:4px 8px;font-size:15px}.star-count small{display:none}.icon-btn{width:34px;height:34px;font-size:17px}.top-actions{gap:4px}.layout{display:block;padding:9px 9px 20px}.sidebar{position:relative;top:auto;max-height:none;overflow:visible;margin-bottom:10px;padding:10px}.side-heading{padding:0 4px;font-size:15px}.map-toggle{display:block}.map-illustration,.side-note{display:none}.mission-list{display:none;grid-template-columns:repeat(2,minmax(0,1fr));padding-top:10px}.sidebar.open .mission-list{display:grid}.mission-item{min-height:46px;gap:7px;padding:6px}.mission-index{width:28px;height:28px;flex-basis:28px;font-size:11px}.mission-label strong{font-size:11px}.mission-label small{font-size:9px}.story-scene{height:270px;border-radius:20px 20px 0 0}.landmark{right:-2%;width:205px;height:186px;bottom:25px}.scene-character{right:40%;bottom:26px;transform:scale(.7);transform-origin:bottom}.scene-caption{left:10px;bottom:14px;max-width:58%;padding:10px}.scene-caption h1{font-size:19px}.scene-caption p{font-size:11px}.sun-disc{right:6%}.quest-panel{padding:14px 12px 18px;border-radius:0 0 21px 21px}.quest-desc{font-size:12px}.quest-head h2{font-size:19px}.quest-stars{font-size:19px;letter-spacing:0}.workspace{min-height:300px}.circuit-board{min-height:300px}.circuit-board.zoomed{min-height:375px}.experiment-layout{grid-template-columns:1fr;gap:9px}.lab-panel{padding:14px}.test-light{font-size:56px}.choices{grid-template-columns:repeat(2,minmax(0,1fr))}.choice{min-height:64px;font-size:12px}.action-row .btn{flex:1 1 47%;font-size:12px;padding:9px 6px}.action-row #checkBtn,.action-row #nextBtn{flex-basis:100%}.feedback{font-size:12px}.footer{font-size:10px}}
 @media(max-width:375px){.topbar{gap:6px;padding:0 7px}.brand{font-size:12px}.brand-symbol{font-size:23px}.brand small{display:none}.game-title{font-size:13px}.icon-btn{width:29px;height:29px}.star-count{font-size:13px;padding:3px 5px}.scene-caption h1{font-size:17px}.scene-caption p{font-size:10px}.scene-caption{max-width:62%}.landmark{width:190px;right:-7%}.terminal{width:34px;height:34px}.quest-head h2{font-size:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Educational illustrations — prioritize scientifically readable terminals and components */
+.science-illustration{width:100%;height:auto;display:block;object-fit:contain;overflow:visible}
+.choice-picture{display:grid;place-items:center;width:100%;height:94px}
+.choice-picture svg{width:min(100%,152px);height:94px}
+.choices.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.choices .choice{padding:8px;min-height:133px}
+.science-spotlight{display:grid;place-items:center;width:100%;max-width:220px;margin:4px auto 10px;max-height:185px;overflow:hidden}
+.science-spotlight svg{width:100%;max-height:183px}
+.test-light{text-align:center;font-size:31px;line-height:1.2;margin:6px 0}
+.light-status{font-size:23px;text-align:center;padding:13px;color:#ffdea2;font-weight:900}
+.answer-area{display:grid;gap:8px;margin-top:18px}
+.answer-area strong{font-size:14px}
+.answer-option{width:100%;padding:11px 14px;background:#275369;border:2px solid #6492a6;border-radius:13px;color:#fff;text-align:left;font-size:12px;font-weight:800}
+.answer-option.chosen{background:#276f62;border-color:#80e7bc}
+.repair-card{display:grid;gap:10px;background:#264d65;border:1px solid #6c94a5;border-radius:13px;padding:11px}
+.repair-card strong{font-size:15px;display:block}.repair-card small{display:block;color:#c8e4e5;font-size:12px}
+.repair-buttons{display:flex;gap:8px}
+.repair-buttons button{border:1px solid #87b5be;border-radius:9px;background:#397789;color:#fff;padding:7px 12px;font-size:12px;font-weight:900}
+.repair-buttons button.repair-now{background:#f1ca81;color:#5c4229;border-color:#ffe1ac}
+.cut-wire{border:2px solid #779bb0;border-radius:12px;background:#2d536a;padding:11px;display:flex;justify-content:space-between;gap:8px;width:100%;margin:8px 0;color:#fff;text-align:left;font-size:12px}
+.cut-wire.removed{background:#3a756d;border-color:#93dfbc}
+.cut-wire strong{white-space:nowrap;color:#ffe3a5}
+.final-question{padding:10px 0;border-bottom:1px solid #628398}
+.final-question strong{font-size:13px}
+.terminal-label{position:absolute;font-size:10px;font-weight:900;pointer-events:none;color:#f9edd0;text-shadow:0 1px 3px #0e283f;z-index:3;white-space:nowrap}
+.label-p{left:20%;top:13%;transform:translateX(-50%)}
+.label-n{left:20%;top:76%;transform:translateX(-50%)}
+.label-l{left:66%;top:33%;transform:translateX(-50%)}
+.label-r{left:77.5%;top:77%;transform:translateX(-50%)}
+.terminal[data-t="L"]{left:65%;top:48.4%}
+.terminal[data-t="R"]{left:77.5%;top:69.6%}
+.terminal[data-t="P"]{left:20%;top:28%}
+.terminal[data-t="N"]{left:20%;top:69.6%}
+.experiment-layout{min-width:0}
+.lab-panel{min-width:0}
+@media(max-width:740px){.choice-picture{height:76px}.choice-picture svg{height:76px}.choices .choice{min-height:110px;font-size:11px}.terminal-label{font-size:9px}.science-spotlight{max-height:150px}.science-spotlight svg{max-height:150px}.experiment-layout{grid-template-columns:1fr}}
