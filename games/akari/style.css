@@ -103,3 +103,15 @@
 .circuit-board.zoomed .terminal-label{display:block;font-size:12px}
 .circuit-board.zoomed .circuit-help{position:sticky;left:10px;max-width:410px}
 @media(max-width:740px){.circuit-board.zoomed{min-height:555px}.circuit-board.zoomed .terminal{width:44px;height:44px;font-size:15px}.circuit-board.zoomed .circuit-inner{width:620px;margin-top:95px}.circuit-board.zoomed .circuit-help{font-size:12px}}
+
+
+/* Durable field journal */
+.journal{margin-top:15px;border:2px solid #b7d5ce;border-radius:16px;background:#fffef7;box-shadow:0 4px 18px #21424a10;overflow:hidden}
+.journal summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;color:#315969;font-size:15px;font-weight:900}
+.journal summary::-webkit-details-marker{display:none}
+.journal summary::after{content:"▾";color:#328d84}
+.journal[open] summary::after{content:"▴"}
+.journal-count{margin-left:auto;padding:2px 8px;border-radius:12px;color:#34776d;font-size:11px;background:#d9f1e6}
+.journal-rows{padding:2px 15px 0;max-height:300px;overflow-y:auto}
+.journal-entry{border-left:3px solid #e3c16d;padding:8px 12px;background:#f6f4e8;border-radius:0 10px 10px 0;margin:9px 0;font-size:13px;line-height:1.7}
+.journal-foot{margin:10px 16px 14px;color:#6d8890;font-size:11px}
