@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#091a37">
+<meta name="description" content="磁石の極を調べ、引き合う力と反発する力で古代の門を開く体験型理科ゲーム。">
+<title>マグネット・クエスト｜ねむれる磁力の門</title>
+<style>
+:root{color-scheme:dark;--white:#f9f5e9;--soft:#d4e3f7;--dim:#a4bcd3;--gold:#f1d59a;--aqua:#96e9ef;--panel:#081b35e8;--stroke:#a5cae75e;--round:18px}
+*{box-sizing:border-box}
+html{height:100%;background:#070e20}body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--white)}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffe49a;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.45}
+.app{min-height:100dvh;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse 80% 90% at 50% 12%,#275c86 0,#152c55 44%,#060e22 100%)}
+.app::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.65;background:radial-gradient(#fff8 1px,transparent 2px);background-size:120px 140px;mask-image:linear-gradient(black,transparent 70%)}
+.wrap{width:min(1100px,calc(100% - 28px));margin:auto}
+.hud{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:70px;position:relative;z-index:3}
+.back{font-size:13px;color:#deebfa;text-decoration:none;border:1px solid #aecbe26e;border-radius:999px;background:#09243bbb;padding:8px 13px;white-space:nowrap}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#98dbea;font-weight:900}
+.hud-title{font-weight:950;letter-spacing:.035em;font-size:clamp(16px,2.7vw,23px)}
+.chapter{font-size:12px;color:#d8ebff;text-align:right}
+.chapter strong{color:var(--gold)}
+.progress{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}.progress i{display:block;width:24px;height:4px;border-radius:99px;background:#9bbbd154}.progress i.done{background:#f1d18e;box-shadow:0 0 11px #fbd99765}
+.title-wrap{margin:3px auto 0;position:relative;z-index:2;text-align:center}
+.title-wrap h1{font-size:clamp(26px,5.5vw,50px);font-weight:950;line-height:1.1;letter-spacing:.02em;margin:5px 0;text-shadow:0 7px 20px #08152f}
+.title-wrap p{margin:7px 0 0;font-size:clamp(12px,2.2vw,15px);color:var(--soft)}
+.world{position:relative;max-width:1110px;margin:-8px auto 0;height:clamp(300px,49vw,570px);min-height:0}
+.scenery{width:100%;height:100%;display:block;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none}
+.mountains{filter:drop-shadow(0 10px 18px #03102199)}
+.sigil{transform-origin:center;animation:turn 45s linear infinite}
+.drift{animation:float 4.4s ease-in-out infinite;transform-origin:center}
+#gate-door{transform-origin:center;transition:transform 1.2s cubic-bezier(.18,.68,.18,1),opacity .8s}
+.app[data-phase="4"] #gate-door{transform:translateY(-136px);opacity:.35}
+.app.repel-hit[data-phase="3"] #gate-door{animation:gate-repel .55s ease-out}
+@keyframes gate-repel{0%,100%{transform:translateX(0)}35%{transform:translateX(15px)}75%{transform:translateX(4px)}}
+#probe-lens{transition:transform .16s ease-out,opacity .25s;opacity:0}
+.touch-handle{touch-action:none;cursor:grab;outline:none}
+.touch-handle:active{cursor:grabbing}
+.touch-handle:focus-visible{filter:drop-shadow(0 0 12px #ffe5a2)}
+.app.dragging .touch-handle{transition:none!important}
+#iron-filings{transition:opacity .2s}
+#iron-filings .filing{transition:opacity .16s}
+#gate-magnet{opacity:0;transition:transform .16s ease-out,opacity .3s;pointer-events:none}
+.app[data-phase="3"] #gate-magnet{opacity:1;pointer-events:all}
+.app[data-phase="2"] #reference-magnet,.app[data-phase="0"] #probe-lens{pointer-events:all}
+.app:not([data-phase="2"]) #reference-magnet,.app:not([data-phase="0"]) #probe-lens{pointer-events:none}
+.app[data-phase="0"] #iron-filings{opacity:1}
+.app:not([data-phase="0"]) #iron-filings{opacity:0}
+#gate-rail{opacity:0;transition:opacity .2s}
+.app[data-phase="3"] #gate-rail{opacity:1}
+.app[data-phase="3"] #force-waves[data-reaction="repel"]{stroke:#ffc8ab}
+.app[data-phase="3"] #force-waves[data-reaction="attract"]{stroke:#a4f0d8}
+.app[data-phase="0"] #probe-lens{opacity:1}
+#reference-magnet{opacity:0;transition:opacity .3s}
+.app[data-phase="2"] #reference-magnet{opacity:1}
+#force-waves{opacity:0;transition:opacity .5s}
+#reaction-indicator{transition:opacity .25s;filter:drop-shadow(0 2px 7px #071a32)}
+.app[data-phase="3"] #force-waves,.app[data-phase="4"] #force-waves{opacity:.9}
+.app.flash #force-waves{animation:flare .65s ease-out}
+#active-n,#active-s{opacity:0;transition:opacity .2s}
+.app[data-phase="3"] #active-n,.app[data-phase="3"] #active-s{opacity:1}
+.app[data-phase="4"] #active-s{opacity:1}
+ .field-caption{position:relative;display:table;margin:-33px auto 0;max-width:93%;width:max-content;text-align:center;white-space:normal;pointer-events:none;color:#e4f5ff;font-size:clamp(10px,1.7vw,13px);letter-spacing:.02em;text-shadow:0 2px 8px #071528;background:#091a31e8;border:1px solid #9acada7e;padding:5px 10px;border-radius:12px;z-index:2}
+.panel{position:relative;z-index:4;width:min(940px,calc(100% - 28px));margin:0 auto 26px;border:1px solid #9fc9db83;background:linear-gradient(145deg,#122a4bf5,#091a33f7);border-radius:23px;padding:clamp(15px,3vw,26px);box-shadow:0 26px 75px #0009,0 1px 0 #e2f1fa36 inset;backdrop-filter:blur(12px)}
+.panel-top{display:flex;justify-content:space-between;align-items:start;gap:20px}
+.panel-kicker{font-size:11px;letter-spacing:.16em;font-weight:900;color:#96dfeb}
+.panel h2{margin:3px 0 8px;line-height:1.35;font-size:clamp(18px,3.2vw,25px)}
+.panel .prompt{font-size:clamp(13px,2.3vw,15px);color:#d1e1f2;line-height:1.6;margin:0}
+.mini-tag{flex:none;border:1px solid #f1d59a7a;border-radius:999px;padding:7px 10px;font-size:11px;color:#f8dfac;white-space:nowrap}
+.controls{margin-top:15px}
+.action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px}
+.choice{min-height:54px;border-radius:13px;border:1px solid #a4c8df72;background:linear-gradient(#244665,#122d4c);color:#f5f7fa;box-shadow:inset 0 1px #ebfbff2b;font-weight:800;font-size:14px;padding:11px;transition:transform .12s,background .16s}
+.choice:hover{background:#245573}.choice:active{transform:scale(.98)}.choice.selected{background:linear-gradient(#376e80,#214b62);border-color:#bff2f0}.choice.correct{border-color:var(--gold)}
+.choice small{display:block;font-weight:500;color:#d1e4ef;margin-top:2px}
+.observations{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0}.obs{font-size:12px;color:#d5e6f2;border:1px solid #97c1db59;border-radius:99px;padding:5px 9px;background:#08253c9c}
+.observations strong{color:#f6d697}
+.tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.primary{border:1px solid #ffebbe;border-radius:12px;color:#0c2343;background:linear-gradient(110deg,#ffefd0,#e1b96d);font-weight:950;padding:13px 20px;box-shadow:0 8px 19px #0003}
+.secondary{border:1px solid #a6c3d779;background:#112d4b;color:#daeafa;border-radius:12px;padding:11px 16px;font-size:13px}
+.status{min-height:45px;display:flex;align-items:center;gap:9px;font-size:13px;color:#e3f1fa;border-top:1px solid #a5c6d638;padding-top:10px;line-height:1.5;margin-top:14px}
+.status:before{content:"✦";color:#ffe2a6;font-size:16px}
+.slider-wrap{background:#092239;border:1px solid #9ac6d05c;border-radius:14px;padding:15px;display:flex;align-items:center;gap:16px;margin:13px 0}
+.slider-wrap label{font-size:13px;font-weight:800;min-width:98px}.slider-wrap input{width:100%;accent-color:#f5d28c;min-height:32px}
+.slider-wrap output{min-width:46px;text-align:center;color:#f6d79b;font-weight:900}
+.footnote{color:#9db9cb;text-align:center;line-height:1.6;font-size:11px;padding:0 20px 20px}
+.clear-flag{display:inline-flex;align-items:center;border:1px solid #c6e8bd80;background:#234b4c;border-radius:999px;padding:6px 12px;color:#e5ffcc;font-weight:900;margin-bottom:8px}
+.discovery{background:linear-gradient(135deg,#24485e,#122d4b);border:1px solid #f1d59885;padding:16px;border-radius:15px;color:#f9eac3;line-height:1.8;margin-top:10px}
+.discovery b{color:#fff4d6}
+@keyframes turn{to{transform:rotate(360deg)}}@keyframes float{50%{transform:translateY(-9px)}}@keyframes flare{50%{opacity:1;filter:drop-shadow(0 0 18px #ffe9a8)}}
+@media(max-width:650px){
+ .hud{min-height:56px}.chapter{font-size:11px}.progress i{width:15px}.back{padding:6px 9px}
+ .world{height:clamp(230px,44vh,350px);margin:-5px auto 0}
+ .title-wrap{margin-top:5px}.title-wrap h1{font-size:clamp(22px,7vw,31px)}
+ .title-wrap p{font-size:12px;padding:0 8px}
+ .panel{padding:15px 13px 13px;margin-bottom:16px;border-radius:18px}
+ .mini-tag{display:none}.action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.choice{min-height:48px;font-size:13px}
+ .field-caption{font-size:10px}.status{font-size:12px}
+}
+@media(max-width:370px){.hud{gap:5px}.hud-title{font-size:13px;line-height:1.15}.back{font-size:10px;padding:6px 7px}.chapter{font-size:10px}.progress{gap:4px}.progress i{width:12px}.world{height:240px;margin-bottom:0}.field-caption{font-size:10px}.panel h2{font-size:17px}.choice{font-size:12px}.wrap{width:calc(100% - 18px)}.panel{width:calc(100% - 18px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app" data-phase="0">
+<header class="hud wrap">
+ <a class="back" href="../../">← RIKA QUEST</a>
+ <div class="hud-title">MAGNET <span style="color:#f0d99e">QUEST</span></div>
+ <div class="chapter"><strong>STAGE 01 / 07</strong><div class="progress" id="progress" aria-label="ステージ内の進行度"></div></div>
+</header>
+<div class="title-wrap wrap"><div class="eyebrow">THE SLEEPING MAGNETIC GATE</div><h1>ねむれる磁力の門</h1><p>磁力を失った古代都市。実験でひみつを見つけ、門を目覚めさせよう。</p></div>
+<main>
+<section class="world" aria-label="古代磁力都市の実験場">
+<svg class="scenery" viewBox="0 0 980 620" role="img" aria-labelledby="scenerytitle scenerydesc" preserveAspectRatio="xMidYMid meet">
+<title id="scenerytitle">青い夜空に浮かぶ磁力都市と大きな棒磁石</title><desc id="scenerydesc">中央の台座に極の不明な棒磁石、右に閉じた門があります。磁石の各部分は下の操作ボタンで調べられます。</desc>
+<defs>
+ <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#22537a"/><stop offset=".67" stop-color="#193e63"/><stop offset="1" stop-color="#0a1733"/></linearGradient>
+ <linearGradient id="tower" x1="0" y1="0" x2="1" y2=".5"><stop stop-color="#6284a2"/><stop offset=".4" stop-color="#274662"/><stop offset="1" stop-color="#10243d"/></linearGradient>
+ <linearGradient id="stone" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#6c889a"/><stop offset=".4" stop-color="#34526c"/><stop offset="1" stop-color="#10243c"/></linearGradient>
+ <linearGradient id="bar" x1="0" x2="1" y1="0" y2="0"><stop stop-color="#648a9a"/><stop offset=".17" stop-color="#385979"/><stop offset=".5" stop-color="#b8cbd3"/><stop offset=".83" stop-color="#395977"/><stop offset="1" stop-color="#648a9a"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#fff0bf"/><stop offset=".5" stop-color="#bf914d"/><stop offset="1" stop-color="#fbe0a6"/></linearGradient>
+ <radialGradient id="moon"><stop stop-color="#f4e9b1" stop-opacity=".8"/><stop offset=".4" stop-color="#b9e3f9" stop-opacity=".25"/><stop offset="1" stop-color="#a4d0e3" stop-opacity="0"/></radialGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="980" height="620" fill="url(#sky)"/>
+<circle cx="480" cy="145" r="230" fill="url(#moon)"/>
+<g stroke="#cee9f3" opacity=".56"><path d="M96 62h7M100 58v8M802 79h7M806 75v8M715 144h5M717 141v6M281 137h6M284 134v7M636 56h4"/></g>
+<path class="mountains" d="M0 354L89 254 161 316 264 203 380 326 483 246 568 336 671 209 774 324 883 257 980 344V620H0Z" fill="#173a60"/>
+<path d="M0 420L140 340 244 391 349 323 466 416 564 361 672 419 789 315 980 429V620H0Z" fill="#0d2647"/>
+<g opacity=".45" fill="#4e7593">
+ <path d="M40 372v-106h24v106zM64 294h32v78H64zM151 363V253h28v110zM196 340v-69h25v69zM716 385V261h29v124zM881 399V256h31v143z"/>
+</g>
+<g opacity=".8" stroke="#8adbe8" fill="none"><path d="M20 452Q220 390 450 452T970 453" opacity=".3"/><path d="M80 470Q420 418 910 483" opacity=".2"/></g>
+<!-- Gate, deliberately visibly distant from the experimental apparatus. -->
+<g transform="translate(735 188)">
+ <path d="M-8 269V85Q-8 -3 100 -3Q208 -3 208 85V269" fill="none" stroke="#102844" stroke-width="58"/>
+ <path d="M-8 269V85Q-8 -3 100 -3Q208 -3 208 85V269" fill="none" stroke="url(#stone)" stroke-width="40"/>
+ <path d="M5 269V85Q5 10 100 10Q195 10 195 85V269" fill="none" stroke="#b0dfe1" stroke-opacity=".25" stroke-width="3"/>
+ <path id="gate-door" d="M26 264V91Q26 19 100 19Q174 19 174 91V264Z" fill="#132940" stroke="#d0b47d" stroke-width="5"/>
+ <path d="M100 60V264M26 150H174M26 213H174" stroke="#b8b28d" stroke-width="3" opacity=".25"/>
+ <g class="sigil" style="transform-box:fill-box"><circle cx="100" cy="148" r="52" fill="#102d46" stroke="url(#gold)" stroke-width="6"/><circle cx="100" cy="148" r="39" fill="none" stroke="#f2dba2" stroke-dasharray="5 12" stroke-width="2"/></g>
+ <circle cx="100" cy="148" r="23" fill="#942e42" stroke="#f4caaa" stroke-width="2"/>
+ <text x="100" y="157" fill="#fff1dc" font-weight="900" font-size="29" text-anchor="middle">N</text>
+ <path d="M-23 280H231" stroke="#a3b8bd" stroke-width="14"/><path d="M-45 294H253" stroke="#173c54" stroke-width="22"/>
+</g>
+<!-- Central experimental plinth, with a neutral-coloured unknown magnet. -->
+<g>
+ <ellipse cx="490" cy="532" rx="310" ry="45" fill="#040b1c" opacity=".6" filter="url(#blur)"/>
+ <path d="M247 503L352 448H655L746 503 654 546H348Z" fill="#193a58" stroke="#6d94ac" stroke-width="5"/>
+ <path d="M280 497L363 458H640L711 497 633 524H366Z" fill="#274a65" stroke="url(#gold)" stroke-width="3"/>
+ <path d="M308 499L376 468H623L683 499 622 518H379Z" fill="#0c2542" stroke="#8ad6dd" stroke-width="2" opacity=".9"/>
+ <ellipse cx="490" cy="498" rx="170" ry="19" fill="#8ad4e5" opacity=".13"/>
+ <path d="M344 433L366 414H620L640 433V466L620 484H366L344 466Z" fill="#08233b" stroke="#d8d4a5" stroke-width="4"/>
+ <rect x="360" y="410" width="265" height="51" rx="12" fill="url(#bar)" stroke="#fbe3b1" stroke-width="4"/>
+ <rect x="364" y="414" width="55" height="43" rx="8" fill="#4c7691" opacity=".7"/>
+ <rect x="567" y="414" width="54" height="43" rx="8" fill="#416d86" opacity=".7"/>
+ <text x="391" y="447" font-size="27" font-weight="900" text-anchor="middle" fill="#f8f4df" id="pole-left">?</text>
+ <text x="593" y="447" font-size="27" font-weight="900" text-anchor="middle" fill="#f8f4df" id="pole-right">?</text>
+ <rect x="471" y="420" width="46" height="30" rx="8" fill="#102f4c" stroke="#adcfce" stroke-width="2"/>
+ <path d="M473 435h40M494 422v26" stroke="#9fd6db" stroke-width="2" opacity=".45"/>
+ <g id="iron-filings" pointer-events="none" aria-hidden="true">
+ <g id="filing-dots" stroke="#f7dba8" stroke-linecap="round" stroke-width="2.2"></g>
+</g>
+<g id="probe-lens" class="touch-handle" transform="translate(390 0)" role="slider" tabindex="0" aria-label="鉄片の検査位置。左右キーで移動しEnterで記録。指でも動かせます。" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" aria-valuetext="ひだりのはし">
+ <rect x="-30" y="325" width="60" height="94" rx="27" fill="#c6e9fc" fill-opacity=".01"/>
+ <path d="M0 393V379" stroke="#ffe8ae" stroke-width="5" stroke-linecap="round"/><circle cy="366" r="18" fill="#10354f" stroke="#ffe5a0" stroke-width="5" filter="url(#glow)"/><path d="M-16 395Q0 385 16 395" fill="none" stroke="#fbe3b3" stroke-width="3"/>
+ <path d="M-9 365H9M0 356V374" stroke="#e6fdff" stroke-width="2" stroke-linecap="round"/>
+</g>
+ <g id="reference-magnet" class="touch-handle" transform="translate(215 420)" role="button" tabindex="-1" aria-label="基準のN極磁石。左右どちらかの端にドラッグして実験。左右キーとEnterにも対応。">
+ <rect width="95" height="38" rx="10" fill="#ad394b" stroke="#ffb7a5" stroke-width="3"/>
+ <text x="47" y="27" font-size="22" fill="#fff2db" text-anchor="middle" font-weight="900" pointer-events="none">N</text>
+ <path d="M95 17L128 17" stroke="#ffe9ba" stroke-width="3" stroke-dasharray="7 5" pointer-events="none"/>
+</g>
+<g id="reaction-indicator" transform="translate(380 379)" opacity="0" pointer-events="none" aria-hidden="true">
+ <rect x="-58" y="-25" width="116" height="39" rx="17" fill="#113958" stroke="#f8e3a9" stroke-width="2"/>
+ <text id="reaction-label" x="0" y="0" text-anchor="middle" font-size="22" font-weight="900" fill="#fff5da">反発！</text>
+</g>
+<g id="gate-rail" aria-hidden="true" pointer-events="none"><path d="M500 391H747" stroke="#a0d9e5" stroke-width="4" stroke-dasharray="8 10" opacity=".6"/><circle cx="535" cy="391" r="5" fill="#ffe3ae"/><circle cx="730" cy="391" r="5" fill="#a4ffdc"/></g>
+<g id="gate-magnet" class="touch-handle" transform="translate(527.5 0)" role="slider" tabindex="-1" aria-label="門に近づける磁石。左右にドラッグまたは方向キーで距離を調整。" aria-valuemin="1" aria-valuemax="5" aria-valuenow="4" aria-valuetext="4cm">
+ <rect x="0" y="320" width="100" height="45" rx="12" fill="#536c81" stroke="#ffe9bb" stroke-width="4" id="gate-magnet-shell"/>
+ <text id="gate-magnet-pole" x="50" y="351" font-size="28" text-anchor="middle" font-weight="950" fill="#fff9e1" pointer-events="none">?</text>
+ <path d="M17 371L82 371" stroke="#ffefc4" stroke-width="3" opacity=".65" pointer-events="none"/>
+</g>
+ <g id="force-waves" fill="none" stroke="#a7e9f0" stroke-width="2" opacity=".8"><path d="M639 397Q705 364 753 396"/><path d="M641 387Q701 324 758 379"/><path d="M640 408Q706 445 755 414"/></g>
+ <g class="drift"><circle cx="483" cy="274" r="27" fill="#baf0e8" opacity=".17" filter="url(#glow)"/><circle cx="483" cy="274" r="16" fill="#8cd8d5"/><circle cx="477" cy="270" r="3" fill="#0b3550"/><circle cx="489" cy="270" r="3" fill="#0b3550"/><path d="M476 279Q483 286 490 279" stroke="#1b5361" stroke-width="2" fill="none"/><path d="M483 247v-15" stroke="#9ce9e0" stroke-width="3"/><circle cx="483" cy="230" r="4" fill="#ffe4a5"/></g>
+</g>
+<path d="M0 566Q220 515 472 557T980 551V620H0Z" fill="#07172c" opacity=".82"/>
+<path d="M0 590Q200 558 476 579T980 569" fill="none" stroke="#3f7685" stroke-width="3" opacity=".7"/>
+</svg>
+<div class="field-caption" id="field-caption">中央の棒磁石には、まだ N・S の印がない</div>
+</section>
+<section class="panel" id="panel" aria-label="実験操作">
+ <div class="panel-top">
+  <div><div class="panel-kicker" id="kicker">MISSION 01 · かんさつ</div><h2 id="task" tabindex="-1">磁石のどこに鉄片が集まる？</h2><p class="prompt" id="prompt">棒磁石のいろいろな場所へ鉄片を近づけ、反応のちがいを調べよう。</p></div>
+  <div class="mini-tag" id="tag">実験で発見</div>
+ </div>
+ <div class="controls" id="controls"></div>
+ <div class="status" id="status" role="status" aria-live="polite">まずは棒磁石の3か所を調べよう。</div>
+</section>
+</main>
+<div class="footnote">磁力の強さを示す記号・距離の成功条件はゲーム上の演出です。実際の実験値ではありません。<br>このゲームはオリジナルの教材ゲーム試作です。</div>
+</div>
+<script type="module">
+import {POSITIONS, inspectBar, referenceExperiment, tryGate, STAGE} from './engine.mjs';
+import {PROBE_STOPS, clamp, probeFromX, distanceFromX, xFromDistance, svgXFromClient} from './interaction.mjs';
+const KEY = 'rika-quest-magnet-stage1-v1';
+const el = id => document.getElementById(id);
+const app = el('app'), controls = el('controls'), status = el('status'), svg=app.querySelector('svg.scenery');
+const initial = () => ({phase:0,probes:[],ref:[],pole:null,distance:4,attempts:0,message:'まずは棒磁石の3か所を調べよう。'});
+let state = initial();
+try {
+ const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+ if(saved && Number.isInteger(saved.phase) && saved.phase>=0 && saved.phase<=4) {
+   state={...initial(),...saved};
+   state.probes=Array.isArray(saved.probes)?saved.probes.filter(id=>POSITIONS.some(p=>p.id===id)):[];
+   state.ref=Array.isArray(saved.ref)?saved.ref.filter(side=>side==='left'||side==='right'):[];
+   state.distance=[1,2,3,4,5].includes(Number(saved.distance))?Number(saved.distance):4;
+   state.pole=saved.pole==='N'||saved.pole==='S'?saved.pole:null;
+   state.message='前の実験から再開しました。';
+ }
+} catch (e) { console.info('Saved game unavailable',e); }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){console.info('Save unavailable',e);}}
+const seen = id => state.probes.includes(id);
+const probesComplete = () => STAGE.requiredProbes.every(seen);
+const referenceComplete = () => state.ref.includes('left')&&state.ref.includes('right');
+function choice(label,action,value,selected=false,small=''){
+ const attr = selected ? ' selected' : '';
+ return '<button class="choice'+attr+'" type="button" data-action="'+action+'" data-value="'+value+'" aria-pressed="'+selected+'">'+label+(small?'<small>'+small+'</small>':'')+'</button>';
+}
+function observations(){
+ return '<div class="observations" aria-label="調べた結果">'+POSITIONS.filter(p=>seen(p.id)).map(p=>'<span class="obs">'+p.label+'：<strong>'+inspectBar(p.id).intensity+'</strong></span>').join('')+'</div>';
+}
+function setMessage(message){state.message=message;save();status.textContent=message;}
+function phaseTo(n,message){
+ state.phase=n;state.message=message;save();render();el('task').focus({preventScroll:true});
+}
+// Small fragments of iron respond as a *qualitative illustration*, not a force calculation.
+const filings=Array.from({length:24},(_,index)=>{
+ const node=document.createElementNS('http://www.w3.org/2000/svg','path');
+ node.setAttribute('class','filing');
+ el('filing-dots').append(node);
+ return node;
+});
+let probeX=390, referenceX=215, gateX=527.5;
+function setProbeVisual(x){
+ probeX=clamp(x,390,591);
+ el('probe-lens').setAttribute('transform','translate('+probeX.toFixed(1)+' 0)');
+ const id=probeFromX(probeX),stop=PROBE_STOPS.find(p=>p.id===id);
+ el('probe-lens').setAttribute('aria-valuenow',String(PROBE_STOPS.indexOf(stop)+1));
+ el('probe-lens').setAttribute('aria-valuetext',POSITIONS.find(p=>p.id===id).label);
+ const level=inspectBar(id).response;
+ filings.forEach((node,i)=>{
+   const visible=i<(level===5?24:level===3?15:7);
+   const radial=8+(i%7)*3.1, angle=i*2.399963+Math.floor(i/8)*.27;
+   const xx=probeX+Math.cos(angle)*radial;
+   const yy=407+Math.sin(angle)*Math.min(radial*.43,10);
+   const tilt=Math.sin(angle)*5;
+   node.setAttribute('d','M'+(xx-2.1).toFixed(1)+' '+(yy-tilt).toFixed(1)+'l4.2 '+(2*tilt).toFixed(1));
+   node.setAttribute('opacity',visible?(.5+(i%4)*.12).toFixed(2):'0');
+ });
+}
+function setReferenceVisual(x){
+ referenceX=clamp(x,195,660);
+ el('reference-magnet').setAttribute('transform','translate('+referenceX.toFixed(1)+' 420)');
+}
+function setGateVisual(x){
+ gateX=clamp(x,470,700);
+ const distance=distanceFromX(gateX);
+ el('gate-magnet').setAttribute('transform','translate('+gateX.toFixed(1)+' 0)');
+ el('gate-magnet').setAttribute('aria-valuenow',String(distance));
+ el('gate-magnet').setAttribute('aria-valuetext',distance+'cm');
+ el('gate-magnet-pole').textContent=state.pole||'?';
+ el('gate-magnet-shell').setAttribute('fill',state.pole==='N'?'#a73b54':state.pole==='S'?'#287caa':'#516f83');
+ el('force-waves').dataset.reaction=state.pole==='N'?'repel':state.pole==='S'?'attract':'neutral';
+ const range=el('distance');
+ if(range)range.value=String(distance);
+ const output=el('distance-value');
+ if(output)output.textContent=distance+' cm';
+}
+function recordProbe(id){
+ if(state.phase!==0)return;
+ if(!state.probes.includes(id))state.probes.push(id);
+ state.lastProbe=id;
+ const found=inspectBar(id);
+ setMessage(found.label+'では鉄片が「'+found.intensity+'」反応した。ほかの場所も比べよう。');
+ render();
+}
+function recordReference(side){
+ if(state.phase!==2)return;
+ if(!state.ref.includes(side))state.ref.push(side);
+ state.lastReference=side;
+ const response=referenceExperiment(side).reaction;
+ setMessage((side==='left'?'左端':'右端')+'にN極を近づけると、'+(response==='repel'?'反発した！':'引き合った！'));
+ render();
+}
+function render(){
+ app.dataset.phase=String(state.phase);
+ el('progress').innerHTML=Array.from({length:5},(_,i)=>'<i class="'+(i<=state.phase?'done':'')+'"></i>').join('');
+ const texts=[
+  ['MISSION 01 · かんさつ','磁石のどこに鉄片が集まる？','光る検査器を左右へドラッグして、鉄片の反応の違いを調べよう。下のボタンでも操作できます。'],
+  ['MISSION 02 · 発見','観察から「極」を見つけよう','調べた結果をもとに、鉄片が最もよく集まる場所を選ぼう。'],
+  ['MISSION 03 · じっけん','「N極」を手がかりに見分けよう','赤いN極磁石をドラッグして左右の端へ。引き合うか反発するか調べよう。下のボタンでも操作できます。'],
+  ['MISSION 04 · 応用','磁力の門をひらこう','極を選び、門の前の磁石をドラッグして近づけよう。距離スライダーでも調整できます。'],
+  ['STAGE 01 · CLEAR','磁力の門が目覚めた！','観察と実験で発見したことが、扉を動かす力になった。']
+ ][state.phase];
+ el('kicker').textContent=texts[0];el('task').textContent=texts[1];el('prompt').textContent=texts[2];
+ el('tag').textContent=state.phase===4?'実験成功':'実験で発見';
+ el('pole-left').textContent=state.phase>=3?'N':'?';
+ el('pole-right').textContent=state.phase>=3?'S':'?';
+ el('field-caption').textContent=state.phase===0?'中央の棒磁石には、まだ N・S の印がない':state.phase===2?'N極を左右へ近づけ、引力と反発を比べよう':state.phase>=3?'門の赤い印はN極。どちらを向ければよい？':'棒磁石の両端に、鉄片が多く集まった';
+ setProbeVisual(PROBE_STOPS.find(p=>p.id===state.lastProbe)?.x ?? PROBE_STOPS[0].x);
+ setReferenceVisual(state.lastReference==='left'?265:state.lastReference==='right'?625:215);
+ const reaction=state.phase===2&&state.lastReference?referenceExperiment(state.lastReference).reaction:null;
+ el('reaction-indicator').setAttribute('opacity',reaction?'1':'0');
+ el('reaction-indicator').setAttribute('transform','translate('+(state.lastReference==='right'?672:310)+' 373)');
+ el('reaction-label').textContent=reaction==='repel'?'反発！':'引き合う！';
+ setGateVisual(xFromDistance(state.distance));
+ el('probe-lens').setAttribute('tabindex',state.phase===0?'0':'-1');
+ el('reference-magnet').setAttribute('tabindex',state.phase===2?'0':'-1');
+ el('gate-magnet').setAttribute('tabindex',state.phase===3?'0':'-1');
+ let body='';
+ if(state.phase===0){
+   body='<div class="action-grid">'+POSITIONS.map(p=>choice(p.label, 'probe',p.id,seen(p.id),seen(p.id)?'記録ずみ':'調べる')).join('')+'</div>'+
+        observations()+'<div class="tools"><span style="font-size:12px;color:#b6cee0">左右の端と中央は必ず調べよう</span><button class="primary" type="button" data-action="next" '+(probesComplete()?'':'disabled')+'>結果をまとめる →</button></div>';
+ }else if(state.phase===1){
+   body=observations()+'<p style="margin:16px 0 10px;color:#ffe0ad;font-weight:900">鉄片がもっともよく集まるのはどこ？</p>'+
+        '<div class="action-grid">'+choice('ひだりのはし','answer','left')+choice('まんなか','answer','center')+choice('りょうはし','answer','both')+'</div>';
+ }else if(state.phase===2){
+   body='<div class="action-grid">'+
+     choice('左のはしで実験','reference','left',state.ref.includes('left'),state.ref.includes('left')?'結果を記録':'N極を近づける')+
+     choice('右のはしで実験','reference','right',state.ref.includes('right'),state.ref.includes('right')?'結果を記録':'N極を近づける')+'</div>'+
+     '<div class="observations">'+state.ref.map(side=>'<span class="obs">'+(side==='left'?'左端':'右端')+'：<strong>'+(referenceExperiment(side).reaction==='repel'?'反発した':'引き合った')+'</strong></span>').join('')+'</div>'+
+     (referenceComplete()?'<p style="margin:16px 0 8px;color:#ffe0ad;font-weight:900">では、左のはしは何極？</p><div class="action-grid">'+choice('N極','identify','N')+choice('S極','identify','S')+'</div>':'<p style="font-size:12px;color:#d1e1f2">まずは左右の両方で試してみよう。</p>');
+ }else if(state.phase===3){
+   body='<div class="action-grid">'+
+     choice('赤い N極を近づける','pick','N',state.pole==='N')+
+     choice('青い S極を近づける','pick','S',state.pole==='S')+'</div>'+
+     '<div class="slider-wrap"><label for="distance">門との距離</label><input type="range" min="1" max="5" step="1" id="distance" value="'+state.distance+'"><output id="distance-value" for="distance">'+state.distance+' cm</output></div>'+
+     '<div class="tools"><span style="font-size:12px;color:#bed9e9">門の極：<strong style="color:#f7cdb2">N極</strong></span><button class="primary" type="button" data-action="gate" '+(state.pole?'':'disabled')+'>磁力を試す →</button></div>';
+ }else{
+   body='<span class="clear-flag">✦ STAGE CLEAR</span><div class="discovery">'+
+    '<b>発見①</b> 棒磁石は両端の極で、鉄がよく引き寄せられる。<br>'+
+    '<b>発見②</b> 同じ極どうしは反発し、ちがう極どうしは引き合う。<br>'+
+    '<b>発見③</b> 磁石の極は、引力・反発を調べて見分けられる。'+
+    '</div><div class="tools"><button class="secondary" type="button" data-action="reset">はじめから実験する</button><a class="primary" href="../../" style="text-decoration:none">Rika Questにもどる</a></div>';
+ }
+ controls.innerHTML=body;
+ status.textContent=state.message;
+}
+controls.addEventListener('click',event=>{
+ const button=event.target.closest('button[data-action]');if(!button||button.disabled)return;
+ const action=button.dataset.action,val=button.dataset.value;
+ if(action==='probe'&&state.phase===0){
+  recordProbe(val);
+ }else if(action==='next'&&state.phase===0&&probesComplete()){
+  phaseTo(1,'結果がそろった。両端と中央を比べてみよう。');
+ }else if(action==='answer'&&state.phase===1){
+  if(val==='both')phaseTo(2,'正解！ 両端を「極（磁極）」という。鉄片の集まり方だけではN・Sは区別できない。');
+  else setMessage('結果をもう一度見てみよう。棒磁石の左右の端には同じように鉄片が集まったね。');
+ }else if(action==='reference'&&state.phase===2){
+  recordReference(val);
+ }else if(action==='identify'&&state.phase===2&&referenceComplete()){
+  if(val==='N')phaseTo(3,'正解！ 同じ極が反発するので、左はN極・右はS極だ。');
+  else setMessage('N極を近づけたとき、反発したのはどちらだったかな？');
+ }else if(action==='pick'&&state.phase===3){
+  state.pole=val;setMessage((val==='N'?'N極':'S極')+'を選択。距離を変えて門で実験しよう。');render();
+ }else if(action==='gate'&&state.phase===3){
+  state.attempts++;
+  const result=tryGate(state.pole,state.distance);
+  if(result==='open'){app.classList.add('flash');phaseTo(4,'S極と門のN極が引き合い、門が開いた！');setTimeout(()=>app.classList.remove('flash'),750);}
+  else if(result==='far')setMessage('距離があるので、門が動かなかった。もう少し近づけてみよう。');
+  else if(result==='repel'){
+    app.classList.remove('repel-hit');void app.offsetWidth;app.classList.add('repel-hit');
+    setMessage('同じN極どうしは反発！ 門の磁石は近づいてこなかった。');
+    setTimeout(()=>app.classList.remove('repel-hit'),650);
+  }
+  else setMessage('磁石を選んで実験しよう。');
+ }else if(action==='reset'){
+  state=initial();try{localStorage.removeItem(KEY);}catch(e){};render();el('task').focus({preventScroll:true});
+ }
+});
+controls.addEventListener('input',event=>{
+ if(event.target.id==='distance'&&state.phase===3){
+  state.distance=Number(event.target.value);el('distance-value').textContent=state.distance+' cm';setGateVisual(xFromDistance(state.distance));save();
+ }
+});
+const targets=[
+ {id:'probe-lens',phase:0,kind:'probe'},
+ {id:'reference-magnet',phase:2,kind:'reference'},
+ {id:'gate-magnet',phase:3,kind:'gate'}
+];
+let gesture=null;
+function moveGesture(x){
+ if(!gesture)return;
+ if(gesture.kind==='probe')setProbeVisual(x);
+ else if(gesture.kind==='reference')setReferenceVisual(x-47);
+ else if(gesture.kind==='gate')setGateVisual(x-50);
+}
+function commitGesture(kind){
+ if(kind==='probe'){
+  recordProbe(probeFromX(probeX));
+ }else if(kind==='reference'){
+  if(referenceX<=325)recordReference('left');
+  else if(referenceX>=565)recordReference('right');
+  else {setMessage('磁石の左端か右端へ近づけて、反応を比べよう。');render();}
+ }else if(kind==='gate'){
+  state.distance=distanceFromX(gateX);
+  setMessage('門との距離は'+state.distance+' cm。磁石の極を選んで「磁力を試す」を押そう。');
+  render();
+ }
+}
+targets.forEach(({id,phase,kind})=>{
+ const target=el(id);
+ target.addEventListener('pointerdown',event=>{
+  if(state.phase!==phase||gesture||event.button!==0)return;
+  event.preventDefault();
+  gesture={id,kind,pointerId:event.pointerId};
+  try{target.setPointerCapture(event.pointerId);}catch(e){gesture=null;return;}
+  app.classList.add('dragging');
+ });
+ target.addEventListener('pointermove',event=>{
+  if(!gesture||gesture.id!==id||gesture.pointerId!==event.pointerId)return;
+  try{moveGesture(svgXFromClient(svg,event.clientX,event.clientY));}catch(e){console.warn('Pointer coordinate unavailable',e);}
+ });
+ target.addEventListener('pointerup',event=>{
+  if(!gesture||gesture.id!==id||gesture.pointerId!==event.pointerId)return;
+  try{moveGesture(svgXFromClient(svg,event.clientX,event.clientY));}catch(e){}
+  gesture=null;app.classList.remove('dragging');
+  try{target.releasePointerCapture(event.pointerId);}catch(e){}
+  commitGesture(kind);
+ });
+ target.addEventListener('pointercancel',()=>{
+  if(gesture?.id===id){gesture=null;app.classList.remove('dragging');render();}
+ });
+ target.addEventListener('keydown',event=>{
+  if(state.phase!==phase)return;
+  if(kind==='probe'){
+    const index=PROBE_STOPS.findIndex(p=>p.id===probeFromX(probeX));
+    if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+      event.preventDefault();
+      const n=clamp(index+(event.key==='ArrowRight'?1:-1),0,4);
+      setProbeVisual(PROBE_STOPS[n].x);
+    }else if(event.key==='Enter'||event.key===' '){event.preventDefault();recordProbe(probeFromX(probeX));}
+  }else if(kind==='reference'){
+    if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
+      event.preventDefault();setReferenceVisual(event.key==='ArrowLeft'?265:625);
+    }else if(event.key==='Enter'||event.key===' '){event.preventDefault();commitGesture(kind);}
+  }else if(kind==='gate'){
+    if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+      event.preventDefault();
+      state.distance=clamp(state.distance+(event.key==='ArrowLeft'?1:-1),1,5);
+      save();setGateVisual(xFromDistance(state.distance));
+    }
+  }
+ });
+});
+render();
+</script>
+</body>
+</html>
