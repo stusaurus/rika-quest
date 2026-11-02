@@ -4,10 +4,23 @@ const wrap=(view,body,label="",css="")=>'<svg class="science-illustration '+css+
 const defs='<defs><linearGradient id="metal" x2="1" y2="1"><stop stop-color="#fbfffa"/><stop offset=".37" stop-color="#b5cbd3"/><stop offset=".71" stop-color="#e5f2ed"/><stop offset="1" stop-color="#738c99"/></linearGradient><linearGradient id="cell" x2="0" y2="1"><stop stop-color="#f8d99c"/><stop offset=".52" stop-color="#e7a15f"/><stop offset="1" stop-color="#c67450"/></linearGradient><radialGradient id="glass"><stop stop-color="#fffbdd"/><stop offset=".7" stop-color="#f4e0a6"/><stop offset="1" stop-color="#adcdcb" stop-opacity=".7"/></radialGradient><filter id="glow"><feGaussianBlur stdDeviation="7"/></filter></defs>';
 const plate=(x,y,w,h,fill="#233f56")=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="13" fill="'+fill+'" stroke="#62899e" stroke-width="2"/>';
 function battery(kind="small",active=true){
- let count=kind==="series"||kind==="reverse"?2:1,reverse=kind==="reverse",wide=kind==="large";
- let cells=Array.from({length:count},(_,i)=>{const x=count===1?73:28+i*115,y=32,w=wide?93:79,h=110;
- const flip=reverse&&i===1;return '<g transform="'+(flip?'translate('+(2*x+w)+' 0) scale(-1 1)':'translate(0 0)')+'"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="14" fill="url(#cell)" stroke="#f9e2bd" stroke-width="3"/><rect x="'+(x+8)+'" y="'+(y+14)+'" width="'+(w-16)+'" height="62" rx="6" fill="#c65d44" stroke="#f7ad80" stroke-width="2"/><rect x="'+(x+10)+'" y="'+(y+84)+'" width="'+(w-20)+'" height="23" rx="4" fill="#e1e7d6" opacity=".93"/><rect x="'+(x+29)+'" y="'+(y-9)+'" width="'+(w-58)+'" height="10" rx="4" fill="url(#metal)"/><path d="M'+(x+8)+' '+(y+111)+' h'+(w-16)+'" stroke="#68757c" stroke-width="7"/><text x="'+(x+w/2)+'" y="'+(y+51)+'" text-anchor="middle" font-size="27" font-weight="900" fill="#fff">1.5V</text><text x="'+(x+w/2)+'" y="'+(y+25)+'" text-anchor="middle" font-size="21" font-weight="900" fill="#fff">＋</text><text x="'+(x+w/2)+'" y="'+(y+101)+'" text-anchor="middle" font-size="21" font-weight="900" fill="#35526a">−</text></g>';}).join("");
- return wrap("0 0 260 190",defs+plate(3,3,254,184)+cells+(count===2?'<path d="M109 82h15" stroke="#f4db8f" stroke-width="4"/><text x="130" y="174" fill="#e0f7fa" font-size="13" text-anchor="middle">'+(reverse?"反対向き":"直列・同じ向き")+'</text>':'<text x="130" y="174" fill="#e0f7fa" font-size="13" text-anchor="middle">'+(wide?"単1形":"単4形")+'　1.5 V</text>'),count===2?"乾電池2個 "+(reverse?"逆向き":"直列"):"乾電池 "+(wide?"単1形":"単4形"),"battery-art"+(active?" active":""));
+ const count=(kind==="series"||kind==="reverse")?2:1,reverse=kind==="reverse",wide=kind==="large";
+ const cells=Array.from({length:count},(_,i)=>{
+  const x=count===1?85:32+i*112,y=34,w=wide?92:78,h=112,plusTop=!(reverse&&i===1);
+  const topContact=plusTop?'<rect x="'+(x+28)+'" y="'+(y-8)+'" width="'+(w-56)+'" height="10" rx="4" fill="url(#metal)"/>':'<rect x="'+(x+9)+'" y="'+(y-4)+'" width="'+(w-18)+'" height="5" rx="2" fill="#dce5da"/>';
+  const bottomContact=plusTop?'<rect x="'+(x+9)+'" y="'+(y+h-2)+'" width="'+(w-18)+'" height="6" rx="2" fill="#bdc9c4"/>':'<rect x="'+(x+28)+'" y="'+(y+h-1)+'" width="'+(w-56)+'" height="10" rx="4" fill="url(#metal)"/>';
+  return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" fill="url(#cell)" stroke="#fbe1aa" stroke-width="3"/>'
+   +'<rect x="'+(x+7)+'" y="'+(y+13)+'" width="'+(w-14)+'" height="70" rx="7" fill="#be6351" stroke="#faad86" stroke-width="2"/>'
+   +'<path d="M'+(x+13)+' '+(y+20)+'v43" stroke="#f6c498" stroke-width="4" opacity=".7"/>'
+   +'<rect x="'+(x+9)+'" y="'+(y+88)+'" width="'+(w-18)+'" height="18" rx="3" fill="#e8e9d9"/>'
+   +topContact+bottomContact
+   +'<text x="'+(x+w/2)+'" y="'+(y+56)+'" text-anchor="middle" font-size="24" font-weight="900" fill="#fff">1.5V</text>'
+   +'<text x="'+(x+w/2)+'" y="'+(plusTop?y+25:y+104)+'" text-anchor="middle" font-size="21" font-weight="900" fill="'+(plusTop?'#fff':'#27465d')+'">＋</text>'
+   +'<text x="'+(x+w/2)+'" y="'+(plusTop?y+104:y+25)+'" text-anchor="middle" font-size="20" font-weight="900" fill="'+(plusTop?'#27465d':'#fff')+'">−</text></g>';
+ }).join("");
+ const wire=count===2?'<path d="M71 150 C70 183 113 182 128 162 C143 145 142 56 181 25" fill="none" stroke="#ffe4b6" stroke-width="6" stroke-linecap="round"/><path d="M71 150 C70 183 113 182 128 162 C143 145 142 56 181 25" fill="none" stroke="#bd8f56" stroke-width="2" stroke-linecap="round"/>':'';
+ const foot=count===2?(reverse?"逆向きの直列（電圧は相殺）":"同じ向きの直列（約3V）"):(wide?"単1形・公称1.5V":"単4形・公称1.5V");
+ return wrap("0 0 260 190",defs+plate(3,3,254,184)+cells+wire+'<text x="130" y="178" text-anchor="middle" fill="#d6f7f2" font-size="12" font-weight="700">'+foot+'</text>',count===2?(reverse?"乾電池2個の逆向き直列つなぎ":"乾電池2個の同じ向きの直列つなぎ"):(wide?"単1形乾電池":"単4形乾電池"),"battery-art"+(active?" active":""));
 }
 function bulb(on=false,short=false){
  return wrap("0 0 220 205",defs+plate(5,4,210,196,'#21455e')+
