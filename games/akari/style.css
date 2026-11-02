@@ -83,3 +83,13 @@
  .battery-choices .choice-picture svg{width:100%;max-width:220px;height:104px}
  .battery-choices .choice>span:last-child{font-size:13px;line-height:1.45}
 }
+
+/* On narrow phones, remove duplicate labels competing with touch targets. */
+@media(max-width:740px){
+ .circuit-inner .terminal-label{display:none}
+ .circuit-inner .circuit-svg text:nth-of-type(3),
+ .circuit-inner .circuit-svg text:nth-of-type(4){display:none}
+ .circuit-inner{top:43%;width:calc(100% - 8px)}
+ .circuit-inner .terminal{width:29px;height:29px;font-size:12px;border-width:2px}
+ .circuit-help{font-size:11.5px;line-height:1.7;bottom:12px}
+}
