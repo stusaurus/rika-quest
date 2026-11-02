@@ -69,5 +69,24 @@ function shortDiagram(){
  '<text x="155" y="103" fill="#fff0b0" font-weight="900" font-size="21">X</text><text x="38" y="122" fill="#fff0b0" font-weight="900" font-size="21">Y</text><text x="212" y="213" fill="#ff9b91" font-size="13" text-anchor="middle">赤い近道は危険！</text>',
  "乾電池から電球を通る正常な導線とショートする赤い導線","short-art");
 }
-window.AkariArt={battery,bulb,material,circuit,shortDiagram};
+
+function testCircuit(id,lit){
+ const names={clip:"鉄",foil:"アルミ",wood:"木",plastic:"プラスチック"};
+ const color={clip:"#d9f0f0",foil:"#d5e5e9",wood:"#c29364",plastic:"#70c9eb"}[id]||"#91b5c4";
+ const glow=lit?"#ffe494":"#8aaebe";
+ return wrap("0 0 420 225",defs+plate(3,3,414,219)+
+ '<path d="M70 49V32H206V83M206 118V138H323M354 162V186H70V161" stroke="'+(lit?"#ffec9b":"#dcb78f")+'" stroke-width="7" fill="none" stroke-linecap="round"/>'+
+ '<rect x="39" y="64" width="62" height="97" rx="11" fill="url(#cell)" stroke="#ffdc9e" stroke-width="4"/><rect x="45" y="74" width="50" height="57" rx="6" fill="#a9574b"/>'+
+ '<rect x="61" y="50" width="18" height="15" rx="4" fill="url(#metal)"/><text x="70" y="107" font-size="19" text-anchor="middle" fill="#fff" font-weight="900">1.5V</text>'+
+ '<text x="70" y="80" font-size="17" text-anchor="middle" fill="#fff">＋</text><text x="70" y="148" font-size="17" text-anchor="middle" fill="#fff">−</text>'+
+ '<rect x="170" y="82" width="75" height="40" rx="7" fill="'+color+'" stroke="#fff2c7" stroke-width="5"/><path d="M190 102h36" stroke="#66818a" stroke-width="5"/>'+
+ '<text x="206" y="148" text-anchor="middle" fill="#ccecf3" font-size="12">'+(names[id]||"材料を選ぼう")+'</text>'+
+ (lit?'<circle cx="354" cy="87" r="52" fill="#ffe494" opacity=".5" filter="url(#glow)"/>':'')+
+ '<path d="M335 122Q312 91 329 60Q348 36 370 54Q397 84 373 122Z" fill="'+glow+'" stroke="#e9f7ed" stroke-width="5"/>'+
+ '<path d="M339 92l13 12 14-13" stroke="#f7f2c4" stroke-width="4" fill="none"/><rect x="338" y="119" width="32" height="28" rx="4" fill="url(#metal)"/><path d="M339 126h30m-30 8h30" stroke="#6f8a91" stroke-width="3"/>'+
+ '<circle cx="354" cy="150" r="7" fill="#efc98a"/>'+
+ '<text x="355" y="212" text-anchor="middle" fill="#cfe9f2" font-size="12">豆電球</text>',
+ "材料を入れて乾電池と豆電球をつなぐ実験回路","test-circuit-art");
+}
+window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit};
 })();
