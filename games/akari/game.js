@@ -141,7 +141,7 @@ function check(){
  if(stageComplete)return;const m=current();
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){if(ui.inspected.length<3){fail("橋の材料を3種類とも観察してから決めよう。");return;}if(ui.chosen==="iron"){success();return;}fail("その材料では電気が通りにくいよ。金属の材料を選んでみよう。");return;}
- if(m.mode==="material"){if(!ui.selected){setFeedback("まず実験する材料を選んでね。","warning");return;}let x=materials.find(x=>x.id===ui.selected);if(!ui.tried.includes(x.id))ui.tried.push(x.id);renderWorkspace();let conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
+ if(m.mode==="material"){if(!ui.selected){setFeedback("まず実験する材料を選んでね。","warning");return;}let x=materials.find(x=>x.id===ui.selected);if(!ui.tried.includes(x.id))ui.tried.push(x.id);recordObservation("material:"+x.id,x.name+"：豆電球が"+(x.conductive?"点灯。":"消灯。"));renderWorkspace();let conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
  if(m.target==="conductor"?conductor>=2&&insulator>=1:insulator>=2&&conductor>=1){success();return;}setFeedback(x.name+"："+(x.conductive?"電気を通して光った！":"電気を通さず光らなかった。")+" ほかの材料とも比べてみよう。",x.conductive?"success":"");return;}
  if(m.mode==="repair"){const broken=repairParts().filter(x=>x.broken);if(broken.every(x=>ui.fixed.includes(x.id))){success();return;}fail("まだ直っていない場所があるよ。部品を一つずつ調べよう。");return;}
  if(m.mode==="logic"){const code=(ui.a?"1":"0")+(ui.b?"1":"0");ui.trials[code]=ui.design==="series"?(ui.a&&ui.b):(ui.a||ui.b);renderWorkspace();
