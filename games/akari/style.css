@@ -64,3 +64,22 @@
 .experiment-layout{min-width:0}
 .lab-panel{min-width:0}
 @media(max-width:740px){.choice-picture{height:76px}.choice-picture svg{height:76px}.choices .choice{min-height:110px;font-size:11px}.terminal-label{font-size:9px}.science-spotlight{max-height:150px}.science-spotlight svg{max-height:150px}.experiment-layout{grid-template-columns:1fr}}
+
+/* Illustration quality pass: fixed-proportion circuit diagram.
+   On desktop the battery and bulb now retain their actual shape. */
+.circuit-board{min-height:400px}
+.circuit-inner{position:absolute;left:50%;top:45%;width:min(480px,calc(100% - 24px));aspect-ratio:400/250;transform:translate(-50%,-50%);z-index:2}
+.circuit-inner .circuit-svg{inset:0;width:100%;height:100%;object-fit:contain}
+.circuit-board .wire-chip-list{top:14px;right:14px;z-index:5;max-width:50%}
+.circuit-board .circuit-label{z-index:5}
+.circuit-board .terminal-label{font-size:12px}
+@media(max-width:740px){
+ .circuit-board{min-height:310px}
+ .circuit-inner{top:45%;width:calc(100% - 12px)}
+ .circuit-board .terminal-label{font-size:10px}
+ .choices.battery-choices{grid-template-columns:1fr}
+ .battery-choices .choice{display:flex;flex-direction:row;min-height:118px;align-items:center;justify-content:flex-start;gap:12px;text-align:left}
+ .battery-choices .choice-picture{width:58%;flex:0 0 58%;height:104px}
+ .battery-choices .choice-picture svg{width:100%;max-width:220px;height:104px}
+ .battery-choices .choice>span:last-child{font-size:13px;line-height:1.45}
+}
