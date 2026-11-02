@@ -30,7 +30,7 @@ function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}c
 function recordObservation(key,description){
  const id=current().id;
  if(!state.notes.some(n=>n.mission===id&&n.key===key)){
- state.notes.push({mission:id,key,text:description});state.notes=state.notes.slice(-100);persist();
+ state.notes.push({mission:id,key,text:description});state.notes=state.notes.slice(-100);persist();if(!stageComplete)reactCharacter("discover");
  }
  renderJournal();
 }
@@ -98,7 +98,7 @@ const buildings={
  lighthouse:'<path d="M89 231 110 47 186 47 207 231Z" fill="#f2e5ce"/><path d="M105 89H192L195 115H101ZM98 165H201L204 189H95Z" fill="#c76f66"/><path d="M93 48H207L183 21H120Z" fill="#587d9e"/><rect class="window" x="115" y="48" width="67" height="39" fill="#38556c"/><rect class="window" x="134" y="135" width="36" height="26" rx="6"/><rect x="121" y="202" width="49" height="29" rx="13" fill="#7a8179"/>'
 };
 function renderScene(){
- const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete);$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
+ const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete);$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
 }
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
@@ -189,15 +189,15 @@ function handleWorkspace(e){
  if(target.hasAttribute("data-view")){const root=$("workspace"),board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;if(board){board.scrollLeft=target.dataset.view==="bulb"?board.scrollWidth-board.clientWidth:0;setFeedback(target.dataset.view==="bulb"?"豆電球の金属の横と底を見てみよう。":"乾電池の＋極と−極を見てみよう。");}return;}
   if(target.hasAttribute("data-t")){const t=target.dataset.t;if(ui.selected===null){ui.selected=t;setFeedback(labels[t]+"を選んだよ。次につなぐ端子を選ぼう。");}
  else if(ui.selected===t){ui.selected=null;setFeedback("端子の選択を解除したよ。");}
- else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");}}else setFeedback("その2つはもうつながっているよ。");}
+ else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");reactCharacter("inspect","つながったノン！");}}else setFeedback("その2つはもうつながっているよ。");}
  renderWorkspace();return;}
  if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
  if(current().mode==="explore"){ui.chosen=id;if(!ui.inspected.includes(id))ui.inspected.push(id);const x=inspectedItems.find(x=>x.id===id);setFeedback("🔎 "+x.description);}
  else{setFeedback("「"+(materials.find(x=>x.id===id)?.name||batteryOptions().find(x=>x.id===id)?.name||({same:"2個を同じ向き",reverse:"2個を逆向き"}[id])||id)+"」をセットしたよ。通電チェックしてみよう。");}
- renderWorkspace();return;}
- if(target.hasAttribute("data-inspect")){let id=target.dataset.inspect;if(!ui.inspected.includes(id))ui.inspected.push(id);let part=repairParts().find(x=>x.id===id);setFeedback(part.name+"："+part.detail,part.broken?"warning":"");renderWorkspace();return;}
- if(target.hasAttribute("data-fix")){let id=target.dataset.fix;if(!ui.fixed.includes(id))ui.fixed.push(id);setFeedback("🔧 修理完了！ ほかにも故障がないか調べよう。","success");renderWorkspace();return;}
+ renderWorkspace();reactCharacter("inspect");return;}
+ if(target.hasAttribute("data-inspect")){let id=target.dataset.inspect;if(!ui.inspected.includes(id))ui.inspected.push(id);let part=repairParts().find(x=>x.id===id);setFeedback(part.name+"："+part.detail,part.broken?"warning":"");reactCharacter("inspect");renderWorkspace();return;}
+ if(target.hasAttribute("data-fix")){let id=target.dataset.fix;if(!ui.fixed.includes(id))ui.fixed.push(id);setFeedback("🔧 修理完了！ ほかにも故障がないか調べよう。","success");reactCharacter("discover");renderWorkspace();return;}
  if(target.hasAttribute("data-design")){ui.design=target.dataset.design;ui.trials={};renderWorkspace();setFeedback("回路を"+(ui.design==="series"?"直列":"並列")+"に組み替えたよ。4通りを試そう。");return;}
  if(target.hasAttribute("data-switch")){const key=target.dataset.switch;ui[key]=!ui[key];renderWorkspace();setFeedback("スイッチを切り替えたよ。通電して記録しよう。");return;}
  if(target.hasAttribute("data-answer")){ui.answer=target.dataset.answer;renderWorkspace();setFeedback("答えを選んだよ。通電チェックで確かめよう。");return;}
@@ -211,7 +211,7 @@ function bind(){
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
  $("resetBtn").addEventListener("click",()=>{ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
- $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");hintIndex=Math.min(hintIndex+1,h.length)});
+ $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
  $("helpBtn").addEventListener("click",()=>modal(true));
