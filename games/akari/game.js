@@ -168,6 +168,6 @@ function bind(){
  $("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))modal(false)});
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)modal(false);if(e.key==="Tab"&&!$("helpModal").hidden){const focusable=[...$("helpModal").querySelectorAll("button")],first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 }
-function boot(){ui=initial(current());bind();renderAll();}
+function boot(){ui=initial(current());bind();persist();renderAll();}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
