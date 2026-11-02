@@ -85,7 +85,8 @@ function testCircuit(id,lit){
  '<rect x="39" y="64" width="62" height="97" rx="11" fill="url(#cell)" stroke="#ffdc9e" stroke-width="4"/><rect x="45" y="74" width="50" height="57" rx="6" fill="#a9574b"/>'+
  '<rect x="61" y="50" width="18" height="15" rx="4" fill="url(#metal)"/><text x="70" y="107" font-size="19" text-anchor="middle" fill="#fff" font-weight="900">1.5V</text>'+
  '<text x="70" y="80" font-size="17" text-anchor="middle" fill="#fff">＋</text><text x="70" y="148" font-size="17" text-anchor="middle" fill="#fff">−</text>'+
- '<rect x="170" y="82" width="75" height="40" rx="7" fill="'+color+'" stroke="#fff2c7" stroke-width="5"/><path d="M190 102h36" stroke="#66818a" stroke-width="5"/>'+
+ '<rect x="177" y="83" width="61" height="39" rx="8" fill="#15344d" stroke="#7898a4" stroke-width="2"/>'+
+ '<path d="M206 83v8M206 113v12" stroke="#efce96" stroke-width="7" stroke-linecap="round"/>'+sample+
  '<text x="206" y="148" text-anchor="middle" fill="#ccecf3" font-size="12">'+(names[id]||"材料を選ぼう")+'</text>'+
  (lit?'<circle cx="354" cy="87" r="52" fill="#ffe494" opacity=".5" filter="url(#glow)"/>':'')+
  '<path d="M335 122Q312 91 329 60Q348 36 370 54Q397 84 373 122Z" fill="'+glow+'" stroke="#e9f7ed" stroke-width="5"/>'+
