@@ -352,3 +352,24 @@
  .story-scene.energizing .landmark .window,
  .story-scene.energizing .scene-prop-svg .scene-bulb{animation:none!important}
 }
+
+
+/* A tiny constellation of all fourteen saved mission lights in the journey map. */
+.map-illustration{height:128px}
+.map-light-grid{
+ position:absolute;z-index:3;left:14px;right:14px;top:30px;bottom:12px;
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
+ grid-template-rows:repeat(2,1fr);justify-items:center;align-items:center;
+ padding:6px 8px;border-radius:12px;background:#1543597a;
+ box-shadow:inset 0 1px 8px #082f3960;pointer-events:none;
+}
+.map-lamp{width:17px;height:20px;position:relative;border-radius:10px 10px 6px 6px;border:2px solid #aed9c8;background:#436b73;box-shadow:inset 0 -4px 4px #234c58}
+.map-lamp::after{content:"";position:absolute;bottom:-5px;left:3px;width:7px;height:4px;border-radius:2px;background:#94b7b3}
+.map-lamp span{position:absolute;inset:3px 4px 5px;border-radius:50%;background:#244b57;transition:background .3s,box-shadow .3s}
+.map-lamp.lit{border-color:#ffe6a7;background:#c99558;box-shadow:0 0 8px #ffe69c92,inset 0 -3px 5px #c9804f}
+.map-lamp.lit span{background:#fff4c2;box-shadow:0 0 10px 3px #ffe4a1}
+.map-lamp.active{outline:2px solid #ddf9ec;outline-offset:3px}
+@media(max-width:740px){
+ .sidebar.open .map-illustration{display:block;height:125px;margin:10px 0}
+ .sidebar.open .map-light-grid{top:26px}
+}
