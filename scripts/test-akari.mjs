@@ -44,6 +44,9 @@ move(13);for(const key of ["wire","bulb"]){click({inspect:key});click({fix:key})
 move(14);click({final:"direction",value:"same"});click({final:"material",value:"clip"});click({final:"contact",value:"true"});check();done(14);
 assert.equal(Object.keys(saved().completed).length,14,"All 14 missions must be completed");
 assert.equal(saved().active,14);
+assert.ok(saved().notes.length>=14,"Observation journal should retain a discovery for each completed mission");
+const scenes=Array.from({length:14},(_,i)=>window.AkariScenes.render(i+1));
+assert.equal(new Set(scenes).size,14,"Each mission needs a distinct scene illustration");
 assert.ok(window.AkariArt.material("clip").includes("<svg"));
 assert.ok(window.AkariArt.circuit("series",false,false).includes("<svg"));
 assert.ok(window.AkariArt.bulb(true).includes("<svg"));
