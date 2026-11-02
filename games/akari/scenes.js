@@ -25,5 +25,14 @@ const designs=[
  ()=>rope(193,308)+lamp(345,310,140),
  ()=>beacon(120,314)+lamp(332,319,138)+lamp(430,319,110)
 ];
+
+const landmarkDefs='<defs>'+
+ '<linearGradient id="rkPlaster" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#ffe7bd"/><stop offset=".58" stop-color="#e5c59a"/><stop offset="1" stop-color="#bb967e"/></linearGradient>'+
+ '<linearGradient id="rkStone" x1="0" y1="0" x2=".95" y2="1"><stop stop-color="#dbe0d6"/><stop offset=".48" stop-color="#adbcb9"/><stop offset="1" stop-color="#718f93"/></linearGradient>'+
+ '<linearGradient id="rkRoof" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5a089"/><stop offset=".56" stop-color="#bc655c"/><stop offset="1" stop-color="#874e53"/></linearGradient>'+
+ '<linearGradient id="rkGlass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#96cad1"/><stop offset="1" stop-color="#426e88"/></linearGradient>'+
+ '<linearGradient id="rkWood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#debb86"/><stop offset=".54" stop-color="#ac7e65"/><stop offset="1" stop-color="#6c5a58"/></linearGradient>'+
+ '</defs>';
+const landmarks={
 window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const box=phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg" viewBox="'+box+'" preserveAspectRatio="none" aria-hidden="true">'+designs[index]()+'</svg>'}};
 })();
