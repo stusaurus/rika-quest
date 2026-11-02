@@ -161,3 +161,9 @@
  .circuit-toolbar>strong{font-size:12px}
  .circuit-toolbar .circuit-zoom-btn{font-size:12px}
 }
+
+
+.circuit-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 0}
+.circuit-legend span{display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#e0f2ec;color:#2e5562;padding:8px 11px;border:1px solid #b9d8cf;border-radius:10px;font-size:12px}
+.circuit-legend small{font-size:11px;color:#597d84}
+@media(max-width:375px){.circuit-legend span{font-size:11px;padding:7px}.circuit-legend small{font-size:10px}}
