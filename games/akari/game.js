@@ -73,7 +73,7 @@ function renderHeader(){
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
-const pts={P:[80,70],N:[80,174],L:[260,121],R:[310,174]};const labels={P:"乾電池の＋極",N:"乾電池の−極",L:"豆電球の金属の横部分",R:"豆電球の底の接点"};
+const pts={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};const labels={P:"乾電池の＋極",N:"乾電池の−極",L:"豆電球の金属の横部分",R:"豆電球の底の接点"};
 function edgeKey(a,b){return[a,b].sort().join("-");}
 function circuitStatus(wires){
  const g={P:[],N:[],L:[],R:[]};wires.forEach(([a,b])=>{if(g[a]&&g[b]){g[a].push(b);g[b].push(a);}});
