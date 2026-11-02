@@ -128,10 +128,7 @@ function workbench(wires,lit){
  '<rect x="285" y="127" width="51" height="34" rx="7" fill="url(#workMetal)" stroke="#d2e4de" stroke-width="3"/>'+
  '<path d="M289 137H331M289 145H331M289 153H331" stroke="#58788a" stroke-width="3"/>'+
  '<rect x="298" y="161" width="24" height="11" rx="4" fill="#ddb779" stroke="#fff5d1" stroke-width="2"/></g>'+
- '<text x="80" y="212" text-anchor="middle" fill="#f8e6b9" font-size="15" font-weight="900">乾電池</text>'+
- '<text x="310" y="212" text-anchor="middle" fill="#f8e6b9" font-size="15" font-weight="900">豆電球</text>'+
- '<text x="80" y="235" text-anchor="middle" fill="#b8dae2" font-size="11">＋／− の接点</text>'+
- '<text x="309" y="235" text-anchor="middle" fill="#b8dae2" font-size="11">横と底に金属の接点</text></svg>';
+ '</svg>';
 }
 
 window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit,workbench};
