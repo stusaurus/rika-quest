@@ -3,6 +3,7 @@ const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
 const scenes=readFileSync("games/akari/scenes.js","utf8");
+const character=readFileSync("games/akari/character.js","utf8");
 const game=readFileSync("games/akari/game.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
@@ -13,6 +14,7 @@ let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
+output=replaceOne(output,'<script src="./character.js" defer></script>',inlineScript(character));
 output=output.replace('href="../../index.html"','href="https://stusaurus.github.io/rika-quest/"');
 output=output.replace("<title>あかりクエスト | Rika Quest</title>","<title>あかりクエスト｜試遊版</title>");
 mkdirSync("artifacts",{recursive:true});
