@@ -33,18 +33,17 @@ function material(id){
  {clip:"鉄のクリップ",foil:"アルミはく",wood:"木の棒",plastic:"プラスチック",iron:"鉄のくぎ"}[id]||"材料の見本","material-art");
 }
 function circuit(design,a,b){
- let parallel=design==="parallel",on=parallel?(a||b):(a&&b);
- return wrap("0 0 390 230",defs+plate(2,2,386,226)+
- '<rect x="20" y="92" width="48" height="58" rx="9" fill="#c47b54" stroke="#ecd1a6" stroke-width="3"/><text x="44" y="115" font-size="13" text-anchor="middle" fill="#fff">＋</text><text x="44" y="136" font-size="13" text-anchor="middle" fill="#fff">−</text>'+
- '<path d="M44 92V38H348V91M348 144V192H44V151" fill="none" stroke="#ffd4a4" stroke-width="5" stroke-linejoin="round"/>'+
- (parallel?'<path d="M133 38V89H256V38M133 89V139H256V89M256 139V38" stroke="#f9dab4" fill="none" stroke-width="5"/>':
- '<path d="M133 38V89H255V38" stroke="#f9dab4" fill="none" stroke-width="5"/>')+
- '<circle cx="348" cy="118" r="28" fill="'+(on?'#ffefad':'#537d91')+'" stroke="#d9e8e8" stroke-width="4"/><path d="M333 117H363M348 104V131" stroke="#ffffe4" stroke-width="3"/>'+
- '<circle cx="163" cy="89" r="11" fill="'+(a?'#5bd1b1':'#456e86')+'" stroke="#c8edf3" stroke-width="3"/><text x="160" y="77" text-anchor="middle" fill="#fff" font-size="13">A</text>'+
- '<circle cx="'+(parallel?164:228)+'" cy="'+(parallel?139:89)+'" r="11" fill="'+(b?'#5bd1b1':'#456e86')+'" stroke="#c8edf3" stroke-width="3"/>'+
- '<text x="'+(parallel?164:228)+'" y="'+(parallel?127:77)+'" text-anchor="middle" fill="#fff" font-size="13">B</text>'+
- '<text x="195" y="214" text-anchor="middle" fill="#d6eef4" font-size="15">'+(parallel?"並列：どちらか":"直列：両方")+'ONで点灯</text>',
- parallel?"並列のスイッチ回路":"直列のスイッチ回路","logic-art");
+ const parallel=design==="parallel",on=parallel?(a||b):(a&&b);
+ const S=(x,y,v,label)=>'<g><circle cx="'+x+'" cy="'+y+'" r="4" fill="#f5e0b8"/><circle cx="'+(x+30)+'" cy="'+y+'" r="4" fill="#f5e0b8"/><path d="M'+x+' '+y+'L'+(x+25)+' '+(v?y:y-16)+'" fill="none" stroke="'+(v?'#9bf4b8':'#ffc09f')+'" stroke-width="5" stroke-linecap="round"/><text x="'+(x+15)+'" y="'+(y-22)+'" text-anchor="middle" font-size="13" fill="#fff">'+label+'</text></g>';
+ const common='<rect x="20" y="92" width="48" height="58" rx="9" fill="#c47b54" stroke="#ecd1a6" stroke-width="3"/><text x="44" y="115" font-size="13" text-anchor="middle" fill="#fff">＋</text><text x="44" y="136" font-size="13" text-anchor="middle" fill="#fff">−</text>'
+ +'<path d="M44 92V58H110M310 58H348V91M348 144V192H44V151" fill="none" stroke="#ffd4a4" stroke-width="5" stroke-linejoin="round"/>'
+ +'<circle cx="348" cy="118" r="28" fill="'+(on?'#ffefad':'#537d91')+'" stroke="#d9e8e8" stroke-width="4"/><path d="M333 117H363M348 104V131" stroke="#ffffe4" stroke-width="3"/>';
+ const routes=parallel?
+ '<path d="M110 58V90M110 90V144M110 90H154M184 90H276M110 144H154M184 144H276M276 90V58M276 144V90M276 58H310" stroke="#f9dab4" fill="none" stroke-width="5"/>'+S(154,90,a,'A')+S(154,144,b,'B'):
+ '<path d="M110 58H154M184 58H232M262 58H310" stroke="#f9dab4" fill="none" stroke-width="5"/>'+S(154,58,a,'A')+S(232,58,b,'B');
+ return wrap("0 0 390 230",defs+plate(2,2,386,226)+common+routes+
+ '<text x="195" y="216" text-anchor="middle" fill="#d6eef4" font-size="15">'+(parallel?"並列：どちらか":"直列：両方")+' ONで点灯</text>',
+ parallel?"2つのスイッチが並列の回路":"2つのスイッチが直列の回路","logic-art");
 }
 function shortDiagram(){
  return wrap("0 0 390 235",defs+plate(2,2,386,231)+
