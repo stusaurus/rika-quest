@@ -15,7 +15,7 @@ const M=[
 {id:11,name:"電池の向きのひみつ",place:"museum",placeName:"ひかり博物館",mode:"polarity",goal:"乾電池の向きを調べよう",story:"展示の電池を入れ直したら、急に消えちゃった。向きは大切なのかな？",instructions:"同じ向き・逆向きの2つの直列つなぎを両方実験して、光るつなぎ方を答えよう。",discovery:"同じ乾電池2個を直列で逆向きにすると、電圧が打ち消し合い、豆電球は光らない。乾電池1個だけなら向きを逆にしても普通の豆電球は光るよ。",hints:["電池1個の向きではなく、2個の向きの組み合わせだよ。","2個を同じ向きに直列につなぐと電圧が足し合わされるよ。"]},
 {id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"危険な導線を2本外そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"正しい2本は残し、ショートの原因になる赤い導線X・Yを外そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","赤い導線XとYを外し、電池→豆電球→電池の通り道だけを残そう。"]},
 {id:13,name:"灯台の二重故障",place:"lighthouse",placeName:"星あかり灯台",mode:"repair",goal:"2つの故障を見つけよう",story:"灯台が消えて船が帰れない。1か所直しても点灯しないみたい。",instructions:"部品を調べて、2つの故障を両方修理してから電気を流そう。",discovery:"複数の故障が重なることもある。電球・導線・接点・乾電池を順番に確認すると落ち着いて直せる。",hints:["1つ直しても消えたままなら、ほかにも故障があるよ。","導線の断線と、豆電球の接触不良を両方直そう。"]},
-{id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"2個の乾電池の向きを直し、電気を通す材料を選び、豆電球の接点を修理して通電しよう。",discovery:"回路は『電源・電気を通す導線・豆電球・確かな接点』の組み合わせ。ひとつひとつ確かめれば、街にあかりを取り戻せる！",hints:["電源・材料・接点をすべて確認してみよう。","乾電池は同じ向き、材料は鉄のクリップ、豆電球はしっかり接触させよう。"]}
+{id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"乾電池の向き・材料・豆電球の接点をそれぞれ調べ、3か所を動作確認してから灯台を点灯させよう。",discovery:"回路は『電源・電気を通す導線・豆電球・確かな接点』の組み合わせ。ひとつひとつ確かめれば、街にあかりを取り戻せる！",hints:["電源・材料・接点をすべて確認してみよう。","乾電池は同じ向き、材料は鉄のクリップ、豆電球はしっかり接触させよう。"]}
 ];
 const $=id=>document.getElementById(id), storageKey="rika-akari-quest-v2";
 let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturnFocus=null,soundCtx=null;
@@ -204,8 +204,21 @@ function renderCut(){
  return'<div class="experiment-layout"><div class="lab-panel"><h3>⚠ 危険な導線を発見！</h3>'+Art.shortDiagram()+'<p class="lab-reading">赤い導線がショートの原因。実物の乾電池では絶対に試さないでね。</p></div><div class="lab-panel"><h3>✂ 外す導線を選ぼう</h3><p class="lab-sub">押すと外す／戻すを切り替えられるよ。</p>'+[["normal","通常の導線（電池→豆電球）"],["x","危険な赤い近道 X"],["y","危険な赤い近道 Y"]].map(([id,label])=>'<button class="cut-wire'+(ui.removed.includes(id)?' removed':'')+'" data-cut="'+id+'" aria-pressed="'+ui.removed.includes(id)+'"><span>'+label+'</span><strong>'+(ui.removed.includes(id)?"外した ✓":"接続中")+'</strong></button>').join("")+'<p class="lab-reading">外した導線：'+ui.removed.length+' 本</p></div></div>';
 }
 function renderFinale(){
- const opts=[["direction","乾電池2個の向き",[["reverse","逆向き"],["same","同じ向き"]]],["material","すき間にはさむ材料",[["wood","木の棒"],["clip","鉄のクリップ"]]],["contact","豆電球の接点",[[false,"はずれたまま"],[true,"底と横をしっかり接続"]]]];
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🌟 灯台の最終修理</h3><div class="science-spotlight">'+Art.battery(ui.direction==="same"?"series":"reverse")+'</div><div class="science-spotlight">'+Art.bulb(stageComplete)+'</div></div><div class="lab-panel"><h3>🛠 3つのチェック</h3>'+opts.map(([key,title,options])=>'<div class="final-question"><strong>'+title+'</strong><div class="toggle-row">'+options.map(([value,label])=>'<button class="toggle'+(ui[key]===value?' on':'')+'" data-final="'+key+'" data-value="'+String(value)+'" aria-pressed="'+(ui[key]===value)+'">'+label+'</button>').join("")+'</div></div>').join("")+'</div></div>';
+ const opts=[
+  ["direction","① 乾電池2個の向き",[["reverse","逆向き"],["same","同じ向き"]]],
+  ["material","② すき間にはさむ材料",[["wood","木の棒"],["clip","鉄のクリップ"]]],
+  ["contact","③ 豆電球の接点",[[false,"はずれたまま"],[true,"底と横をしっかり接続"]]]
+ ];
+ const tasks=opts.map(([key,title,options])=>{
+  const verified=ui.verified.includes(key),wasChecked=Object.hasOwn(ui.checked,key);
+  const mark=verified?"✓ 動作確認 OK":wasChecked?"⚠ まだつながっていない":"？ 未確認";
+  const tag=verified?" ok":wasChecked?" needs-fix":"";
+  return'<div class="final-question verification-step'+tag+'"><strong>'+title+'</strong><div class="toggle-row">'+
+   options.map(([value,label])=>'<button class="toggle'+(ui[key]===value?' on':'')+'" data-final="'+key+'" data-value="'+String(value)+'" aria-pressed="'+(ui[key]===value)+'">'+label+'</button>').join("")+
+   '</div><div class="verify-row"><button class="verify-part" type="button" data-verify="'+key+'">🔎 この部分を調べる</button><span class="verification-status">'+mark+'</span></div></div>';
+ }).join("");
+ return'<div class="experiment-layout"><div class="lab-panel"><h3>🌟 灯台の最終修理</h3><p class="lab-sub">3か所の不具合を調べ、すべて動作確認してから灯台のあかりをつけよう。</p><div class="science-spotlight">'+Art.battery(ui.direction==="same"?"series":"reverse")+'</div><div class="science-spotlight">'+Art.bulb(stageComplete)+'</div><div class="lab-reading">確認済み：'+ui.verified.length+' / 3 か所</div></div><div class="lab-panel"><h3>🛠 3か所を調査する</h3>'+tasks+
+ '<p class="finale-guidance">部品を選んだら「この部分を調べる」で確かめよう。全部が ✓ になったら最後の通電！</p></div></div>';
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
