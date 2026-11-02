@@ -106,8 +106,8 @@ function workbench(wires,lit){
  return '<svg class="circuit-svg" viewBox="0 0 400 250" aria-label="乾電池と豆電球を導線でつなぐ実験回路" role="img">'+
  '<defs><linearGradient id="workCell" x1="0" y1="0" x2=".95" y2="1"><stop stop-color="#e7a361"/><stop offset=".32" stop-color="#c97255"/><stop offset=".65" stop-color="#b9574b"/><stop offset="1" stop-color="#803d42"/></linearGradient>'+
  '<linearGradient id="workMetal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#788e99"/><stop offset=".32" stop-color="#f0f7ed"/><stop offset=".65" stop-color="#9fbdc3"/><stop offset="1" stop-color="#577080"/></linearGradient>'+
- '<radialGradient id="workGlass" cx=".36" cy=".26" r=".85"><stop stop-color="'+(lit?'#fff9d7':'#b7e5ea')+'" stop-opacity="'+(lit?'.99':'.68')+'"/><stop offset=".8" stop-color="'+(lit?'#f6c765':'#709cae')+'" stop-opacity="'+(lit?'.88':'.5')+'"/><stop offset="1" stop-color="#31516c" stop-opacity=".45"/></radialGradient></defs>'+
- (lit?'<ellipse cx="310" cy="96" rx="66" ry="67" fill="#ffdf86" opacity=".24" filter="url(#glow)"/>':'')+
+ '<radialGradient id="workGlass" cx=".36" cy=".26" r=".85"><stop stop-color="'+(lit?'#fff9d7':'#b7e5ea')+'" stop-opacity="'+(lit?'.99':'.68')+'"/><stop offset=".8" stop-color="'+(lit?'#f6c765':'#709cae')+'" stop-opacity="'+(lit?'.88':'.5')+'"/><stop offset="1" stop-color="#31516c" stop-opacity=".45"/></radialGradient><filter id="workGlow"><feGaussianBlur stdDeviation="9"/></filter></defs>'+
+ (lit?'<ellipse cx="310" cy="96" rx="66" ry="67" fill="#ffdf86" opacity=".24" filter="url(#workGlow)"/>':'')+
  '<ellipse cx="82" cy="178" rx="62" ry="10" fill="#061a32" opacity=".35"/><ellipse cx="310" cy="181" rx="53" ry="8" fill="#061a32" opacity=".25"/>'+
  leads+
  '<g class="battery-model"><rect x="32" y="83" width="98" height="83" rx="19" fill="url(#workCell)" stroke="#ffdfac" stroke-width="4"/>'+
