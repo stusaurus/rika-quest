@@ -29,11 +29,25 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
-   await page.locator("[data-zoom]").click();
-   assert.equal(await page.locator(".circuit-board.zoomed").count(),1,"Zoom should enlarge the interactive circuit");
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
+   const overlap=await page.evaluate(()=>{
+     const a=document.querySelector(".circuit-zoom-btn").getBoundingClientRect(),b=document.querySelector('[data-t="P"]').getBoundingClientRect();
+     return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+   });
+   assert.equal(overlap,false,"Magnifier must not cover battery terminal");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-start.png",fullPage:true});
+   await page.locator("[data-zoom]").click();
+   assert.equal(await page.locator(".circuit-board.zoomed").count(),1,"Zoom should enlarge the interactive circuit");
+   await page.locator('[data-view="bulb"]').click();
+   const scrollBefore=await page.locator(".circuit-board").evaluate(e=>e.scrollLeft);
+   assert.ok(scrollBefore>50,"Zoomed circuit must jump to bulb");
+   await page.locator('[data-t="L"]').click();
+   const scrollAfter=await page.locator(".circuit-board").evaluate(e=>e.scrollLeft);
+   assert.ok(Math.abs(scrollBefore-scrollAfter)<5,"Pan position must survive selecting a terminal");
+   await page.locator('[data-t="L"]').click();
+   await page.locator('[data-view="battery"]').click();
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    await page.locator('[data-unwire="0"]').click();
