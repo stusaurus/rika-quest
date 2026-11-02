@@ -5,6 +5,7 @@ on:
       - 'games/akari/**'
       - 'scripts/test-akari.mjs'
       - 'scripts/test-akari-browser.mjs'
+      - 'scripts/build-akari-preview.mjs'
       - '.github/workflows/akari-qa.yml'
   workflow_dispatch:
 permissions:
@@ -22,6 +23,7 @@ jobs:
           node --check games/akari/game.js
           node --check games/akari/art.js
           node --check scripts/test-akari-browser.mjs
+          node --check scripts/build-akari-preview.mjs
       - name: Run full 14-mission simulation
         run: node scripts/test-akari.mjs
       - name: Install Playwright and browsers
@@ -30,6 +32,16 @@ jobs:
           npx playwright install --with-deps chromium webkit
       - name: Verify real mobile / desktop interactions
         run: node scripts/test-akari-browser.mjs
+      - name: Build self-contained playable preview
+        if: always()
+        run: node scripts/build-akari-preview.mjs
+      - name: Upload playable preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-playable-preview
+          path: artifacts/akari-preview.html
+          if-no-files-found: error
       - name: Save diagnostic screenshots
         if: always()
         uses: actions/upload-artifact@v4
