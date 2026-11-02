@@ -313,3 +313,42 @@
 .scene-character{width:113px;height:auto;aspect-ratio:106/116}
 @media(max-width:740px){.scene-character{height:auto;aspect-ratio:106/116}}
 @media(max-width:375px){.scene-character{width:92px;height:auto;aspect-ratio:106/116}}
+
+
+/* Effects are separate from the immutable eight-frame mascot artwork. */
+.character-art{position:relative}
+.tiranon-emote-fx{position:absolute;z-index:2;left:-8%;top:-12%;width:128%;height:122%;overflow:visible;pointer-events:none}
+.tiranon-emote-fx>g{opacity:0;visibility:hidden;transform-origin:108px 30px}
+.scene-character[data-mood="inspect"] .fx-inspect,
+.scene-character[data-mood="discover"] .fx-discover,
+.scene-character[data-mood="think"] .fx-think,
+.scene-character[data-mood="danger"] .fx-danger,
+.scene-character[data-mood="celebrate"] .fx-celebrate{opacity:1;visibility:visible}
+.scene-character[data-mood="inspect"] .fx-inspect{animation:tiraFxPop .45s ease-out both}
+.scene-character[data-mood="discover"] .fx-discover{animation:tiraFxPop .6s ease-out both}
+.scene-character[data-mood="think"] .fx-think{animation:tiraFxPop .45s ease-out both}
+.scene-character[data-mood="danger"] .fx-danger{animation:tiraFxAlert .5s ease-out both}
+.scene-character[data-mood="celebrate"] .fx-celebrate{animation:tiraFxPop .55s ease-out both}
+@keyframes tiraFxPop{from{opacity:0;transform:scale(.65) translateY(7px)}50%{opacity:1;transform:scale(1.06)}to{opacity:1;transform:scale(1)}}
+@keyframes tiraFxAlert{from{opacity:0;transform:scale(.7)}35%{opacity:1;transform:scale(1.12) rotate(-5deg)}70%{transform:scale(1.02) rotate(4deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+
+/* The successful experiment sends one short symbolic pulse to the dark town.
+   It is a visual metaphor, never a simulation of current outside the circuit. */
+.scene-restoration-trail{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.scene-restoration-trail svg{width:100%;height:100%;display:block}
+.restoration-arc{fill:none;stroke:#fff0b3;stroke-width:5;stroke-linecap:round;stroke-dasharray:16 20;filter:drop-shadow(0 0 6px #ffe38c);animation:lightRoute 1.15s ease-out both}
+.restoration-core{fill:#fff6c5;stroke:#ffe3a3;stroke-width:2;filter:drop-shadow(0 0 8px #ffe19d);animation:lightOrb 1.15s ease-in-out both}
+.restoration-spark{fill:#fff8cd;stroke:#ffe1a7;stroke-width:2;animation:lightSpark .8s ease-out both}
+.restoration-spark:nth-of-type(2){animation-delay:.2s}
+@keyframes lightRoute{from{stroke-dashoffset:200;opacity:0}20%{opacity:.95}to{stroke-dashoffset:0;opacity:0}}
+@keyframes lightOrb{0%{opacity:0;transform:translate(-180px,130px) scale(.3)}18%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.8)}}
+@keyframes lightSpark{0%{opacity:0;transform:scale(.2)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+.story-scene.energizing .landmark .window{animation:landmarkIgnition 1.15s ease-out both}
+.story-scene.energizing .scene-prop-svg .scene-bulb{animation:landmarkIgnition 1.15s ease-out both}
+@keyframes landmarkIgnition{0%{opacity:.18;filter:brightness(.45)}35%{opacity:.45}55%{opacity:1;filter:brightness(1.8)}76%{opacity:.65}100%{opacity:1;filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){
+ .scene-character .tiranon-emote-fx>g{animation:none!important}
+ .scene-restoration-trail{display:none!important}
+ .story-scene.energizing .landmark .window,
+ .story-scene.energizing .scene-prop-svg .scene-bulb{animation:none!important}
+}
