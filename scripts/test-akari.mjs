@@ -34,8 +34,9 @@ assert.equal(el("stageCelebration").hidden,true,"Short must never trigger victor
 click({unwire:"0"});wire("P","L");wire("N","R");check();done(1);
 assert.equal(el("sceneCharacter").dataset.mood,"celebrate","Completing a safe circuit should trigger a cheer");
 assert.equal(el("stageCelebration").hidden,false,"Clear should show nonblocking celebration");
+assert.equal(el("restorationTrail").hidden,false,"First clear should send a short pulse to the town");
 assert.match(el("characterArt").innerHTML,/tiranon-sprite-strip/,"Canonical dinosaur walk sprite should mount");
-move(2);wire("N","R");check();done(2);
+move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel old light trail");wire("N","R");check();done(2);
 move(3);for(const choice of ["wood","plastic","iron"])click({choice});check();done(3);
 move(4);for(const choice of ["clip","foil","wood"]){click({choice});check()}done(4);
 move(5);for(const choice of ["wood","plastic","clip"]){click({choice});check()}done(5);
@@ -62,4 +63,5 @@ assert.ok(window.AkariArt.circuit("series",false,false).includes("<svg"));
 assert.ok(window.AkariArt.bulb(true).includes("<svg"));
 assert.ok(window.AkariCharacter.render().includes("tiranon-walk-prototype.webp"));
 assert.equal(el("litPlaceCount").textContent,14,"Restoration progress should reach 14 regions");
+move(1);wire("P","L");wire("N","R");check();assert.equal(el("restorationTrail").hidden,true,"Replay must not trigger a first-clear town pulse");
 console.log("Akari Quest: 14/14 missions passed; dangerous battery short rejected; art templates rendered.");
