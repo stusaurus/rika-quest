@@ -40,11 +40,11 @@ try{
    await page.locator("[data-zoom]").click();
    assert.equal(await page.locator(".circuit-board.zoomed").count(),1,"Zoom should enlarge the interactive circuit");
    await page.locator('[data-view="bulb"]').click();
-   const scrollBefore=await page.locator(".circuit-board").evaluate(e=>e.scrollLeft);
-   assert.ok(scrollBefore>50,"Zoomed circuit must jump to bulb");
+   const before=await page.locator(".circuit-board").evaluate(e=>({left:e.scrollLeft,client:e.clientWidth,total:e.scrollWidth}));
+   if(before.total>before.client+20)assert.ok(before.left>50,"Zoomed mobile circuit must jump to bulb");
    await page.locator('[data-t="L"]').click();
    const scrollAfter=await page.locator(".circuit-board").evaluate(e=>e.scrollLeft);
-   assert.ok(Math.abs(scrollBefore-scrollAfter)<5,"Pan position must survive selecting a terminal");
+   assert.ok(Math.abs(before.left-scrollAfter)<5,"Pan position must survive selecting a terminal");
    await page.locator('[data-t="L"]').click();
    await page.locator('[data-view="battery"]').click();
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
