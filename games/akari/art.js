@@ -97,7 +97,7 @@ function testCircuit(id,lit){
 }
 
 function workbench(wires,lit){
- const points={P:[80,70],N:[80,174],L:[260,121],R:[310,174]};
+ const points={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};
  const leads=wires.map(([a,b])=>{
   const p=points[a],q=points[b];if(!p||!q)return "";
   const danger=(a==="P"&&b==="N")||(a==="N"&&b==="P");
@@ -113,14 +113,14 @@ function workbench(wires,lit){
  '<g class="battery-model"><rect x="32" y="83" width="98" height="83" rx="19" fill="url(#workCell)" stroke="#ffdfac" stroke-width="4"/>'+
  '<rect x="39" y="91" width="85" height="64" rx="13" fill="#e3a065" opacity=".23"/>'+
  '<path d="M46 91Q38 116 47 152" stroke="#ffe3b0" stroke-width="8" opacity=".35" fill="none"/>'+
- '<path d="M80 83V70M80 166V174" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
+ '<path d="M80 83V43M80 166V207" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
  '<rect x="64" y="77" width="32" height="9" rx="4" fill="url(#workMetal)" stroke="#d9eced" stroke-width="2"/>'+
  '<rect x="49" y="161" width="62" height="7" rx="3" fill="url(#workMetal)"/>'+
  '<text x="81" y="116" text-anchor="middle" fill="#fff9e7" font-size="21" font-weight="900">1.5V</text>'+
  '<text x="81" y="140" text-anchor="middle" fill="#fff2da" font-size="13" font-weight="800">乾電池</text></g>'+
  '<g class="bulb-model">'+
- '<path d="M260 121L286 141" stroke="#e3ca8f" stroke-width="8" stroke-linecap="round"/>'+
- '<path d="M310 159V174" stroke="url(#workMetal)" stroke-width="8" stroke-linecap="round"/>'+
+ '<path d="M245 144H286" stroke="#e3ca8f" stroke-width="8" stroke-linecap="round"/>'+
+ '<path d="M310 159V206" stroke="url(#workMetal)" stroke-width="8" stroke-linecap="round"/>'+
  '<path d="M284 132C271 117 265 102 268 83C273 47 294 35 312 36C339 36 356 57 356 85C356 109 344 123 333 136Z" fill="url(#workGlass)" stroke="'+(lit?'#fff1af':'#c1e9ed')+'" stroke-width="4"/>'+
  '<path d="M284 82C288 59 299 52 306 53" fill="none" stroke="#fff" opacity=".62" stroke-width="7" stroke-linecap="round"/>'+
  '<path d="M296 126L296 102L302 98L310 105L318 98L325 103L325 126" fill="none" stroke="'+(lit?'#fff8be':'#dfb98d')+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'+
