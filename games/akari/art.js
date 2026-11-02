@@ -73,6 +73,12 @@ function shortDiagram(){
 function testCircuit(id,lit){
  const names={clip:"鉄",foil:"アルミ",wood:"木",plastic:"プラスチック"};
  const color={clip:"#d9f0f0",foil:"#d5e5e9",wood:"#c29364",plastic:"#70c9eb"}[id]||"#91b5c4";
+ const sample={
+ clip:'<path d="M205 91C221 78 230 88 227 101L227 109Q226 118 216 116Q207 115 207 105L207 95Q208 89 212 91Q218 93 216 101L216 109" stroke="url(#metal)" stroke-width="6" stroke-linecap="round" fill="none"/>',
+ foil:'<path d="M190 90L219 87L229 109L194 119Z" fill="#d6e8ea" stroke="#f8ffff" stroke-width="3"/><path d="M194 119L203 94L219 87L213 111L229 109L202 105" stroke="#7b9caa" stroke-width="2" fill="none"/>',
+ wood:'<path d="M189 91L219 85L232 112L198 119Z" fill="#b78553" stroke="#f0cb97" stroke-width="3"/><path d="M194 96L218 91M198 103L223 98M201 109L228 106" stroke="#8b5e3f" stroke-width="2"/>',
+ plastic:'<g transform="rotate(-13 208 102)"><rect x="183" y="90" width="49" height="26" rx="3" fill="#78cbed" stroke="#d4f6ff" stroke-width="3"/><path d="M190 91V101M199 91V97M207 91V101M215 91V97M224 91V101" stroke="#e8ffff" stroke-width="2"/></g>'
+ }[id]||'<path d="M195 96L217 110" stroke="#daeaf1" stroke-width="5"/>';
  const glow=lit?"#ffe494":"#8aaebe";
  return wrap("0 0 420 225",defs+plate(3,3,414,219)+
  '<path d="M70 49V32H206V83M206 118V138H323M354 162V186H70V161" stroke="'+(lit?"#ffec9b":"#dcb78f")+'" stroke-width="7" fill="none" stroke-linecap="round"/>'+
