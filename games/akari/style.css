@@ -167,3 +167,15 @@
 .circuit-legend span{display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#e0f2ec;color:#2e5562;padding:8px 11px;border:1px solid #b9d8cf;border-radius:10px;font-size:12px}
 .circuit-legend small{font-size:11px;color:#597d84}
 @media(max-width:375px){.circuit-legend span{font-size:11px;padding:7px}.circuit-legend small{font-size:10px}}
+
+
+/* The restored lighthouse casts a slow, soft beam across the sea. */
+.story-scene[data-place="lighthouse"].restored::after{
+ content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+ background:linear-gradient(112deg,transparent 6%,#fff7c308 30%,#ffe5a42b 60%,transparent 78%);
+ clip-path:polygon(75% 25%,0 0,0 100%);opacity:.75;transform-origin:75% 25%;
+ animation:lighthouseSweep 7s ease-in-out infinite alternate
+}
+.story-scene[data-stage="14"].restored .scene-glow{opacity:1;background:radial-gradient(ellipse at 75% 30%,#ffe7a48c,transparent 60%)}
+@keyframes lighthouseSweep{from{transform:rotate(-5deg);opacity:.38}to{transform:rotate(6deg);opacity:.8}}
+@media(prefers-reduced-motion:reduce){.story-scene[data-place="lighthouse"].restored::after{animation:none;opacity:.48}}
