@@ -374,6 +374,49 @@ function check(){
 }
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
+ if(ui.builder){
+  const B=window.AkariBuilder,b=ui.builder;
+  if(target.hasAttribute("data-builder-t")){
+   const term=target.dataset.builderT;
+   if(!B.ids.includes(term))return;
+   if(b.selected===null){b.selected=term;renderWorkspace();setFeedback("選んだ端子："+B.terminals[term].name+"。次につなぐ端子をタップしよう。");return;}
+   const from=b.selected;b.selected=null;
+   if(from===term){renderWorkspace();setFeedback("端子の選択を解除したよ。");return;}
+   const key=B.edge(from,term);
+   const index=b.wires.findIndex(pair=>B.edge(...pair)===key);
+   if(index>=0)b.wires.splice(index,1);
+   else b.wires.push([from,term]);
+   b.tests={};saveBuilderDraft();renderWorkspace();
+   setFeedback(index>=0?"その導線を外したよ。":"導線を追加したよ。OFFとONを両方確かめてみよう。");
+   reactCharacter("inspect");return;
+  }
+  if(target.hasAttribute("data-builder-clear")){
+   b.wires=[];b.selected=null;b.tests={};saveBuilderDraft();renderWorkspace();setFeedback("導線をすべて外したよ。新しく設計しよう。");return;
+  }
+  if(target.hasAttribute("data-builder-switch")){
+   const mode=target.dataset.builderSwitch;if(!["on","off"].includes(mode))return;
+   b.switchOn=mode==="on";b.selected=null;saveBuilderDraft();renderWorkspace();
+   setFeedback("スイッチを"+(b.switchOn?"ON":"OFF")+"に切り替えた。通電実験で確認しよう。");return;
+  }
+  if(target.hasAttribute("data-builder-test")){
+   const mode=b.switchOn?"on":"off";
+   const result=B.evaluate(b.wires,b.switchOn);
+   b.tests[mode]={...result,signature:B.signature(b.wires)};
+   saveBuilderDraft();renderWorkspace();
+   if(result.short){setFeedback("⚠ ショート！ 電池の＋と−が豆電球を通らずつながる危険な道があるよ。実物で試さないでね。","warning");reactCharacter("danger");return;}
+   const ok=(mode==="on"&&result.lit)||(mode==="off"&&!result.lit);
+   setFeedback("実験記録："+(mode==="on"?"ON":"OFF")+" → "+(result.lit?"点灯":"消灯")+(ok?"。目的どおり！":"。条件と合わないので配線を見直そう。"),ok?"success":"warning");
+   reactCharacter(ok?"discover":"think");return;
+  }
+  if(target.hasAttribute("data-builder-submit")){
+   if(!B.expected(b.tests,b.wires)){setFeedback("ONで点灯・OFFで消灯、ショートなしを両方の実験で確かめよう。","warning");return;}
+   const used=B.normalize(b.wires),wiring=used.map(([a,c])=>B.terminals[a].name+"―"+B.terminals[c].name).join("、");
+   recordObservation("builder:14","【最終設計】"+wiring+"。スイッチOFFでは消灯、ONでは点灯。いずれもショートなし。");
+   ui.builderPassed=true;ui.builder=null;clearBuilderDraft();
+   success();return;
+  }
+  return;
+ }
  if(ui.transfer){
   const p=window.AkariTransfer?.get(current().id);if(!p)return;
   if(target.hasAttribute("data-transfer-jump")){
@@ -518,7 +561,7 @@ function bind(){
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
  $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
- $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
+ $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.builder){setFeedback("💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
  $("helpBtn").addEventListener("click",()=>modal(true));
