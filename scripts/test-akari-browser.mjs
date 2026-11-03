@@ -31,7 +31,9 @@ try{
        14:{a:"lit",b:"dark",c:"dark",reason:"closed"}
      }[id];
      assert.ok(values,"Unknown transfer test "+id);
-     assert.equal(await page.locator(".transfer-probe").count(),3,"Transfer gate has three novel circuit cases");
+     assert.equal(await page.locator(".transfer-probe").count(),1,"Only one unknown circuit is shown at a time on iPhone");
+     assert.equal(await page.locator(".transfer-reason").count(),0,"Learners must predict before seeing causal choices");
+     if(id===7)assert.match(await page.locator(".transfer-focus").textContent(),/AとBがON、CがOFF/,"Three-switch transfer should differ from two-switch tutorial");
      assert.equal(await page.locator("#checkBtn").isVisible(),false,"Main check must not bypass transfer challenge");
      if(tryWrong){
        const wrong=id===12?"safe":"lit";
@@ -43,6 +45,8 @@ try{
        assert.equal(await page.locator("#discovery").isVisible(),false,"Blind guessing must not complete scientific transfer");
      }
      for(const item of ["a","b","c"])await page.locator('[data-transfer-answer="'+item+'"][data-transfer-value="'+values[item]+'"]').click();
+     assert.equal(await page.locator(".transfer-review-row").count(),3,"After prediction, show a compact comparison of three results");
+     assert.equal(await page.locator(".transfer-probe").count(),0,"Collapse circuit diagrams into editable review after prediction");
      const wrongReason=id===7?"one":id===12?"off":id===14?"battery":"plus";
      await page.locator('[data-transfer-reason="'+wrongReason+'"]').click();
      await page.locator('[data-transfer-verify]').click();
