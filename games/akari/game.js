@@ -5,8 +5,8 @@ const M=[
 {id:1,name:"はじめてのひかり",place:"village",placeName:"ひかりの村",mode:"wire",goal:"小屋のあかりをつけよう",story:"村の小屋がまっくらだ。乾電池と豆電球をつないで、はじめてのひかりをともそう。",instructions:"乾電池の＋と−を、豆電球の金属の横部分・底の接点につなごう。端子を2つ順番にタップすると導線を引けるよ。",discovery:"豆電球は、乾電池の＋極と−極が豆電球を通る1つの輪でつながると光る。電気の通り道を「回路」というよ。",hints:["豆電球には電気が出入りする2つの接点があるよ。","＋から豆電球の金属の横部分へ、−から底の接点へ。2本つなごう。"]},
 {id:2,name:"切れた通り道",place:"village",placeName:"ひかりの村",mode:"wire",prefill:[["P","L"]],goal:"消えた街灯を直そう",story:"さっきまで明るかった街灯が消えちゃった。1本の導線がはずれているみたい。",instructions:"すでにつながっている導線を観察して、足りない1本をつなごう。",discovery:"回路にすき間があると電気が流れず、豆電球はつかない。1か所でも切れていると点灯しないんだ。",hints:["すでに＋極と豆電球はつながっているよ。","−極と、まだつながっていない底の接点をつなごう。"]},
 {id:3,name:"橋の材料さがし",place:"bridge",placeName:"こもれび橋",mode:"explore",goal:"橋を調べて修理しよう",story:"橋のあかりが消えた！代わりの材料を探して通り道をつなごう。",instructions:"橋の3か所を調査。材料を予想して仮想実験し、電気の通り道にある2つのすき間を自分で修理して、なぜ光ったか説明しよう。",discovery:"電球の横と底の接点を通り、乾電池の＋と−が閉じた輪になると点灯する。途中に木やプラスチックのような不導体が入ると通り道が途切れる。",hints:["電気が通るかは材料によって違うよ。実験の記録を比べてみよう。","2か所のすき間のどちらも、電気を通すものをはさみ、＋から−へ戻る輪を作ろう。"]},
-{id:4,name:"庭の実験工房",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"conductor",goal:"電気を通すものを2つ見つけよう",story:"庭師さんが材料を集めてきた。豆電球を使って、どれが電気を通すのか実験しよう。",instructions:"材料を選び、点灯するか予想してから実験！ 通す2種類と、通さない1種類を発見しよう。",discovery:"鉄のクリップやアルミはくのような金属は電気を通す「導体」。実験で確かめることができるんだ。",hints:["金属でできているものに注目しよう。","クリップとアルミはくを実験し、木やプラスチックとも比べよう。"]},
-{id:5,name:"にせものの金属",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"insulator",goal:"電気を通さないものを見つけよう",story:"ぴかぴかの材料は全部電気を通す？ 見た目にだまされないで調べてみよう。",instructions:"予想してから材料を実験！ 通さない2種類と、通す1種類を見つけよう。予想はずれも大切な発見だよ。",discovery:"色や光り方ではなく、材料の性質が大切。プラスチックや乾いた木はふつう電気を通しにくい「不導体」だよ。",hints:["ぴかぴかだからといって金属とは限らないよ。","プラスチックは見た目が金属でも通しにくい。木も試そう。"]},
+{id:4,name:"庭の実験工房",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"conductor",goal:"電気を通すものを2つ見つけよう",story:"庭師さんが材料を集めてきた。豆電球を使って、どれが電気を通すのか実験しよう。",instructions:"同じクリップで接点の条件を変えたらどうなる？基準実験から始め、条件をそろえて材料を比べ、電気を通す性質を説明しよう。",discovery:"同じ金属でも接点が離れると消灯する。接点条件をそろえて比べると、鉄やアルミニウムは電気を通し、乾いた木やプラスチックは通しにくいとわかる。",hints:["最初は材料を変えず、同じクリップの接点だけを変えてみよう。","材料を比べるときは接点を両方しっかり合わせて、条件をそろえよう。"]},
+{id:5,name:"にせものの金属",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"insulator",goal:"電気を通さないものを見つけよう",story:"ぴかぴかの材料は全部電気を通す？ 見た目にだまされないで調べてみよう。",instructions:"見た目が似た4材料を仮想実験で見分け、電気を通す修理部品1つ・電気を通しにくい仕切り2つを選び、ショートせず点灯する設備を完成させよう。",discovery:"主回路では導体を使うと豆電球に電気が流れる。一方、乾電池の＋と−を隔てる仕切りは不導体が適している。金属が両極をつなぐとショートし危険。",hints:["豆電球に電気を通す部分と、電池の＋と−が直接触れるのを防ぐ部分では必要な材料が違うよ。","主回路には金属、むき出しの2極の間には木やプラスチックなど電気を通しにくい材料を考えよう。"]},
 {id:6,name:"時計塔の故障調査",place:"tower",placeName:"古時計の塔",mode:"repair",goal:"故障した回路を修理しよう",story:"時計塔の時計が暗くて読めない。点灯しない理由を、部品を調べて探そう。",instructions:"3つの部品を調査して原因を推理。修理後は自分で回路を作り、点灯を実験して＋極から−極までの道をたどろう。",discovery:"電球がつかないとき、すぐに乾電池のせいと決めつけず、接点や導線を1か所ずつ調べると原因がわかる。",hints:["故障は乾電池とは限らないよ。","3つの部品の観察結果を比較し、異常のあるものを考えよう。"]},
 {id:7,name:"ふたつの合図",place:"tower",placeName:"古時計の塔",mode:"logic",target:"series",goal:"両方押したときだけ点灯する回路",story:"時計塔の扉には2つのスイッチがある。両方ONのときだけ明かりをつけたいんだ。",instructions:"直列・並列の違いを4通りで調べよう。次は自分で導線を引き、両方ONのときだけ点灯する回路を作ろう。",discovery:"スイッチを直列につなぐと、両方閉じたときだけ回路がつながる。「両方」が必要なんだね。",hints:["1つでもスイッチが開くと電気が止まる回路はどっち？","スイッチが1つ開いていても電流が通れる、別の道はあるかな？"]},
 {id:8,name:"どちらかの合図",place:"port",placeName:"月あかり港",mode:"logic",target:"parallel",goal:"どちらかで点灯する回路",story:"港の灯りは、船着き場からでも倉庫からでもつけたい。スイッチAかB、どちらかがONなら点灯させよう。",instructions:"4通りの点灯・消灯を比べたら、自分で導線をつないで、どちらかONなら点灯する回路を設計しよう。",discovery:"スイッチを並列につなぐと、どちらか一方が閉じていれば電気の通り道ができる。",hints:["電気の通り道が2つに分かれるとどうなる？","1本の通り道が閉じても、もう1本が使えるつなぎ方を考えよう。"]},
@@ -22,17 +22,31 @@ let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturn
 let reactionToken=0,celebrationToken=0,restorationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 
-function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,notes:[]};}
+function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},notes:[]};}
 function current(){return M[state.active-1]}
-function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
+function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{garden:window.AkariGarden?window.AkariGarden.initial(m.id):null};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
 function saveSafetyDraft(){if(current().id===12&&ui.safety){state.safetyDraft=window.AkariSafety.restore(ui.safety);persist();}}
 function clearSafetyDraft(){state.safetyDraft=null;persist();}
 function saveBridgeDraft(){if(current().id===3&&ui.bridge&&window.AkariBridge){state.bridgeDraft=window.AkariBridge.normalize(ui.bridge);persist();}}
 function clearBridgeDraft(){state.bridgeDraft=null;persist();}
+function saveGardenDraft(){
+ const id=current().id;
+ if(![4,5].includes(id)||!window.AkariGarden||!ui.garden)return;
+ state.gardenDrafts=state.gardenDrafts||{};
+ state.gardenDrafts[id]=window.AkariGarden.normalize(id,ui.garden);
+ persist();
+}
+function clearGardenDraft(id){
+ if(state.gardenDrafts?.[id]){delete state.gardenDrafts[id];persist();}
+}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
  if(m.id===3&&window.AkariBridge){base.bridge=window.AkariBridge.normalize(state.completed[3]?null:state.bridgeDraft);return base;}
+ if([4,5].includes(m.id)&&window.AkariGarden){
+  base.garden=window.AkariGarden.normalize(m.id,state.completed[m.id]?null:state.gardenDrafts?.[m.id]);
+  if(m.id!==5||state.completed[m.id]||!window.AkariGarden.canFinish(5,base.garden)||!draft)return base;
+ }
  if(m.id===12&&!state.completed[m.id]&&window.AkariSafety){base.safety=window.AkariSafety.restore(state.safetyDraft);const finished=base.safety.index===2&&window.AkariSafety.canAdvance(base.safety)&&base.safety.reason===window.AkariSafety.correctReason;if(!finished||!draft)return base;}
  if([7,8].includes(m.id)&&!state.completed[m.id]&&state.switchDrafts?.[m.id]?.unlocked&&window.AkariSwitchLab){
   const B=window.AkariSwitchLab,raw=state.switchDrafts[m.id],wires=B.normalize(raw.wires),sig=B.signature(wires),trials={};
@@ -219,6 +233,7 @@ function success(){
   reactCharacter("think","最後は自分で回路を作るノン！");return;
  }
  if(current().id===12)clearSafetyDraft();
+ if([4,5].includes(current().id))clearGardenDraft(current().id);
  const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。"+(ui.transferPassed?" 🔍 応用の証 "+Object.keys(state.masteries).length+"/6":""),"success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
@@ -244,7 +259,7 @@ function renderScene(){
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
- $("checkBtn").hidden=stageComplete||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
+ $("checkBtn").hidden=stageComplete||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
@@ -266,27 +281,7 @@ function renderWire(){
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
 function renderExplore(){return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>橋の調査画面を読み込めませんでした。再読み込みしてください。</p>';}
-function renderMaterial(){
- const selected=materials.find(x=>x.id===ui.selected),tried=ui.tried;
- const tested=!!selected&&tried.includes(selected.id);
- const predicted=selected&&(ui.predictions[selected.id]||ui.prediction);
- const predictions=[["lit","💡 つくと思う"],["dark","◯ つかないと思う"]];
- let predictPanel='<div class="prediction-panel">';
- if(!selected){
-  predictPanel+='<p>① 材料を選ぼう → ② 点灯を予想しよう → ③ 通電して比べよう</p>';
- }else if(!tested){
-  predictPanel+='<strong>🔮 予想：'+escapeHtml(selected.name)+'をはさむと？</strong>'+
-  '<div class="prediction-buttons">'+predictions.map(([id,label])=>'<button class="prediction-option'+(ui.prediction===id?' chosen':'')+'" data-predict="'+id+'" aria-pressed="'+(ui.prediction===id)+'">'+label+'</button>').join("")+'</div>'+
-  '<p>予想ははずれても減点なし。実験で確かめよう！</p>';
- }else{
-  const actual=selected.conductive?"lit":"dark";
-  predictPanel+='<strong>🔍 予想と実験をくらべよう</strong><p>予想：'+(predicted==="lit"?"点灯":"消灯")+' ／ 実際：'+(actual==="lit"?"点灯":"消灯")+
-  (predicted===actual?' <b>✓ 予想どおり！</b>':' <b>✦ 新しい発見！</b>')+'</p>';
- }
- predictPanel+='</div>';
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🧪 材料で実験</h3><p class="lab-sub">導線のすき間に材料をはさんで、豆電球がつくか予想しよう。</p><div class="choices two">'+materials.map(x=>choice(x.id,x.name,Art.material(x.id),ui.selected===x.id,tried.includes(x.id)?"tried":"")).join("")+'</div>'+predictPanel+'</div>'
- +'<div class="lab-panel"><h3>🔬 電気の通り道</h3><div class="science-spotlight">'+Art.testCircuit(selected?.id,selected&&tested&&selected.conductive)+'</div><div class="test-light'+(selected&&tested&&selected.conductive?' on':'')+'">'+(selected&&tested&&selected.conductive?'💡':'◯')+'</div><p class="test-caption">'+(selected&&tested?selected.conductive?"電気を通した！ 豆電球が点灯。":"電気を通さない。豆電球は消えたまま。":"予想を決めたら電気を流してみよう")+'</p><div class="lab-reading">実験済み：'+tried.length+' / 4<br>'+tried.map(t=>{let x=materials.find(z=>z.id===t);return x.name+"："+(x.conductive?"点灯":"消灯")}).join(" ／ ")+'</div></div></div>';
-}
+function renderMaterial(){return window.AkariGarden?window.AkariGarden.render(current().id,ui.garden):'<div class="lab-panel">実験工房を読み込めませんでした。再読み込みしてください。</div>';}
 function repairParts(){return current().id===6?[{id:"battery",name:"乾電池",broken:false,detail:"1.5V・残量あり。問題なし。"},{id:"wire",name:"導線のつなぎ目",broken:true,detail:"接触がはずれている！"},{id:"bulb",name:"豆電球",broken:false,detail:"フィラメントは切れていない。"}]:[{id:"wire",name:"導線",broken:true,detail:"途中で切れていた！"},{id:"bulb",name:"豆電球の接点",broken:true,detail:"底が端子に触れていない！"},{id:"battery",name:"乾電池",broken:false,detail:"十分な電気がある。"}];}
 function renderRepair(){
  const parts=repairParts(),broken=parts.filter(x=>x.broken),fixedCount=parts.filter(x=>ui.fixed.includes(x.id)).length;
@@ -393,16 +388,15 @@ function check(){
   clearBridgeDraft();success();return;
  }
  if(m.mode==="material"){
- if(!ui.selected){setFeedback("まず実験する材料を選んでね。","warning");return;}
- const x=materials.find(x=>x.id===ui.selected),newTrial=!ui.tried.includes(x.id);
- if(newTrial&&!ui.prediction){setFeedback("💡 通電する前に「つく／つかない」を予想しよう。はずれても減点はないよ。","warning");return;}
- if(newTrial){
-  ui.tried.push(x.id);ui.predictions[x.id]=ui.prediction;
-  recordObservation("material:"+x.id,x.name+"：予想は"+(ui.prediction==="lit"?"点灯":"消灯")+" → 実際は"+(x.conductive?"点灯":"消灯")+"。");
+  const G=window.AkariGarden;
+  if(!G||!G.canFinish(m.id,ui.garden)){
+   setFeedback(m.id===4?"接点の比較・条件をそろえた材料実験・科学的な説明を完成させよう。":"実験済み材料で通電部分と2つの仕切りを設計し、安全な点灯と両方の理由を確認しよう。","warning");
+   return;
+  }
+  const sampleText=m.id===4?"【実験工房】同じ鉄のクリップでも接点が離れると消灯。両接点の条件をそろえて金属と不導体の性質を比べた。":"【庭の安全設計】通電には"+ui.garden.slots.link+"、隔てる仕切りには"+ui.garden.slots.guardA+"と"+ui.garden.slots.guardB+"を使用。ショートなしの点灯を確認した。";
+  recordObservation("garden:proof:"+m.id,sampleText);
+  success();return;
  }
- renderWorkspace();
- const conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
- if(m.target==="conductor"?conductor>=2&&insulator>=1:insulator>=2&&conductor>=1){success();return;}setFeedback(x.name+"："+(x.conductive?"電気を通して光った！":"電気を通さず光らなかった。")+" ほかの材料とも比べてみよう。",x.conductive?"success":"");return;}
  if(m.mode==="repair"){
   const broken=repairParts().filter(x=>x.broken);
   if(!ui.diagnosed){setFeedback("🔎 まず3つの部品を調べ、故障の原因を推理して診断しよう。","warning");return;}
@@ -654,6 +648,114 @@ function handleWorkspace(e){
  else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");reactCharacter("inspect","つながったノン！");}}else setFeedback("その2つはもうつながっているよ。");}
  renderWorkspace();return;}
  if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
+ if(current().mode==="material"&&window.AkariGarden){
+  const G=window.AkariGarden,id=current().id,g=ui.garden||G.initial(id);
+  if(target.hasAttribute("data-garden-clamp")){
+   if(id!==4)return;
+   const clamp=target.dataset.gardenClamp;
+   if(!["loose","tight"].includes(clamp))return;
+   g.clamp=clamp;g.guess=null;ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback(clamp==="tight"?"2つの金属接点を合わせた。":"接点を1か所だけ離した。電気の輪はどうなる？");return;
+  }
+  if(target.hasAttribute("data-garden-sample")){
+   const sample=G.material(target.dataset.gardenSample);
+   if(!sample||(id===4&&!G.calibrated(g)))return;
+   g.selected=sample.id;g.guess=null;ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("試料を選んだよ。点灯を予想して実験で確かめよう。");reactCharacter("inspect");return;
+  }
+  if(target.hasAttribute("data-garden-guess")){
+   const guess=target.dataset.gardenGuess;
+   if(!["lit","dark"].includes(guess))return;
+   if(id===4){
+    const old=G.calibrated(g)?g.trials[g.selected]?.[g.clamp]:g.calibrations[g.clamp];
+    if(old)return;
+   }else if(!G.material(g.selected)||g.tests[g.selected])return;
+   g.guess=guess;ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("予想を記録したよ。実験で比較しよう。");return;
+  }
+  if(target.hasAttribute("data-garden-calibrate")){
+   if(id!==4||!g.guess||g.calibrations[g.clamp])return;
+   const result=G.experiment("clip",g.clamp);
+   g.calibrations[g.clamp]={guess:g.guess,actual:result.kind};g.guess=null;
+   ui.garden=g;saveGardenDraft();renderWorkspace();
+   recordObservation("garden:control:"+g.clamp,"【条件比較】同じクリップで"+(g.clamp==="tight"?"両接点を合わせると":"接点を浮かせると")"："+(result.lit?"点灯":"消灯")+"。");
+   setFeedback("同じクリップでも、接点によって結果が変わった。もう一方も比べよう。","success");reactCharacter("discover");return;
+  }
+  if(target.hasAttribute("data-garden-control-reason")){
+   if(id!==4||Object.keys(g.calibrations).length!==2)return;
+   const reason=target.dataset.gardenControlReason;
+   if(!G.reasons4.some(([key])=>key===reason))return;
+   g.calibrationReason=reason;ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback(reason==="control"?"条件の違いがわかった！材料を調べてみよう。":"2つの実験は同じ材料だったね。変えた条件をもう一度見よう。",reason==="control"?"success":"warning");return;
+  }
+  if(target.hasAttribute("data-garden-test")){
+   const sample=G.material(g.selected);
+   if(!sample||!g.guess)return;
+   const clamp=id===4?g.clamp:"tight";
+   if(id===4&&(!G.calibrated(g)||g.trials[sample.id]?.[clamp]))return;
+   if(id===5&&g.tests[sample.id])return;
+   const result=G.experiment(sample.id,clamp),guess=g.guess;
+   if(id===4){
+    g.trials[sample.id]=g.trials[sample.id]||{};
+    g.trials[sample.id][clamp]={guess,actual:result.kind};
+   }else g.tests[sample.id]={guess,actual:result.kind};
+   g.guess=null;ui.garden=g;saveGardenDraft();renderWorkspace();
+   recordObservation("garden:trial:"+id+":"+sample.id+":"+clamp,"【材料調査】"+sample.name+"（"+(clamp==="tight"?"接点を合わせる":"接点を浮かせる")+"）：予想 "+(guess==="lit"?"点灯":"消灯")+"／実際 "+(result.lit?"点灯":"消灯")+"。");
+   setFeedback(result.lit?"豆電球が点灯。材料と接点の関係を考えよう。":"豆電球は消灯。試料と接点の両方を確かめよう。","success");
+   reactCharacter("discover");return;
+  }
+  if(target.hasAttribute("data-garden-material-reason")){
+   if(id!==4)return;
+   const reason=target.dataset.gardenMaterialReason;
+   const p=G.evidence4(g);
+   if(!G.calibrated(g)||p.metals<2||p.nonmetals<1||!G.conclusions4.some(([key])=>key===reason))return;
+   g.finalReason=reason;ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("結論を選んだ。実験の条件と結果がつながっているか確認しよう。");return;
+  }
+  if(target.hasAttribute("data-garden-slot")){
+   if(id!==5)return;
+   const slot=target.dataset.gardenSlot,sample=G.material(g.selected),e=G.evidence5(g);
+   if(!["link","guardA","guardB"].includes(slot)||!sample||!g.tests[sample.id]||e.conductors<1||e.nonconductors<2)return;
+   const prev=g.slots[slot];
+   if(prev===sample.id)g.slots[slot]=null;
+   else{
+    for(const k of ["link","guardA","guardB"])if(k!==slot&&g.slots[k]===sample.id)g.slots[k]=null;
+    g.slots[slot]=sample.id;
+   }
+   g.prediction=null;g.measurement=null;g.pathReason=null;g.guardReason=null;
+   ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("役割を変更したよ。新しい設計でもう一度仮想通電しよう。");reactCharacter("inspect");return;
+  }
+  if(target.hasAttribute("data-garden-design-guess")){
+   if(id!==5)return;
+   const guess=target.dataset.gardenDesignGuess;
+   if(!["short","lit","dark"].includes(guess))return;
+   g.prediction=guess;g.measurement=null;g.pathReason=null;g.guardReason=null;
+   ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("設計した設備の結果を予想した。安全に仮想実験しよう。");return;
+  }
+  if(target.hasAttribute("data-garden-design-test")){
+   if(id!==5||!g.prediction||!Object.values(g.slots).every(Boolean))return;
+   const actual=G.evaluate5(g.slots);
+   g.measurement={prediction:g.prediction,signature:G.signature5(g.slots),actual:actual.kind};
+   g.pathReason=null;g.guardReason=null;ui.garden=g;saveGardenDraft();renderWorkspace();
+   if(actual.short){setFeedback("⚠ 仮想実験でショートの危険を発見。電池の＋と−を隔てる部品を見直そう。実物では試さないでね。","warning");reactCharacter("danger");}
+   else if(actual.lit){setFeedback("💡 安全な回路ができた！どこに導体・不導体を使ったか説明して完成させよう。","success");reactCharacter("discover");}
+   else{setFeedback("回路が切れて消灯した。豆電球に電気を届ける部品を見直そう。","warning");reactCharacter("think");}
+   recordObservation("garden:design:"+G.signature5(g.slots),"【設備の仮想実験】"+G.signature5(g.slots)+"：予想 "+(g.prediction==="lit"?"点灯":g.prediction==="short"?"ショート":"消灯")+"、実際 "+(actual.kind==="lit"?"点灯":actual.kind==="short"?"ショート":"消灯")+"。");
+   return;
+  }
+  if(target.hasAttribute("data-garden-path-reason")||target.hasAttribute("data-garden-cover-reason")){
+   if(id!==5||!G.measured5(g)||!G.evaluate5(g.slots).lit)return;
+   if(target.hasAttribute("data-garden-path-reason")){
+    const val=target.dataset.gardenPathReason;if(!G.paths5.some(([key])=>key===val))return;g.pathReason=val;
+   }else{
+    const val=target.dataset.gardenCoverReason;if(!G.covers5.some(([key])=>key===val))return;g.guardReason=val;
+   }
+   ui.garden=g;saveGardenDraft();renderWorkspace();
+   setFeedback("理由を選んだよ。回路を通すところと、隔てるところの役割を確認しよう。");return;
+  }
+ }
  if(target.hasAttribute("data-predict")){
   if(current().mode!=="material"||!ui.selected)return;
   const guess=target.dataset.predict;if(guess!=="lit"&&guess!=="dark")return;
@@ -844,7 +946,7 @@ function bind(){
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
