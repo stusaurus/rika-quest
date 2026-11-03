@@ -96,10 +96,12 @@ function diagram(kind){
 function get(id){return puzzles[id]||null;}
 function render(id,answers,reason){
  const p=get(id);if(!p)return"";
- return '<section class="transfer-puzzle"><div class="transfer-heading"><span>🚨 街からの追加依頼</span><h3>'+p.title+'</h3><p>'+p.intro+'</p></div>'+
+ const count=p.probes.filter(t=>answers[t.id]).length;
+ const ready=count===3&&!!reason;
+ return '<section class="transfer-puzzle"><div class="transfer-heading"><span>🚨 街からの追加依頼</span><h3>'+p.title+'</h3><p>'+p.intro+'</p><div class="transfer-progress">回路の判断：'+count+' / 3　　理由：'+(reason?"選択済み":"未選択")+'</div></div>'+
  '<div class="transfer-probes">'+p.probes.map((t,index)=>'<div class="transfer-probe"><strong>調査 '+(index+1)+'：'+t.name+'</strong>'+diagram(t.diagram)+'<div class="transfer-answers">'+p.choices.map(value=>'<button type="button" data-transfer-answer="'+t.id+'" data-transfer-value="'+value+'" aria-pressed="'+(answers[t.id]===value)+'" class="'+(answers[t.id]===value?'selected':'')+'">'+labels[value]+'</button>').join("")+'</div></div>').join("")+'</div>'+
  '<div class="transfer-reason"><strong>🧠 どうしてそうなる？</strong><p>3つの予想をつなぐ、正しい理由を選ぼう。</p>'+p.reasons.map(([key,label])=>'<button type="button" data-transfer-reason="'+key+'" aria-pressed="'+(reason===key)+'" class="'+(reason===key?'selected':'')+'">'+label+'</button>').join("")+'</div>'+
- '<button type="button" class="transfer-verify" data-transfer-verify="1">🔑 予想と理由を提出して街を救う</button></section>';
+ '<button type="button" class="transfer-verify" data-transfer-verify="1"'+(ready?"":" disabled")+' aria-disabled="'+(!ready)+'">🔑 予想と理由を提出して街を救う</button></section>';
 }
 function score(id,answers,reason){const p=get(id);if(!p)return null;
  const wrong=p.probes.filter(x=>answers[x.id]!==x.answer).map(x=>x.id);
