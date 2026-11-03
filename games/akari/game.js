@@ -28,6 +28,17 @@ function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
+ if(m.id===14&&!state.completed[m.id]&&state.masteries?.[14]&&window.AkariBuilder){
+  const raw=state.builderDraft||{},wires=window.AkariBuilder.normalize(raw.wires),signature=window.AkariBuilder.signature(wires);
+  const tests={};
+  for(const mode of ["off","on"]){
+   if(raw.tests?.[mode]?.signature===signature){
+    tests[mode]={...window.AkariBuilder.evaluate(wires,mode==="on"),signature};
+   }
+  }
+  base.builder={wires,selected:null,switchOn:!!raw.switchOn,tests};
+  return base;
+ }
  if(!puzzle||!draft||state.completed[m.id])return base;
  const raw=draft.answers&&typeof draft.answers==="object"?draft.answers:{};
  const answers={};
@@ -36,6 +47,15 @@ function restoreMissionUI(m){
  const step=Number.isInteger(draft.step)&&draft.step>=0&&draft.step<=3?draft.step:0;
  base.transfer={answers,reason,step:step===3&&Object.keys(answers).length<3?Object.keys(answers).length:step};
  return base;
+}
+function saveBuilderDraft(){
+ if(!ui.builder)return;
+ const {wires,switchOn,tests}=ui.builder;
+ state.builderDraft={wires:window.AkariBuilder.normalize(wires),switchOn:!!switchOn,tests:{...tests}};
+ persist();
+}
+function clearBuilderDraft(){
+ if(state.builderDraft){state.builderDraft=null;persist();}
 }
 function saveTransferDraft(){
  if(!ui.transfer)return;
@@ -497,7 +517,7 @@ function bind(){
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
