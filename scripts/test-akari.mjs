@@ -111,7 +111,7 @@ assert.equal(basic.scientificComplete("direct",saved().practiceDraft.tests,saved
 click({builderSubmit:"1"});assert.equal(saved().completed[6],undefined,"Submission cannot bypass the route explanation");
 click({builderTrace:"L"});assert.match(el("feedbackText").textContent,/＋極/,"Explanation must start from battery positive terminal");
 for(const id of ["P","N"]){click({builderTrace:id})}
-assert.match(el("feedbackText").textContent,/豆電球/,"Cannot jump straight from positive to negative without lamp");
+assert.match(el("feedbackText").textContent,/つながり/,"A missing wire cannot be invented by guessing a route");
 click({builderTrace:"L"});click({builderTrace:"L"});assert.match(el("feedbackText").textContent,/同じ端子/);
 click({builderTrace:"R"});
 move(5);move(6);assert.deepEqual(Array.from(saved().practiceDraft.trace),["P","L","R"],"Partial scientific path must survive navigation");
