@@ -83,6 +83,7 @@ try{
    const completeTransfer=async(id,tryWrong=false)=>{
      const values={
        2:{a:"dark",b:"lit",c:"lit",reason:"path"},
+       5:{a:"dark",b:"lit",c:"lit",reason:"material"},
        7:{a:"dark",b:"lit",c:"dark",reason:"both"},
        12:{a:"short",b:"safe",c:"short",reason:"battery"},
        14:{a:"lit",b:"dark",c:"dark",reason:"closed"}
@@ -293,19 +294,86 @@ try{
    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).bridgeDraft),null,"Completed bridge removes transient evidence");
    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).completed[3]),3,"Incorrect scientific predictions are not penalized");
 
-   await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.active=4;localStorage.setItem(key,JSON.stringify(s))});
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     s.active=4;s.gardenDrafts={};localStorage.setItem(key,JSON.stringify(s));
+   });
    await page.reload({waitUntil:"domcontentloaded"});
-   await page.locator('[data-choice="clip"]').click();
+   assert.equal(await page.locator(".garden-contacts button").count(),2,"Stage4 asks about contact control");
+   assert.equal(await page.locator(".garden-samples").count(),0,"Do not give materials before discovering experimental control");
+   assert.equal(await page.locator('[data-garden-calibrate]').isDisabled(),true,"Calibration requires a prediction");
+   await page.locator('[data-garden-guess="lit"]').click();await page.locator('[data-garden-calibrate]').click();
+   assert.match(await page.locator(".garden-measured").first().textContent(),/実際.*消灯/,"An open metal contact must stay dark");
+   await page.locator('[data-garden-clamp="tight"]').click();
+   await page.locator('[data-garden-guess="dark"]').click();await page.locator('[data-garden-calibrate]').click();
+   assert.match(await page.locator(".garden-measured").first().textContent(),/実際.*点灯/,"Closing the same clip changes the result");
+   await page.locator('[data-garden-control-reason="identity"]').click();
+   assert.equal(await page.locator(".garden-samples").count(),0,"Incorrect causal interpretation must not unlock comparison");
+   await page.locator('[data-garden-control-reason="control"]').click();
+   assert.equal(await page.locator('.garden-samples [data-garden-sample]').count(),4,"Learners can choose the order of material trials");
+   await page.locator('[data-garden-sample="clip"]').click();
+   await page.locator('[data-garden-guess="dark"]').last().click();
+   await page.locator('[data-garden-test]').click();
+   assert.match(await page.locator(".garden-measured").last().textContent(),/予想.*消灯.*実際.*点灯/s,"A mistaken prediction remains visible alongside actual observation");
+   await page.locator('[data-garden-clamp="loose"]').click();
+   await page.locator('[data-garden-guess="dark"]').last().click();await page.locator('[data-garden-test]').click();
+   assert.match(await page.locator(".garden-measured").last().textContent(),/実際.*消灯/,"Loose contact must give a false negative even on same metal");
+   await page.locator('[data-garden-clamp="tight"]').click();
+   for(const [id,guess] of [["foil","lit"],["wood","dark"]]){
+     await page.locator('[data-garden-sample="'+id+'"]').click();
+     await page.locator('[data-garden-guess="'+guess+'"]').last().click();
+     await page.locator('[data-garden-test]').click();
+   }
+   assert.equal(await page.locator(".garden-explain").count(),1,"Comparative evidence unlocks a scientific conclusion");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden4-controlled-research.png",fullPage:true});
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".garden-explain").count(),1,"Experimental evidence should survive a mobile reload");
+   assert.match(await page.locator(".garden-journal").textContent(),/鉄のクリップ/,"Lab notes survive navigation and reload");
+   await page.locator('[data-garden-material-reason="shiny"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Looks-alone theory fails causal requirement");
+   await page.locator('[data-garden-material-reason="material"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Controlled experimental design and explanation complete mission4");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).completed[4]),3,"Wrong hypotheses are not graded as failure");
+   await page.locator("#nextBtn").click();
+   assert.equal(await page.locator("#missionTitle").textContent(),"にせものの金属","Next mission has a distinct engineering story");
+   assert.equal(await page.locator(".garden-hazard").count(),1,"Stage5 virtual short caution must remain visible");
+   assert.equal(await page.locator(".garden-schematic").count(),0,"Safety wiring is unlocked only through material evidence");
+   for(const [id,guess] of [["clip","dark"],["wood","lit"],["plastic","dark"]]){
+     await page.locator('[data-garden-sample="'+id+'"]').click();
+     await page.locator('[data-garden-guess="'+guess+'"]').click();
+     await page.locator('[data-garden-test]').click();
+   }
+   assert.equal(await page.locator(".garden-slots [data-garden-slot]").count(),3,"After evidence, place a conductor and two insulating partitions");
+   await page.locator('[data-garden-sample="wood"]').click();await page.locator('[data-garden-slot="link"]').click();
+   await page.locator('[data-garden-sample="clip"]').click();await page.locator('[data-garden-slot="guardA"]').click();
+   await page.locator('[data-garden-sample="plastic"]').click();await page.locator('[data-garden-slot="guardB"]').click();
+   await page.locator('[data-garden-design-guess="lit"]').click();await page.locator('[data-garden-design-test]').click();
+   assert.equal(await page.locator(".garden-measured.danger").count(),1,"A metal partition creates a dangerous virtual shortcut, even if lamp path is broken");
+   assert.equal(await page.locator(".garden-explain").count(),0,"Hazard cannot unlock scientific explanation");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-virtual-short.png",fullPage:true});
+   await page.locator('[data-garden-sample="clip"]').click();await page.locator('[data-garden-slot="link"]').click();
+   await page.locator('[data-garden-sample="wood"]').click();await page.locator('[data-garden-slot="guardA"]').click();
+   assert.equal(await page.locator(".garden-measured").count(),0,"Replacing material invalidates old dangerous measurement");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator('[data-garden-slot="link"] span').textContent(),"鉄のクリップ","Wired conductor must persist through reload");
+   assert.equal(await page.locator('[data-garden-slot="guardA"] span').textContent(),"乾いた木片","Insulation remains in place after reload");
+   await page.locator('[data-garden-design-guess="dark"]').click();await page.locator('[data-garden-design-test]').click();
+   assert.match(await page.locator(".garden-measured").textContent(),/実際.*点灯/,"Actual lamp result overrules incorrect hypothesis");
+   assert.equal(await page.locator(".garden-explain").count(),1,"Only safe current path unlocks causal science questions");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-safe-lit.png",fullPage:true});
+   await page.locator('[data-garden-path-reason="glass"]').click();
+   await page.locator('[data-garden-cover-reason="insulate"]').click();
    await page.locator("#checkBtn").click();
-   assert.match(await page.locator("#feedbackText").textContent(),/予想/,"Material test requires an explicit hypothesis");
-   await page.locator('[data-predict="dark"]').click();
-   await page.locator("#checkBtn").click();
-   assert.equal(await page.locator(".test-circuit-art").count(),1,"Material test must show the complete circuit");
-   assert.match(await page.locator(".prediction-panel").textContent(),/予想.*消灯.*実際.*点灯/s,"A mistaken prediction should be compared to real evidence");
-   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===4&&n.text.includes("予想は消灯"))),"Observation journal should retain scientific hypotheses");
-   dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Material circuit overflow");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Unscientific current-path explanation must not pass");
+   await page.locator('[data-garden-path-reason="loop"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator(".transfer-puzzle").count(),1,"Engineering success must still require existing unseen-circuit transfer");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".transfer-puzzle").count(),1,"Transfer must resume rather than force the stage5 experiment again");
+   await completeTransfer(5);
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Causal transfer plus safe design completes mission5");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).gardenDrafts?.[5]),undefined,"Clear removes temporary engineering save");
+   dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,"Garden workshop must not overflow narrow viewport");
    await page.evaluate(()=>window.scrollTo(0,0));
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-materials.png",fullPage:true});
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
