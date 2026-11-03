@@ -148,7 +148,7 @@ function startRestorationPulse(firstClear){
 function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
 function success(){
  const transfer=window.AkariTransfer?.get(current().id);
- if(transfer&&!ui.transferPassed){
+ if(transfer&&!ui.transferPassed&&!state.masteries?.[current().id]){
   if(!ui.transfer){ui.transfer={answers:{},reason:null,step:0};saveTransferDraft();}
   renderWorkspace();renderHeader();
   setFeedback("🚨 追加依頼！ 実験で見つけた法則を、別の3つの回路で使えるかな？","warning");
