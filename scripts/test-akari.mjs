@@ -128,6 +128,9 @@ assert.equal(builder.evaluate([["P","N"]],false).short,true,"Direct battery conn
 assert.equal(builder.evaluate([["P","L"],["R","N"]],false).lit,true,"Bypassing switch can power bulb even when OFF and must fail objective");
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"]],false).lit,false,"Open switch must interrupt the lamp");
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"]],true).lit,true,"Closed switch must complete the loop through lamp");
+assert.equal(builder.evaluate([["P","R"],["L","S"],["T","N"]],true).lit,true,"A reversed but electrically equivalent loop must be valid");
+assert.equal(builder.evaluate([["P","R"],["L","S"],["T","N"]],false).lit,false,"The reversed valid circuit must still respond to the switch");
+assert.equal(builder.evaluate([["P","L"],["R","N"]],false).lit,true,"Bypassing the switch must fail when it is OFF");
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"],["P","N"]],true).short,true,"Direct shortcut must override any safe lamp connection");
 builderWire("P","N");click({builderTest:"1"});
 assert.match(el("feedbackText").textContent,/ショート/,"Unsafe battery short must be flagged by an interactive trial");
@@ -136,6 +139,8 @@ builderWire("P","N");
 builderWire("P","S");builderWire("T","L");builderWire("R","N");
 click({builderTest:"1"});
 assert.equal(saved().builderDraft.tests.off.lit,false,"OFF observation must remain recorded");
+const staleSig=builder.signature([["P","S"],["T","L"],["R","N"]]);
+assert.equal(builder.expected({off:{...builder.evaluate([["P","S"],["T","L"],["R","N"]],false),signature:staleSig},on:{...builder.evaluate([["P","S"],["T","L"],["R","N"]],true),signature:staleSig}},[["P","S"],["T","L"],["R","N"],["P","N"]]),false,"Old valid trials cannot be reused after dangerous rewiring");
 move(13);move(14);
 assert.match(el("workspace").innerHTML,/builder-puzzle/,"Custom wires must survive mission navigation");
 assert.equal(saved().builderDraft.wires.length,3,"Three selected wires must survive the reload-ready save format");
