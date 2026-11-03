@@ -30,7 +30,7 @@ function saveSafetyDraft(){if(current().id===12&&ui.safety){state.safetyDraft=wi
 function clearSafetyDraft(){state.safetyDraft=null;persist();}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
- if(m.id===12&&!state.completed[m.id]&&window.AkariSafety){base.safety=window.AkariSafety.restore(state.safetyDraft);return base;}
+ if(m.id===12&&!state.completed[m.id]&&window.AkariSafety){base.safety=window.AkariSafety.restore(state.safetyDraft);const finished=base.safety.index===2&&window.AkariSafety.canAdvance(base.safety)&&base.safety.reason===window.AkariSafety.correctReason;if(!finished||!draft)return base;}
  if([7,8].includes(m.id)&&!state.completed[m.id]&&state.switchDrafts?.[m.id]?.unlocked&&window.AkariSwitchLab){
   const B=window.AkariSwitchLab,raw=state.switchDrafts[m.id],wires=B.normalize(raw.wires),sig=B.signature(wires),trials={};
   for(const code of B.codes)if(raw.trials?.[code]?.signature===sig){
