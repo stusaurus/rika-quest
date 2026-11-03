@@ -23,6 +23,36 @@ try{
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,hasTouch:engine==="webkit",isMobile:engine==="webkit",reducedMotion:"reduce"});
    const page=await context.newPage(),errors=[];
+   const completeTransfer=async(id,tryWrong=false)=>{
+     const values={
+       2:{a:"dark",b:"lit",c:"lit",reason:"path"},
+       7:{a:"dark",b:"lit",c:"dark",reason:"both"},
+       12:{a:"short",b:"safe",c:"short",reason:"battery"},
+       14:{a:"lit",b:"dark",c:"dark",reason:"closed"}
+     }[id];
+     assert.ok(values,"Unknown transfer test "+id);
+     assert.equal(await page.locator(".transfer-probe").count(),3,"Transfer gate has three novel circuit cases");
+     assert.equal(await page.locator("#checkBtn").isVisible(),false,"Main check must not bypass transfer challenge");
+     if(tryWrong){
+       const wrong=id===12?"safe":"lit";
+       const wrongValue=wrong===values.a?(id===12?"short":"dark"):wrong;
+       await page.locator('[data-transfer-answer="a"][data-transfer-value="'+wrongValue+'"]').click();
+       for(const item of ["b","c"])await page.locator('[data-transfer-answer="'+item+'"][data-transfer-value="'+values[item]+'"]').click();
+       await page.locator('[data-transfer-reason="'+values.reason+'"]').click();
+       await page.locator('[data-transfer-verify]').click();
+       assert.equal(await page.locator("#discovery").isVisible(),false,"Blind guessing must not complete scientific transfer");
+     }
+     for(const item of ["a","b","c"])await page.locator('[data-transfer-answer="'+item+'"][data-transfer-value="'+values[item]+'"]').click();
+     const wrongReason=id===7?"one":id===12?"off":id===14?"battery":"plus";
+     await page.locator('[data-transfer-reason="'+wrongReason+'"]').click();
+     await page.locator('[data-transfer-verify]').click();
+     assert.equal(await page.locator("#discovery").isVisible(),false,"Predictions alone cannot bypass causal explanation");
+     await page.locator('[data-transfer-reason="'+values.reason+'"]').click();
+     await page.evaluate(()=>window.scrollTo(0,0));
+     await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-transfer-"+id+".png",fullPage:true});
+     await page.locator('[data-transfer-verify]').click();
+     assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-based challenge should open the next stage");
+   };
    page.on("pageerror",e=>errors.push(e.message));
    await page.goto(origin+"/games/akari/",{waitUntil:"domcontentloaded"});
    await page.locator("#missionTitle").waitFor();
@@ -119,6 +149,11 @@ try{
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"Revisiting should retain the first map light");
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();await page.locator("#checkBtn").click();
+   await completeTransfer(2,true);
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".story-scene.restored").count(),1,"A solved transfer case stays saved after reload");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="transfer:2")),"Scientific transfer discovery must persist");
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("#missionTitle").textContent(),"電池の向きのひみつ");
@@ -176,9 +211,15 @@ try{
    assert.equal(await page.locator('.science-conclusion').count(),1,"Four switch trials must require a conclusion");
    assert.equal(await page.locator("#discovery").isVisible(),false,"Filling all four switch outcomes cannot auto-clear");
    await page.locator('[data-conclude="both"]').click();await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-backed switch inference should clear");
+   await completeTransfer(7,true);
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-backed switch inference and transfer should clear");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-conclusion.png",fullPage:true});
+
+   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));for(let i=1;i<=11;i++)s.completed[i]=3;s.active=12;localStorage.setItem(k,JSON.stringify(s))});
+   await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator('[data-cut="x"]').click();await page.locator('[data-cut="y"]').click();await page.locator("#checkBtn").click();
+   await completeTransfer(12,true);
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
@@ -221,6 +262,7 @@ try{
    }
    assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
+   await completeTransfer(14,true);
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
