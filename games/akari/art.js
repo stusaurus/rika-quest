@@ -58,18 +58,25 @@ function circuit(design,a,b){
  '<text x="195" y="216" text-anchor="middle" fill="#d6eef4" font-size="15">'+(parallel?"並列：どちらか":"直列：両方")+' ONで点灯</text>',
  parallel?"2つのスイッチが並列の回路":"2つのスイッチが直列の回路","logic-art");
 }
-function shortDiagram(){
+function shortDiagram(removed=[]){
+ const removedSet=new Set(Array.isArray(removed)?removed:[]);
+ const lampOn=removedSet.has("x")&&removedSet.has("y")&&!removedSet.has("normal");
+ const wire=(id,d,color,width=6)=>'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"'+
+  (removedSet.has(id)?' stroke-dasharray="4 14" opacity=".21"':'')+' data-line="'+id+'"/>';
+ const mark=(id,x,y)=>'<g><rect x="'+(x-12)+'" y="'+(y-16)+'" width="24" height="23" rx="7" fill="#163c50" stroke="#d9e5c9" stroke-width="1.5"/><text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#fff1c2" font-weight="900" font-size="15">'+id.toUpperCase()+'</text></g>';
+ const bulbColor=lampOn?"#fff1ae":"#bad4d2";
+ const bulbLine=lampOn?"#fff7c9":"#e4f3ec";
  return wrap("0 0 390 235",defs+plate(2,2,386,231)+
  '<rect x="29" y="85" width="72" height="65" rx="11" fill="#d99c61" stroke="#ffdf9b" stroke-width="3"/><text x="65" y="108" text-anchor="middle" fill="#fff" font-size="16">＋</text><text x="65" y="130" text-anchor="middle" fill="#fff" font-size="16">−</text>'+
- '<circle cx="304" cy="118" r="27" fill="#ffdf8c" stroke="#fff6b3" stroke-width="5"/><path d="M293 117l9 7 10-14" stroke="#f5c46c" stroke-width="4" fill="none"/>'+
- '<path d="M65 85V39H304V91M304 145V187H65V150" stroke="#f2deac" stroke-width="6" fill="none"/>'+
- '<path d="M65 85 160 77 225 163 65 150" stroke="#ff7058" stroke-width="6" stroke-dasharray="10 7" fill="none"/>'+
- '<path d="M65 85 65 150" stroke="#ff7058" stroke-width="5" stroke-dasharray="6 7"/>'+
- '<text x="190" y="33" fill="#dcf4f2" font-size="13" text-anchor="middle">正しい通り道</text>'+
- '<text x="155" y="103" fill="#fff0b0" font-weight="900" font-size="21">X</text><text x="38" y="122" fill="#fff0b0" font-weight="900" font-size="21">Y</text><text x="212" y="213" fill="#ff9b91" font-size="13" text-anchor="middle">赤い近道は危険！</text>',
- "乾電池から電球を通る正常な導線とショートする赤い導線","short-art");
+ '<circle cx="304" cy="118" r="27" fill="'+bulbColor+'" stroke="'+bulbLine+'" stroke-width="5"/><path d="M293 110L314 129M314 110L293 129" stroke="#70878c" stroke-width="4" fill="none"/>'+
+ (lampOn?'<circle cx="304" cy="118" r="38" fill="none" stroke="#ffe6a7" stroke-width="3" opacity=".7"/>':'')+
+ wire("normal","M65 85V39H304V91M304 145V187H65V150","#f2deac")+
+ wire("x","M65 85L160 77L225 163L65 150","#a0d8d3")+
+ wire("y","M65 85V150","#adc1ec",5)+
+ mark("z",202,37)+mark("x",165,101)+mark("y",33,122)+
+ '<text x="202" y="213" fill="#d8eded" font-size="12" text-anchor="middle">'+(lampOn?"安全な回路だけが残った！":"3つの道を追って、どれを切るか考えよう")+'</text>',
+ "乾電池から豆電球への3本の電気の道。ショートする経路を自分で見分ける安全なシミュレーション","short-art");
 }
-
 function testCircuit(id,lit){
  const names={clip:"鉄",foil:"アルミ",wood:"木",plastic:"プラスチック"};
  const color={clip:"#d9f0f0",foil:"#d5e5e9",wood:"#c29364",plastic:"#70c9eb"}[id]||"#91b5c4";
