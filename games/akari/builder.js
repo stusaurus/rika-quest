@@ -123,7 +123,7 @@ function traceStatus(task,wires,steps){
 function scientificComplete(task,tests,wires,trace){
  return (task==="direct"?expectedDirect(tests,wires):expected(tests,wires))&&traceStatus(task,wires,trace).complete;
 }
-function render(wires=[],selected=null,switchOn=false,tests={},task="switch",trace=[]){
+function render(wires=[],selected=null,switchOn=false,tests={},task="switch",trace=[],insight=null){
  const direct=task==="direct",segments=normalize(wires);
  const proofReady=expectedFor(task,tests,segments),route=Array.isArray(trace)?trace:[];
  const proof=traceStatus(task,segments,route);
@@ -146,7 +146,33 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
 
  const simulation=evaluate(segments,direct?false:switchOn);
  const mode=direct?"single":switchOn?"on":"off";
- const recorded=tests[mode],measured=recorded&&recorded.signature===signature(segments);
+ const recorded=tests[mode],measured=!!recorded&&recorded.signature===signature(segments);
+ const issue=measured?diagnose(task,segments,direct?false:switchOn):null;
+ const validInsight=!!issue&&insight?.mode===mode&&insight?.signature===signature(segments)&&insight.kind===issue;
+ const physical=evidence(task,segments,direct?false:switchOn);
+ const shownEvidence=measured&&(!issue||validInsight);
+ const observedRoute=shownEvidence?physical.route:[];
+ const routeDiagram=observedRoute.slice(1).map((node,i)=>{
+  const from=observedRoute[i],one=terminals[from],two=terminals[node],key=edge(from,node),danger=physical.kind==="short";
+  const d=key===edge("L","R")?"M888 118V170 M888 286V340":
+    key===edge("S","T")?"M382 118L555 118":
+    "M"+one.x+" "+one.y+"L"+two.x+" "+two.y;
+  return '<path class="builder-diagnostic-flow'+(danger?' danger':'')+'" d="'+d+'" stroke="'+(danger?'#ff9680':'#ffe78d')+'" stroke-width="9" fill="none" stroke-linecap="round" data-diagnostic-edge="'+key+'"/>';
+ }).join("");
+ const reached=issue==="open"&&validInsight?physical.reachable:[];
+ const comparison=measured?'<div class="builder-comparison'+(issue?' mismatch':' match')+'"><strong>'+
+ (issue?'⚠ 設計条件と違う結果！':'✓ この通電条件は成功！')+'</strong><span>'+
+ (direct?'基本回路':switchOn?'スイッチON':'スイッチOFF')+'：'+
+ (simulation.short?'ショート':simulation.lit?'点灯':'消灯')+' ／ 目標：'+(direct||switchOn?'点灯':'消灯')+'</span></div>':"";
+ const diagnosisPanel=issue&&!validInsight?
+  '<div class="builder-diagnosis"><strong>🕵️ どうして失敗した？</strong><p>実験結果とつないだ導線を見比べて、原因を推理しよう。</p>'+
+   '<div class="builder-causes"><button type="button" data-builder-cause="open">電気の輪のどこかが切れている</button>'+
+   '<button type="button" data-builder-cause="bypass">スイッチを通らない別の道がある</button>'+
+   '<button type="button" data-builder-cause="short">電池の＋と−を直接つなぐ危険な道がある</button></div></div>':
+ issue&&validInsight?
+  '<div class="builder-diagnosis solved"><strong>🔎 原因を発見した！</strong><p>'+diagnosisMessage(issue)+'</p>'+
+   '<p>'+(issue==="open"?'＋極から導線でつながる端子を光らせているよ。':'実際に電気が通る道を図に光で表示しているよ。')+'</p></div>':"";
+
  const glow=!!measured&&simulation.lit;
  const status=measured?(simulation.short?"⚠ ショート！ 乾電池を直結している":simulation.lit?"💡 点灯した！":"◯ 消灯した"):"？ まだ実験していない";
  const lineSvg=segments.map(([a,b],i)=>{
@@ -157,7 +183,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const available=direct?ids.filter(id=>id!=="S"&&id!=="T"):ids;
  const buttons=available.map(id=>{
   const t=terminals[id];
-  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+(route.includes(id)?' traced':'')+'" style="left:'+(100*t.x/1000)+'%;top:'+(100*t.y/460)+'%" data-builder-t="'+id+'" aria-label="'+t.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
+  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+(route.includes(id)?' traced':'')+(reached.includes(id)?' builder-reachable':'')+'" style="left:'+(100*t.x/1000)+'%;top:'+(100*t.y/460)+'%" data-builder-t="'+id+'" aria-label="'+t.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
  }).join("");
  const statusBlocks=(direct?[["single","点灯の実験"]]:[["off","OFFの実験"],["on","ONの実験"]]).map(([id,label])=>{
   const data=tests[id],valid=data&&data.signature===signature(segments);
@@ -192,12 +218,12 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<path d="M859 202L917 258M917 202L859 258" stroke="#fff5d8" stroke-width="6" fill="none"/>'+
  '<text x="888" y="419" text-anchor="middle" fill="#e1f3e6" font-size="20">豆電球</text>'+
  '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
- lineSvg+'<g class="builder-proof-path">'+routeSvg+'</g></svg>'+buttons+'</div></div>'+
+ lineSvg+'<g class="builder-diagnostic-path" aria-hidden="true">'+routeDiagram+'</g><g class="builder-proof-path">'+routeSvg+'</g></svg>'+buttons+'</div></div>'+
  '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
  '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'このゲーム内で通電して、安全に豆電球がつくか確かめよう。':'スイッチOFFとONをそれぞれ試そう。実物でショートを試すのは危険だよ。')+'</p>'+
  switchControl+'<p class="builder-live">'+status+'</p>'+
  '<button type="button" data-builder-test="1" class="builder-test">⚡ 今の状態を実験する</button>'+
- '<div class="builder-measures">'+statusBlocks+'</div>'+
+ '<div class="builder-measures">'+statusBlocks+'</div>'+comparison+diagnosisPanel+
  '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
  tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+
  (direct?'🏆 時計塔の回路を完成させる':'🏆 設計を完成して灯台に光を戻す')+'</button></div></div></section>';
