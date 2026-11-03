@@ -137,21 +137,26 @@ function notes(raw,stage){
 }
 function testDiagram(id,clamp,measured=false){
  const result=measured?experiment(id,clamp):null,lit=Boolean(result?.lit);
- const y=clamp==="loose"?120:146;
- return '<svg class="garden-circuit-svg" role="img" aria-label="乾電池、材料をはさむ2つの金属接点、豆電球の回路。片方の接点が浮くと回路が切れる。" viewBox="0 0 610 290">'+
+ const ink=lit?"#ffe9a2":"#a4c9d5",open=clamp==="loose";
+ return '<svg class="garden-circuit-svg" role="img" aria-label="電池の＋極、調査材料と2つの金属接点、豆電球の横・底、電池の−極を順番につなぐ仮想回路。片方の接点が浮くとすき間ができる。" viewBox="0 0 610 290">'+
  '<rect width="610" height="290" rx="18" fill="#112f45"/>'+
- '<rect x="25" y="91" width="100" height="120" rx="12" fill="#b96856" stroke="#ffe4b6" stroke-width="4"/>'+
- '<text x="75" y="127" text-anchor="middle" fill="white" font-size="17">乾電池</text><text x="75" y="155" text-anchor="middle" fill="white" font-size="16">1.5V</text>'+
- '<path d="M75 90V38H300V118M300 176V253H75V211" stroke="'+(lit?"#f9e7a2":"#a8c5d3")+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
- '<rect x="244" y="109" width="112" height="75" rx="12" fill="#37596c" stroke="#bad9d7" stroke-width="3"/>'+
- '<text x="300" y="142" text-anchor="middle" fill="#f5faff" font-size="13">'+(material(id)?.name||"試料")+'</text>'+
- '<path d="M272 117V'+(clamp==="tight"?137:103)+'M328 156V177" stroke="#f2c98e" stroke-width="8" fill="none" stroke-linecap="round"/>'+
- (clamp==="loose"?'<path d="M256 94L286 109" stroke="#ffbb83" stroke-width="4"/><text x="390" y="121" fill="#f5d5ae" font-size="14">接点にすき間</text>':"")+
- '<path d="M300 118V59H495V94M495 204V251H300" stroke="'+(lit?"#f9e7a2":"#a8c5d3")+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
- '<circle cx="495" cy="150" r="51" fill="'+(lit?"#ffe4a2":"#294e66")+'" stroke="#e5ebd2" stroke-width="5"/>'+
- '<path d="M474 128L516 172M516 128L474 172" stroke="'+(lit?"#ae7e3f":"#b4d5db")+'" stroke-width="6"/>'+
- '<text x="495" y="225" text-anchor="middle" fill="#fff4de" font-size="14">豆電球</text>'+
- '<text x="139" y="270" fill="#d4edf2" font-size="13">接点：'+(clamp==="tight"?"しっかり接触":"片方が浮いている")+'</text>'+
+ '<rect x="25" y="93" width="100" height="118" rx="12" fill="#b96856" stroke="#ffe4b6" stroke-width="4"/>'+
+ '<text x="75" y="128" text-anchor="middle" fill="white" font-size="17">乾電池</text><text x="75" y="158" text-anchor="middle" fill="white" font-size="16">1.5V</text>'+
+ '<text x="44" y="88" fill="#f8e8bd" font-size="17">＋</text><text x="44" y="237" fill="#f8e8bd" font-size="17">−</text>'+
+ '<path d="M75 93V43H185V90H204" stroke="'+ink+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
+ '<path d="'+(open?"M204 90L219 73":"M204 90H238")+'" stroke="'+(open?"#ffb78d":ink)+'" stroke-width="7" fill="none" stroke-linecap="round"/>'+
+ '<rect x="238" y="60" width="128" height="62" rx="11" fill="#365b6d" stroke="#c4d9d4" stroke-width="3"/>'+
+ '<circle cx="238" cy="90" r="8" fill="#ffddb1"/><circle cx="366" cy="90" r="8" fill="#ffddb1"/>'+
+ '<text x="302" y="85" text-anchor="middle" fill="#f3ffff" font-weight="800" font-size="13">'+(material(id)?.name||"試料")+'</text>'+
+ '<text x="302" y="105" text-anchor="middle" fill="#c5e4e9" font-size="11">金属接点ではさむ</text>'+
+ (open?'<path d="M218 75L229 69" stroke="#ffbb91" stroke-width="4"/><text x="210" y="135" fill="#ffe0b7" font-size="13">すき間</text>':"")+
+ '<path d="M366 90H495V100M495 205V252H75V211" stroke="'+ink+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
+ '<circle cx="495" cy="152" r="51" fill="'+(lit?"#ffe4a2":"#294e66")+'" stroke="#e5ebd2" stroke-width="5"/>'+
+ '<path d="M474 132L516 172M516 132L474 172" stroke="'+(lit?"#ae7e3f":"#b4d5db")+'" stroke-width="6"/>'+
+ '<circle cx="495" cy="101" r="8" fill="#f9e8c0"/><circle cx="495" cy="204" r="8" fill="#f9e8c0"/>'+
+ '<text x="560" y="151" text-anchor="middle" fill="#fff4de" font-size="14">豆電球</text>'+
+ '<text x="495" y="273" text-anchor="middle" fill="#d2edf3" font-size="13">横・底の接点</text>'+
+ '<text x="184" y="278" fill="#d4edf2" font-size="13">試料の接点：'+(open?"片方が浮いている":"両方が接触")+'</text>'+
  '</svg>';
 }
 function display4(raw){
@@ -200,7 +205,7 @@ function schematic5(raw){
  '<text x="590" y="264" font-size="15" text-anchor="middle" fill="#ecf4e7">豆電球</text>'+
  slot(260,68,s.slots.link)+
  '<text x="260" y="29" text-anchor="middle" fill="#e5f8ed" font-size="16">導線のすき間</text>'+
- '<path d="M170 140H480M170 310H480" stroke="'+(short?"#f1a493":"#92becb")+'" stroke-width="5"/>'+
+ '<path d="M80 122H145V140H480M80 252H145V310H480" stroke="'+(short?"#f1a493":"#92becb")+'" stroke-width="5"/>'+
  '<text x="169" y="124" fill="#f3e3ba" font-size="13">＋の露出端子</text>'+
  '<text x="169" y="345" fill="#f3e3ba" font-size="13">−の露出端子</text>'+
  '<path d="M210 140V173M210 236V310M430 140V173M430 236V310" stroke="'+(short?"#eea38f":"#8fbbcb")+'" stroke-width="6" fill="none"/>'+
