@@ -112,7 +112,7 @@ try{
      for(const item of ["a","b","c"])await page.locator('[data-transfer-answer="'+item+'"][data-transfer-value="'+values[item]+'"]').click();
      assert.equal(await page.locator(".transfer-review-row").count(),3,"After prediction, show a compact comparison of three results");
      assert.equal(await page.locator(".transfer-probe").count(),0,"Collapse circuit diagrams into editable review after prediction");
-     const wrongReason=id===7?"one":id===12?"off":id===14?"battery":"plus";
+     const wrongReason=id===5?"look":id===7?"one":id===12?"off":id===14?"battery":"plus";
      await page.locator('[data-transfer-reason="'+wrongReason+'"]').click();
      await page.locator('[data-transfer-verify]').click();
      assert.equal(await page.locator("#discovery").isVisible(),false,"Predictions alone cannot bypass causal explanation");
