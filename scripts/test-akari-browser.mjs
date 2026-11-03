@@ -228,23 +228,92 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".story-scene.restored").count(),1,"A solved transfer case stays saved after reload");
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="transfer:2")),"Scientific transfer discovery must persist");
-   await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.completed={};for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
+   // Mission 9: match battery chemistry & nominal voltage; distinguish initial brightness and modelled endurance.
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     s.completed={};for(let i=1;i<=8;i++)s.completed[i]=3;
+     s.active=9;s.batteryDrafts={};localStorage.setItem(key,JSON.stringify(s));
+   });
    await page.reload({waitUntil:"domcontentloaded"});
-   assert.equal(await page.locator("#missionTitle").textContent(),"電池の向きのひみつ");
-   assert.equal(await page.locator(".battery-art").count(),2,"Compare two detailed battery orientations");
-   await page.locator('[data-choice="reverse"]').click();
-   dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery overflow: "+JSON.stringify(dimensions));
-   await page.evaluate(()=>window.scrollTo(0,0));
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery.png",fullPage:true});
+   assert.equal(await page.locator("#missionTitle").textContent(),"乾電池の大きさ");
+   assert.equal(await page.locator(".battery-lab-svg").count(),1,"Battery lab should show a controlled virtual circuit diagram");
+   assert.equal(await page.locator(".battery-record").count(),4,"Four crossed size/time observations");
    await page.locator("#checkBtn").click();
-   await page.locator('[data-choice="same"]').click();await page.locator("#checkBtn").click();
-   await page.locator('[data-answer="same"]').click();await page.locator("#checkBtn").click();
-   assert.match(await page.locator("#feedbackText").textContent(),/理由/,"Observations alone should not clear polarity");
-   await page.locator('[data-why="single"]').click();await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),false,"Incorrect polarity explanation should not clear");
-   await page.locator('[data-why="cancel"]').click();await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Battery cancellation explanation should clear");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"No correct conclusion without experimental evidence");
+   await page.locator('[data-battery-test]').click({force:true}).catch(()=>{});
+   assert.equal(await page.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem("rika-akari-quest-v2")).batteryDrafts?.[9]?.trials||{}).length),0,"Battery experiment requires scientific prediction");
+   await page.locator('[data-battery-guess="dim"]').click();await page.locator('[data-battery-test]').click();
+   assert.match(await page.locator(".battery-predict-card .battery-result").textContent(),/予想.*弱い光.*実際.*点灯/s,"Prediction and actual are compared without penalty");
+   const batteryField=async(key,val)=>page.locator('[data-battery-field="'+key+'"][data-battery-value="'+val+'"]').click();
+   await batteryField("size","large");
+   await page.locator('[data-battery-guess="bright"]').click();await page.locator('[data-battery-test]').click();
+   await batteryField("phase","late");
+   await page.locator('[data-battery-guess="dim"]').click();await page.locator('[data-battery-test]').click();
+   await batteryField("size","small");
+   await page.locator('[data-battery-guess="bright"]').click();await page.locator('[data-battery-test]').click();
+   assert.equal(await page.locator(".battery-record.tested").count(),4,"Every size/duration combination recorded");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery9-controlled-comparison.png",fullPage:true});
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".battery-record.tested").count(),4,"Saved long-watch observations survive iPhone reload");
+   await page.locator('[data-battery-service="small"]').click();
+   await page.locator('[data-battery-service-guess="dim"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="voltage"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"A poor field choice cannot earn rescue credit");
+   await page.locator('[data-battery-service="large"]').click();
+   await page.locator('[data-battery-service-guess="bright"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="size"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"False bigger-means-more-voltage claim must fail");
+   await page.locator('[data-battery-reason="voltage"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Size, endurance and nominal voltage evidence completes rescue");
+   await page.locator("#nextBtn").click();
 
+   // Mission 10: varied series-cell voltage AND bulb voltage rating; never encourage overvolting real bulbs.
+   assert.equal(await page.locator("#missionTitle").textContent(),"ふたつの力");
+   assert.equal(await page.locator(".battery-record").count(),4);
+   for(const [cells,rating,guess] of [["one","1.5","bright"],["one","3","dim"],["two","3","bright"],["two","1.5","risk"]]){
+     await batteryField("cells",cells);await batteryField("rating",rating);
+     await page.locator('[data-battery-guess="'+guess+'"]').click();await page.locator('[data-battery-test]').click();
+   }
+   assert.equal(await page.locator(".battery-record.tested").count(),4);
+   assert.match(await page.locator(".battery-notebook").textContent(),/定格超過の危険/,"Overrating a bulb is presented as risk, not a real experiment");
+   await page.locator('[data-battery-service="two:1.5"]').click();
+   await page.locator('[data-battery-service-guess="risk"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="series"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Overrated setup cannot be approved");
+   await page.locator('[data-battery-service="two:3"]').click();
+   await page.locator('[data-battery-service-guess="bright"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="always"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"More batteries always safe is a misconception");
+   await page.locator('[data-battery-reason="series"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true);
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery10-rated-device.png",fullPage:true});
+   await page.locator("#nextBtn").click();
+
+   // Mission 11: distinguish reversing one cell from opposing two matched cells.
+   assert.equal(await page.locator("#missionTitle").textContent(),"電池の向きのひみつ");
+   for(const [cells,dir,guess] of [["one","forward","bright"],["one","reverse","dark"],["two","aligned","bright"],["two","opposed","dark"]]){
+     await batteryField("cells",cells);
+     await batteryField("direction",dir);
+     await page.locator('[data-battery-guess="'+guess+'"]').click();await page.locator('[data-battery-test]').click();
+   }
+   assert.equal(await page.locator(".battery-record.tested").count(),4);
+   assert.match(await page.locator(".battery-notebook").textContent(),/乾電池1個・逆向き.*実験.*点灯/s,"Reversing just one battery cannot falsely be explained as cancelling voltage");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery11-polarity-observations.png",fullPage:true});
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".battery-record.tested").count(),4,"Four polarity results persist after reload");
+   await page.locator('[data-battery-service="two:opposed"]').click();
+   await page.locator('[data-battery-service-guess="dark"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="cancel"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"The cancelled pair cannot relight museum display");
+   await page.locator('[data-battery-service="two:aligned"]').click();
+   await page.locator('[data-battery-service-guess="bright"]').click();await page.locator('[data-battery-service-test]').click();
+   await page.locator('[data-battery-reason="bulb"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Polarity-sensitive lamp misconception must be rejected");
+   await page.locator('[data-battery-reason="cancel"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Correct four-trial evidence and scientific reason relights exhibit");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).batteryDrafts?.[11]),undefined,"Successful polarity study removes temporary state");
+   dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery expedition overflow");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery11-restored.png",fullPage:true});
 
    // Mission 3: bridge exploration -> material experiment -> repair two series gaps.
    await page.evaluate(()=>{
