@@ -532,3 +532,42 @@
  .transfer-steps button{min-height:44px}
  .transfer-focus strong{font-size:14px}
 }
+
+
+/* Final original-engineering puzzle: hand-assemble a switch-controlled circuit.
+   A scrollable fixed-geometry board preserves terminal size on narrow phones. */
+.builder-puzzle{display:grid;gap:15px;color:#244b5b}
+.builder-heading{padding:16px 20px;border:2px solid #b5d7c7;border-radius:18px;background:linear-gradient(125deg,#24556a,#277a80);box-shadow:0 7px 18px #184b6026;color:#fff6e0}
+.builder-heading>span{font-size:11px;font-weight:900;color:#594823;background:#ffdfa0;padding:4px 10px;border-radius:30px;display:inline-block;margin-bottom:7px}
+.builder-heading h3{font-size:clamp(19px,2.4vw,27px);margin:0 0 8px;line-height:1.4}
+.builder-heading p{font-size:13px;line-height:1.7;margin:0;color:#e1f1eb}
+.builder-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:15px;align-items:start}
+.builder-panel{min-width:0;border:2px solid #bfdbd5;background:#eff7f2;border-radius:17px;padding:13px;box-shadow:0 5px 18px #1e4a6318;overflow-x:auto}
+.builder-panel h3{font-size:16px;margin:0 0 8px;color:#245567}
+.builder-help{font-size:12px;line-height:1.7;color:#426977;margin:0 0 12px}
+.builder-board{position:relative;aspect-ratio:1000/460;width:100%;min-width:570px;overflow:hidden;border-radius:14px;background:#183c55;box-shadow:0 5px 12px #103c5347;isolation:isolate}
+.builder-board svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.builder-terminal{position:absolute;z-index:3;transform:translate(-50%,-50%);width:46px;height:46px;display:grid;place-items:center;border-radius:50%;border:4px solid #ffdea5;color:#244756;background:#fff3c8;box-shadow:0 3px 0 #c69c60,0 0 0 7px #1939507d;cursor:pointer;touch-action:manipulation}
+.builder-terminal span{font-size:18px;line-height:1;font-weight:900}
+.builder-terminal.selected{background:#8be6d4;border-color:#e5fff4;box-shadow:0 0 0 8px #a3f7d17a,0 0 16px #dfffe3}
+.builder-terminal:focus-visible{outline:4px solid #ffe086;outline-offset:9px}
+.builder-line{pointer-events:none}
+.builder-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:900;color:#386675;margin-top:12px}
+.builder-clear{background:#fff;border:1px solid #98bdc2;border-radius:9px;color:#426775;min-height:41px;padding:6px 12px;font-size:12px;font-weight:900}
+.builder-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.builder-switch button{min-height:52px;border:2px solid #a8c8c8;background:#fffaf0;color:#365b69;border-radius:12px;font-size:15px;font-weight:900}
+.builder-switch button.on{border-color:#ffe4aa;background:#266c7a;color:#fff8d5;box-shadow:inset 0 0 0 2px #396f7a}
+.builder-live{font-size:15px;font-weight:900;line-height:1.5;color:#2e5864;padding:12px;border-radius:12px;background:#e2f0ec;min-height:50px}
+.builder-test,.builder-submit{min-height:50px;width:100%;border-radius:11px;background:#f6d68a;border:2px solid #e9c27b;color:#594524;font-weight:900;font-size:13px;line-height:1.5;padding:10px 12px}
+.builder-submit{background:#1b7777;color:#fff9da;border-color:#8ec4ac;font-size:14px;margin-top:14px}
+.builder-submit:disabled{opacity:.48;filter:grayscale(.4);cursor:not-allowed}
+.builder-measures{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.builder-measure{display:grid;gap:3px;border:1px solid #bdcfc9;border-radius:11px;background:#f9fcf8;padding:9px;font-size:12px;color:#456976}
+.builder-measure.measured{background:#e2f2e8;border-color:#9dcbb0}
+.builder-measure strong{font-size:12px;color:#386275}
+.builder-measure span{font-size:12px;font-weight:800;line-height:1.4}
+.builder-hint{font-size:12px;color:#51717b;line-height:1.7;margin:13px 0 0}
+.builder-clear:focus-visible,.builder-switch button:focus-visible,.builder-test:focus-visible,.builder-submit:focus-visible{outline:3px solid #ebb96b;outline-offset:4px}
+@media(max-width:1000px){.builder-layout{grid-template-columns:1fr}}
+@media(max-width:740px){.builder-panel{padding:11px}.builder-board{min-width:570px}.builder-heading{padding:13px}.builder-help{font-size:12px}.builder-measures{grid-template-columns:1fr 1fr}.builder-terminal{width:45px;height:45px}}
+@media(prefers-reduced-motion:reduce){.builder-board *{animation:none!important}}
