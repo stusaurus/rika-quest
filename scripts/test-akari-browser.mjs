@@ -143,6 +143,28 @@ try{
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     for(let i=1;i<=5;i++)s.completed[i]=3;
+     s.active=6;localStorage.setItem(key,JSON.stringify(s));
+   });
+   await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator('[data-inspect="wire"]').click();
+   await page.locator('[data-suspect="wire"]').click();
+   assert.equal(await page.locator('[data-diagnose]').isDisabled(),true,"Diagnosis requires examining all components");
+   for(const id of ["battery","bulb"])await page.locator('[data-inspect="'+id+'"]').click();
+   await page.locator('[data-suspect="battery"]').click();
+   await page.locator('[data-diagnose]').click();
+   assert.equal(await page.locator('.diagnosis-panel.complete').count(),0,"Wrong hypothesis cannot enable repair");
+   await page.locator('[data-suspect="battery"]').click();
+   await page.locator('[data-diagnose]').click();
+   assert.equal(await page.locator('.diagnosis-panel.complete').count(),1,"Correct deduction unlocks repair");
+   await page.locator('[data-fix="wire"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Clock tower repair should finish");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clock-diagnosis.png",fullPage:true});
+
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
      for(let i=1;i<=6;i++)s.completed[i]=3;
      s.active=7;localStorage.setItem(key,JSON.stringify(s));
    });
@@ -157,6 +179,27 @@ try{
    assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-backed switch inference should clear");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-conclusion.png",fullPage:true});
+
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     for(let i=1;i<=12;i++)s.completed[i]=3;
+     s.active=13;localStorage.setItem(key,JSON.stringify(s));
+   });
+   await page.reload({waitUntil:"domcontentloaded"});
+   for(const id of ["wire","bulb","battery"])await page.locator('[data-inspect="'+id+'"]').click();
+   await page.locator('[data-suspect="wire"]').click();
+   await page.locator('[data-diagnose]').click();
+   assert.equal(await page.locator('.diagnosis-panel.complete').count(),0,"Double faults need two suspects");
+   await page.locator('[data-suspect="bulb"]').click();
+   await page.locator('[data-diagnose]').click();
+   await page.locator('[data-fix="wire"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"One of two repairs cannot complete");
+   await page.locator('[data-fix="bulb"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Two repairs restore lighthouse");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault.png",fullPage:true});
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
