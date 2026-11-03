@@ -24,7 +24,7 @@ const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil
 const inspectedItems=[{id:"wood",name:"木の板",description:"木は電気を通しにくそうだね。",correct:false},{id:"iron",name:"鉄のくぎ",description:"鉄は金属！ 電気を通しそうだ。",correct:true},{id:"plastic",name:"プラスチックの定規",description:"プラスチックは電気を通しにくい。",correct:false}];
 function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,notes:[]};}
 function current(){return M[state.active-1]}
-function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
+function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
 
 function recordObservation(key,description){
@@ -210,15 +210,42 @@ function renderLogic(){
   +'<div class="lab-panel"><h3>📊 実験記録</h3><p class="lab-sub">それぞれの組み合わせで「電気を流してみる」を押そう。</p><div class="light-status">'+(lit?"💡 点灯":"◯ 消灯")+'</div><table class="truth-table"><thead><tr><th>A</th><th>B</th><th>実験結果</th></tr></thead><tbody>'+[["0","0"],["0","1"],["1","0"],["1","1"]].map(([x,y])=>{let result=ui.trials[x+y];return'<tr><td>'+(x==="1"?"ON":"OFF")+'</td><td>'+(y==="1"?"ON":"OFF")+'</td><td>'+(result===undefined?"？":result?"💡 点灯":"○ 消灯")+'</td></tr>'}).join("")+'</tbody></table><p class="lab-reading">試した組み合わせ：'+Object.keys(ui.trials).length+' / 4</p>'+conclusion+'</div></div>';
 }
 function batteryOptions(){return current().id===9?[{id:"small",name:"単4形（1.5V）",kind:"small"},{id:"large",name:"単1形（1.5V）",kind:"large"}]:[{id:"single",name:"乾電池1個（1.5V）",kind:"small"},{id:"series",name:"2個を直列（3V）",kind:"series"}]}
+function batteryReasonOptions(){
+ return current().id===9?[
+  ["voltage","単1形も単4形も、同じ種類なら公称電圧は1.5Vだから"],
+  ["size","大きい乾電池ほど電圧が高くなるから"],
+  ["shape","乾電池が太いと電気が必ず強くなるから"]
+ ]:current().id===10?[
+  ["seriesAdds","同じ向きの乾電池2個を直列につなぐと、電圧が加わるから"],
+  ["shape","乾電池が2個で重くなるから"],
+  ["always","豆電球の電気の通り道が2倍になるから"]
+ ]:[
+  ["cancel","同じ乾電池を逆向きに直列につなぐと、電圧が打ち消し合うから"],
+  ["single","乾電池1個でも向きを逆にしただけで豆電球が光らないから"],
+  ["shape","乾電池を反対向きに置くと物理的に小さくなるから"]
+ ];
+}
 function renderBattery(){
- let opts=batteryOptions(),selected=opts.find(x=>x.id===ui.selected),done=opts.every(x=>ui.tried.includes(x.id));
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 電池を入れ替えて実験</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.kind),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(selected&&ui.tried.includes(selected.id)?(current().id===10&&selected.id==="series"?"1個のときより明るい！（対応する豆電球の場合）":"点灯した！ 公称電圧は1.5V。"):"電池を選んで通電しよう")+'</p>'
- +(done?'<div class="answer-area"><strong>調べてわかったことは？</strong>'+((current().id===9)?[['correct',"大きさだけで明るさは決まらない"],['wrong',"大きい乾電池ほど必ず明るい"]]:[['correct',"2個直列で電圧が大きくなり、明るくなることがある"],['wrong',"2個直列にしても必ず同じ明るさ"]]).map(x=>'<button class="answer-option'+(ui.answer===x[0]?' chosen':'')+'" data-answer="'+x[0]+'">'+x[1]+'</button>').join("")+'</div>':'<p class="lab-reading">まず2つとも試そう。</p>')+'</div></div>';
+ const opts=batteryOptions(),selected=opts.find(x=>x.id===ui.selected),done=opts.every(x=>ui.tried.includes(x.id));
+ const conclusions=current().id===9?[
+  ["sameVoltage","大きさだけで明るさは決まらない"],
+  ["alwaysBrighter","単1形の方が必ず明るい"]
+ ]:[
+  ["seriesBrighter","2個直列では電圧が大きくなり、対応する電球は明るくなることがある"],
+  ["sameBrightness","2個直列でも1個と必ず同じ明るさ"]
+ ];
+ const analysis=done?'<div class="answer-area"><strong>① 実験結果からわかったことは？</strong>'+
+  conclusions.map(([key,label])=>'<button class="answer-option'+(ui.answer===key?' chosen':'')+'" data-answer="'+key+'" aria-pressed="'+(ui.answer===key)+'">'+label+'</button>').join("")+
+  '<strong class="reason-subheading">② それはなぜ？</strong>'+
+  batteryReasonOptions().map(([key,label])=>'<button class="answer-option'+(ui.why===key?' chosen':'')+'" data-why="'+key+'" aria-pressed="'+(ui.why===key)+'">'+label+'</button>').join("")+
+  '</div>':'<p class="lab-reading">まず2つとも試そう。</p>';
+ return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 電池を入れ替えて実験</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.kind),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(selected&&ui.tried.includes(selected.id)?(current().id===10&&selected.id==="series"?"1個のときより明るい！（対応する豆電球の場合）":"点灯した！ 公称電圧は1.5V。"):"電池を選んで通電しよう")+'</p>'+analysis+'</div></div>';
 }
 function renderPolarity(){
- let opts=[{id:"same",name:"2個を同じ向き"},{id:"reverse",name:"2個を逆向き"}],done=opts.every(x=>ui.tried.includes(x.id));
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 乾電池の向きを変えよう</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.id==="same"?"series":"reverse"),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected==="same"&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(ui.selected&&ui.tried.includes(ui.selected)?ui.selected==="same"?"2個を同じ向きに直列：点灯！":"2個を逆向きに直列：消灯":"乾電池を選んで実験しよう")+'</p>'
- +(done?'<div class="answer-area"><strong>どちらの向きが光った？</strong><button class="answer-option'+(ui.answer==="same"?" chosen":"")+'" data-answer="same">同じ向き</button><button class="answer-option'+(ui.answer==="reverse"?" chosen":"")+'" data-answer="reverse">逆向き</button></div>':'')+'</div></div>';
+ const opts=[{id:"same",name:"2個を同じ向き"},{id:"reverse",name:"2個を逆向き"}],done=opts.every(x=>ui.tried.includes(x.id));
+ const analysis=done?'<div class="answer-area"><strong>① どちらの向きが光った？</strong><button class="answer-option'+(ui.answer==="same"?' chosen':'')+'" data-answer="same">同じ向き</button><button class="answer-option'+(ui.answer==="reverse"?' chosen':'')+'" data-answer="reverse">逆向き</button>'+
+ '<strong class="reason-subheading">② 光り方が違う理由は？</strong>'+batteryReasonOptions().map(([key,label])=>'<button class="answer-option'+(ui.why===key?' chosen':'')+'" data-why="'+key+'" aria-pressed="'+(ui.why===key)+'">'+label+'</button>').join("")+'</div>':'';
+ return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 乾電池の向きを変えよう</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.id==="same"?"series":"reverse"),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected==="same"&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(ui.selected&&ui.tried.includes(ui.selected)?ui.selected==="same"?"2個を同じ向きに直列：点灯！":"2個を逆向きに直列：消灯":"乾電池を選んで実験しよう")+'</p>'+analysis+'</div></div>';
 }
 function renderCut(){
  return'<div class="experiment-layout"><div class="lab-panel"><h3>⚠ 危険な導線を発見！</h3>'+Art.shortDiagram()+'<p class="lab-reading">赤い導線がショートの原因。実物の乾電池では絶対に試さないでね。</p></div><div class="lab-panel"><h3>✂ 外す導線を選ぼう</h3><p class="lab-sub">押すと外す／戻すを切り替えられるよ。</p>'+[["normal","通常の導線（電池→豆電球）"],["x","危険な赤い近道 X"],["y","危険な赤い近道 Y"]].map(([id,label])=>'<button class="cut-wire'+(ui.removed.includes(id)?' removed':'')+'" data-cut="'+id+'" aria-pressed="'+ui.removed.includes(id)+'"><span>'+label+'</span><strong>'+(ui.removed.includes(id)?"外した ✓":"接続中")+'</strong></button>').join("")+'<p class="lab-reading">外した導線：'+ui.removed.length+' 本</p></div></div>';
