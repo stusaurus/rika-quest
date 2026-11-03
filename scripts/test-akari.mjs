@@ -46,7 +46,15 @@ click({predict:"dark"});check();assert.match(el("journalPanel").innerHTML||el("f
 for(const [choice,prediction] of [["foil","lit"],["wood","dark"]]){click({choice});click({predict:prediction});check()}
 done(4);assert.equal(saved().completed[4],3,"An incorrect scientific prediction must not cost stars");
 move(5);for(const [choice,prediction] of [["wood","dark"],["plastic","dark"],["clip","lit"]]){click({choice});click({predict:prediction});check()}done(5);
-move(6);click({inspect:"wire"});click({fix:"wire"});check();done(6);
+move(6);
+click({inspect:"wire"});click({fix:"wire"});check();
+assert.equal(saved().completed[6],undefined,"Cannot fix before evidence diagnosis");
+click({inspect:"battery"});click({inspect:"bulb"});
+click({suspect:"battery"});click({diagnose:"1"});
+assert.match(el("feedbackText").textContent,/予想/,"Incorrect diagnosis should invite comparison without losing stars");
+click({suspect:"battery"});click({suspect:"wire"});click({diagnose:"1"});
+click({fix:"wire"});check();done(6);
+assert.equal(saved().completed[6],3,"Wrong hypothesis should not cost a star");
 move(7);check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
 assert.equal(saved().completed[7],undefined,"Four switch outcomes alone must not auto-complete");
 click({conclude:"either"});check();assert.equal(saved().completed[7],undefined,"Incorrect interpretation cannot clear");
@@ -57,7 +65,14 @@ move(9);for(const choice of ["small","large"]){click({choice});check()}click({an
 move(10);for(const choice of ["single","series"]){click({choice});check()}click({answer:"correct"});check();done(10);
 move(11);for(const choice of ["same","reverse"]){click({choice});check()}click({answer:"same"});check();done(11);
 move(12);click({cut:"x"});click({cut:"y"});check();done(12);
-move(13);for(const key of ["wire","bulb"]){click({inspect:key});click({fix:key})}check();done(13);
+move(13);
+for(const key of ["wire","bulb","battery"])click({inspect:key});
+click({suspect:"wire"});click({diagnose:"1"});
+assert.equal(saved().completed[13],undefined,"One suspected defect is insufficient for the double fault");
+click({suspect:"bulb"});click({diagnose:"1"});
+click({fix:"wire"});check();
+assert.equal(saved().completed[13],undefined,"Repairing one of two faults cannot relight the tower");
+click({fix:"bulb"});check();done(13);
 move(14);click({final:"direction",value:"same"});click({final:"material",value:"clip"});click({final:"contact",value:"true"});check();
 assert.equal(saved().completed[14],undefined,"Correct guesses alone must not complete final mission");
 for(const verify of ["direction","material","contact"])click({verify});
