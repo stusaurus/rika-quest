@@ -453,3 +453,36 @@
 .diagnose-btn:disabled{opacity:.55;filter:grayscale(.35);cursor:not-allowed}
 .suspect-btn:focus-visible,.diagnose-btn:focus-visible{outline:3px solid #eecb74;outline-offset:3px}
 @media(max-width:740px){.diagnosis-panel{padding:12px;margin-top:12px}.diagnose-btn{min-height:48px}.suspect-btn{min-height:44px;white-space:normal}}
+
+
+/* Six late-game rescue calls: new circuits, predictions, then causal explanation. */
+.transfer-puzzle{display:grid;gap:14px;color:#294a5b;animation:transferArrival .4s ease-out both}
+.transfer-heading{padding:15px 18px;border-radius:19px;background:linear-gradient(130deg,#174d66,#307e81);border:2px solid #a8d5bd;box-shadow:0 6px 14px #11324c25;color:#fff7dd}
+.transfer-heading>span{display:inline-block;padding:3px 9px;background:#f6e29d;color:#4c4a36;font-size:11px;font-weight:900;border-radius:30px;margin-bottom:6px}
+.transfer-heading h3{font-size:clamp(19px,2.4vw,25px);line-height:1.4;margin:0 0 5px}
+.transfer-heading p{margin:0;font-size:13px;line-height:1.7;color:#e2f2f0}
+.transfer-probes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.transfer-probe{display:grid;align-content:start;gap:10px;min-width:0;padding:13px;border:2px solid #b3d4d3;border-radius:15px;background:#f4faf5;box-shadow:0 4px 10px #1d496313}
+.transfer-probe>strong{font-size:13px;line-height:1.6;min-height:43px}
+.transfer-diagram{display:block;max-width:100%;width:100%;height:auto;border-radius:12px;overflow:visible}
+.transfer-answers{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.transfer-answers button,.transfer-reason button{min-height:45px;border:2px solid #b4d6d8;border-radius:10px;background:#fffdf6;color:#34586b;font-size:12px;line-height:1.5;font-weight:900;padding:8px 6px}
+.transfer-answers button.selected,.transfer-reason button.selected{border-color:#e3aa3e;background:#ffecab;color:#6c4e22;box-shadow:inset 0 0 0 1px #ffe6a2}
+.transfer-answers button:focus-visible,.transfer-reason button:focus-visible,.transfer-verify:focus-visible{outline:3px solid #efbd6e;outline-offset:3px}
+.transfer-reason{padding:15px 18px;border:2px solid #c9dbca;border-radius:15px;background:#e4f2ee;display:grid;gap:8px}
+.transfer-reason>strong{font-size:16px;line-height:1.4}
+.transfer-reason>p{font-size:12px;margin:0 0 4px}
+.transfer-reason button{text-align:left;padding:10px 12px;font-size:13px}
+.transfer-verify{min-height:53px;border-radius:13px;background:linear-gradient(110deg,#edb95c,#ffdc86);border:2px solid #fff0c1;color:#58411f;font-weight:900;font-size:15px;box-shadow:0 4px 0 #c58e44;padding:10px}
+@keyframes transferArrival{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:980px){.transfer-probes{grid-template-columns:1fr 1fr}}
+@media(max-width:740px){
+ .transfer-probes{grid-template-columns:1fr;gap:9px}
+ .transfer-probe{padding:11px;grid-template-columns:minmax(0,1fr);gap:8px}
+ .transfer-probe>strong{min-height:0;font-size:13px}
+ .transfer-diagram{max-width:440px;justify-self:center}
+ .transfer-answers button{min-height:49px;font-size:13px}
+ .transfer-reason{padding:11px 12px}.transfer-reason button{min-height:48px}
+ .transfer-heading{padding:13px}.transfer-heading h3{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){.transfer-puzzle{animation:none!important}}
