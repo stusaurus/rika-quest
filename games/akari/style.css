@@ -709,3 +709,5 @@
 .safety-reasons h3{margin:0}.safety-reasons p{font-size:12px}.safety-reason{text-align:left;width:100%;line-height:1.5}
 @media(max-width:740px){.safety-heading{padding:13px;align-items:flex-start}.safety-heading h3{font-size:18px}.safety-progress{padding:7px;font-size:11px}.safety-wires{grid-template-columns:1fr}.safety-guesses button{font-size:11px;padding:6px 2px}.safety-result{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.safety-wire{transition:none}}
+
+.safety-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.safety-nav button{min-height:44px;border-radius:10px;background:#d8f3ef;color:#16485d;border:2px solid #8cbbbf;font-weight:800;cursor:pointer}
