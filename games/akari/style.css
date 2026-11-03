@@ -820,3 +820,42 @@
 .story-scene.garden-powered:not(.restored) .scene-bulb{fill:#ffe6a4!important;filter:drop-shadow(0 0 8px #ffdb84)}
 .story-scene.garden-powered:not(.restored) .scene-glow{opacity:.56}
 @media(max-width:375px){.garden-nav button{font-size:12px}}
+
+/* Battery expedition 9–11: controlled trials, field repair and recorded evidence */
+.battery-expedition{display:grid;gap:15px;min-width:0;color:#eefafa}
+.battery-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;padding:17px;background:linear-gradient(110deg,#235374,#366e72);border:1px solid #72aab5;border-radius:17px}
+.battery-head strong{font-size:20px;flex:1 1 170px}.battery-head small{color:#d8f0eb;font-size:12px}
+.battery-caution{padding:11px 14px;background:#f6e8c5;border-left:5px solid #ce9550;color:#55431e;border-radius:9px;font-size:12px;font-weight:700;line-height:1.7}
+.battery-section{display:grid;gap:13px;min-width:0}.battery-section h3{margin:0;font-size:17px}.battery-section .lab-sub{margin:0;line-height:1.65}
+.battery-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.battery-control-set{display:grid;gap:8px;padding:11px;background:#193e52;border:1px solid #6397a6;border-radius:12px}
+.battery-control-set>strong{font-size:13px}
+.battery-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.battery-option,.battery-predictions button,.battery-reason{padding:10px;border:2px solid #90b5c1;background:#e3f2ef;color:#214754;border-radius:11px;min-height:46px;font-size:12px;font-weight:800;line-height:1.45;cursor:pointer}
+.battery-option.chosen,.battery-predictions button.chosen,.battery-reason.chosen{background:#fff0b1;border-color:#dba84b;color:#674616}
+.battery-diagram{max-width:100%;background:#123146;overflow-x:auto;border-radius:13px;border:1px solid #75a5b0;overscroll-behavior-x:contain}
+.battery-lab-svg{display:block;min-width:480px;width:100%;height:auto}
+.battery-predict-card,.battery-service-predict{display:grid;gap:10px;padding:12px;background:#1a4158;border:1px solid #72a7b5;border-radius:14px}
+.battery-predict-card>strong,.battery-service-predict>strong{font-size:14px}
+.battery-predictions{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}
+.battery-test{border:2px solid #d6aa5b;border-radius:12px;background:#ffe7b1;min-height:49px;color:#674618;font-size:14px;font-weight:900;cursor:pointer;padding:10px}
+.battery-test:disabled,.battery-predictions button:disabled{opacity:.52;cursor:not-allowed}
+.battery-result{background:#275b62;border:1px solid #7bc3bb;color:#f6ffef;padding:12px;border-radius:11px;font-size:13px;line-height:1.65}
+.battery-notebook{display:grid;gap:8px;border:1px solid #709aab;padding:11px;border-radius:12px}
+.battery-notebook>strong{font-size:14px}
+.battery-record{display:grid;grid-template-columns:1fr 1.8fr;gap:8px;padding:9px;border-radius:9px;background:#2c5366;color:#dceaf0;font-size:11px;line-height:1.6}
+.battery-record.tested{background:#2e645c;color:#eef9ee}
+.battery-record strong{font-size:12px}
+.battery-service-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.battery-service-options .battery-option{min-height:64px}
+.battery-science{display:grid;gap:9px;border-top:1px solid #6b9eab;padding-top:13px}
+.battery-science h3{margin:0}.battery-reason{text-align:left;font-size:13px}
+@media(max-width:740px){
+ .battery-expedition{gap:11px}.battery-head{padding:11px}.battery-head strong{font-size:17px}
+ .battery-controls{grid-template-columns:1fr}.battery-control-set{padding:9px}.battery-options{grid-template-columns:1fr 1fr}
+ .battery-control-set .battery-option{font-size:11px;padding:8px 5px}
+ .battery-lab-svg{min-width:480px}.battery-record{grid-template-columns:1fr}.battery-record strong{font-size:12px}
+ .battery-service-options{grid-template-columns:1fr}.battery-service-options .battery-option{min-height:48px}
+ .battery-reason{font-size:12px}.battery-predictions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){.battery-options .battery-option{font-size:10px}}
