@@ -17,6 +17,14 @@ output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(
 output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
 output=replaceOne(output,'<script src="./character.js" defer></script>',inlineScript(character));
 output=output.replace("./assets/tiranon-walk-prototype.webp","data:image/webp;base64,"+characterSprite);
+const previewCommit=process.env.AKARI_PREVIEW_SHA;
+if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
+ output=output.replace(
+  "https://rawcdn.githack.com/stusaurus/rika-quest/a45e52b643eb1e21e435e5c6b57ecfbcfdd6f47f/games/akari/index.html",
+  "https://rawcdn.githack.com/stusaurus/rika-quest/"+previewCommit+"/games/akari/index.html"
+ );
+}
+
 output=output.replace('href="../../index.html"','href="https://stusaurus.github.io/rika-quest/"');
 output=output.replace("<title>あかりクエスト | Rika Quest</title>","<title>あかりクエスト｜試遊版</title>");
 mkdirSync("artifacts",{recursive:true});
