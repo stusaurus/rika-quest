@@ -421,3 +421,21 @@
  .verification-step{padding:10px}
  .verify-part{min-height:44px}
 }
+
+
+/* Static recovery UI survives environments that display HTML/CSS but block scripts. */
+.startup-fallback{
+ display:grid;align-content:center;justify-items:start;gap:14px;min-height:310px;
+ width:100%;padding:24px clamp(14px,4vw,32px);margin:0;
+ background:linear-gradient(145deg,#f8fcf6,#dfefea);
+ border:2px dashed #85b9b3;border-radius:18px;color:#28546a;
+}
+.startup-fallback strong{font-size:clamp(16px,2.1vw,21px);line-height:1.45}
+.startup-fallback p{font-size:14px;line-height:1.8;margin:0;max-width:45ch}
+.startup-fallback small{font-size:11px;line-height:1.65;color:#5c777d}
+.startup-open-web{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 20px;
+ color:#fff;background:linear-gradient(115deg,#187d82,#24647f);border-radius:13px;
+ box-shadow:0 3px 0 #164a60;border:2px solid #4aada6;
+ font-size:14px;font-weight:900;text-decoration:none}
+.startup-open-web:focus-visible{outline:3px solid #ffcc74;outline-offset:4px}
+@media(max-width:740px){.startup-fallback{min-height:275px;padding:18px 14px;gap:12px}.startup-fallback p{font-size:13px}.startup-open-web{width:100%}}
