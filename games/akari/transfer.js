@@ -26,24 +26,24 @@ const puzzles={
   ["material","電気の通りやすさは、物の色や形より、材料の性質で決まる"],
   ["length","すき間にはさむ物が短ければ、どんな材料でも電気が通る"]
  ],correct:"material",discovery:"見た目が金属に似ていても、プラスチックは電気を通しにくい。鉄とアルミは金属なので通す。"},
- 7:{title:"時計塔の二重ロック",intro:"2つのスイッチは直列。条件が変わっても点灯を予測できるかな？",choices:["lit","dark"],
+ 7:{title:"時計塔の二重ロック",intro:"今度はスイッチが3つ！2つで見つけた直列の法則を使えるかな？",choices:["lit","dark"],
  probes:[
-  {id:"a",name:"AがON、BがOFF",diagram:"series10",answer:"dark"},
-  {id:"b",name:"AもBもON",diagram:"series11",answer:"lit"},
-  {id:"c",name:"AがOFF、BがON",diagram:"series01",answer:"dark"}
+  {id:"a",name:"AとBがON、CがOFF",diagram:"series110",answer:"dark"},
+  {id:"b",name:"A・B・CすべてON",diagram:"series111",answer:"lit"},
+  {id:"c",name:"AがOFF、BとCがON",diagram:"series011",answer:"dark"}
  ],reasons:[
-  ["both","直列ではAとBの両方が閉じて、はじめて電気の通り道がつながる"],
-  ["one","直列ではAとBの片方が閉じれば、もう片方は開いていても光る"],
+  ["both","直列では3つとも閉じて、はじめて電気の一本道がつながる"],
+  ["one","直列でも3つのうち1つが閉じていれば光る"],
   ["count","2つスイッチがあれば、ON・OFFに関係なく必ず明るくなる"]
  ],correct:"both",discovery:"直列スイッチの通り道は1本。どこか1か所でも開けば消灯する。"},
- 8:{title:"港の遠隔スイッチ",intro:"今度は並列。船着き場と倉庫のどちらからでも明かりをつけられる？",choices:["lit","dark"],
+ 8:{title:"港の遠隔スイッチ",intro:"港の照明を3か所から操作するよ。2本で見つけた並列の法則を3本に使おう。",choices:["lit","dark"],
  probes:[
-  {id:"a",name:"AがOFF、BがON",diagram:"parallel01",answer:"lit"},
-  {id:"b",name:"AもBもOFF",diagram:"parallel00",answer:"dark"},
-  {id:"c",name:"AがON、BがOFF",diagram:"parallel10",answer:"lit"}
+  {id:"a",name:"AとBがOFF、CがON",diagram:"parallel001",answer:"lit"},
+  {id:"b",name:"A・B・CすべてOFF",diagram:"parallel000",answer:"dark"},
+  {id:"c",name:"AがON、BとCがOFF",diagram:"parallel100",answer:"lit"}
  ],reasons:[
-  ["both","並列では2つともONでなければ点灯しない"],
-  ["either","並列は道が2本。どちらか1つでも閉じれば道がつながる"],
+  ["both","並列では3つともONでなければ点灯しない"],
+  ["either","並列は道が3本。どれか1本でも閉じれば電気の道がつながる"],
   ["open","並列なら全部OFFでも電流が流れる"]
  ],correct:"either",discovery:"スイッチが並列なら、どちらかの道がつながっていれば豆電球は点灯する。"},
  12:{title:"危険な近道を見破れ！",intro:"赤い線を外す前に、別の3つの回路が安全かを判断しよう。現実の乾電池で試すのは禁止。",choices:["short","safe"],
@@ -70,7 +70,7 @@ const puzzles={
 const labels={lit:"💡 点灯",dark:"◯ 消灯",short:"⚠ ショート（危険）",safe:"💡 正しく点灯"};
 function diagram(kind){
  const isSeries=kind.startsWith("series"),isParallel=kind.startsWith("parallel");
- const status=kind.match(/[01]{2}$/)?.[0]||"00";
+ const status=kind.match(/[01]{3}$/)?.[0]||"000";
  const topLine='<path d="M53 48V28H294V72M294 107V143H53V99" fill="none" stroke="#f5d6a4" stroke-width="5" stroke-linecap="round"/>';
  const reverseBattery=kind==="reverseLoop";
  const battery='<g><rect x="32" y="58" width="42" height="41" rx="9" fill="#b96253" stroke="#ffe6a7" stroke-width="3"/><path d="M53 58V47M53 99V145" stroke="#dce9e2" stroke-width="5"/><text x="53" y="84" fill="#fff6dc" font-size="11" font-weight="bold" text-anchor="middle">1.5V</text><text x="53" y="44" fill="#ffe0a9" font-size="12" text-anchor="middle">'+(reverseBattery?"−":"＋")+'</text><text x="53" y="159" fill="#ffe0a9" font-size="12" text-anchor="middle">'+(reverseBattery?"＋":"−")+'</text></g>';
@@ -87,8 +87,8 @@ function diagram(kind){
   '<text x="180" y="31" font-size="11" text-anchor="middle" fill="#25465a" font-weight="900">'+material+'</text>';
   if(kind==="bottomGap")details+='<text x="271" y="131" fill="#ffe19d" font-size="10" text-anchor="end">接点が外れた</text>';
  }
- if(isSeries){paths='<path d="M53 48V28H114M158 28H207M251 28H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(136,28,status[0]==="1","A")+switchGlyph(229,28,status[1]==="1","B")}
- if(isParallel){paths='<path d="M53 48V28H103M263 28H294V72M103 28V8H123M166 8H263V28M103 28V53H123M166 53H263" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(144,8,status[0]==="1","A")+switchGlyph(144,53,status[1]==="1","B")}
+ if(isSeries){paths='<path d="M53 48V47H95M137 47H159M201 47H223M265 47H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(116,47,status[0]==="1","A")+switchGlyph(180,47,status[1]==="1","B")+switchGlyph(244,47,status[2]==="1","C")}
+ if(isParallel){paths='<path d="M53 48V28H103M263 28H294V72M103 28V115M263 28V115M103 30H134M178 30H263M103 73H134M178 73H263M103 115H134M178 115H263" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(156,30,status[0]==="1","A")+switchGlyph(156,73,status[1]==="1","B")+switchGlyph(156,115,status[2]==="1","C")}
  if(kind==="short"||kind==="shunt"){details='<path d="M53 48H16V147H53" stroke="#f7a990" stroke-width="5" fill="none" stroke-dasharray="7 4"/><text x="80" y="119" font-size="11" fill="#ffc5aa">豆電球を通らない道</text>';if(kind==="short")paths='<path d="M294 107V143H53" stroke="#f5d6a4" stroke-width="5" fill="none"/>';else details='<path d="M53 48H16V147H53" stroke="#f7a990" stroke-width="5" fill="none" stroke-dasharray="7 4"/><text x="80" y="119" font-size="11" fill="#ffc5aa">別の導線で直結</text>'}
  return '<svg viewBox="0 0 340 173" class="transfer-diagram" role="img" aria-label="乾電池と豆電球の回路の模式図。結果はまだ表示しない"><rect x="1" y="1" width="338" height="171" rx="13" fill="#173a53" stroke="#55808c" stroke-width="2"/>'+
  paths+battery+bulb+details+'</svg>';
@@ -109,8 +109,8 @@ function score(id,answers,reason){const p=get(id);if(!p)return null;
 const hints={
  2:"乾電池の＋から出て、豆電球の2つの金属接点を通り、−まで戻る道があるかな？",
  5:"金属のように見えるかではなく、何の材料でできているかを確認しよう。",
- 7:"直列は電気の道が一本。AとBのどちらかで道が切れていないかな？",
- 8:"並列の2本の道を別々にたどって、どちらか一方でもつながっているか見よう。",
+ 7:"直列は一本道。3つのどこかで道が切れていないか見よう。",
+ 8:"3本の並列の道を別々にたどろう。どれか1本は閉じているかな？",
  12:"豆電球を通らない道で、乾電池の＋と−が直接つながっていないかな？",
  14:"電池、通す材料、豆電球の横と底、電池に戻るまでを指でなぞってみよう。"
 };
