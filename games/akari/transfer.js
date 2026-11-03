@@ -103,8 +103,17 @@ function render(id,answers,reason){
  '<div class="transfer-reason"><strong>🧠 どうしてそうなる？</strong><p>3つの予想をつなぐ、正しい理由を選ぼう。</p>'+p.reasons.map(([key,label])=>'<button type="button" data-transfer-reason="'+key+'" aria-pressed="'+(reason===key)+'" class="'+(reason===key?'selected':'')+'">'+label+'</button>').join("")+'</div>'+
  '<button type="button" class="transfer-verify" data-transfer-verify="1"'+(ready?"":" disabled")+' aria-disabled="'+(!ready)+'">🔑 予想と理由を提出して街を救う</button></section>';
 }
+function evaluateCircuit(kind){
+ if(kind==="short"||kind==="shunt")return"short";
+ if(["open","wood","plastic","bottomGap"].includes(kind))return"dark";
+ if(["loop","reverseLoop","clip","foil"].includes(kind))return"lit";
+ if(/^series[01]{3}$/.test(kind))return kind.slice(-3).split("").every(x=>x==="1")?"lit":"dark";
+ if(/^parallel[01]{3}$/.test(kind))return kind.slice(-3).split("").some(x=>x==="1")?"lit":"dark";
+ throw new Error("Unknown transfer circuit: "+kind);
+}
+function expected(id,kind){const result=evaluateCircuit(kind);return id===12&&result==="lit"?"safe":result;}
 function score(id,answers,reason){const p=get(id);if(!p)return null;
- const wrong=p.probes.filter(x=>answers[x.id]!==x.answer).map(x=>x.id);
+ const wrong=p.probes.filter(x=>answers[x.id]!==expected(id,x.diagram)).map(x=>x.id);
  const reasonOk=reason===p.correct;
  return {ok:wrong.length===0&&reasonOk,wrong,reasonOk,discovery:p.discovery};
 }
@@ -116,5 +125,5 @@ const hints={
  12:"豆電球を通らない道で、乾電池の＋と−が直接つながっていないかな？",
  14:"電池、通す材料、豆電球の横と底、電池に戻るまでを指でなぞってみよう。"
 };
-window.AkariTransfer={get,render,score,diagram,hint:id=>hints[id],stages:Object.keys(puzzles).map(Number)};
+window.AkariTransfer={get,render,score,diagram,evaluateCircuit,expected,hint:id=>hints[id],stages:Object.keys(puzzles).map(Number)};
 })();
