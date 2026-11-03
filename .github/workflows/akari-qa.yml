@@ -36,6 +36,8 @@ jobs:
         run: node scripts/test-akari-browser.mjs
       - name: Build self-contained playable preview
         if: always()
+        env:
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/build-akari-preview.mjs
       - name: Upload playable preview
         if: always()
