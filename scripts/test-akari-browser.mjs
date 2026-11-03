@@ -293,6 +293,7 @@ try{
    await page.locator('[data-builder-cause="short"]').click();
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),1,"Correct short-circuit diagnosis unlocks evidence");
    assert.equal(await page.locator('[data-diagnostic-edge="N-P"]').count(),1,"Real shortcut glows on the circuit");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clock-short-diagnosed.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),1,"Clock fault evidence persists on reload");
    await tapPractice("P","N");
@@ -442,6 +443,7 @@ try{
    await page.locator('[data-builder-cause="bypass"]').click();
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),1,"Correct OFF-bypass diagnosis rewarded");
    assert.ok(await page.locator(".builder-diagnostic-flow").count()>0,"Unexpected lit loop shown after science reasoning");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-bypass-diagnosed.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),1,"Lighthouse diagnosis persists across Safari reload");
    for(const [a,b] of [["P","L"],["R","N"]])await tapPair(a,b);
