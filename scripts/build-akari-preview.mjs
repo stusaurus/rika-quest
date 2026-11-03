@@ -6,6 +6,7 @@ const scenes=readFileSync("games/akari/scenes.js","utf8");
 const character=readFileSync("games/akari/character.js","utf8");
 const transfer=readFileSync("games/akari/transfer.js","utf8");
 const builder=readFileSync("games/akari/builder.js","utf8");
+const switchLab=readFileSync("games/akari/switch-lab.js","utf8");
 const characterSprite=readFileSync("games/akari/assets/tiranon-walk-prototype.webp").toString("base64");
 const game=readFileSync("games/akari/game.js","utf8");
 function replaceOne(source,what,withText){
@@ -20,6 +21,7 @@ output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScr
 output=replaceOne(output,'<script src="./character.js" defer></script>',inlineScript(character));
 output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScript(transfer));
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
+output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
 output=output.replace("./assets/tiranon-walk-prototype.webp","data:image/webp;base64,"+characterSprite);
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
