@@ -101,7 +101,7 @@ function render(raw){
  return '<div class="safety-lab">'+
  '<div class="safety-heading"><div><span class="eyebrow">⚡ 安全点検 '+(s.index+1)+' / 3</span><h3>'+job.name+'</h3><p>'+job.story+'</p></div><strong class="safety-progress">'+progress(s)+' / 3 完了</strong></div>'+
  '<p class="safety-warning">これはゲーム内の仮想実験です。実際の乾電池をショートさせる実験は絶対にしないでください。</p>'+
- '<div class="experiment-layout"><section class="lab-panel"><h3>🧭 図から危険な道を探す</h3><p class="lab-sub">導線を切り替えると図から薄くなるよ。電池と豆電球の接点をたどろう。</p><div class="safety-diagram">'+svg(s.index,s.removed,s.measured)+'</div>'+
+ '<div class="experiment-layout"><section class="lab-panel"><h3>🧭 図から危険な道を探す</h3><p class="lab-sub">導線を切り替えると図から薄くなるよ。電池と豆電球の接点をたどろう。</p><div class="safety-diagram">'+svg(s.index,s.removed,s.measured)+'</div><div class="safety-nav"><button type="button" data-safe-view="left">◀ 乾電池側</button><button type="button" data-safe-view="right">豆電球側 ▶</button></div>'+
  '<p class="lab-reading">図は電池の＋・−、豆電球の横・底を表す。豆電球の内部を通る道は、電池を直接つなぐ導線とは違うよ。</p></section>'+
  '<section class="lab-panel"><h3>✂ 修理する導線を選ぼう</h3><p class="lab-sub">安全に点灯する道を残しながら、できるだけ少ない導線を外してね。</p><div class="safety-wires">'+job.wires.map(w=>'<button type="button" class="cut-wire'+(s.removed.includes(w.id)?" removed":"")+'" data-safe-wire="'+w.id+'" aria-pressed="'+s.removed.includes(w.id)+'"><span>導線 '+w.id+'</span><strong>'+(s.removed.includes(w.id)?"外した ✓":"つながっている")+'</strong></button>').join("")+'</div>'+
  '<div class="safety-prediction"><strong>🔮 この状態を仮想通電するとどうなる？</strong><div class="safety-guesses">'+[["lit","💡 点灯"],["open","◯ 消灯"],["short","⚠ ショート"]].map(([id,label])=>'<button type="button" class="'+(s.guess===id?"chosen":"")+'" data-safe-guess="'+id+'" aria-pressed="'+(s.guess===id)+'">'+label+'</button>').join("")+'</div></div>'+
