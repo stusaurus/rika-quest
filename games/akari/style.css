@@ -439,3 +439,17 @@
  font-size:14px;font-weight:900;text-decoration:none}
 .startup-open-web:focus-visible{outline:3px solid #ffcc74;outline-offset:4px}
 @media(max-width:740px){.startup-fallback{min-height:275px;padding:18px 14px;gap:12px}.startup-fallback p{font-size:13px}.startup-open-web{width:100%}}
+
+
+/* Fault finding now asks learners to use observations before touching repair tools. */
+.suspect-btn{min-height:42px;border:2px solid #aec8cc;color:#e5f6ef;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800;background:#44667a;line-height:1.4}
+.suspect-btn.chosen{color:#584321;background:#ffe2a2;border-color:#ffcf81}
+.diagnosis-panel{display:grid;gap:8px;margin-top:14px;padding:13px 14px;border-radius:14px;border:2px solid #b1d8d4;background:linear-gradient(120deg,#e7f5ed,#d2e9e5);color:#274f5f}
+.diagnosis-panel strong{font-size:14px;line-height:1.45}
+.diagnosis-panel p{margin:0;font-size:12px;line-height:1.7}
+.diagnosis-panel.complete{background:#daf3df;border-color:#95d7ad}
+.diagnosis-status{font-weight:800}
+.diagnose-btn{min-height:44px;width:100%;border-radius:11px;padding:10px 12px;font-size:13px;font-weight:900;background:#176f76;border:2px solid #379c98;color:#fff}
+.diagnose-btn:disabled{opacity:.55;filter:grayscale(.35);cursor:not-allowed}
+.suspect-btn:focus-visible,.diagnose-btn:focus-visible{outline:3px solid #eecb74;outline-offset:3px}
+@media(max-width:740px){.diagnosis-panel{padding:12px;margin-top:12px}.diagnose-btn{min-height:48px}.suspect-btn{min-height:44px;white-space:normal}}
