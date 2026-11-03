@@ -78,6 +78,25 @@ function scientificComplete(task,tests,wires,trace){
 }
 function render(wires=[],selected=null,switchOn=false,tests={},task="switch",trace=[]){
  const direct=task==="direct",segments=normalize(wires);
+ const proofReady=expectedFor(task,tests,segments),route=Array.isArray(trace)?trace:[];
+ const proof=traceStatus(task,segments,route);
+ const routeSvg=route.slice(1).map((node,i)=>{
+  const prev=route[i],a=terminals[prev],b=terminals[node],key=edge(prev,node);
+  if(key===edge("L","R"))return '<path d="M888 118V340" stroke="#ffef94" stroke-width="11" stroke-linecap="round" fill="none" opacity=".8"/>';
+  if(key===edge("S","T"))return '<path d="M382 118L555 118" stroke="#ffef94" stroke-width="11" stroke-linecap="round" fill="none" opacity=".85"/>';
+  return '<path d="M'+a.x+' '+a.y+'L'+b.x+' '+b.y+'" stroke="#ffef94" stroke-width="10" stroke-linecap="round" fill="none" opacity=".85"/>';
+ }).join("");
+ const tracePanel='<div class="builder-proof'+(proof.complete?' finished':'')+'"><h4>🧠 電気の道を証明しよう</h4>'+
+  '<p>電気の通り道を、<b>乾電池の＋極から−極へ</b>順番にたどろう。豆電球の「横と底」の間も必ず通ってね。'+(direct?'':'スイッチはONにして、入口と出口の間もたどろう。')+'</p>'+
+  (proofReady?'<div class="builder-trace-sequence" aria-live="polite">'+(route.length?route.map(id=>names[id]).join(' → '):'まだ通り道を選んでいないよ')+'</div>'+
+   '<div class="builder-trace-choices">'+(direct?["P","L","R","N"]:["P","S","T","L","R","N"]).map(id=>'<button type="button" data-builder-trace="'+id+'"'+(!direct&&!switchOn?' disabled':'')+' aria-label="電気の道：'+terminals[id].name+'" class="'+(route.includes(id)?' traced':'')+'">'+names[id]+'</button>').join("")+'</div>'+
+   '<div class="builder-trace-footer">'+
+     (proof.complete?'<strong>✓ 豆電球'+(direct?'':'とスイッチ')+'を通る道を説明できた！</strong>':
+       '<span>'+(direct?'電球の接点を通る輪をたどろう。':'スイッチONの状態で、電球も通る輪をたどろう。')+'</span>')+
+     '<button type="button" data-builder-trace-reset="1"'+(route.length?'':' disabled')+'>↺ 通り道をやり直す</button></div>'+
+     (!direct&&!switchOn?'<p class="builder-trace-warning">通り道をたどるときは、先にスイッチをONにしよう。</p>':'')
+  :'<p class="builder-trace-pending">まず安全な回路を作り、'+(direct?'通電実験で点灯を確かめよう。':'OFF・ONの両方を実験して確かめよう。')+'</p>')+'</div>';
+
  const simulation=evaluate(segments,direct?false:switchOn);
  const mode=direct?"single":switchOn?"on":"off";
  const recorded=tests[mode],measured=recorded&&recorded.signature===signature(segments);
@@ -91,7 +110,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const available=direct?ids.filter(id=>id!=="S"&&id!=="T"):ids;
  const buttons=available.map(id=>{
   const t=terminals[id];
-  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+'" style="left:'+(100*t.x/1000)+'%;top:'+(100*t.y/460)+'%" data-builder-t="'+id+'" aria-label="'+t.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
+  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+(route.includes(id)?' traced':'')+'" style="left:'+(100*t.x/1000)+'%;top:'+(100*t.y/460)+'%" data-builder-t="'+id+'" aria-label="'+t.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
  }).join("");
  const statusBlocks=(direct?[["single","点灯の実験"]]:[["off","OFFの実験"],["on","ONの実験"]]).map(([id,label])=>{
   const data=tests[id],valid=data&&data.signature===signature(segments);
@@ -126,14 +145,14 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<path d="M859 202L917 258M917 202L859 258" stroke="#fff5d8" stroke-width="6" fill="none"/>'+
  '<text x="888" y="419" text-anchor="middle" fill="#e1f3e6" font-size="20">豆電球</text>'+
  '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
- lineSvg+'</svg>'+buttons+'</div></div>'+
+ lineSvg+'<g class="builder-proof-path">'+routeSvg+'</g></svg>'+buttons+'</div></div>'+
  '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
  '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'このゲーム内で通電して、安全に豆電球がつくか確かめよう。':'スイッチOFFとONをそれぞれ試そう。実物でショートを試すのは危険だよ。')+'</p>'+
  switchControl+'<p class="builder-live">'+status+'</p>'+
  '<button type="button" data-builder-test="1" class="builder-test">⚡ 今の状態を実験する</button>'+
  '<div class="builder-measures">'+statusBlocks+'</div>'+
  '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
- '<button type="button" class="builder-submit" data-builder-submit="1"'+(expectedFor(task,tests,segments)?'':' disabled')+'>'+
+ tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+
  (direct?'🏆 時計塔の回路を完成させる':'🏆 設計を完成して灯台に光を戻す')+'</button></div></div></section>';
 }
 window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,expectedDirect,expectedFor,traceStatus,scientificComplete,render};
