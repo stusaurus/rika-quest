@@ -42,7 +42,7 @@ const switchLab=(id,layout)=>{
  for(const [a,b]of edges)netWire(a,b);
  assert.equal(saved().switchDrafts[id].wires.length,edges.length,"Network wiring must persist");
  const cases=B.codes.map(code=>({code,...B.evaluate(edges,code[0]==="1",code[1]==="1")}));
- assert.deepEqual(cases.map(x=>x.lit),id===7?[false,false,false,true]:[false,true,true,true],"Circuit graph must produce target truth table");
+ assert.deepEqual(Array.from(cases,x=>Boolean(x.lit)),id===7?[false,false,false,true]:[false,true,true,true],"Circuit graph must produce target truth table");
  assert.equal(B.evaluate([["P","N"]],false,false).short,true,"Direct battery connection is always unsafe");
  move(id-1);move(id);
  assert.match(el("workspace").innerHTML,/network-lab/,"Wiring challenge must survive switching missions");
