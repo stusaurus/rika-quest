@@ -310,10 +310,11 @@ function handleWorkspace(e){
      (!result.reasonOk?"理由も、3つの結果すべてに当てはまるか考えよう。":"一つずつ通り道を確かめよう。"),"warning");
     reactCharacter("think","どうしてそうなるノン？");return;
    }
+   const answeredReason=ui.transfer.reason;
    ui.transferPassed=true;ui.transfer=null;
    const outcomeNames={lit:"点灯",dark:"消灯",short:"ショート（危険）",safe:"正しく点灯"};
-   const evidence=p.probes.map(q=>q.name+" → "+outcomeNames[result&&window.AkariTransfer.expected(current().id,q.diagram)]).join("／");
-   const causal=p.reasons.find(([k])=>k===ui.transfer.reason)?.[1]||"";
+   const evidence=p.probes.map(q=>q.name+" → "+outcomeNames[window.AkariTransfer.expected(current().id,q.diagram)]).join("／");
+   const causal=p.reasons.find(([k])=>k===answeredReason)?.[1]||"";
    recordObservation("transfer:"+current().id,"【追加依頼】"+evidence+"。理由："+causal+"。"+result.discovery);
    success();return;
   }
