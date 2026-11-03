@@ -67,7 +67,7 @@ function render(wires=[],selected=null,switchOn=false,tests={}){
    (valid?(result.short?"⚠ ショート（危険）":result.lit?"💡 点灯":"◯ 消灯"):"？ 未実験")+'</span></div>';
  }).join("");
  return '<section class="builder-puzzle"><div class="builder-heading"><span>🌟 最終の設計依頼</span><h3>灯台のスイッチ回路を組み立てよう</h3>'+
-  '<p>スイッチ <b>ONで点灯</b>、<b>OFFで消灯</b>。どちらの状態でもショートしない回路を作ってね。</p></div>'+
+  '<p>灯台本体の修理が終わった！ 最後は乾電池1個を使う非常用スイッチ盤を設計しよう。<b>ONで点灯</b>、<b>OFFで消灯</b>。どちらもショートなしが条件だよ。</p></div>'+
   '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線でつながるよ。すでにつないだ2つを選ぶと外せるよ。スマホでは横に動かして全部の端子を見よう。</p>'+
   '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
   '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして全ての端子を見られます"><div class="builder-board"><svg viewBox="0 0 1000 460" role="img" aria-label="乾電池の＋−、豆電球の横と底、スイッチの入口出口を自由につなぐ回路図">'+
