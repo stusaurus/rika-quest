@@ -83,7 +83,7 @@ function diagram(kind){
   const material={plastic:"プラスチック",wood:"乾いた木",foil:"アルミはく",clip:"鉄のクリップ",bottomGap:"アルミはく"}[kind];
   paths='<path d="M53 48V28H139M221 28H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none" stroke-linecap="round"/>';
   if(kind==="bottomGap")paths='<path d="M53 48V28H139M221 28H294V72M294 107V114M294 140V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none" stroke-linecap="round"/>';
-  details='<rect x="139" y="13" width="82" height="30" rx="8" fill="'+({plastic:"#70c5df",wood:"#bc946b",foil:"#c4dadb",clip:"#95bdc3",bottomGap:"#c4dadb"}[kind])+'" stroke="#f5e1b5" stroke-width="2"/>'+
+  details='<rect x="139" y="13" width="82" height="30" rx="8" fill="'+({plastic:"#b3c7cf",wood:"#bc946b",foil:"#c4dadb",clip:"#95bdc3",bottomGap:"#c4dadb"}[kind])+'" stroke="#f5e1b5" stroke-width="2"/>'+
   '<text x="180" y="31" font-size="11" text-anchor="middle" fill="#25465a" font-weight="900">'+material+'</text>';
   if(kind==="bottomGap")details+='<text x="271" y="131" fill="#ffe19d" font-size="10" text-anchor="end">接点が外れた</text>';
  }
