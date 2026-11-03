@@ -223,7 +223,7 @@ function display5(raw){
  const itemGuesses='<div class="garden-predictions">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-garden-guess="'+id+'" class="'+(s.guess===id?" chosen":"")+'" aria-pressed="'+(s.guess===id)+'" '+(test?"disabled":"")+'>'+label+'</button>').join("")+'</div>';
  const role=(key,label,detail)=>'<button type="button" class="garden-slot" data-garden-slot="'+key+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>'+label+'</strong><span>'+(material(s.slots[key])?.name||"まだ決まっていない")+'</span><small>'+detail+'</small></button>';
  return '<div class="garden-lab"><div class="garden-heading"><span class="eyebrow">🕵️ 調査 5 / 14</span><strong>にせものの金属・夜の庭の修理</strong><small>材質の実験 '+e.done+'/4　｜　設置 '+Object.values(s.slots).filter(Boolean).length+'/3</small></div>'+
- '<div class="garden-hazard">⚠ ここに出るショートは画面内だけの仮想実験。実物の乾電池でショートさせないでね。</div>'+
+ '<div class="garden-hazard">⚠ ここに出るショートは画面内だけの仮想実験。実物では絶対に試さないでね。乾いた木の性質を扱う模型なので、実際の屋外配線には専用の安全な絶縁部品を使うよ。</div>'+
  '<section class="lab-panel garden-section"><h3>① 見た目ではなく、実験で正体を見つける</h3><p class="lab-sub">同じように光って見える試料もあるよ。先に予想を立てて、電気を通すか確かめてから、使い道を決めよう。</p>'+
  samples+
  (selected?'<div class="garden-rig">'+testDiagram(selected.id,"tight",!!test)+'</div><strong class="garden-current">調査中：'+selected.secret+'</strong>'+
@@ -232,7 +232,7 @@ function display5(raw){
  '<div class="garden-journal"><strong>📖 材料の実験記録</strong>'+notes(s,5)+'</div>'+
  '<p class="garden-goal">修理に必要な実験：導体1種類以上、絶縁に使える不導体2種類。記録：'+e.conductors+' / 1 導体、'+e.nonconductors+' / 2 不導体</p></section>'+
  (ready?'<section class="lab-panel garden-section"><h3>② 明かりの配線と、危険を防ぐ仕切りを設計</h3><p class="lab-sub">上で選択した実験済みの試料を下の3か所へ置こう。主回路には導体、電池の＋と−の露出端子を隔てる2か所には何を置く？</p>'+
- '<div class="garden-schematic">'+schematic5(s)+'</div>'+
+ '<div class="garden-schematic">'+schematic5(s)+'</div><div class="garden-nav"><button type="button" data-garden-view="left">◀ 乾電池側</button><button type="button" data-garden-view="right">豆電球側 ▶</button></div>'+
  '<div class="garden-slots">'+role("link","回路のつなぎ目","豆電球へ電気を通す道")+role("guardA","仕切り A","＋・−の露出した端子の間")+role("guardB","仕切り B","＋・−の露出した端子の間")+'</div>'+
  '<div class="garden-question"><strong>この設計を仮想通電したらどうなる？</strong>'+
  '<div class="garden-predictions">'+[["lit","💡 点灯"],["dark","◯ 消灯"],["short","⚠ ショート"]].map(([id,label])=>'<button type="button" data-garden-design-guess="'+id+'" class="'+(s.prediction===id?" chosen":"")+'" aria-pressed="'+(s.prediction===id)+'">'+label+'</button>').join("")+'</div>'+
