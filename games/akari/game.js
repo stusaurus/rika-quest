@@ -374,12 +374,14 @@ function renderFinale(){
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
- const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,mode=current().mode;
+ const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,mode=current().mode;
  root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[],ui.builder.insight):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
  const builderView=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null;
  if(builderView)builderView.scrollLeft=builderPosition;
+ const safetyView=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null;
+ if(safetyView)safetyView.scrollLeft=safetyPosition;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
@@ -707,6 +709,12 @@ function handleWorkspace(e){
  if(target.hasAttribute("data-answer")){ui.answer=target.dataset.answer;renderWorkspace();setFeedback("結論を選んだよ。理由も説明してから通電チェック！");return;}
  if(current().mode==="cut"&&window.AkariSafety){
   const B=window.AkariSafety,q=ui.safety||B.empty(),job=B.stages[q.index];
+  if(target.hasAttribute("data-safe-view")){
+   const board=$("workspace").querySelector(".safety-diagram"),direction=target.dataset.safeView;
+   if(!board||!["left","right"].includes(direction))return;
+   board.scrollLeft=direction==="right"?board.scrollWidth-board.clientWidth:0;
+   setFeedback(direction==="right"?"豆電球の横・底の接点と導線を調べよう。":"乾電池の＋・−極から導線をたどろう。");return;
+  }
   if(target.hasAttribute("data-safe-wire")){
    const id=target.dataset.safeWire;
    if(!job.wires.some(w=>w.id===id))return;
