@@ -68,8 +68,9 @@ function render(wires=[],selected=null,switchOn=false,tests={}){
  }).join("");
  return '<section class="builder-puzzle"><div class="builder-heading"><span>🌟 最終の設計依頼</span><h3>灯台のスイッチ回路を組み立てよう</h3>'+
   '<p>スイッチ <b>ONで点灯</b>、<b>OFFで消灯</b>。どちらの状態でもショートしない回路を作ってね。</p></div>'+
-  '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線でつながるよ。すでにつないだ2つを選ぶと外せるよ。</p>'+
-  '<div class="builder-board"><svg viewBox="0 0 1000 460" role="img" aria-label="乾電池の＋−、豆電球の横と底、スイッチの入口出口を自由につなぐ回路図">'+
+  '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線でつながるよ。すでにつないだ2つを選ぶと外せるよ。スマホでは横に動かして全部の端子を見よう。</p>'+
+  '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
+  '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして全ての端子を見られます"><div class="builder-board"><svg viewBox="0 0 1000 460" role="img" aria-label="乾電池の＋−、豆電球の横と底、スイッチの入口出口を自由につなぐ回路図">'+
   '<rect width="1000" height="460" rx="27" fill="#183c55"/>'+
   '<g><rect x="39" y="164" width="92" height="125" rx="15" fill="#d7a96b" stroke="#ffdeab" stroke-width="5"/>'+
   '<text x="85" y="226" text-anchor="middle" font-size="28" fill="#fff6d3" font-weight="bold">1.5V</text>'+
@@ -85,7 +86,7 @@ function render(wires=[],selected=null,switchOn=false,tests={}){
   '<path d="M859 202L917 258M917 202L859 258" stroke="#fff5d8" stroke-width="6" fill="none"/>'+
   '<text x="888" y="419" text-anchor="middle" fill="#e1f3e6" font-size="20">豆電球</text>'+
   '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
-   lineSvg+'</svg>'+endpoints+'</div>'+
+   lineSvg+'</svg>'+endpoints+'</div></div>'+
   '<div class="builder-bottom"><span>導線 '+normalized.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
   '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">まずOFF、次にONを確かめてみよう。ショートがあると危険なので、このゲーム内だけで試してね。</p>'+
   '<div class="builder-switch"><button type="button" data-builder-switch="off" aria-pressed="'+(!switchOn)+'" class="'+(!switchOn?'on':'')+'">OFF</button>'+
