@@ -107,7 +107,7 @@ function fail(message,short=false){failures++;setFeedback(message,"warning");rea
 function success(){
  const transfer=window.AkariTransfer?.get(current().id);
  if(transfer&&!ui.transferPassed){
-  if(!ui.transfer)ui.transfer={answers:{},reason:null};
+  if(!ui.transfer)ui.transfer={answers:{},reason:null,step:0};
   renderWorkspace();renderHeader();
   setFeedback("🚨 追加依頼！ 実験で見つけた法則を、別の3つの回路で使えるかな？","warning");
   reactCharacter("think","次の街灯も助けるノン！");
@@ -271,7 +271,7 @@ function renderFinale(){
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,mode=current().mode;
- root.innerHTML=ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ root.innerHTML=ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
 }
@@ -321,11 +321,22 @@ function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
  if(ui.transfer){
   const p=window.AkariTransfer?.get(current().id);if(!p)return;
+  if(target.hasAttribute("data-transfer-jump")){
+   const step=Number(target.dataset.transferJump);
+   if(!Number.isInteger(step)||step<0||step>3)return;
+   if(step===3&&p.probes.some(q=>!ui.transfer.answers[q.id]))return;
+   if(step>0&&step<3&&!ui.transfer.answers[p.probes[step-1].id]&&!ui.transfer.answers[p.probes[step].id])return;
+   ui.transfer.step=step;renderWorkspace();setFeedback(step===3?"3つの予想を見比べて理由を考えよう。":"この回路の電気の通り道をたどろう。");return;
+  }
   if(target.hasAttribute("data-transfer-answer")){
    const id=target.dataset.transferAnswer,value=target.dataset.transferValue;
    if(!p.probes.some(q=>q.id===id)||!p.choices.includes(value))return;
    ui.transfer.answers[id]=value;
-   renderWorkspace();setFeedback("予想を記録したよ。3つの回路と理由を見比べよう。");return;
+   if(ui.transfer.step<3){
+    const allAnswered=p.probes.every(q=>!!ui.transfer.answers[q.id]);
+    ui.transfer.step=allAnswered?3:Math.min(3,ui.transfer.step+1);
+   }
+   renderWorkspace();setFeedback(ui.transfer.step===3?"3つの予想がそろった！結果を比べて理由を説明しよう。":"予想を記録したよ。次の回路もよく見てみよう。");return;
   }
   if(target.hasAttribute("data-transfer-reason")){
    const reason=target.dataset.transferReason;
