@@ -32,9 +32,31 @@ try{
      if(width<740)assert.ok(await page.locator(".network-viewport").evaluate(e=>e.scrollLeft)>20,"Bulb side must be reachable on mobile");
      await page.locator('[data-net-view="left"]').click();
      const tap=async(a,b)=>{await page.locator('[data-net-t="'+a+'"]').click();await page.locator('[data-net-t="'+b+'"]').click()};
+     // An incorrect prediction must not expose the dangerous route.
      await tap("P","N");await page.locator('[data-net-test]').click();
      assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is unsafe");
+     assert.equal(await page.locator(".network-diagnosis").count(),1,"Unsafe outcome opens science-based fault diagnosis");
+     assert.equal(await page.locator(".network-flow-segment").count(),0,"Dangerous shortcut not spoiled before hypothesis");
+     await page.locator('[data-net-cause="open"]').click();
+     assert.equal(await page.locator(".network-diagnosis.solved").count(),0,"Wrong cause must be rejected");
+     await page.locator('[data-net-cause="short"]').click();
+     assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"Correct hazardous shortcut diagnosis rewarded");
+     assert.equal(await page.locator('.network-flow-segment.danger').count(),1,"Actual battery shortcut should glow after diagnosis");
+     assert.equal(await page.locator(".network-trial.measured").count(),1,"Diagnosing must not erase recorded observation");
+     await page.reload({waitUntil:"domcontentloaded"});
+     assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"A solved fault cause persists after reload");
      await tap("P","N");
+     assert.equal(await page.locator(".network-diagnosis.solved").count(),0,"Rewiring invalidates old diagnostic evidence");
+     if(id===8){
+       // The lamp can glow while both switches are OFF if wires bypass them.
+       for(const [a,b] of [["P","L"],["R","N"]])await tap(a,b);
+       await page.locator('[data-net-test]').click();
+       assert.equal(await page.locator(".network-diagnosis").count(),1,"Unexpected light must be investigated");
+       await page.locator('[data-net-cause="bypass"]').click();
+       assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"Bypass diagnosis must match the actual circuit");
+       assert.ok(await page.locator(".network-flow-segment").count()>0,"Electric path through bypassed switches should be visible");
+       await page.locator('[data-net-clear]').click();
+     }
      for(const [a,b] of wires)await tap(a,b);
      await page.locator('[data-net-test]').click(); // 00
      await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 10
@@ -42,6 +64,7 @@ try{
      assert.equal(await page.locator(".network-lab").count(),1,"Reload restores unfinished network");
      assert.equal(await page.locator(".network-trial.measured").count(),2,"Two trials survived reload");
      await page.locator('[data-net-switch="b"]').click();await page.locator('[data-net-test]').click(); // 11
+     if(id===7)assert.ok(await page.locator(".network-flow-segment").count()>4,"Closed series circuit must show the measured complete path");
      await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 01
      assert.equal(await page.locator(".network-trial.measured").count(),4,"All four combinations tested");
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Causal explanation required");
@@ -49,6 +72,7 @@ try{
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Wrong conclusion rejected");
      await page.locator('[data-net-reason="'+(id===7?"both":"either")+'"]').click();
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),false,"Correct topology and reasoning unlock stage");
+     assert.equal(await page.locator(".network-power-ready").count(),1,"Completing the objective restores the power-ready indicator");
      await page.evaluate(()=>window.scrollTo(0,0));
      await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-network-"+id+".png",fullPage:true});
      await page.locator('[data-net-submit]').click();
