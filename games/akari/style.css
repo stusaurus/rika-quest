@@ -581,3 +581,27 @@
 .builder-nav button{min-height:43px;min-width:0;flex:1;border-radius:10px;background:#d7eeed;border:1px solid #96c6c9;color:#285d6a;font-size:12px;font-weight:900;padding:8px 9px}
 .builder-nav button:focus-visible{outline:3px solid #efc477;outline-offset:2px}
 @media(max-width:740px){.builder-nav button{min-height:46px;font-size:12px}.builder-viewport{box-shadow:0 3px 8px #15395130}}
+
+
+/* Proof of understanding: students trace the physically connected return path. */
+.builder-proof{margin-top:14px;padding:13px 14px;border-radius:15px;background:linear-gradient(130deg,#e2f4ed,#d8ecea);border:2px solid #98c9c5;display:grid;gap:9px}
+.builder-proof h4{font-size:16px;margin:0;color:#255a66;line-height:1.45}
+.builder-proof p{margin:0;color:#426b76;font-size:12px;line-height:1.75}
+.builder-proof.finished{border-color:#83bc87;background:linear-gradient(130deg,#e0f6db,#cbeecf)}
+.builder-trace-sequence{min-height:48px;padding:10px;border-radius:11px;background:#224c60;color:#fff0bb;font-size:13px;font-weight:800;line-height:1.55;overflow-wrap:anywhere}
+.builder-trace-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.builder-trace-choices button{min-height:46px;border:2px solid #b9d9d5;border-radius:10px;background:#fffdf5;color:#315d6d;font-size:12px;font-weight:900;line-height:1.4;padding:7px 6px}
+.builder-trace-choices button.traced{background:#ffe6a3;border-color:#e6b555;color:#634b27}
+.builder-trace-choices button:disabled{opacity:.4;cursor:not-allowed}
+.builder-trace-footer{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:#456a6f;line-height:1.55}
+.builder-trace-footer strong{color:#216f50}
+.builder-trace-edit{display:flex;gap:6px;flex-wrap:wrap}
+.builder-trace-edit button{min-height:39px;padding:7px 9px;border:1px solid #91c1b9;border-radius:9px;background:#f8fff8;color:#356a72;font-size:11px;font-weight:900}
+.builder-trace-edit button:disabled{opacity:.48}
+.builder-trace-warning{color:#8b4b35!important;font-weight:800}
+.builder-trace-pending{background:#f7f9ec;padding:10px;border-radius:10px;border:1px dashed #b0cbbf}
+.builder-terminal.traced{background:#ffdfa0;border-color:#fff3c1;box-shadow:0 0 0 8px #f7d7837d}
+.builder-terminal.selected.traced{background:#81e6ce}
+.builder-proof-path{pointer-events:none;filter:drop-shadow(0 0 9px #ffde8c)}
+.builder-trace-choices button:focus-visible,.builder-trace-edit button:focus-visible{outline:3px solid #efb954;outline-offset:2px}
+@media(max-width:740px){.builder-proof{padding:11px;gap:9px}.builder-trace-choices button{min-height:49px;font-size:13px}.builder-trace-edit button{min-height:44px}.builder-proof h4{font-size:15px}}
