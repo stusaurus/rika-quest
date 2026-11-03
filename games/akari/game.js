@@ -254,7 +254,7 @@ const buildings={
  lighthouse:'<path d="M89 231 110 47 186 47 207 231Z" fill="#f2e5ce"/><path d="M105 89H192L195 115H101ZM98 165H201L204 189H95Z" fill="#c76f66"/><path d="M93 48H207L183 21H120Z" fill="#587d9e"/><rect class="window" x="115" y="48" width="67" height="39" fill="#38556c"/><rect class="window" x="134" y="135" width="36" height="26" rx="6"/><rect x="121" y="202" width="49" height="29" rx="13" fill="#7a8179"/>'
 };
 function renderScene(){
- const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete||!!state.completed[m.id]);scene.classList.toggle("bridge-powered",m.id===3&&!!window.AkariBridge?.sceneLit(ui.bridge));$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":state.completed[m.id]?"この場所には、前の冒険であかりをともしたよ。もう一度実験してみよう！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
+ const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete||!!state.completed[m.id]);scene.classList.toggle("bridge-powered",m.id===3&&!!window.AkariBridge?.sceneLit(ui.bridge));scene.classList.toggle("garden-powered",m.id===5&&!!window.AkariGarden?.measured5(ui.garden)&&!!window.AkariGarden?.evaluate5(ui.garden.slots).lit);$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":state.completed[m.id]?"この場所には、前の冒険であかりをともしたよ。もう一度実験してみよう！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
 }
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
@@ -369,7 +369,7 @@ function renderFinale(){
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
- const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,mode=current().mode;
+ const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,mode=current().mode;
  root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[],ui.builder.insight):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
@@ -377,6 +377,8 @@ function renderWorkspace(){
  if(builderView)builderView.scrollLeft=builderPosition;
  const safetyView=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null;
  if(safetyView)safetyView.scrollLeft=safetyPosition;
+ const gardenView=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null;
+ if(gardenView)gardenView.scrollLeft=gardenPosition;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
@@ -650,6 +652,13 @@ function handleWorkspace(e){
  if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
  if(current().mode==="material"&&window.AkariGarden){
   const G=window.AkariGarden,id=current().id,g=ui.garden||G.initial(id);
+  if(target.hasAttribute("data-garden-view")){
+   if(id!==5)return;
+   const view=$("workspace").querySelector(".garden-schematic"),direction=target.dataset.gardenView;
+   if(!view||!["left","right"].includes(direction))return;
+   view.scrollLeft=direction==="right"?view.scrollWidth-view.clientWidth:0;
+   setFeedback(direction==="right"?"豆電球と、仕切りの端子を調べよう。":"乾電池の＋・−極から道をたどってみよう。");return;
+  }
   if(target.hasAttribute("data-garden-clamp")){
    if(id!==4)return;
    const clamp=target.dataset.gardenClamp;
@@ -723,7 +732,7 @@ function handleWorkspace(e){
     g.slots[slot]=sample.id;
    }
    g.prediction=null;g.measurement=null;g.pathReason=null;g.guardReason=null;
-   ui.garden=g;saveGardenDraft();renderWorkspace();
+   ui.garden=g;saveGardenDraft();renderWorkspace();renderScene();
    setFeedback("役割を変更したよ。新しい設計でもう一度仮想通電しよう。");reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-garden-design-guess")){
@@ -738,7 +747,7 @@ function handleWorkspace(e){
    if(id!==5||!g.prediction||!Object.values(g.slots).every(Boolean))return;
    const actual=G.evaluate5(g.slots);
    g.measurement={prediction:g.prediction,signature:G.signature5(g.slots),actual:actual.kind};
-   g.pathReason=null;g.guardReason=null;ui.garden=g;saveGardenDraft();renderWorkspace();
+   g.pathReason=null;g.guardReason=null;ui.garden=g;saveGardenDraft();renderWorkspace();renderScene();
    if(actual.short){setFeedback("⚠ 仮想実験でショートの危険を発見。電池の＋と−を隔てる部品を見直そう。実物では試さないでね。","warning");reactCharacter("danger");}
    else if(actual.lit){setFeedback("💡 安全な回路ができた！どこに導体・不導体を使ったか説明して完成させよう。","success");reactCharacter("discover");}
    else{setFeedback("回路が切れて消灯した。豆電球に電気を届ける部品を見直そう。","warning");reactCharacter("think");}
