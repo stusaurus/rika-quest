@@ -192,7 +192,7 @@ function render(stage,raw){
  '</div><button class="battery-test" type="button" data-battery-service-test '+(!s.serviceGuess?"disabled":"")+'>🔬 現場で仮想通電</button></div>':"")+
  (s.service?'<div class="battery-result" role="status">予想：'+outcomes[s.service.guess]+' ／ 実際：'+outcomes[s.service.actual]+(s.service.guess===s.service.actual?"。実験結果と一致！":"。予想と違った。記録を見直そう。")+'</div>':"")+
  '<div class="battery-science"><h3>③ なぜそうなる？</h3><p class="lab-sub">3つの科学的な説明のうち、実験記録と合うものを選ぼう。</p>'+reason+'</div>'+
- '<p class="lab-sub">現場の実験結果・理由の説明がそろったら、画面下の「点灯のしくみを確認」で完了。</p></section>':"");
+ '<p class="lab-sub">現場の実験結果・理由の説明がそろったら、画面下の「点灯のしくみを確認」で完了。</p></section>':"";
  return '<div class="battery-expedition"><div class="battery-head"><span class="eyebrow">🔋 ミッション '+stage+' / 14</span><strong>'+title(stage)+'</strong><small>実験記録 '+Object.keys(s.trials).length+' / '+all(stage).length+'</small></div>'+
  '<div class="battery-caution">※ 仮想実験です。電池をショートさせたり、定格を超える豆電球を実物で試したりしないでね。'+(stage===9?"乾電池の持続時間は容量や使い方で変わるため、長時間後の結果は一例です。":"")+'</div>'+
  '<section class="lab-panel battery-section"><h3>① 条件を決め、予想してから実験する</h3><p class="lab-sub">'+instruction(stage)+'</p><div class="battery-controls">'+selection(stage,s)+'</div>'+
