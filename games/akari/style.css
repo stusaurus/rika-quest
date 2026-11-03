@@ -501,3 +501,5 @@
 
 .mastery-track{display:inline-flex;gap:4px;align-items:center;align-self:flex-start;margin-top:7px;padding:6px 11px;font-size:12px;font-weight:900;line-height:1.5;border:1px solid #c7dfb8;border-radius:20px;color:#285b5b;background:#e7f4df}
 .mastery-track strong{font-size:15px;min-width:12px;text-align:center;color:#237a76}
+
+@media(max-width:740px){.sidebar.open .side-note{display:grid;margin-top:10px;padding:11px}.sidebar.open .mastery-track{align-self:flex-start}}
