@@ -33,6 +33,51 @@ function evaluate(wires,a,b){
  const short=reaches("P","N",conductors);
  return {short,safe:!short,lit:!short&&reaches("P","N",[...conductors,["L","R"]])};
 }
+function conductors(wires,a,b){
+ const parts=normalize(wires);
+ if(a)parts.push(["A1","A2"]);
+ if(b)parts.push(["B1","B2"]);
+ return parts;
+}
+function findPath(start,end,edges){
+ const graph=Object.fromEntries(ids.map(k=>[k,[]]));
+ for(const [a,b] of edges){graph[a].push(b);graph[b].push(a)}
+ const queue=[start],parent={[start]:null};
+ for(let i=0;i<queue.length;i++){
+  const at=queue[i];
+  if(at===end){const route=[];let node=at;while(node!==null){route.unshift(node);node=parent[node]}return route}
+  for(const next of graph[at])if(!(next in parent)){parent[next]=at;queue.push(next)}
+ }
+ return [];
+}
+function pathEvidence(wires,a,b){
+ const active=conductors(wires,a,b);
+ const simulated=evaluate(wires,a,b);
+ if(simulated.short)return {kind:"short",route:findPath("P","N",active)};
+ if(simulated.lit)return {kind:"lit",route:findPath("P","N",[...active,["L","R"]])};
+ return {kind:"open",route:[]};
+}
+function reachableContacts(wires,a,b){
+ const active=conductors(wires,a,b),graph=Object.fromEntries(ids.map(k=>[k,[]]));
+ for(const [x,y] of active){graph[x].push(y);graph[y].push(x)}
+ const visited=new Set(["P"]),queue=["P"];
+ for(let i=0;i<queue.length;i++)for(const node of graph[queue[i]])if(!visited.has(node)){visited.add(node);queue.push(node)}
+ return [...visited];
+}
+function discrepancy(stage,wires,a,b){
+ const reality=evaluate(wires,a,b),code=Number(a)+""+Number(b);
+ const shouldLight=stage===7?code==="11":code!=="00";
+ if(reality.short)return"short";
+ if(reality.lit&&!shouldLight)return"bypass";
+ if(!reality.lit&&shouldLight)return"open";
+ return null;
+}
+function diagnosticMessage(kind){
+ return kind==="short"?"豆電球を通らず、乾電池の＋と−を導線と閉じたスイッチだけでつなぐ危険な道があるよ。":
+  kind==="bypass"?"消すべき組み合わせでも電球に電気が通っている。スイッチを通らない道や、別の回り道がないか調べよう。":
+  kind==="open"?"光らせたい組み合わせでも、豆電球を通って乾電池に戻る輪ができていないよ。接点と閉じたスイッチの道をたどろう。":
+  "まず4通りの実験で配線の働きを確かめよう。";
+}
 function expected(stage,wires,trials,reason){
  const target=stage===7?{"00":false,"10":false,"01":false,"11":true}:{"00":false,"10":true,"01":true,"11":true};
  const sig=signature(wires);
@@ -84,5 +129,5 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    <button type="button" data-net-submit="1" class="builder-submit" ${expected(stage,wiring,trials,reason)?"":"disabled"}>🏆 設計を完成する</button>
   </div></div></section>`;
 }
-window.AkariSwitchLab={points,ids,edge,normalize,signature,evaluate,expected,render,codes};
+window.AkariSwitchLab={points,ids,edge,normalize,signature,evaluate,expected,conductors,findPath,pathEvidence,reachableContacts,discrepancy,diagnosticMessage,render,codes};
 })();
