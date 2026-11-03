@@ -325,10 +325,12 @@ function renderFinale(){
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
- const position=old?old.scrollLeft:0,mode=current().mode;
+ const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,mode=current().mode;
  root.innerHTML=ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
+ const builderView=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null;
+ if(builderView)builderView.scrollLeft=builderPosition;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
@@ -376,6 +378,15 @@ function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
  if(ui.builder){
   const B=window.AkariBuilder,b=ui.builder;
+  if(target.hasAttribute("data-builder-view")){
+   const viewport=$("workspace").querySelector(".builder-viewport");
+   if(!viewport)return;
+   const direction=target.dataset.builderView;
+   if(direction!=="battery"&&direction!=="bulb")return;
+   viewport.scrollLeft=direction==="bulb"?viewport.scrollWidth-viewport.clientWidth:0;
+   setFeedback(direction==="bulb"?"豆電球の横と底の端子を見てみよう。":"乾電池の＋と−、スイッチの端子を見てみよう。");
+   return;
+  }
   if(target.hasAttribute("data-builder-t")){
    const term=target.dataset.builderT;
    if(!B.ids.includes(term))return;
