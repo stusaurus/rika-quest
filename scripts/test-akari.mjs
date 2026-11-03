@@ -106,6 +106,19 @@ assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).lengt
 assert.equal(saved().active,14);
 assert.ok(window.AkariCharacter.moods.includes("walk"),"Mission travel should animate the canonical walk");
 assert.ok(saved().notes.length>=14,"Observation journal should retain a discovery for each completed mission");
+assert.equal(window.AkariTransfer.stages.length,6,"Six scientific transfer checkpoints are required");
+for(const id of window.AkariTransfer.stages){
+ const puzzle=window.AkariTransfer.get(id);
+ assert.equal(puzzle.probes.length,3,"Three independent novel cases per transfer checkpoint");
+ for(const probe of puzzle.probes){
+  assert.equal(probe.answer,window.AkariTransfer.expected(id,probe.diagram),
+   "Circuit topology must determine the answer in stage "+id+" case "+probe.id);
+  assert.ok(window.AkariTransfer.diagram(probe.diagram).includes('<svg'),"Every transfer case needs visible diagram");
+ }
+}
+assert.equal(window.AkariTransfer.evaluateCircuit("parallel001"),"lit","A third parallel path still lights the bulb");
+assert.equal(window.AkariTransfer.evaluateCircuit("series110"),"dark","An open third series switch breaks the circuit");
+assert.equal(window.AkariTransfer.evaluateCircuit("shunt"),"short","A bypass remains dangerous even when a lamp is attached");
 const scenes=Array.from({length:14},(_,i)=>window.AkariScenes.render(i+1));
 assert.equal(new Set(scenes).size,14,"Each mission needs a distinct scene illustration");
 const landmarks=["village","bridge","garden","tower","port","museum","lighthouse"].map(place=>window.AkariScenes.landmark(place));
