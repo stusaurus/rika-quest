@@ -62,7 +62,10 @@ try{
      await page.evaluate(()=>window.scrollTo(0,0));
      await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-transfer-"+id+".png",fullPage:true});
      await page.locator('[data-transfer-verify]').click();
-     assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-based challenge should open the next stage");
+     if(id===14){
+       assert.equal(await page.locator(".builder-puzzle").count(),1,"Final transfer must unlock six-terminal circuit engineering");
+       assert.equal(await page.locator("#discovery").isVisible(),false,"Final level cannot clear before circuit construction");
+     }else assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-based challenge should open the next stage");
      assert.ok(await page.evaluate(id=>!JSON.parse(localStorage.getItem("rika-akari-quest-v2")).drafts?.[id],id),"Completed transfer must discard its draft");
    };
    page.on("pageerror",e=>errors.push(e.message));
@@ -295,7 +298,36 @@ try{
    assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
    await completeTransfer(14,true);
-   assert.equal(await page.locator("#masteryCount").textContent(),"4","Only four transfers performed in browser QA should count as tokens");
+   assert.equal(await page.locator("#masteryCount").textContent(),"4","Four transfers are recorded");
+
+   const tapPair=async(a,b)=>{
+     await page.locator('[data-builder-t="'+a+'"]').click();
+     await page.locator('[data-builder-t="'+b+'"]').click();
+   };
+   assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"Builder completion locked until both tests succeed");
+   await tapPair("P","N");
+   await page.locator('[data-builder-test]').click();
+   assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is a hazard");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Unsafe circuit must not clear");
+   await tapPair("P","N");
+
+   for(const [a,b] of [["P","S"],["T","L"],["R","N"]])await tapPair(a,b);
+   await page.locator('[data-builder-switch="off"]').click();
+   await page.locator('[data-builder-test]').click();
+   assert.match(await page.locator(".builder-measure").first().textContent(),/消灯/,"OFF must leave bulb unlit");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".builder-puzzle").count(),1,"Reload should reopen unfinished wiring design");
+   assert.equal(await page.locator(".builder-line").count(),3,"Saved wires must reappear");
+   await page.locator('[data-builder-switch="on"]').click();
+   await page.locator('[data-builder-test]').click();
+   assert.match(await page.locator(".builder-measure").last().textContent(),/点灯/,"ON must light bulb through switch");
+   assert.equal(await page.locator('[data-builder-submit]').isDisabled(),false,"Both safe tests unlock final action");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-self-built-circuit.png",fullPage:true});
+   await page.locator('[data-builder-submit]').click();
+   assert.equal(await page.locator(".builder-puzzle").count(),0,"Correct wiring closes workbench");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="builder:14")),"Final engineering result saved in notebook");
+
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
