@@ -176,9 +176,20 @@ function renderMaterial(){
 }
 function repairParts(){return current().id===6?[{id:"battery",name:"乾電池",broken:false,detail:"1.5V・残量あり。問題なし。"},{id:"wire",name:"導線のつなぎ目",broken:true,detail:"接触がはずれている！"},{id:"bulb",name:"豆電球",broken:false,detail:"フィラメントは切れていない。"}]:[{id:"wire",name:"導線",broken:true,detail:"途中で切れていた！"},{id:"bulb",name:"豆電球の接点",broken:true,detail:"底が端子に触れていない！"},{id:"battery",name:"乾電池",broken:false,detail:"十分な電気がある。"}];}
 function renderRepair(){
- let p=repairParts(),fixedCount=p.filter(x=>ui.fixed.includes(x.id)).length;
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🔧 回路を調査しよう</h3><div class="science-spotlight">'+Art.bulb(fixedCount===p.filter(x=>x.broken).length)+'</div><p class="lab-reading">発見した故障：'+p.filter(x=>x.broken&&ui.inspected.includes(x.id)).length+' / '+p.filter(x=>x.broken).length+'　修理済み：'+fixedCount+' / '+p.filter(x=>x.broken).length+'</p></div>'
- +'<div class="lab-panel"><h3>🛠 故障チェック</h3><p class="lab-sub">まず「調べる」で状態を確認してね。</p><div class="repair-list">'+p.map(x=>'<div class="repair-card"><div><strong>'+x.name+'</strong><small>'+(!ui.inspected.includes(x.id)?"？ 未調査":ui.fixed.includes(x.id)?"✓ 修理完了":x.detail)+'</small></div><div class="repair-buttons"><button data-inspect="'+x.id+'">調べる</button>'+(x.broken&&ui.inspected.includes(x.id)&&!ui.fixed.includes(x.id)?'<button class="repair-now" data-fix="'+x.id+'">修理する</button>':'')+'</div></div>').join("")+'</div></div></div>';
+ const parts=repairParts(),broken=parts.filter(x=>x.broken),fixedCount=parts.filter(x=>ui.fixed.includes(x.id)).length;
+ const inspections=parts.filter(x=>ui.inspected.includes(x.id)).length;
+ const diagnosed=!!ui.diagnosed;
+ const cards=parts.map(x=>{
+  const inspected=ui.inspected.includes(x.id),fixed=ui.fixed.includes(x.id),suspect=ui.suspected.includes(x.id);
+  const observation=!inspected?"？ 未調査":fixed?"✓ 修理完了":x.detail;
+  const action=diagnosed?(x.broken&&!fixed?'<button class="repair-now" data-fix="'+x.id+'">修理する</button>':''):
+    (inspected?'<button class="suspect-btn'+(suspect?' chosen':'')+'" data-suspect="'+x.id+'" aria-pressed="'+suspect+'">'+(suspect?"原因に選んだ ✓":"故障の原因かも？")+'</button>':'');
+  return'<div class="repair-card"><div><strong>'+x.name+'</strong><small>'+observation+'</small></div><div class="repair-buttons"><button data-inspect="'+x.id+'">調べる</button>'+action+'</div></div>';
+ }).join("");
+ const diagnosis=diagnosed?'<div class="diagnosis-panel complete"><strong>✓ 故障の原因を特定できた！</strong><p>発見した'+broken.length+'か所を修理して、最後に電気を流して確かめよう。</p></div>':
+  '<div class="diagnosis-panel"><strong>🔍 証拠から原因を推理しよう</strong><p>3つの部品をすべて調べ、故障していると思うものを'+broken.length+'か所選ぼう。原因の予想は外れても減点しないよ。</p><p class="diagnosis-status">調査：'+inspections+' / 3　原因の候補：'+ui.suspected.length+' / '+broken.length+'</p><button type="button" class="diagnose-btn" data-diagnose="1"'+(inspections<parts.length?' disabled':'')+'>原因を診断する</button></div>';
+ return'<div class="experiment-layout"><div class="lab-panel"><h3>🔧 回路を調査しよう</h3><div class="science-spotlight">'+Art.bulb(fixedCount===broken.length)+'</div><p class="lab-reading">調査済み：'+inspections+' / 3　修理済み：'+fixedCount+' / '+broken.length+'</p><p class="lab-sub">1か所直しても消えたままなら、まだ別の故障があるかもしれないよ。</p></div>'
+  +'<div class="lab-panel"><h3>🛠 故障チェック</h3><p class="lab-sub">「調べる」で証拠を集め、原因だと思う部品を選んでね。</p><div class="repair-list">'+cards+'</div>'+diagnosis+'</div></div>';
 }
 function renderLogic(){
  const k=ui.a?"1":"0",l=ui.b?"1":"0",lit=ui.design==="series"?(ui.a&&ui.b):(ui.a||ui.b);
