@@ -254,7 +254,12 @@ function check(){
  renderWorkspace();
  const conductor=ui.tried.filter(t=>materials.find(x=>x.id===t).conductive).length,insulator=ui.tried.length-conductor;
  if(m.target==="conductor"?conductor>=2&&insulator>=1:insulator>=2&&conductor>=1){success();return;}setFeedback(x.name+"："+(x.conductive?"電気を通して光った！":"電気を通さず光らなかった。")+" ほかの材料とも比べてみよう。",x.conductive?"success":"");return;}
- if(m.mode==="repair"){const broken=repairParts().filter(x=>x.broken);if(broken.every(x=>ui.fixed.includes(x.id))){success();return;}fail("まだ直っていない場所があるよ。部品を一つずつ調べよう。");return;}
+ if(m.mode==="repair"){
+  const broken=repairParts().filter(x=>x.broken);
+  if(!ui.diagnosed){setFeedback("🔎 まず3つの部品を調べ、故障の原因を推理して診断しよう。","warning");return;}
+  if(broken.every(x=>ui.fixed.includes(x.id))){success();return;}
+  setFeedback("🔧 診断はできたよ。まだ修理していない部品があるみたい。","warning");return;
+ }
  if(m.mode==="logic"){const code=(ui.a?"1":"0")+(ui.b?"1":"0");ui.trials[code]=ui.design==="series"?(ui.a&&ui.b):(ui.a||ui.b);recordObservation("switch:"+ui.design+":"+code,(ui.trials[code]?"点灯":"消灯"));renderWorkspace();
  if(Object.keys(ui.trials).length===4){
   if(!ui.conclusion){setFeedback("4つの実験結果がそろった！結果からわかることを選んで、もう一度通電チェックしよう。","success");return;}
@@ -291,8 +296,39 @@ function handleWorkspace(e){
  if(current().mode==="explore"){ui.chosen=id;if(!ui.inspected.includes(id))ui.inspected.push(id);const x=inspectedItems.find(x=>x.id===id);setFeedback("🔎 "+x.description);}
  else{setFeedback("「"+(materials.find(x=>x.id===id)?.name||batteryOptions().find(x=>x.id===id)?.name||({same:"2個を同じ向き",reverse:"2個を逆向き"}[id])||id)+"」をセットしたよ。通電チェックしてみよう。");}
  renderWorkspace();reactCharacter("inspect");return;}
- if(target.hasAttribute("data-inspect")){let id=target.dataset.inspect;if(!ui.inspected.includes(id))ui.inspected.push(id);let part=repairParts().find(x=>x.id===id);setFeedback(part.name+"："+part.detail,part.broken?"warning":"");reactCharacter("inspect");renderWorkspace();return;}
- if(target.hasAttribute("data-fix")){let id=target.dataset.fix;if(!ui.fixed.includes(id))ui.fixed.push(id);setFeedback("🔧 修理完了！ ほかにも故障がないか調べよう。","success");reactCharacter("discover");renderWorkspace();return;}
+ if(target.hasAttribute("data-inspect")){
+  if(current().mode!=="repair")return;
+  const id=target.dataset.inspect,part=repairParts().find(x=>x.id===id);if(!part)return;
+  if(!ui.inspected.includes(id))ui.inspected.push(id);
+  setFeedback(part.name+"：観察したよ。"+part.detail,part.broken?"warning":"");
+  recordObservation("inspect:"+id,part.name+"："+part.detail);
+  reactCharacter("inspect");renderWorkspace();return;
+ }
+ if(target.hasAttribute("data-suspect")){
+  if(current().mode!=="repair"||ui.diagnosed)return;
+  const id=target.dataset.suspect;
+  if(!ui.inspected.includes(id))return;
+  ui.suspected=ui.suspected.includes(id)?ui.suspected.filter(x=>x!==id):[...ui.suspected,id];
+  renderWorkspace();setFeedback("原因の予想を選んだよ。観察した3つの部品と比べてみよう。");return;
+ }
+ if(target.hasAttribute("data-diagnose")){
+  if(current().mode!=="repair"||ui.diagnosed)return;
+  const parts=repairParts();if(parts.some(x=>!ui.inspected.includes(x.id))){setFeedback("3つとも調べてから原因を診断しよう。","warning");return;}
+  const actual=parts.filter(x=>x.broken).map(x=>x.id);
+  const correct=ui.suspected.length===actual.length&&ui.suspected.every(id=>actual.includes(id));
+  if(!correct){setFeedback("その予想では、観察した証拠と合わない部分があるよ。もう一度見比べよう。予想が外れても減点なし。","warning");reactCharacter("think");return;}
+  ui.diagnosed=true;
+  recordObservation("diagnosis",actual.map(id=>parts.find(x=>x.id===id).name).join("と")+"に故障があると、観察結果から判断した。");
+  renderWorkspace();setFeedback("🔍 診断成功！ 原因を見つけたよ。正しい場所を修理して確かめよう。","success");reactCharacter("discover");return;
+ }
+ if(target.hasAttribute("data-fix")){
+  if(current().mode!=="repair"||!ui.diagnosed)return;
+  const id=target.dataset.fix,part=repairParts().find(x=>x.id===id);
+  if(!part||!part.broken||!ui.suspected.includes(id))return;
+  if(!ui.fixed.includes(id))ui.fixed.push(id);
+  recordObservation("fixed:"+id,part.name+"を修理した。");
+  setFeedback("🔧 修理完了！ 残りの故障がないか確かめよう。","success");reactCharacter("discover");renderWorkspace();return;
+ }
  if(target.hasAttribute("data-design")){ui.design=target.dataset.design;ui.trials={};ui.conclusion=null;renderWorkspace();setFeedback("回路を"+(ui.design==="series"?"直列":"並列")+"に組み替えたよ。4通りを試そう。");return;}
  if(target.hasAttribute("data-switch")){const key=target.dataset.switch;ui[key]=!ui[key];renderWorkspace();setFeedback("スイッチを切り替えたよ。通電して記録しよう。");return;}
  if(target.hasAttribute("data-conclude")){
