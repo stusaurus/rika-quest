@@ -154,7 +154,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const observedRoute=shownEvidence?physical.route:[];
  const routeDiagram=observedRoute.slice(1).map((node,i)=>{
   const from=observedRoute[i],one=terminals[from],two=terminals[node],key=edge(from,node),danger=physical.kind==="short";
-  const d=key===edge("L","R")?"M888 118V170 M888 286V340":
+  const d=key===edge("L","R")?"M888 118V340":
     key===edge("S","T")?"M382 118L555 118":
     "M"+one.x+" "+one.y+"L"+two.x+" "+two.y;
   return '<path class="builder-diagnostic-flow'+(danger?' danger':'')+'" d="'+d+'" stroke="'+(danger?'#ff9680':'#ffe78d')+'" stroke-width="9" fill="none" stroke-linecap="round" data-diagnostic-edge="'+key+'"/>';
@@ -167,7 +167,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const diagnosisPanel=issue&&!validInsight?
   '<div class="builder-diagnosis"><strong>🕵️ どうして失敗した？</strong><p>実験結果とつないだ導線を見比べて、原因を推理しよう。</p>'+
    '<div class="builder-causes"><button type="button" data-builder-cause="open">電気の輪のどこかが切れている</button>'+
-   '<button type="button" data-builder-cause="bypass">スイッチを通らない別の道がある</button>'+
+   (direct?'':'<button type="button" data-builder-cause="bypass">スイッチを通らない別の道がある</button>')+
    '<button type="button" data-builder-cause="short">電池の＋と−を直接つなぐ危険な道がある</button></div></div>':
  issue&&validInsight?
   '<div class="builder-diagnosis solved"><strong>🔎 原因を発見した！</strong><p>'+diagnosisMessage(issue)+'</p>'+
