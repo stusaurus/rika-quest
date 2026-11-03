@@ -13,7 +13,7 @@ const M=[
 {id:9,name:"乾電池の大きさ",place:"port",placeName:"月あかり港",mode:"battery",goal:"大きさと明るさを比べよう",story:"港の電池屋さんから質問！ 大きな乾電池なら必ず明るくなるのかな？",instructions:"同じ種類・電圧表示の単4形と単1形を両方試してから答えよう。",discovery:"同じ種類の1.5V乾電池なら、大きさが違っても公称電圧は同じ。ただし使える時間や大きな電流を流す力などは異なる。",hints:["乾電池に書かれた1.5Vという数字を見てみよう。","単4形も単1形も公称電圧は1.5V。大きいから必ず明るいわけではないよ。"]},
 {id:10,name:"ふたつの力",place:"museum",placeName:"ひかり博物館",mode:"battery",goal:"直列つなぎの効果を比べよう",story:"博物館の展示には乾電池を2個使う装置がある。1個のときとの違いを調べよう。",instructions:"乾電池1個と、同じ向きの2個直列つなぎを両方試してから答えよう。",discovery:"同じ1.5Vの乾電池を2個直列にすると、電圧は約3Vになる。対応する豆電球では1個より明るくなることがある。電球の定格を守ろう。",hints:["2個の乾電池を同じ向きに直列につなぐと、電圧が足し合わされるよ。","この装置では2個直列のほうが明るい設定だよ。"]},
 {id:11,name:"電池の向きのひみつ",place:"museum",placeName:"ひかり博物館",mode:"polarity",goal:"乾電池の向きを調べよう",story:"展示の電池を入れ直したら、急に消えちゃった。向きは大切なのかな？",instructions:"同じ向き・逆向きの2つの直列つなぎを両方実験して、光るつなぎ方を答えよう。",discovery:"同じ乾電池2個を直列で逆向きにすると、電圧が打ち消し合い、豆電球は光らない。乾電池1個だけなら向きを逆にしても普通の豆電球は光るよ。",hints:["電池1個の向きではなく、2個の向きの組み合わせだよ。","2個を同じ向きに直列につなぐと電圧が足し合わされるよ。"]},
-{id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"危険な導線を2本外そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"正しい2本は残し、ショートの原因になる赤い導線X・Yを外そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","豆電球を通らず乾電池へ戻る線と、豆電球へ向かう線を区別してみよう。"]},
+{id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"安全に電気が流れる道を残そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"3つの導線を観察し、豆電球を通らずに乾電池の＋極と−極をつなぐ危険な道だけ外そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","豆電球を通らず乾電池へ戻る線と、豆電球へ向かう線を区別してみよう。"]},
 {id:13,name:"灯台の二重故障",place:"lighthouse",placeName:"星あかり灯台",mode:"repair",goal:"2つの故障を見つけよう",story:"灯台が消えて船が帰れない。1か所直しても点灯しないみたい。",instructions:"3つの部品を調べて故障が2か所あることを確かめよう。原因を2つ推理し、修理して通電チェック！",discovery:"複数の故障が重なることもある。電球・導線・接点・乾電池を順番に確認すると落ち着いて直せる。",hints:["1つ直しても消えたままなら、ほかにも故障があるよ。","直したのにまだ消えているなら、どの部品をもう一度調べたい？"]},
 {id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"乾電池の向き・材料・豆電球の接点をそれぞれ調べ、3か所を動作確認してから灯台を点灯させよう。",discovery:"回路は『電源・電気を通す導線・豆電球・確かな接点』の組み合わせ。ひとつひとつ確かめれば、街にあかりを取り戻せる！",hints:["電源・材料・接点をすべて確認してみよう。","電源のつなぎ方、すき間の材料、豆電球の2つの金属接点をそれぞれ確かめよう。"]}
 ];
@@ -249,7 +249,14 @@ function renderPolarity(){
  return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 乾電池の向きを変えよう</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.id==="same"?"series":"reverse"),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected==="same"&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(ui.selected&&ui.tried.includes(ui.selected)?ui.selected==="same"?"2個を同じ向きに直列：点灯！":"2個を逆向きに直列：消灯":"乾電池を選んで実験しよう")+'</p>'+analysis+'</div></div>';
 }
 function renderCut(){
- return'<div class="experiment-layout"><div class="lab-panel"><h3>⚠ 危険な導線を発見！</h3>'+Art.shortDiagram()+'<p class="lab-reading">赤い導線がショートの原因。実物の乾電池では絶対に試さないでね。</p></div><div class="lab-panel"><h3>✂ 外す導線を選ぼう</h3><p class="lab-sub">押すと外す／戻すを切り替えられるよ。</p>'+[["normal","通常の導線（電池→豆電球）"],["x","危険な赤い近道 X"],["y","危険な赤い近道 Y"]].map(([id,label])=>'<button class="cut-wire'+(ui.removed.includes(id)?' removed':'')+'" data-cut="'+id+'" aria-pressed="'+ui.removed.includes(id)+'"><span>'+label+'</span><strong>'+(ui.removed.includes(id)?"外した ✓":"接続中")+'</strong></button>').join("")+'<p class="lab-reading">外した導線：'+ui.removed.length+' 本</p></div></div>';
+ const removed=ui.removed||[];
+ const labels=[["normal","導線 Z（長い外側の道）"],["x","導線 X（斜めの道）"],["y","導線 Y（電池の近くの道）"]];
+ return '<div class="experiment-layout"><div class="lab-panel"><h3>🧭 電気の道を見つけよう</h3>'+
+ Art.shortDiagram(removed)+
+ '<p class="lab-reading">豆電球を通らずに乾電池の＋と−がつながる道がないか、指でたどってみよう。実物でショートを試すのは危険だよ。</p></div>'+
+ '<div class="lab-panel"><h3>✂ 導線を切り替える</h3><p class="lab-sub">3つの道のうち、危険な近道だけを外そう。外した導線は図から薄く消えるよ。</p>'+
+ labels.map(([id,label])=>'<button class="cut-wire'+(removed.includes(id)?' removed':'')+'" data-cut="'+id+'" aria-pressed="'+removed.includes(id)+'"><span>'+label+'</span><strong>'+(removed.includes(id)?"外した ✓":"つながっている")+'</strong></button>').join("")+
+ '<p class="lab-reading">外した導線：'+removed.length+' 本。最後に「電気を流してみる」で安全を確認しよう。</p></div></div>';
 }
 function renderFinale(){
  const opts=[
