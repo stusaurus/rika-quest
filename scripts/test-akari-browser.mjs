@@ -361,6 +361,9 @@ try{
    assert.equal(await page.locator(".safety-lab").count(),1,"Mission12 becomes three progressive safety designs");
    assert.equal(await page.locator(".safety-svg").count(),1,"Circuit topology must be visible before choosing wires");
    assert.equal(await page.locator(".safety-wire.cut").count(),0,"Dangerous paths must not be highlighted as answers");
+   await page.locator('[data-safe-view="right"]').click();
+   if(width<740)assert.ok(await page.locator(".safety-diagram").evaluate(e=>e.scrollLeft)>10,"Safety diagram should pan right on mobile");
+   await page.locator('[data-safe-view="left"]').click();
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-safety-inspection-start.png",fullPage:true});
    await page.locator('[data-safe-guess="lit"]').click();
    await page.locator('[data-safe-test]').click();
