@@ -38,6 +38,12 @@ const transfer=(id,withMistake=false)=>{
  if(withMistake){
   const probe=puzzle.probes[0];
   click({transferAnswer:probe.id,transferValue:puzzle.choices.find(x=>x!==probe.answer)});
+  assert.ok(saved().drafts[id]?.answers?.[probe.id],"First transfer prediction must be checkpointed");
+  if(id===2){
+   move(1);move(2);
+   assert.match(el("workspace").innerHTML,/transfer-puzzle/,"Transfer challenge must survive leaving and revisiting");
+   assert.match(el("workspace").innerHTML,/調査 2 \/ 3/,"Reopened challenge resumes at the next unseen circuit");
+  }
   for(const x of puzzle.probes.slice(1))click({transferAnswer:x.id,transferValue:x.answer});
   click({transferReason:puzzle.correct});click({transferVerify:"1"});
   assert.equal(saved().completed[id],undefined,"Incorrect prediction must not clear "+id);
@@ -50,6 +56,7 @@ const transfer=(id,withMistake=false)=>{
  assert.equal(saved().completed[id],undefined,"Correct outcomes alone cannot bypass the causal explanation for "+id);
  click({transferReason:puzzle.correct});click({transferVerify:"1"});
  assert.ok(saved().completed[id],"Understanding the novel cases must unlock stage "+id);
+ assert.equal(saved().drafts[id],undefined,"Completed transfer draft must not linger in saved progress");
  assert.ok(saved().notes.some(n=>n.mission===id&&n.key==="transfer:"+id),"Scientific transfer must be saved in notebook");
 };
 move(14);assert.equal(saved().active,1,"Locked final mission cannot be opened");
