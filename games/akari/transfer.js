@@ -72,12 +72,13 @@ function diagram(kind){
  const isSeries=kind.startsWith("series"),isParallel=kind.startsWith("parallel");
  const status=kind.match(/[01]{2}$/)?.[0]||"00";
  const topLine='<path d="M53 48V28H294V72M294 107V143H53V99" fill="none" stroke="#f5d6a4" stroke-width="5" stroke-linecap="round"/>';
- const battery='<g><rect x="32" y="58" width="42" height="41" rx="9" fill="#b96253" stroke="#ffe6a7" stroke-width="3"/><path d="M53 58V47M53 99V145" stroke="#dce9e2" stroke-width="5"/><text x="53" y="84" fill="#fff6dc" font-size="11" font-weight="bold" text-anchor="middle">1.5V</text><text x="53" y="44" fill="#ffe0a9" font-size="12" text-anchor="middle">＋</text><text x="53" y="159" fill="#ffe0a9" font-size="12" text-anchor="middle">−</text></g>';
+ const reverseBattery=kind==="reverseLoop";
+ const battery='<g><rect x="32" y="58" width="42" height="41" rx="9" fill="#b96253" stroke="#ffe6a7" stroke-width="3"/><path d="M53 58V47M53 99V145" stroke="#dce9e2" stroke-width="5"/><text x="53" y="84" fill="#fff6dc" font-size="11" font-weight="bold" text-anchor="middle">1.5V</text><text x="53" y="44" fill="#ffe0a9" font-size="12" text-anchor="middle">'+(reverseBattery?"−":"＋")+'</text><text x="53" y="159" fill="#ffe0a9" font-size="12" text-anchor="middle">'+(reverseBattery?"＋":"−")+'</text></g>';
  const bulb='<g><path d="M295 110Q272 95 277 74Q279 51 295 51Q318 55 319 76Q322 93 306 111Z" fill="#c0d3d0" fill-opacity=".6" stroke="#edf9ea" stroke-width="3"/><path d="M287 87L295 94L303 87" fill="none" stroke="#fbe9c6" stroke-width="3"/><rect x="288" y="106" width="23" height="19" rx="4" fill="#9dbbc0" stroke="#e7ebdf" stroke-width="2"/><path d="M288 112h23m-23 6h23" stroke="#557c87" stroke-width="2"/><text x="294" y="158" text-anchor="middle" font-size="12" fill="#e5f6ef">豆電球</text></g>';
  function switchGlyph(x,y,on,label){return '<g><circle cx="'+(x-22)+'" cy="'+y+'" r="4" fill="#ffe1ac"/><circle cx="'+(x+22)+'" cy="'+y+'" r="4" fill="#ffe1ac"/><path d="M'+(x-22)+' '+y+'L'+(x+17)+' '+(on?y:y-18)+'" stroke="#e9c997" stroke-width="5" stroke-linecap="round"/><text x="'+x+'" y="'+(y-20)+'" text-anchor="middle" font-size="12" fill="#e9f3ee">'+label+' '+(on?"ON":"OFF")+'</text></g>'}
  let paths=topLine,details="";
  if(kind==="open"){paths='<path d="M53 48V28H167M198 28H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none" stroke-linecap="round"/>';details='<text x="180" y="20" fill="#f6cfa0" text-anchor="middle" font-size="10">すき間</text>'}
- if(kind==="reverseLoop"){details='<text x="176" y="79" text-anchor="middle" font-size="12" fill="#d0e5e5">横と底につなぐ</text>'}
+ if(kind==="reverseLoop"){details='<text x="175" y="79" text-anchor="middle" font-size="12" fill="#d0e5e5">電池の向きだけ逆</text>'}
  if(["plastic","wood","foil","clip","bottomGap"].includes(kind)){
   const material={plastic:"プラスチック",wood:"乾いた木",foil:"アルミはく",clip:"鉄のクリップ",bottomGap:"アルミはく"}[kind];
   paths='<path d="M53 48V28H139M221 28H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none" stroke-linecap="round"/>';
@@ -105,5 +106,13 @@ function score(id,answers,reason){const p=get(id);if(!p)return null;
  const reasonOk=reason===p.correct;
  return {ok:wrong.length===0&&reasonOk,wrong,reasonOk,discovery:p.discovery};
 }
-window.AkariTransfer={get,render,score,diagram,stages:Object.keys(puzzles).map(Number)};
+const hints={
+ 2:"乾電池の＋から出て、豆電球の2つの金属接点を通り、−まで戻る道があるかな？",
+ 5:"金属のように見えるかではなく、何の材料でできているかを確認しよう。",
+ 7:"直列は電気の道が一本。AとBのどちらかで道が切れていないかな？",
+ 8:"並列の2本の道を別々にたどって、どちらか一方でもつながっているか見よう。",
+ 12:"豆電球を通らない道で、乾電池の＋と−が直接つながっていないかな？",
+ 14:"電池、通す材料、豆電球の横と底、電池に戻るまでを指でなぞってみよう。"
+};
+window.AkariTransfer={get,render,score,diagram,hint:id=>hints[id],stages:Object.keys(puzzles).map(Number)};
 })();
