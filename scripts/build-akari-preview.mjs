@@ -11,6 +11,7 @@ const characterSprite=readFileSync("games/akari/assets/tiranon-walk-prototype.we
 const safetyLab=readFileSync("games/akari/safety-lab.js","utf8");
 const bridgeLab=readFileSync("games/akari/bridge-lab.js","utf8");
 const gardenLab=readFileSync("games/akari/garden-lab.js","utf8");
+const batteryLab=readFileSync("games/akari/battery-lab.js","utf8");
 const game=readFileSync("games/akari/game.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
@@ -28,6 +29,7 @@ output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineS
 output=replaceOne(output,'<script src="./safety-lab.js" defer></script>',inlineScript(safetyLab));
 output=replaceOne(output,'<script src="./bridge-lab.js" defer></script>',inlineScript(bridgeLab));
 output=replaceOne(output,'<script src="./garden-lab.js" defer></script>',inlineScript(gardenLab));
+output=replaceOne(output,'<script src="./battery-lab.js" defer></script>',inlineScript(batteryLab));
 output=output.replace("./assets/tiranon-walk-prototype.webp","data:image/webp;base64,"+characterSprite);
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
