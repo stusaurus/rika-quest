@@ -605,3 +605,24 @@
 .builder-proof-path{pointer-events:none;filter:drop-shadow(0 0 9px #ffde8c)}
 .builder-trace-choices button:focus-visible,.builder-trace-edit button:focus-visible{outline:3px solid #efb954;outline-offset:2px}
 @media(max-width:740px){.builder-proof{padding:11px;gap:9px}.builder-trace-choices button{min-height:49px;font-size:13px}.builder-trace-edit button{min-height:44px}.builder-proof h4{font-size:15px}}
+
+
+/* Two switch networks: clear lab structure with compact four-case observations. */
+.network-lab{display:grid;gap:14px;color:#2d5360}
+.network-board{aspect-ratio:920 / 445;min-width:600px}
+.network-board .builder-terminal{font-size:12px;font-weight:900}
+.network-switches{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.network-switches button{min-height:48px;background:#f7faf1;color:#426b77;border:2px solid #b6d9d2;border-radius:10px;font-weight:900}
+.network-switches button.on{background:#2a7c77;color:#fff5d5;border-color:#9ad3c9}
+.network-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.network-trial{display:grid;gap:4px;border:1px solid #b9d8d4;border-radius:10px;padding:10px;background:#fcfef8;font-size:12px;line-height:1.4}
+.network-trial strong{font-size:12px;color:#3a6570}
+.network-trial span{font-size:12px;color:#527680}
+.network-trial.measured{background:#e0f4e8;border-color:#93c5ac}
+.network-trial.measured span{color:#25665e;font-weight:900}
+.network-reason{margin-top:13px;display:grid;gap:8px;padding:12px;border-radius:12px;background:#e7f5ec;border:1px solid #afcec0}
+.network-reason strong{font-size:13px}
+.network-reason button{padding:10px;min-height:48px;text-align:left;font-size:13px;line-height:1.5;border-radius:10px;background:#fffdf5;border:2px solid #abcfc9;color:#365d67;font-weight:800}
+.network-reason button.chosen{background:#ffe6a0;border-color:#eebd65;color:#674a2c}
+.network-reason button:focus-visible,.network-switches button:focus-visible{outline:3px solid #f0bb72;outline-offset:2px}
+@media(max-width:740px){.network-board{min-width:600px}.network-results{gap:6px}.network-trial{padding:8px}.network-switches button{min-height:51px}}
