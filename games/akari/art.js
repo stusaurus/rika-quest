@@ -78,9 +78,10 @@ function shortDiagram(removed=[]){
  "乾電池から豆電球への3本の電気の道。ショートする経路を自分で見分ける安全なシミュレーション","short-art");
 }
 function testCircuit(id,lit){
- const names={clip:"鉄",foil:"アルミ",wood:"木",plastic:"プラスチック"};
+ const names={iron:"鉄",clip:"鉄",foil:"アルミ",wood:"木",plastic:"プラスチック"};
  const color={clip:"#d9f0f0",foil:"#d5e5e9",wood:"#c29364",plastic:"#70c9eb"}[id]||"#91b5c4";
  const sample={
+ iron:'<path d="M190 87L221 118L226 112L195 81Z" fill="url(#metal)" stroke="#dbeefa" stroke-width="2"/><ellipse cx="192" cy="86" rx="7" ry="4" transform="rotate(43 192 86)" fill="#e1f1ef"/>',
  clip:'<path d="M205 91C221 78 230 88 227 101L227 109Q226 118 216 116Q207 115 207 105L207 95Q208 89 212 91Q218 93 216 101L216 109" stroke="url(#metal)" stroke-width="6" stroke-linecap="round" fill="none"/>',
  foil:'<path d="M190 90L219 87L229 109L194 119Z" fill="#d6e8ea" stroke="#f8ffff" stroke-width="3"/><path d="M194 119L203 94L219 87L213 111L229 109L202 105" stroke="#7b9caa" stroke-width="2" fill="none"/>',
  wood:'<path d="M189 91L219 85L232 112L198 119Z" fill="#b78553" stroke="#f0cb97" stroke-width="3"/><path d="M194 96L218 91M198 103L223 98M201 109L228 106" stroke="#8b5e3f" stroke-width="2"/>',
