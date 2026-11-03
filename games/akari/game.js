@@ -355,7 +355,7 @@ function handleWorkspace(e){
    if(!Number.isInteger(step)||step<0||step>3)return;
    if(step===3&&p.probes.some(q=>!ui.transfer.answers[q.id]))return;
    if(step>0&&step<3&&!ui.transfer.answers[p.probes[step-1].id]&&!ui.transfer.answers[p.probes[step].id])return;
-   ui.transfer.step=step;renderWorkspace();setFeedback(step===3?"3つの予想を見比べて理由を考えよう。":"この回路の電気の通り道をたどろう。");return;
+   ui.transfer.step=step;saveTransferDraft();renderWorkspace();setFeedback(step===3?"3つの予想を見比べて理由を考えよう。":"この回路の電気の通り道をたどろう。");return;
   }
   if(target.hasAttribute("data-transfer-answer")){
    const id=target.dataset.transferAnswer,value=target.dataset.transferValue;
@@ -365,12 +365,12 @@ function handleWorkspace(e){
     const allAnswered=p.probes.every(q=>!!ui.transfer.answers[q.id]);
     ui.transfer.step=allAnswered?3:Math.min(3,ui.transfer.step+1);
    }
-   renderWorkspace();setFeedback(ui.transfer.step===3?"3つの予想がそろった！結果を比べて理由を説明しよう。":"予想を記録したよ。次の回路もよく見てみよう。");return;
+   saveTransferDraft();renderWorkspace();setFeedback(ui.transfer.step===3?"3つの予想がそろった！結果を比べて理由を説明しよう。":"予想を記録したよ。次の回路もよく見てみよう。");return;
   }
   if(target.hasAttribute("data-transfer-reason")){
    const reason=target.dataset.transferReason;
    if(!p.reasons.some(([key])=>key===reason))return;
-   ui.transfer.reason=reason;renderWorkspace();setFeedback("理由を選んだよ。3つの予想とつながっているかな？");return;
+   ui.transfer.reason=reason;saveTransferDraft();renderWorkspace();setFeedback("理由を選んだよ。3つの予想とつながっているかな？");return;
   }
   if(target.hasAttribute("data-transfer-verify")){
    if(p.probes.some(q=>!ui.transfer.answers[q.id])||!ui.transfer.reason){
@@ -383,7 +383,7 @@ function handleWorkspace(e){
     reactCharacter("think","どうしてそうなるノン？");return;
    }
    const answeredReason=ui.transfer.reason;
-   ui.transferPassed=true;ui.transfer=null;
+   ui.transferPassed=true;ui.transfer=null;clearTransferDraft(current().id);
    state.masteries[current().id]=true;persist();
    const outcomeNames={lit:"点灯",dark:"消灯",short:"ショート（危険）",safe:"正しく点灯"};
    const evidence=p.probes.map(q=>q.name+" → "+outcomeNames[window.AkariTransfer.expected(current().id,q.diagram)]).join("／");
@@ -491,7 +491,7 @@ function bind(){
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
