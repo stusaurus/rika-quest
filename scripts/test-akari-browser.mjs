@@ -162,6 +162,15 @@ try{
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery overflow: "+JSON.stringify(dimensions));
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery.png",fullPage:true});
+   await page.locator("#checkBtn").click();
+   await page.locator('[data-choice="same"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-answer="same"]').click();await page.locator("#checkBtn").click();
+   assert.match(await page.locator("#feedbackText").textContent(),/理由/,"Observations alone should not clear polarity");
+   await page.locator('[data-why="single"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Incorrect polarity explanation should not clear");
+   await page.locator('[data-why="cancel"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Battery cancellation explanation should clear");
+
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.active=4;localStorage.setItem(key,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-choice="clip"]').click();
