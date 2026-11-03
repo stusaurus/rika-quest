@@ -244,6 +244,55 @@ try{
    await page.locator('[data-why="cancel"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Battery cancellation explanation should clear");
 
+
+   // Mission 3: bridge exploration -> material experiment -> repair two series gaps.
+   await page.evaluate(()=>{
+     const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
+     s.completed={1:3,2:3};s.active=3;s.bridgeDraft=null;
+     localStorage.setItem(key,JSON.stringify(s));
+   });
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
+   assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests should not appear before observing site");
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
+   for(const site of ["battery","lamp","return"])await page.locator('[data-bridge-inspect="'+site+'"]').click();
+   assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Discover four visually distinct material samples");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-bridge-explore.png",fullPage:true});
+   await page.locator('[data-bridge-sample="iron"]').click();
+   assert.equal(await page.locator('[data-bridge-test]').isDisabled(),true,"Scientifically explicit hypothesis is required");
+   await page.locator('[data-bridge-guess="dark"]').click();
+   await page.locator('[data-bridge-test]').click();
+   assert.match(await page.locator(".bridge-test-box").textContent(),/予想：消灯.*実際：点灯/s,"Wrong hypothesis must be compared with evidence");
+   assert.equal(await page.locator(".bridge-mini-circuit svg").count(),1,"Actual battery-bulb sample test schematic is present");
+   await page.locator('[data-bridge-sample="wood"]').click();
+   await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
+   await page.locator('[data-bridge-sample="foil"]').click();
+   await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
+   assert.equal(await page.locator(".bridge-slot-actions").count(),1,"Contrasting scientific tests should reveal the real repair puzzle");
+   await page.locator('[data-bridge-sample="iron"]').click();await page.locator('[data-bridge-place="a"]').click();
+   await page.locator('[data-bridge-sample="wood"]').click();await page.locator('[data-bridge-place="b"]').click();
+   await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
+   assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"Insulator in series leaves the bridge unlit");
+   assert.equal(await page.locator(".story-scene.bridge-powered").count(),0,"Failing circuit must not illuminate landscape");
+   await page.locator('[data-bridge-sample="foil"]').click();
+   await page.locator('[data-bridge-place="b"]').click();
+   assert.equal(await page.locator(".bridge-outcome").count(),0,"Changing sample invalidates previous measurement");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".bridge-slot-actions").count(),1,"Interrupted iPhone experiment resumes repair phase");
+   assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","Saved repair persists after reload");
+   await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
+   assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");
+   assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The bridge visually responds to observed working circuit");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-bridge-lit.png",fullPage:true});
+   await page.locator('[data-bridge-reason="one"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"A wrong explanation cannot clear despite light");
+   await page.locator('[data-bridge-reason="both"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence, physical repair and scientific reason unlock stage3");
+   assert.equal(await page.locator(".story-scene.restored").count(),1,"Restored story scene must remain consistent");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).bridgeDraft),null,"Completed bridge removes transient evidence");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).completed[3]),3,"Incorrect scientific predictions are not penalized");
+
    await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.active=4;localStorage.setItem(key,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-choice="clip"]').click();
