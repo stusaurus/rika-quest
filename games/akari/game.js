@@ -44,7 +44,9 @@ function restoreMissionUI(m){
   const raw=state.practiceDraft,wires=window.AkariBuilder.normalize(raw.wires).filter(([a,b])=>![a,b].some(t=>t==="S"||t==="T"));
   const sig=window.AkariBuilder.signature(wires),test=raw.tests?.single;
   const savedTrace=window.AkariBuilder.traceStatus("direct",wires,raw.trace).valid&&Array.isArray(raw.trace)?raw.trace.slice():[];
-  base.builder={wires,selected:null,switchOn:false,tests:test?.signature===sig?{single:{...window.AkariBuilder.evaluate(wires,false),signature:sig}}:{},trace:savedTrace};
+  const insight=raw.insight?.mode==="single"&&raw.insight.signature===sig&&raw.insight.kind===window.AkariBuilder.diagnose("direct",wires,false)?
+    {mode:"single",signature:sig,kind:raw.insight.kind}:null;
+  base.builder={wires,selected:null,switchOn:false,tests:test?.signature===sig?{single:{...window.AkariBuilder.evaluate(wires,false),signature:sig}}:{},trace:savedTrace,insight};
   base.builderTask="direct";
   return base;
  }
@@ -57,7 +59,10 @@ function restoreMissionUI(m){
    }
   }
   const savedTrace=window.AkariBuilder.traceStatus("switch",wires,raw.trace).valid&&Array.isArray(raw.trace)?raw.trace.slice():[];
-  base.builder={wires,selected:null,switchOn:!!raw.switchOn,tests,trace:savedTrace};
+  const mode=raw.switchOn?"on":"off",issue=window.AkariBuilder.diagnose("switch",wires,!!raw.switchOn);
+  const insight=raw.insight?.mode===mode&&raw.insight.signature===signature&&raw.insight.kind===issue?
+    {mode,signature,kind:issue}:null;
+  base.builder={wires,selected:null,switchOn:!!raw.switchOn,tests,trace:savedTrace,insight};
   return base;
  }
  if(!puzzle||!draft||state.completed[m.id])return base;
@@ -81,8 +86,8 @@ function clearSwitchDraft(id){
 }
 function saveBuilderDraft(){
  if(!ui.builder)return;
- const {wires,switchOn,tests,trace}=ui.builder;
- const raw={wires:window.AkariBuilder.normalize(wires),switchOn:!!switchOn,tests:{...tests},trace:Array.isArray(trace)?trace.slice():[]};
+ const {wires,switchOn,tests,trace,insight}=ui.builder;
+ const raw={wires:window.AkariBuilder.normalize(wires),switchOn:!!switchOn,tests:{...tests},trace:Array.isArray(trace)?trace.slice():[],insight:insight||null};
  if(current().id===6)state.practiceDraft={...raw,unlocked:true};
  else state.builderDraft=raw;
  persist();
@@ -196,13 +201,13 @@ function success(){
   return;
  }
  if(current().id===6&&window.AkariBuilder&&!ui.builderPassed){
-  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[]};ui.builderTask="direct";saveBuilderDraft();}
+  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[],insight:null};ui.builderTask="direct";saveBuilderDraft();}
   renderWorkspace();renderHeader();renderMenu();
   setFeedback("🕰 時計塔の追加修理！ 乾電池と豆電球の端子を自分で配線して、実験で点灯を確かめよう。","warning");
   reactCharacter("think","電気の輪を作ってみるノン！");return;
  }
  if(current().id===14&&window.AkariBuilder&&!ui.builderPassed){
-  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[]};saveBuilderDraft();}
+  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[],insight:null};saveBuilderDraft();}
   renderWorkspace();renderHeader();renderMenu();
   setFeedback("🔧 最終の設計依頼！ 選択肢ではなく導線を自分でつなぎ、OFFとONの両方を確かめよう。","warning");
   reactCharacter("think","最後は自分で回路を作るノン！");return;
@@ -372,7 +377,7 @@ function renderFinale(){
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,mode=current().mode;
- root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[]):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[],ui.builder.insight):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
  const builderView=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null;
@@ -531,12 +536,12 @@ function handleWorkspace(e){
    const index=b.wires.findIndex(pair=>B.edge(...pair)===key);
    if(index>=0)b.wires.splice(index,1);
    else b.wires.push([from,term]);
-   b.tests={};b.trace=[];saveBuilderDraft();renderWorkspace();
+   b.tests={};b.trace=[];b.insight=null;saveBuilderDraft();renderWorkspace();
    setFeedback(index>=0?"その導線を外したよ。":direct?"導線を追加したよ。回路ができたら通電してみよう。":"導線を追加したよ。OFFとONを両方確かめてみよう。");
    reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-builder-clear")){
-   b.wires=[];b.selected=null;b.tests={};b.trace=[];saveBuilderDraft();renderWorkspace();setFeedback("導線をすべて外したよ。新しく設計しよう。");return;
+   b.wires=[];b.selected=null;b.tests={};b.trace=[];b.insight=null;saveBuilderDraft();renderWorkspace();setFeedback("導線をすべて外したよ。新しく設計しよう。");return;
   }
   if(target.hasAttribute("data-builder-switch")){
    if(direct)return;
@@ -549,10 +554,27 @@ function handleWorkspace(e){
    const result=B.evaluate(b.wires,direct?false:b.switchOn);
    b.tests[mode]={...result,signature:B.signature(b.wires)};
    saveBuilderDraft();renderWorkspace();
-   if(result.short){setFeedback("⚠ ショート！ 電池の＋と−が豆電球を通らずつながる危険な道があるよ。実物で試さないでね。","warning");reactCharacter("danger");return;}
-   const ok=direct?(result.safe&&result.lit):(mode==="on"&&result.lit)||(mode==="off"&&!result.lit);
-   setFeedback("実験記録："+(direct?"基本回路":mode==="on"?"ON":"OFF")+" → "+(result.lit?"点灯":"消灯")+(ok?"。目的どおり！":"。条件と合わないので配線を見直そう。"),ok?"success":"warning");
+   const issue=B.diagnose(direct?"direct":"switch",b.wires,direct?false:b.switchOn);
+   if(result.short){setFeedback("⚠ ショート！ 電池の＋と−が豆電球を通らずつながっている。原因を予想してから危険な道を見つけよう。実物で試さないでね。","warning");reactCharacter("danger");return;}
+   const ok=!issue;
+   setFeedback("実験記録："+(direct?"基本回路":mode==="on"?"ON":"OFF")+" → "+(result.lit?"点灯":"消灯")+(ok?"。目的どおり！":"。目標と違うよ。回路の原因を推理してみよう。"),ok?"success":"warning");
    reactCharacter(ok?"discover":"think");return;
+  }
+  if(target.hasAttribute("data-builder-cause")){
+   const hypothesis=target.dataset.builderCause,mode=direct?"single":b.switchOn?"on":"off";
+   if(!["short","open","bypass"].includes(hypothesis))return;
+   const sig=B.signature(b.wires);
+   if(b.tests[mode]?.signature!==sig){setFeedback("まず今の状態を通電実験で確かめよう。","warning");return;}
+   const answer=B.diagnose(direct?"direct":"switch",b.wires,direct?false:b.switchOn);
+   if(!answer){setFeedback("この状態は目標どおり。別の状態も調べてみよう。");return;}
+   if(hypothesis!==answer){
+    setFeedback("その原因で、今回の点灯・消灯・ショートを説明できるかな？導線をたどってもう一度考えよう。","warning");
+    reactCharacter("think");return;
+   }
+   b.insight={mode,kind:answer,signature:sig};saveBuilderDraft();renderWorkspace();
+   recordObservation("builder-clue:"+current().id+":"+mode,"【回路の原因】"+(direct?"基本回路":mode==="on"?"スイッチON":"スイッチOFF")+"の実験で "+B.diagnosisMessage(answer));
+   setFeedback("🔎 故障の原因がわかった！"+B.diagnosisMessage(answer),"success");
+   reactCharacter("discover");return;
   }
   if(target.hasAttribute("data-builder-submit")){
    if(!B.scientificComplete(direct?"direct":"switch",b.tests,b.wires,b.trace)){
