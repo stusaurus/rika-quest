@@ -46,7 +46,7 @@ const puzzles={
   ["either","並列は道が3本。どれか1本でも閉じれば電気の道がつながる"],
   ["open","並列なら全部OFFでも電流が流れる"]
  ],correct:"either",discovery:"スイッチが並列なら、どちらかの道がつながっていれば豆電球は点灯する。"},
- 12:{title:"危険な近道を見破れ！",intro:"赤い線を外す前に、別の3つの回路が安全かを判断しよう。現実の乾電池で試すのは禁止。",choices:["short","safe"],
+ 12:{title:"危険な近道を見破れ！",intro:"修理の前に、別の3つの回路が安全かを考えよう。実物の乾電池でショートを試すのは禁止。",choices:["short","safe"],
  probes:[
   {id:"a",name:"豆電球を通らず＋極と−極を導線でつなぐ",diagram:"short",answer:"short"},
   {id:"b",name:"乾電池の＋と−を電球の横と底につなぐ",diagram:"loop",answer:"safe"},
