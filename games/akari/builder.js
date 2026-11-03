@@ -93,7 +93,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
    '<div class="builder-trace-footer">'+
      (proof.complete?'<strong>✓ 豆電球'+(direct?'':'とスイッチ')+'を通る道を説明できた！</strong>':
        '<span>'+(direct?'電球の接点を通る輪をたどろう。':'スイッチONの状態で、電球も通る輪をたどろう。')+'</span>')+
-     '<button type="button" data-builder-trace-reset="1"'+(route.length?'':' disabled')+'>↺ 通り道をやり直す</button></div>'+
+     '<div class="builder-trace-edit"><button type="button" data-builder-trace-back="1"'+(route.length?'':' disabled')+'>↶ 1つ戻る</button><button type="button" data-builder-trace-reset="1"'+(route.length?'':' disabled')+'>↺ 最初から</button></div></div>'+
      (!direct&&!switchOn?'<p class="builder-trace-warning">通り道をたどるときは、先にスイッチをONにしよう。</p>':'')
   :'<p class="builder-trace-pending">まず安全な回路を作り、'+(direct?'通電実験で点灯を確かめよう。':'OFF・ONの両方を実験して確かめよう。')+'</p>')+'</div>';
 
