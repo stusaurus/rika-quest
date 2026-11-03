@@ -626,3 +626,40 @@
 .network-reason button.chosen{background:#ffe6a0;border-color:#eebd65;color:#674a2c}
 .network-reason button:focus-visible,.network-switches button:focus-visible{outline:3px solid #f0bb72;outline-offset:2px}
 @media(max-width:740px){.network-board{min-width:600px}.network-results{gap:6px}.network-trial{padding:8px}.network-switches button{min-height:51px}}
+
+
+/* Scientific diagnostics: first predict the cause of a failed observation,
+   then show the route actually found by the graph engine. */
+.network-flow-layer{pointer-events:none}
+.network-flow-segment{stroke-dasharray:17 12;filter:drop-shadow(0 0 6px #ffe996);animation:networkCurrent 1.65s linear infinite;opacity:.94}
+.network-flow-segment.danger{filter:drop-shadow(0 0 6px #ff9888);animation:networkDanger 1s ease-in-out infinite}
+@keyframes networkCurrent{from{stroke-dashoffset:0}to{stroke-dashoffset:-58}}
+@keyframes networkDanger{0%,100%{opacity:.65}50%{opacity:1}}
+.network-comparison{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin:9px 0 0;padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.5}
+.network-comparison strong{font-size:12px}
+.network-comparison.match{color:#276357;background:#def4e6;border:1px solid #8fcea9}
+.network-comparison.mismatch{color:#95502d;background:#fff0dc;border:1px solid #eeb985}
+.network-diagnosis{margin-top:12px;padding:12px;border:2px solid #f1bd82;border-radius:13px;background:#fff2dd;display:grid;gap:8px;color:#684e35}
+.network-diagnosis strong{font-size:13px;line-height:1.5}
+.network-diagnosis p{font-size:12px;line-height:1.65;margin:0}
+.network-diagnosis.solved{border-color:#9acdbb;background:#e4f5e9;color:#2f625b}
+.network-causes{display:grid;gap:7px}
+.network-causes button{border:1px solid #cba87b;border-radius:10px;background:#fffaf2;color:#6c4f36;padding:10px 12px;min-height:43px;text-align:left;font-weight:800;font-size:12px;line-height:1.5}
+.network-causes button:focus-visible{outline:3px solid #ebc46d;outline-offset:2px}
+.network-reachable{background:#fff0bd;border-color:#ffcf80;box-shadow:0 0 0 8px #ffdb985b,0 0 13px #ffc373;animation:networkReachable 1s ease-in-out 2}
+@keyframes networkReachable{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+.network-power-ready{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 10px;background:linear-gradient(120deg,#286f76,#35997e);color:#fff6d5;border:2px solid #bde2b0;border-radius:13px;padding:11px;margin-top:14px;box-shadow:0 6px 14px #0c5b5f37}
+.network-power-dot{grid-row:span 2;font-size:29px;color:#ffe5a4;filter:drop-shadow(0 0 7px #ffeab6);animation:networkPowerOn .8s ease-out both}
+.network-power-ready strong{font-size:13px}
+.network-power-ready small{font-size:11px;color:#deeee3}
+@keyframes networkPowerOn{0%{opacity:0;transform:scale(.35)}60%{opacity:1;transform:scale(1.35)}100%{transform:scale(1)}}
+.network-ready .builder-heading{border-color:#ffe4a8;box-shadow:0 0 20px #ffe6ab36,0 7px 18px #184b6026}
+.story-scene[data-stage="7"].energizing .scene-bulb,
+.story-scene[data-stage="8"].energizing .scene-bulb{animation:networkTownLights 1.2s ease-out both}
+@keyframes networkTownLights{0%{filter:brightness(.65);opacity:.55}33%{filter:brightness(2);opacity:1}57%{filter:brightness(.85)}100%{filter:brightness(1.15);opacity:1}}
+@media(max-width:740px){.network-causes button{min-height:47px;font-size:13px}.network-comparison{font-size:12px}.network-diagnosis{padding:11px}}
+@media(prefers-reduced-motion:reduce){
+ .network-flow-segment,.network-flow-segment.danger,.network-reachable,.network-power-dot,
+ .story-scene[data-stage="7"].energizing .scene-bulb,
+ .story-scene[data-stage="8"].energizing .scene-bulb{animation:none!important}
+}
