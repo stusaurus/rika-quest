@@ -311,7 +311,10 @@ function handleWorkspace(e){
     reactCharacter("think","どうしてそうなるノン？");return;
    }
    ui.transferPassed=true;ui.transfer=null;
-   recordObservation("transfer:"+current().id,"追加依頼の3つの回路を予測し理由を説明できた。"+result.discovery);
+   const outcomeNames={lit:"点灯",dark:"消灯",short:"ショート（危険）",safe:"正しく点灯"};
+   const evidence=p.probes.map(q=>q.name+" → "+outcomeNames[result&&window.AkariTransfer.expected(current().id,q.diagram)]).join("／");
+   const causal=p.reasons.find(([k])=>k===ui.transfer.reason)?.[1]||"";
+   recordObservation("transfer:"+current().id,"【追加依頼】"+evidence+"。理由："+causal+"。"+result.discovery);
    success();return;
   }
   return;
