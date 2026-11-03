@@ -44,6 +44,23 @@ const switchLab=(id,layout)=>{
  const cases=B.codes.map(code=>({code,...B.evaluate(edges,code[0]==="1",code[1]==="1")}));
  assert.deepEqual(Array.from(cases,x=>Boolean(x.lit)),id===7?[false,false,false,true]:[false,true,true,true],"Circuit graph must produce target truth table");
  assert.equal(B.evaluate([["P","N"]],false,false).short,true,"Direct battery connection is always unsafe");
+ const realPath=B.pathEvidence(edges,true,true);
+ assert.equal(realPath.kind,"lit","A closed successful loop has an observable electric path");
+ assert.equal(realPath.route[0],"P","Observed electrical path begins at battery positive");
+ assert.equal(realPath.route.at(-1),"N","Observed electrical path returns to battery negative");
+ assert.ok(realPath.route.includes("L")&&realPath.route.includes("R"),"Measured lamp current must pass the bulb contacts");
+ assert.deepEqual(Array.from(B.pathEvidence([["P","N"]],false,false).route),["P","N"],"Real short path skips the bulb");
+ assert.equal(B.discrepancy(id,[["P","N"]],false,false),"short","Direct short must be categorized as hazardous");
+ assert.equal(B.discrepancy(id,[["P","L"],["R","N"]],false,false),"bypass","Unintended light without switches is a bypass");
+ assert.equal(B.discrepancy(id,[],true,true),"open","Unlit circuit when light required is an open-path problem");
+ assert.equal(B.discrepancy(id,edges,false,false),null,"Correctly dark cases should not trigger unsolicited diagnostics");
+ const risky=B.render(id,[["P","N"]],null,false,false,{"00":{...B.evaluate([["P","N"]],false,false),signature:B.signature([["P","N"]])}},null);
+ assert.match(risky,/data-net-cause="short"/,"A measured short should invite cause investigation");
+ assert.doesNotMatch(risky,/network-flow-segment/,"Dangerous shortcut is not revealed before diagnosis");
+ const explained=B.render(id,[["P","N"]],null,false,false,{"00":{...B.evaluate([["P","N"]],false,false),signature:B.signature([["P","N"]])}},null,{code:"00",kind:"short",signature:B.signature([["P","N"]])});
+ assert.match(explained,/data-flow-edge="N-P"/,"Correct diagnosis reveals the observed shortcut, not a canned solution");
+ assert.match(explained,/診断成功/,"Science-based correction evidence must be visible");
+
  move(id-1);move(id);
  assert.match(el("workspace").innerHTML,/network-lab/,"Wiring challenge must survive switching missions");
  click({netTest:"1"});  // 00
