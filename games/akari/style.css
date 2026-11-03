@@ -490,3 +490,5 @@
 
 .transfer-progress{display:inline-block;margin-top:12px;padding:7px 11px;background:#0d4058a6;border:1px solid #b5d7c8;border-radius:13px;color:#fff0b9;font-size:12px;font-weight:900;letter-spacing:.015em}
 .transfer-verify:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:grayscale(.35)}
+
+.transfer-heading .transfer-notation{font-size:11px;color:#d5ebe2;margin-top:7px}
