@@ -104,7 +104,16 @@ function startRestorationPulse(firstClear){
  },1300);
 }
 function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
-function success(){const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
+function success(){
+ const transfer=window.AkariTransfer?.get(current().id);
+ if(transfer&&!ui.transferPassed){
+  if(!ui.transfer)ui.transfer={answers:{},reason:null};
+  renderWorkspace();renderHeader();
+  setFeedback("🚨 追加依頼！ 実験で見つけた法則を、別の3つの回路で使えるかな？","warning");
+  reactCharacter("think","次の街灯も助けるノン！");
+  return;
+ }
+ const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。","success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
  $("missionList").innerHTML=M.map(m=>{let done=!!state.completed[m.id],allow=m.id<=unlocked()||done,active=m.id===state.active;return'<button type="button" class="mission-item'+(active?' current':'')+(done?' done':'')+'" data-mission="'+m.id+'" '+(!allow?'disabled':'')+' '+(active?'aria-current="step"':'')+'><span class="mission-index">'+(done?'★':allow?m.id:'🔒')+'</span><span class="mission-label"><strong>'+m.name+'</strong><small>'+icon(m.place)+' '+m.placeName+'</small></span></button>'}).join("");
@@ -128,7 +137,7 @@ function renderScene(){
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
- $("checkBtn").hidden=stageComplete;$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
+ $("checkBtn").hidden=stageComplete||!!ui.transfer;$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
@@ -234,13 +243,13 @@ function renderFinale(){
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,mode=current().mode;
- root.innerHTML=mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ root.innerHTML=ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
- if(stageComplete)return;const m=current();
+ if(stageComplete)return;const m=current();if(ui.transfer){setFeedback("追加依頼の3つの予想と理由を選び、最後の「街を救う」を押そう。");return;}
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){if(ui.inspected.length<3){fail("橋の材料を3種類とも観察してから決めよう。");return;}if(ui.chosen==="iron"){success();return;}fail("その材料では電気が通りにくいよ。金属の材料を選んでみよう。");return;}
  if(m.mode==="material"){
@@ -278,6 +287,35 @@ function check(){
 }
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
+ if(ui.transfer){
+  const p=window.AkariTransfer?.get(current().id);if(!p)return;
+  if(target.hasAttribute("data-transfer-answer")){
+   const id=target.dataset.transferAnswer,value=target.dataset.transferValue;
+   if(!p.probes.some(q=>q.id===id)||!p.choices.includes(value))return;
+   ui.transfer.answers[id]=value;
+   renderWorkspace();setFeedback("予想を記録したよ。3つの回路と理由を見比べよう。");return;
+  }
+  if(target.hasAttribute("data-transfer-reason")){
+   const reason=target.dataset.transferReason;
+   if(!p.reasons.some(([key])=>key===reason))return;
+   ui.transfer.reason=reason;renderWorkspace();setFeedback("理由を選んだよ。3つの予想とつながっているかな？");return;
+  }
+  if(target.hasAttribute("data-transfer-verify")){
+   if(p.probes.some(q=>!ui.transfer.answers[q.id])||!ui.transfer.reason){
+    setFeedback("3つすべての予想と、そう考えた理由を選ぼう。","warning");return;
+   }
+   const result=window.AkariTransfer.score(current().id,ui.transfer.answers,ui.transfer.reason);
+   if(!result.ok){
+    setFeedback("あと少し！ "+(result.wrong.length?"3つの回路のうち"+result.wrong.length+"つの予想を見直そう。 ":"")+
+     (!result.reasonOk?"理由も、3つの結果すべてに当てはまるか考えよう。":"一つずつ通り道を確かめよう。"),"warning");
+    reactCharacter("think","どうしてそうなるノン？");return;
+   }
+   ui.transferPassed=true;ui.transfer=null;
+   recordObservation("transfer:"+current().id,"追加依頼の3つの回路を予測し理由を説明できた。"+result.discovery);
+   success();return;
+  }
+  return;
+ }
  if(target.hasAttribute("data-zoom")){ui.zoomed=!ui.zoomed;renderWorkspace();setFeedback(ui.zoomed?"大きく表示したよ。「豆電球 ▶」で右へ移動できるよ。":"全体を表示したよ。");return;}
  if(target.hasAttribute("data-view")){const root=$("workspace"),board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;if(board){board.scrollLeft=target.dataset.view==="bulb"?board.scrollWidth-board.clientWidth:0;setFeedback(target.dataset.view==="bulb"?"豆電球の金属の横と底を見てみよう。":"乾電池の＋極と−極を見てみよう。");}return;}
   if(target.hasAttribute("data-t")){const t=target.dataset.t;if(ui.selected===null){ui.selected=t;setFeedback(labels[t]+"を選んだよ。次につなぐ端子を選ぼう。");}
