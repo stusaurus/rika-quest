@@ -364,7 +364,7 @@ try{
    assert.equal(await page.locator('[data-garden-slot="link"] span').textContent(),"鉄のクリップ","Wired conductor must persist through reload");
    assert.equal(await page.locator('[data-garden-slot="guardA"] span').textContent(),"乾いた木片","Insulation remains in place after reload");
    await page.locator('[data-garden-design-guess="dark"]').click();await page.locator('[data-garden-design-test]').click();
-   assert.match(await page.locator(".garden-measured").textContent(),/実際.*点灯/,"Actual lamp result overrules incorrect hypothesis");
+   assert.match(await page.locator(".garden-measured").last().textContent(),/実際.*点灯/,"Actual lamp result overrules incorrect hypothesis");
    assert.equal(await page.locator(".story-scene.garden-powered").count(),1,"Measured safe garden circuit glows in the game world");
    assert.equal(await page.locator(".garden-explain").count(),1,"Only safe current path unlocks causal science questions");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-safe-lit.png",fullPage:true});
