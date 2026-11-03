@@ -151,6 +151,7 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();await page.locator("#checkBtn").click();
    await completeTransfer(2,true);
+   assert.equal(await page.locator("#masteryCount").textContent(),"1","First successful transfer earns a reasoning token");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".story-scene.restored").count(),1,"A solved transfer case stays saved after reload");
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="transfer:2")),"Scientific transfer discovery must persist");
@@ -272,6 +273,7 @@ try{
    assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
    await completeTransfer(14,true);
+   assert.equal(await page.locator("#masteryCount").textContent(),"4","Only four transfers performed in browser QA should count as tokens");
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Final restoration should relight scenery");
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
