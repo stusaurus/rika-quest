@@ -304,6 +304,13 @@ try{
      await page.locator('[data-builder-t="'+a+'"]').click();
      await page.locator('[data-builder-t="'+b+'"]').click();
    };
+   await page.locator('[data-builder-view="bulb"]').click();
+   if(width<740){
+     const scrolled=await page.locator(".builder-viewport").evaluate(e=>e.scrollLeft);
+     assert.ok(scrolled>50,"Small-screen bulb navigation should reveal hidden right terminals");
+   }
+   await page.locator('[data-builder-view="battery"]').click();
+   assert.equal(await page.locator(".builder-viewport").evaluate(e=>e.scrollLeft),0,"Battery navigation returns to first endpoints");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"Builder completion locked until both tests succeed");
    await tapPair("P","N");
    await page.locator('[data-builder-test]').click();
@@ -324,6 +331,11 @@ try{
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),false,"Both safe tests unlock final action");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-self-built-circuit.png",fullPage:true});
+   if(width<740){
+     await page.locator('[data-builder-view="bulb"]').click();
+     await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-self-built-bulb-side.png",fullPage:true});
+     await page.locator('[data-builder-view="battery"]').click();
+   }
    await page.locator('[data-builder-submit]').click();
    assert.equal(await page.locator(".builder-puzzle").count(),0,"Correct wiring closes workbench");
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="builder:14")),"Final engineering result saved in notebook");
