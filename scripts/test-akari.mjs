@@ -29,6 +29,7 @@ const move=i=>el("missionList").listeners.click({target:{closest(s){return s==="
 const saved=()=>JSON.parse(stored["rika-akari-quest-v2"]||"{}");
 const done=i=>assert.ok(saved().completed?.[i],"Mission "+i+" should be completed");
 const wire=(a,b)=>{click({t:a});click({t:b})};
+const builderWire=(a,b)=>{click({builderT:a});click({builderT:b})};
 const transfer=(id,withMistake=false)=>{
  const puzzle=window.AkariTransfer.get(id);
  assert.ok(puzzle,"An independent challenge must exist for stage "+id);
@@ -128,11 +129,11 @@ assert.equal(builder.evaluate([["P","L"],["R","N"]],false).lit,true,"Bypassing s
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"]],false).lit,false,"Open switch must interrupt the lamp");
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"]],true).lit,true,"Closed switch must complete the loop through lamp");
 assert.equal(builder.evaluate([["P","S"],["T","L"],["R","N"],["P","N"]],true).short,true,"Direct shortcut must override any safe lamp connection");
-wire("P","N");click({builderTest:"1"});
+builderWire("P","N");click({builderTest:"1"});
 assert.match(el("feedbackText").textContent,/ショート/,"Unsafe battery short must be flagged by an interactive trial");
 assert.equal(saved().completed[14],undefined,"Unsafe circuit must never clear");
-wire("P","N");
-wire("P","S");wire("T","L");wire("R","N");
+builderWire("P","N");
+builderWire("P","S");builderWire("T","L");builderWire("R","N");
 click({builderTest:"1"});
 assert.equal(saved().builderDraft.tests.off.lit,false,"OFF observation must remain recorded");
 move(13);move(14);
