@@ -760,3 +760,57 @@
  .bridge-section .lab-sub,.bridge-why button{font-size:12px}
 }
 @media(prefers-reduced-motion:reduce){.bridge-sparkles{animation:none!important}}
+
+/* Garden lessons — controlled scientific experiments (4) and safety design (5) */
+.garden-lab{display:grid;gap:15px;min-width:0;color:#eaf9f8}
+.garden-heading{display:flex;align-items:center;flex-wrap:wrap;gap:7px 15px;padding:16px;border:1px solid #80b5a7;border-radius:19px;background:linear-gradient(115deg,#245f66,#376f70)}
+.garden-heading strong{font-size:20px;flex:1 1 240px}.garden-heading small{font-size:12px;line-height:1.5;color:#d9f7e6}
+.garden-section{display:grid;gap:11px;min-width:0}
+.garden-section h3{font-size:17px;margin:0;line-height:1.5}
+.garden-section .lab-sub{margin:0;line-height:1.7}
+.garden-contacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.garden-contact,.garden-predictions button,.garden-try,.garden-explain button{display:block;min-width:0;border:2px solid #93b7bd;background:#e5f4ee;color:#224653;border-radius:12px;padding:11px 10px;font-size:13px;font-weight:800;line-height:1.5;text-align:center;cursor:pointer;min-height:48px}
+.garden-contact.chosen,.garden-predictions button.chosen,.garden-explain button.chosen{background:#ffe9b0;color:#684319;border-color:#d1a547;box-shadow:inset 0 0 0 1px #d1a547}
+.garden-rig{max-width:100%;overflow-x:auto;border-radius:14px;background:#112f45;border:1px solid #6b9ba8}
+.garden-circuit-svg{display:block;width:100%;min-width:460px;height:auto}
+.garden-question{display:grid;gap:9px;padding:13px;border:1px solid #7ba3a8;border-radius:14px;background:#1b4658;min-width:0}
+.garden-question>strong{font-size:14px}
+.garden-predictions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.garden-slots+.garden-question .garden-predictions{grid-template-columns:repeat(3,minmax(0,1fr))}
+.garden-try{background:#ffe5a9;border-color:#d7b16a;color:#61461e;font-size:14px;font-weight:900}
+.garden-try:disabled,.garden-predictions button:disabled,.garden-slot:disabled{opacity:.48;cursor:not-allowed}
+.garden-measured{padding:12px 13px;background:#2e655f;border:1px solid #91d6b3;border-radius:11px;color:#e7fff4;font-size:13px;line-height:1.65}
+.garden-measured.danger{background:#693d38;border-color:#f2b3a3;color:#fff2de}
+.garden-explain{display:grid;gap:9px;border-top:1px solid #77a0a5;padding-top:13px}
+.garden-explain>strong{font-size:14px}.garden-explain>h3{margin:0}
+.garden-explain button{text-align:left}
+.garden-samples{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.garden-sample{display:grid;align-content:center;justify-items:center;gap:6px;padding:8px 6px;border:2px solid #98bbc0;background:#e5f4ed;color:#254b54;border-radius:15px;min-height:132px;min-width:0;text-align:center;cursor:pointer}
+.garden-sample.chosen{border-color:#d4a651;background:#ffecac;box-shadow:inset 0 0 0 1px #d4a651}
+.garden-sample>span{height:77px;width:100%;max-width:130px;display:grid;place-items:center;overflow:hidden}
+.garden-sample svg{height:100%;width:100%}
+.garden-sample strong{font-size:12px;line-height:1.4}.garden-sample small{font-size:10px;line-height:1.5;color:#456872}
+.garden-journal{display:grid;gap:8px;padding:11px;border:1px solid #659da8;border-radius:13px}
+.garden-journal>strong{font-size:14px}
+.garden-record{display:grid;gap:4px;grid-template-columns:1.1fr 1fr 2.2fr;align-items:center;background:#2d596a;border-radius:9px;padding:8px;color:#e5f9f7;font-size:11px;line-height:1.55}
+.garden-record strong{font-size:12px}
+.garden-record.empty{display:block}
+.garden-goal,.garden-hazard{margin:0;padding:10px 12px;border-radius:11px;background:#f3e6c0;color:#5f431e;font-size:12px;line-height:1.7;font-weight:700}
+.garden-hazard{border-left:5px solid #d49e5b}
+.garden-current{font-size:14px}
+.garden-schematic{max-width:100%;overflow-x:auto;background:#112f45;border-radius:14px;border:1px solid #6b99a6;overscroll-behavior-x:contain}
+.garden-design-svg{width:100%;min-width:580px;height:auto;display:block}
+.garden-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.garden-slot{display:grid;align-content:center;justify-items:start;gap:5px;text-align:left;min-width:0;min-height:100px;padding:11px;border-radius:12px;border:2px solid #9ac0bf;background:#e2f2e5;color:#215257;cursor:pointer}
+.garden-slot strong{font-size:14px;line-height:1.4}.garden-slot span{font-size:12px;font-weight:700}.garden-slot small{font-size:11px;line-height:1.6}
+@media(max-width:740px){
+ .garden-lab{gap:10px}.garden-heading{padding:12px}.garden-heading strong{font-size:16px}
+ .garden-contacts{grid-template-columns:1fr 1fr}
+ .garden-samples{grid-template-columns:repeat(2,minmax(0,1fr))}.garden-sample{min-height:122px}
+ .garden-journal .garden-record{grid-template-columns:1fr;gap:2px}.garden-record{font-size:11px}
+ .garden-slots{grid-template-columns:1fr}.garden-slot{min-height:61px;gap:3px}
+ .garden-design-svg{min-width:580px}.garden-predictions button{font-size:11px;padding:10px 4px}
+ .garden-explain button{font-size:12px}.garden-section{gap:9px}
+}
+@media(max-width:375px){.garden-sample strong{font-size:11px}.garden-predictions button{font-size:10px}.garden-contact{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.garden-lab *{transition:none!important;animation:none!important}}
