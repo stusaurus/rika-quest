@@ -324,10 +324,10 @@ try{
      await page.locator('[data-garden-guess="'+guess+'"]').last().click();
      await page.locator('[data-garden-test]').click();
    }
-   assert.equal(await page.locator(".garden-explain").count(),1,"Comparative evidence unlocks a scientific conclusion");
+   assert.equal(await page.locator("[data-garden-material-reason]").count(),3,"Comparative evidence unlocks a scientific conclusion");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden4-controlled-research.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
-   assert.equal(await page.locator(".garden-explain").count(),1,"Experimental evidence should survive a mobile reload");
+   assert.equal(await page.locator("[data-garden-material-reason]").count(),3,"Experimental evidence should survive a mobile reload");
    assert.match(await page.locator(".garden-journal").textContent(),/鉄のクリップ/,"Lab notes survive navigation and reload");
    await page.locator('[data-garden-material-reason="shiny"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Looks-alone theory fails causal requirement");
@@ -344,11 +344,16 @@ try{
      await page.locator('[data-garden-test]').click();
    }
    assert.equal(await page.locator(".garden-slots [data-garden-slot]").count(),3,"After evidence, place a conductor and two insulating partitions");
+   await page.locator('[data-garden-view="right"]').click();
+   const pan=await page.locator(".garden-schematic").evaluate(e=>e.scrollLeft);
+   if(width<740)assert.ok(pan>15,"On iPhone width, visible controls should pan to the bulb and safety partitions");
    await page.locator('[data-garden-sample="wood"]').click();await page.locator('[data-garden-slot="link"]').click();
+   if(width<740)assert.ok(await page.locator(".garden-schematic").evaluate(e=>e.scrollLeft)>15,"Editing a sample should preserve the circuit pan position");
    await page.locator('[data-garden-sample="clip"]').click();await page.locator('[data-garden-slot="guardA"]').click();
    await page.locator('[data-garden-sample="plastic"]').click();await page.locator('[data-garden-slot="guardB"]').click();
    await page.locator('[data-garden-design-guess="lit"]').click();await page.locator('[data-garden-design-test]').click();
    assert.equal(await page.locator(".garden-measured.danger").count(),1,"A metal partition creates a dangerous virtual shortcut, even if lamp path is broken");
+   assert.equal(await page.locator(".story-scene.garden-powered").count(),0,"A virtual short cannot illuminate the garden scene");
    assert.equal(await page.locator(".garden-explain").count(),0,"Hazard cannot unlock scientific explanation");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-virtual-short.png",fullPage:true});
    await page.locator('[data-garden-sample="clip"]').click();await page.locator('[data-garden-slot="link"]').click();
@@ -359,6 +364,7 @@ try{
    assert.equal(await page.locator('[data-garden-slot="guardA"] span').textContent(),"乾いた木片","Insulation remains in place after reload");
    await page.locator('[data-garden-design-guess="dark"]').click();await page.locator('[data-garden-design-test]').click();
    assert.match(await page.locator(".garden-measured").textContent(),/実際.*点灯/,"Actual lamp result overrules incorrect hypothesis");
+   assert.equal(await page.locator(".story-scene.garden-powered").count(),1,"Measured safe garden circuit glows in the game world");
    assert.equal(await page.locator(".garden-explain").count(),1,"Only safe current path unlocks causal science questions");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-safe-lit.png",fullPage:true});
    await page.locator('[data-garden-path-reason="glass"]').click();
