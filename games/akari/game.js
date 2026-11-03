@@ -26,6 +26,28 @@ function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"nu
 function current(){return M[state.active-1]}
 function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
+function restoreMissionUI(m){
+ const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
+ if(!puzzle||!draft||state.completed[m.id])return base;
+ const raw=draft.answers&&typeof draft.answers==="object"?draft.answers:{};
+ const answers={};
+ puzzle.probes.forEach(q=>{if(puzzle.choices.includes(raw[q.id]))answers[q.id]=raw[q.id]});
+ const reason=puzzle.reasons.some(([key])=>key===draft.reason)?draft.reason:null;
+ const step=Number.isInteger(draft.step)&&draft.step>=0&&draft.step<=3?draft.step:0;
+ base.transfer={answers,reason,step:step===3&&Object.keys(answers).length<3?Object.keys(answers).length:step};
+ return base;
+}
+function saveTransferDraft(){
+ if(!ui.transfer)return;
+ const id=current().id;
+ state.drafts=state.drafts||{};
+ state.drafts[id]={answers:{...ui.transfer.answers},reason:ui.transfer.reason,step:ui.transfer.step};
+ persist();
+}
+function clearTransferDraft(id){
+ if(state.drafts&&state.drafts[id]){delete state.drafts[id];persist();}
+}
+
 
 function recordObservation(key,description){
  const id=current().id;
@@ -43,7 +65,7 @@ function renderJournal(){
  entries.forEach(message=>{const p=document.createElement("p");p.className="journal-entry";p.textContent="✦ "+message;rows.appendChild(p)});
 }
 function unlocked(){let id=1;while(id<=14&&state.completed[id])id++;return Math.min(id,14)}
-function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=initial(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();reactCharacter("walk");window.scrollTo({top:0,behavior:"smooth"});}
+function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=restoreMissionUI(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();reactCharacter("walk");window.scrollTo({top:0,behavior:"smooth"});}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function setFeedback(t,type=""){const e=$("feedback");e.className="feedback"+(type?" "+type:"");$("feedbackText").textContent=t;}
 function playTone(ok){if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;soundCtx=soundCtx||new C();const now=soundCtx.currentTime;(ok?[523,659,784,1046]:[220,175]).forEach((freq,i)=>{const oscillator=soundCtx.createOscillator(),gain=soundCtx.createGain(),start=now+i*.12;oscillator.type=ok?"sine":"triangle";oscillator.frequency.value=freq;oscillator.connect(gain);gain.connect(soundCtx.destination);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.065,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.22);oscillator.start(start);oscillator.stop(start+.23);});}catch(e){}}
@@ -107,7 +129,7 @@ function fail(message,short=false){failures++;setFeedback(message,"warning");rea
 function success(){
  const transfer=window.AkariTransfer?.get(current().id);
  if(transfer&&!ui.transferPassed){
-  if(!ui.transfer)ui.transfer={answers:{},reason:null,step:0};
+  if(!ui.transfer){ui.transfer={answers:{},reason:null,step:0};saveTransferDraft();}
   renderWorkspace();renderHeader();
   setFeedback("🚨 追加依頼！ 実験で見つけた法則を、別の3つの回路で使えるかな？","warning");
   reactCharacter("think","次の街灯も助けるノン！");
@@ -479,6 +501,6 @@ function bind(){
  $("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))modal(false)});
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)modal(false);if(e.key==="Tab"&&!$("helpModal").hidden){const focusable=[...$("helpModal").querySelectorAll("button")],first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 }
-function boot(){ui=initial(current());bind();persist();renderAll();initializeCharacter();window.scrollTo(0,0);}
+function boot(){ui=restoreMissionUI(current());bind();persist();renderAll();initializeCharacter();window.scrollTo(0,0);}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
