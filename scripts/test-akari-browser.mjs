@@ -358,7 +358,8 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-garden5-virtual-short.png",fullPage:true});
    await page.locator('[data-garden-sample="clip"]').click();await page.locator('[data-garden-slot="link"]').click();
    await page.locator('[data-garden-sample="wood"]').click();await page.locator('[data-garden-slot="guardA"]').click();
-   assert.equal(await page.locator(".garden-measured").count(),0,"Replacing material invalidates old dangerous measurement");
+   assert.equal(await page.locator(".garden-measured.danger").count(),0,"Replacing material invalidates the old dangerous circuit measurement");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).gardenDrafts[5].measurement),null,"Previous electrical evidence cannot be reused after rewiring");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator('[data-garden-slot="link"] span').textContent(),"鉄のクリップ","Wired conductor must persist through reload");
    assert.equal(await page.locator('[data-garden-slot="guardA"] span').textContent(),"乾いた木片","Insulation remains in place after reload");
