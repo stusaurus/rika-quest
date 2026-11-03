@@ -46,55 +46,72 @@ function expected(tests,wires){
  const off=tests?.off,on=tests?.on;
  return !!off&&!!on&&off.signature===sig&&on.signature===sig&&off.safe&&!off.lit&&on.safe&&on.lit;
 }
-function render(wires=[],selected=null,switchOn=false,tests={}){
- const normalized=normalize(wires),sim=evaluate(normalized,switchOn);
- const test=tests[switchOn?"on":"off"];
- const measured=!!test&&test.signature===signature(normalized);
- const lineSvg=normalized.map(([a,b],i)=>{
-   const p=terminals[a],q=terminals[b];
-   return '<g class="builder-line"><path d="M'+p.x+' '+p.y+'L'+q.x+' '+q.y+'" fill="none" stroke="#eff5e6" stroke-width="11" opacity=".17" stroke-linecap="round"/>'+
-     '<path d="M'+p.x+' '+p.y+'L'+q.x+' '+q.y+'" fill="none" stroke="'+(i%2?"#b9e4e4":"#f2d69f")+'" stroke-width="5" stroke-linecap="round"/></g>';
- }).join("");
- const lampGlow=measured&&sim.lit;
- const status=measured?(sim.short?"⚠ ショート：危険な直結がある":sim.lit?"💡 豆電球が点灯":"◯ 豆電球は消灯"):"？ 通電実験はまだ";
- const endpoints=ids.map(id=>{
-  const p=terminals[id];
-  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+'" style="left:'+(100*p.x/1000)+'%;top:'+(100*p.y/460)+'%" data-builder-t="'+id+'" aria-label="'+p.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
- }).join("");
- const testsPanel=[["off","OFFの実験",tests.off],["on","ONの実験",tests.on]].map(([mode,label,result])=>{
-  const valid=result&&result.signature===signature(normalized);
-  return '<div class="builder-measure'+(valid?' measured':'')+'"><strong>'+label+'</strong><span>'+
-   (valid?(result.short?"⚠ ショート（危険）":result.lit?"💡 点灯":"◯ 消灯"):"？ 未実験")+'</span></div>';
- }).join("");
- return '<section class="builder-puzzle"><div class="builder-heading"><span>🌟 最終の設計依頼</span><h3>灯台のスイッチ回路を組み立てよう</h3>'+
-  '<p>灯台本体の修理が終わった！ 最後は乾電池1個を使う非常用スイッチ盤を設計しよう。<b>ONで点灯</b>、<b>OFFで消灯</b>。どちらもショートなしが条件だよ。</p></div>'+
-  '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線でつながるよ。すでにつないだ2つを選ぶと外せるよ。スマホでは横に動かして全部の端子を見よう。</p>'+
-  '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
-  '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして全ての端子を見られます"><div class="builder-board"><svg viewBox="0 0 1000 460" role="img" aria-label="乾電池の＋−、豆電球の横と底、スイッチの入口出口を自由につなぐ回路図">'+
-  '<rect width="1000" height="460" rx="27" fill="#183c55"/>'+
-  '<g><rect x="39" y="164" width="92" height="125" rx="15" fill="#d7a96b" stroke="#ffdeab" stroke-width="5"/>'+
-  '<text x="85" y="226" text-anchor="middle" font-size="28" fill="#fff6d3" font-weight="bold">1.5V</text>'+
-  '<text x="85" y="258" text-anchor="middle" font-size="18" fill="#fff6d3">乾電池</text>'+
-  '<path d="M85 118V164M85 289V340" stroke="#e9ecdf" stroke-width="7" fill="none"/>'+
-  '<text x="151" y="120" fill="#fff1ae" font-size="18">＋</text><text x="151" y="347" fill="#fff1ae" font-size="18">−</text></g>'+
-  '<g><path d="M382 118L555 '+(switchOn?'118':'91')+'" fill="none" stroke="#f7d69e" stroke-width="7" stroke-linecap="round"/>'+
-  '<path d="M382 118L555 118" stroke="#94b3bc" stroke-width="4" stroke-dasharray="5 12" opacity=".48"/>'+
-  '<text x="467" y="62" text-anchor="middle" font-size="22" fill="#e8eecf">スイッチ '+(switchOn?'ON':'OFF')+'</text></g>'+
-  '<g><path d="M888 118V170M888 286V340" stroke="#dcebe2" stroke-width="7"/>'+
-  '<circle cx="888" cy="230" r="57" fill="'+(lampGlow?'#ffe6aa':'#7d9ca4')+'" fill-opacity="'+(lampGlow?'1':'.42')+'" stroke="#fff1c5" stroke-width="5"/>'+
-  (lampGlow?'<circle cx="888" cy="230" r="75" fill="none" stroke="#ffe5a1" stroke-width="8" opacity=".6"/>':'')+
-  '<path d="M859 202L917 258M917 202L859 258" stroke="#fff5d8" stroke-width="6" fill="none"/>'+
-  '<text x="888" y="419" text-anchor="middle" fill="#e1f3e6" font-size="20">豆電球</text>'+
-  '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
-   lineSvg+'</svg>'+endpoints+'</div></div>'+
-  '<div class="builder-bottom"><span>導線 '+normalized.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
-  '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">まずOFF、次にONを確かめてみよう。ショートがあると危険なので、このゲーム内だけで試してね。</p>'+
-  '<div class="builder-switch"><button type="button" data-builder-switch="off" aria-pressed="'+(!switchOn)+'" class="'+(!switchOn?'on':'')+'">OFF</button>'+
-  '<button type="button" data-builder-switch="on" aria-pressed="'+switchOn+'" class="'+(switchOn?'on':'')+'">ON</button></div>'+
-  '<p class="builder-live">'+status+'</p><button type="button" data-builder-test="1" class="builder-test">⚡ 今の状態を実験する</button>'+
-  '<div class="builder-measures">'+testsPanel+'</div>'+
-  '<p class="builder-hint">合格条件：OFFで消灯、ONで点灯、そしてどちらもショートなし。</p>'+
-  '<button type="button" class="builder-submit" data-builder-submit="1"'+(expected(tests,normalized)?'':' disabled')+'>🏆 設計を完成して灯台に光を戻す</button></div></div></section>';
+function expectedDirect(tests,wires){
+ const segments=normalize(wires),sig=signature(segments),result=tests?.single;
+ if(segments.some(([a,b])=>["S","T"].includes(a)||["S","T"].includes(b)))return false;
+ const check=evaluate(segments,false);
+ return !!result&&result.signature===sig&&check.safe&&check.lit&&result.safe&&result.lit;
 }
-window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,render};
+function expectedFor(task,tests,wires){return task==="direct"?expectedDirect(tests,wires):expected(tests,wires)}
+function render(wires=[],selected=null,switchOn=false,tests={},task="switch"){
+ const direct=task==="direct",segments=normalize(wires);
+ const simulation=evaluate(segments,direct?false:switchOn);
+ const mode=direct?"single":switchOn?"on":"off";
+ const recorded=tests[mode],measured=recorded&&recorded.signature===signature(segments);
+ const glow=!!measured&&simulation.lit;
+ const status=measured?(simulation.short?"⚠ ショート！ 乾電池を直結している":simulation.lit?"💡 点灯した！":"◯ 消灯した"):"？ まだ実験していない";
+ const lineSvg=segments.map(([a,b],i)=>{
+  const u=terminals[a],v=terminals[b];
+  return '<g class="builder-line"><path d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="#eff5e6" stroke-width="11" opacity=".17" stroke-linecap="round"/>'+
+  '<path d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="'+(i%2?"#b9e4e4":"#f2d69f")+'" stroke-width="5" stroke-linecap="round"/></g>';
+ }).join("");
+ const available=direct?ids.filter(id=>id!=="S"&&id!=="T"):ids;
+ const buttons=available.map(id=>{
+  const t=terminals[id];
+  return '<button type="button" class="builder-terminal'+(selected===id?' selected':'')+'" style="left:'+(100*t.x/1000)+'%;top:'+(100*t.y/460)+'%" data-builder-t="'+id+'" aria-label="'+t.name+' を選ぶ" aria-pressed="'+(selected===id)+'"><span>'+id+'</span></button>';
+ }).join("");
+ const statusBlocks=(direct?[["single","点灯の実験"]]:[["off","OFFの実験"],["on","ONの実験"]]).map(([id,label])=>{
+  const data=tests[id],valid=data&&data.signature===signature(segments);
+  return '<div class="builder-measure'+(valid?' measured':'')+'"><strong>'+label+'</strong><span>'+
+   (valid?(data.short?"⚠ ショート（危険）":data.lit?"💡 点灯":"◯ 消灯"):"？ 未実験")+'</span></div>';
+ }).join("");
+ const switchArt=direct?
+   '<text x="475" y="226" text-anchor="middle" font-size="18" fill="#92b9be">自分で電気の輪を作ろう</text>':
+   '<g><path d="M382 118L555 '+(switchOn?'118':'91')+'" stroke="#f7d69e" stroke-width="7" fill="none" stroke-linecap="round"/>'+
+   '<path d="M382 118L555 118" stroke="#94b3bc" stroke-width="4" stroke-dasharray="5 12" opacity=".48"/>'+
+   '<text x="467" y="62" text-anchor="middle" font-size="22" fill="#e8eecf">スイッチ '+(switchOn?"ON":"OFF")+'</text></g>';
+ const switchControl=direct?'':'<div class="builder-switch"><button type="button" data-builder-switch="off" aria-pressed="'+(!switchOn)+'" class="'+(!switchOn?'on':'')+'">OFF</button>'+
+  '<button type="button" data-builder-switch="on" aria-pressed="'+switchOn+'" class="'+(switchOn?'on':'')+'">ON</button></div>';
+ return '<section class="builder-puzzle'+(direct?' builder-direct':'')+'"><div class="builder-heading"><span>'+(direct?'🕰 時計塔の再配線':'🌟 最終の設計依頼')+'</span>'+
+ '<h3>'+(direct?'切れた回路を自分で直そう':'灯台のスイッチ回路を組み立てよう')+'</h3>'+
+ '<p>'+(direct?'故障の原因を見つけたね。乾電池の＋と−を、豆電球の横と底の金属部分につないで<b>安全に点灯</b>させよう。':
+ '灯台本体の修理が終わった！ 乾電池1個の非常用スイッチ盤を設計しよう。<b>ONで点灯・OFFで消灯</b>、どちらもショートなしが条件だよ。')+'</p></div>'+
+ '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線がつながるよ。もう一度同じ2つを選ぶと外せるよ。スマホでは左右に移動しよう。</p>'+
+ '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
+ '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして端子を選べます"><div class="builder-board">'+
+ '<svg viewBox="0 0 1000 460" role="img" aria-label="'+(direct?'乾電池と豆電球の4端子':'乾電池・スイッチ・豆電球の6端子')+'をつなぐ回路の模式図">'+
+ '<rect width="1000" height="460" rx="27" fill="#183c55"/>'+
+ '<g><rect x="39" y="164" width="92" height="125" rx="15" fill="#d7a96b" stroke="#ffdeab" stroke-width="5"/>'+
+ '<text x="85" y="226" text-anchor="middle" font-size="28" fill="#fff6d3" font-weight="bold">1.5V</text>'+
+ '<text x="85" y="258" text-anchor="middle" font-size="18" fill="#fff6d3">乾電池</text>'+
+ '<path d="M85 118V164M85 289V340" stroke="#e9ecdf" stroke-width="7" fill="none"/>'+
+ '<text x="151" y="120" fill="#fff1ae" font-size="18">＋</text>'+
+ '<text x="151" y="347" fill="#fff1ae" font-size="18">−</text></g>'+switchArt+
+ '<g><path d="M888 118V170M888 286V340" stroke="#dcebe2" stroke-width="7"/>'+
+ '<circle cx="888" cy="230" r="57" fill="'+(glow?'#ffe6aa':'#7d9ca4')+'" fill-opacity="'+(glow?'1':'.42')+'" stroke="#fff1c5" stroke-width="5"/>'+
+ (glow?'<circle cx="888" cy="230" r="75" fill="none" stroke="#ffe5a1" stroke-width="8" opacity=".6"/>':'')+
+ '<path d="M859 202L917 258M917 202L859 258" stroke="#fff5d8" stroke-width="6" fill="none"/>'+
+ '<text x="888" y="419" text-anchor="middle" fill="#e1f3e6" font-size="20">豆電球</text>'+
+ '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
+ lineSvg+'</svg>'+buttons+'</div></div>'+
+ '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
+ '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'このゲーム内で通電して、安全に豆電球がつくか確かめよう。':'スイッチOFFとONをそれぞれ試そう。実物でショートを試すのは危険だよ。')+'</p>'+
+ switchControl+'<p class="builder-live">'+status+'</p>'+
+ '<button type="button" data-builder-test="1" class="builder-test">⚡ 今の状態を実験する</button>'+
+ '<div class="builder-measures">'+statusBlocks+'</div>'+
+ '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
+ '<button type="button" class="builder-submit" data-builder-submit="1"'+(expectedFor(task,tests,segments)?'':' disabled')+'>'+
+ (direct?'🏆 時計塔の回路を完成させる':'🏆 設計を完成して灯台に光を戻す')+'</button></div></div></section>';
+}
+window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,expectedDirect,expectedFor,render};
 })();
