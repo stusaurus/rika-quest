@@ -240,7 +240,7 @@ try{
    assert.equal(await page.locator(".battery-record").count(),4,"Four crossed size/time observations");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"No correct conclusion without experimental evidence");
-   await page.locator('[data-battery-test]').click({force:true}).catch(()=>{});
+   assert.equal(await page.locator('[data-battery-test]').isDisabled(),true,"The test button requires a prediction");
    assert.equal(await page.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem("rika-akari-quest-v2")).batteryDrafts?.[9]?.trials||{}).length),0,"Battery experiment requires scientific prediction");
    await page.locator('[data-battery-guess="dim"]').click();await page.locator('[data-battery-test]').click();
    assert.match(await page.locator(".battery-predict-card .battery-result").textContent(),/予想.*弱い光.*実際.*点灯/s,"Prediction and actual are compared without penalty");
