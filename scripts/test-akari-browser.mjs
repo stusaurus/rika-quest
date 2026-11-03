@@ -23,6 +23,39 @@ try{
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,hasTouch:engine==="webkit",isMobile:engine==="webkit",reducedMotion:"reduce"});
    const page=await context.newPage(),errors=[];
+   const completeNetwork=async(id)=>{
+     const wires=id===7?[["P","A1"],["A2","B1"],["B2","L"],["R","N"]]:
+       [["P","A1"],["P","B1"],["A2","L"],["B2","L"],["R","N"]];
+     assert.equal(await page.locator(".network-lab").count(),1,"Free-wiring two-switch lab must open");
+     assert.equal(await page.locator('[data-net-t]').count(),8,"Eight terminals should be usable");
+     await page.locator('[data-net-view="right"]').click();
+     if(width<740)assert.ok(await page.locator(".network-viewport").evaluate(e=>e.scrollLeft)>20,"Bulb side must be reachable on mobile");
+     await page.locator('[data-net-view="left"]').click();
+     const tap=async(a,b)=>{await page.locator('[data-net-t="'+a+'"]').click();await page.locator('[data-net-t="'+b+'"]').click()};
+     await tap("P","N");await page.locator('[data-net-test]').click();
+     assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is unsafe");
+     await tap("P","N");
+     for(const [a,b] of wires)await tap(a,b);
+     await page.locator('[data-net-test]').click(); // 00
+     await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 10
+     await page.reload({waitUntil:"domcontentloaded"});
+     assert.equal(await page.locator(".network-lab").count(),1,"Reload restores unfinished network");
+     assert.equal(await page.locator(".network-trial.measured").count(),2,"Two trials survived reload");
+     await page.locator('[data-net-switch="b"]').click();await page.locator('[data-net-test]').click(); // 11
+     await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 01
+     assert.equal(await page.locator(".network-trial.measured").count(),4,"All four combinations tested");
+     assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Causal explanation required");
+     await page.locator('[data-net-reason="'+(id===7?"either":"both")+'"]').click();
+     assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Wrong conclusion rejected");
+     await page.locator('[data-net-reason="'+(id===7?"both":"either")+'"]').click();
+     assert.equal(await page.locator('[data-net-submit]').isDisabled(),false,"Correct topology and reasoning unlock stage");
+     await page.evaluate(()=>window.scrollTo(0,0));
+     await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-network-"+id+".png",fullPage:true});
+     await page.locator('[data-net-submit]').click();
+     assert.equal(await page.locator("#discovery").isVisible(),true,"Design success completes mission");
+     assert.ok(await page.evaluate(id=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="switchbuilder:"+id),id),"Design evidence saved");
+   };
+
    const completeTransfer=async(id,tryWrong=false)=>{
      const values={
        2:{a:"dark",b:"lit",c:"lit",reason:"path"},
@@ -272,10 +305,18 @@ try{
    assert.equal(await page.locator('.science-conclusion').count(),1,"Four switch trials must require a conclusion");
    assert.equal(await page.locator("#discovery").isVisible(),false,"Filling all four switch outcomes cannot auto-clear");
    await page.locator('[data-conclude="both"]').click();await page.locator("#checkBtn").click();
-   await completeTransfer(7,true);
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Evidence-backed switch inference and transfer should clear");
+   await completeNetwork(7);
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-conclusion.png",fullPage:true});
+   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));for(let i=1;i<=7;i++)s.completed[i]=3;s.active=8;localStorage.setItem(k,JSON.stringify(s))});
+   await page.reload({waitUntil:"domcontentloaded"});
+   await page.locator('[data-design="parallel"]').click();
+   await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="a"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="b"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-switch="a"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-conclude="either"]').click();await page.locator("#checkBtn").click();
+   await completeNetwork(8);
 
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.completed={};for(let i=1;i<=11;i++)s.completed[i]=3;s.active=12;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
@@ -334,7 +375,7 @@ try{
    assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
    await completeTransfer(14,true);
-   assert.equal(await page.locator("#masteryCount").textContent(),"4","Four transfers are recorded");
+   assert.equal(await page.locator("#masteryCount").textContent(),"5","Engineering of two switch networks plus three transfer discoveries must be recorded");
 
    const tapPair=async(a,b)=>{
      await page.locator('[data-builder-t="'+a+'"]').click();
