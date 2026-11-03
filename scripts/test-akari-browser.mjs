@@ -574,7 +574,7 @@ try{
    assert.equal(await page.locator(".verification-step.ok").count(),3,"All final components must be investigated separately");
    await page.locator("#checkBtn").click();
    await completeTransfer(14,true);
-   assert.equal(await page.locator("#masteryCount").textContent(),"5","Engineering of two switch networks plus three transfer discoveries must be recorded");
+   assert.equal(await page.locator("#masteryCount").textContent(),"6","Both switch networks and all four prior transfer discoveries, including redesigned mission5, must be recorded");
 
    const tapPair=async(a,b)=>{
      await page.locator('[data-builder-t="'+a+'"]').click();
