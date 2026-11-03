@@ -157,7 +157,7 @@ function success(){
  }
  if(current().id===14&&window.AkariBuilder&&!ui.builderPassed){
   if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{}};saveBuilderDraft();}
-  renderWorkspace();renderHeader();
+  renderWorkspace();renderHeader();renderMenu();
   setFeedback("🔧 最終の設計依頼！ 選択肢ではなく導線を自分でつなぎ、OFFとONの両方を確かめよう。","warning");
   reactCharacter("think","最後は自分で回路を作るノン！");return;
  }
