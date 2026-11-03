@@ -25,6 +25,7 @@ vm.runInContext(readFileSync("games/akari/switch-lab.js","utf8"),context,{filena
 vm.runInContext(readFileSync("games/akari/safety-lab.js","utf8"),context,{filename:"safety-lab.js"});
 vm.runInContext(readFileSync("games/akari/bridge-lab.js","utf8"),context,{filename:"bridge-lab.js"});
 vm.runInContext(readFileSync("games/akari/garden-lab.js","utf8"),context,{filename:"garden-lab.js"});
+vm.runInContext(readFileSync("games/akari/battery-lab.js","utf8"),context,{filename:"battery-lab.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -311,16 +312,89 @@ click({conclude:"either"});check();assert.equal(saved().completed[7],undefined,"
 click({conclude:"both"});check();switchLab(7);done(7);
 move(8);click({design:"parallel"});check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
 click({conclude:"either"});check();switchLab(8);done(8);
-move(9);for(const choice of ["small","large"]){click({choice});check()}
- click({answer:"sameVoltage"});check();assert.equal(saved().completed[9],undefined,"Battery outcome alone must not clear");
- click({why:"size"});check();assert.equal(saved().completed[9],undefined,"Incorrect battery reason must not clear");
- click({why:"voltage"});check();done(9);
-move(10);for(const choice of ["single","series"]){click({choice});check()}
- click({answer:"seriesBrighter"});click({why:"shape"});check();assert.equal(saved().completed[10],undefined,"Brightness needs voltage reasoning");
- click({why:"seriesAdds"});check();done(10);
-move(11);for(const choice of ["same","reverse"]){click({choice});check()}
- click({answer:"same"});click({why:"single"});check();assert.equal(saved().completed[11],undefined,"Two-battery polarity requires cancellation concept");
- click({why:"cancel"});check();done(11);
+move(9);
+const battery=window.AkariBatteryLab;
+assert.ok(battery,"Battery expedition module must be mounted before game");
+assert.equal(battery.all(9).length,4,"Battery size lesson has two sizes and two time points");
+assert.equal(battery.model(9,"small:early").kind,"bright");
+assert.equal(battery.model(9,"large:early").kind,"bright","Size alone must not make fresh matching cells brighter");
+assert.equal(battery.model(9,"small:late").kind,"dim","Illustrative long-watch condition is lower output for smaller cell");
+assert.equal(battery.model(9,"large:late").kind,"bright");
+assert.equal(battery.canFinish(9,{trials:{}}),false,"Cannot bypass trials by choosing an answer");
+assert.match(el("workspace").innerHTML,/battery-expedition/);
+check();assert.equal(saved().completed[9],undefined);
+click({batteryTest:"1"});assert.equal(Object.keys(saved().batteryDrafts?.[9]?.trials||{}).length,0,"Every battery experiment requires prediction");
+click({batteryGuess:"dim"});click({batteryTest:"1"});
+assert.equal(saved().batteryDrafts[9].trials["small:early"].actual,"bright","An incorrect prediction should retain the actual measured evidence");
+click({batteryField:"size",batteryValue:"large"});
+click({batteryGuess:"bright"});click({batteryTest:"1"});
+click({batteryField:"phase",batteryValue:"late"});
+click({batteryGuess:"dim"});click({batteryTest:"1"});
+click({batteryField:"size",batteryValue:"small"});
+click({batteryGuess:"bright"});click({batteryTest:"1"});
+assert.equal(battery.evidence(9,saved().batteryDrafts[9]),true);
+assert.equal(saved().batteryDrafts[9].trials["small:late"].actual,"dim");
+move(8);move(9);
+assert.equal(battery.evidence(9,saved().batteryDrafts[9]),true,"All battery observations survive a mission revisit");
+click({batteryService:"small"});click({batteryServiceGuess:"dim"});click({batteryServiceTest:"1"});
+click({batteryReason:"voltage"});check();
+assert.equal(saved().completed[9],undefined,"A shorter-lived cell does not meet the harbor need despite correct theory");
+click({batteryService:"large"});click({batteryServiceGuess:"dim"});click({batteryServiceTest:"1"});
+assert.equal(saved().batteryDrafts[9].service.actual,"bright","The virtual model, not the player's guess, decides result");
+check();assert.equal(saved().completed[9],undefined,"Incorrect final prediction should not certify deployment");
+click({batteryServiceGuess:"bright"});click({batteryServiceTest:"1"});
+click({batteryReason:"size"});check();assert.equal(saved().completed[9],undefined,"Wrong cause blocks certificate");
+click({batteryReason:"voltage"});check();done(9);
+assert.equal(saved().batteryDrafts?.[9],undefined,"Stage9 temporary save cleared after success");
+assert.equal(saved().completed[9],3,"Wrong hypotheses are not penalties");
+move(10);
+assert.equal(battery.model(10,"one:1.5").kind,"bright");
+assert.equal(battery.model(10,"one:3").kind,"dim");
+assert.equal(battery.model(10,"two:3").kind,"bright");
+assert.equal(battery.model(10,"two:1.5").kind,"risk","Overrating a 1.5V lamp should be a virtual warning");
+assert.equal(battery.model(10,"two:1.5").warning,true);
+const stage10=[
+ ["one","1.5","bright"],["one","3","bright"],["two","3","dim"],["two","1.5","risk"]
+];
+for(const [cells,rating,guess] of stage10){
+ click({batteryField:"cells",batteryValue:cells});
+ click({batteryField:"rating",batteryValue:rating});
+ click({batteryGuess:guess});click({batteryTest:"1"});
+}
+assert.equal(battery.evidence(10,saved().batteryDrafts[10]),true);
+assert.equal(saved().batteryDrafts[10].trials["two:1.5"].actual,"risk");
+click({batteryService:"two:1.5"});click({batteryServiceGuess:"risk"});click({batteryServiceTest:"1"});
+click({batteryReason:"series"});check();
+assert.equal(saved().completed[10],undefined,"Overrated hardware cannot be certified as safe");
+click({batteryService:"two:3"});click({batteryServiceGuess:"bright"});click({batteryServiceTest:"1"});
+click({batteryReason:"always"});check();assert.equal(saved().completed[10],undefined);
+click({batteryReason:"series"});check();done(10);
+assert.equal(saved().batteryDrafts?.[10],undefined);
+move(11);
+assert.equal(battery.model(11,"one:forward").kind,"bright");
+assert.equal(battery.model(11,"one:reverse").kind,"bright","One ordinary incandescent lamp works regardless of battery polarity");
+assert.equal(battery.model(11,"two:aligned").kind,"bright");
+assert.equal(battery.model(11,"two:opposed").kind,"dark","Identical opposite series cells cancel net voltage");
+for(const [cells,direction,guess] of [
+ ["one","forward","bright"],["one","reverse","dark"],
+ ["two","aligned","bright"],["two","opposed","dark"]
+]){
+ click({batteryField:"cells",batteryValue:cells});
+ click({batteryField:"direction",batteryValue:direction});
+ click({batteryGuess:guess});click({batteryTest:"1"});
+}
+assert.equal(battery.evidence(11,saved().batteryDrafts[11]),true);
+assert.equal(saved().batteryDrafts[11].trials["one:reverse"].actual,"bright");
+click({batteryService:"two:opposed"});click({batteryServiceGuess:"dark"});click({batteryServiceTest:"1"});
+click({batteryReason:"cancel"});check();
+assert.equal(saved().completed[11],undefined,"Museum display still dark with opposing cells");
+click({batteryService:"two:aligned"});click({batteryServiceGuess:"bright"});click({batteryServiceTest:"1"});
+click({batteryReason:"bulb"});check();assert.equal(saved().completed[11],undefined);
+click({batteryReason:"cancel"});check();done(11);
+assert.equal(saved().batteryDrafts?.[11],undefined);
+assert.ok(saved().notes.some(n=>n.key==="battery:proof:11"),"Battery science mission records findings in journal");
+assert.equal(battery.normalize(10,{trials:{"two:1.5":{guess:"bright",actual:"bright"}}}).trials["two:1.5"],undefined,"Tampered measurements are rejected on restore");
+
 move(12);
 const safety=window.AkariSafety;
 assert.equal(safety.stages.length,3,"Port safety rescue must have three distinct topology problems");
