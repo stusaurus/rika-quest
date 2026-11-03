@@ -41,6 +41,53 @@ function evaluate(wires,switchOn){
  const reverse=connected("P","R",conductive)&&connected("L","N",conductive);
  return {short,lit:!short&&(forward||reverse),safe:!short,condition:switchOn?"on":"off"};
 }
+function conductiveEdges(wires,on){
+ return normalize(wires).concat(on?[["S","T"]]:[]);
+}
+function findPath(edges,from="P",to="N"){
+ const graph=Object.fromEntries(ids.map(id=>[id,[]]));
+ for(const [a,b] of edges){graph[a].push(b);graph[b].push(a)}
+ const queue=[from],parents={[from]:null};
+ for(let i=0;i<queue.length;i++){
+  const current=queue[i];
+  if(current===to){
+   const result=[];let node=current;
+   while(node!==null){result.unshift(node);node=parents[node]}
+   return result;
+  }
+  for(const next of graph[current])if(!(next in parents)){parents[next]=current;queue.push(next)}
+ }
+ return [];
+}
+function reachedEdges(edges){
+ const graph=Object.fromEntries(ids.map(id=>[id,[]]));
+ for(const [a,b] of edges){graph[a].push(b);graph[b].push(a)}
+ const queue=["P"],seen=new Set(queue);
+ for(let i=0;i<queue.length;i++)for(const adjacent of graph[queue[i]])if(!seen.has(adjacent)){seen.add(adjacent);queue.push(adjacent)}
+ return [...seen];
+}
+function diagnose(task,wires,switchOn){
+ const result=evaluate(wires,task==="direct"?false:switchOn);
+ if(result.short)return"short";
+ if(task==="direct")return result.lit?null:"open";
+ if(!switchOn&&result.lit)return"bypass";
+ if(switchOn&&!result.lit)return"open";
+ return null;
+}
+function evidence(task,wires,switchOn){
+ const on=task!=="direct"&&!!switchOn,kind=diagnose(task,wires,switchOn),conductors=conductiveEdges(wires,on);
+ if(kind==="short")return {kind,route:findPath(conductors),reachable:[]};
+ if(kind==="bypass")return {kind,route:findPath([...conductors,["L","R"]]),reachable:[]};
+ if(kind==="open")return {kind,route:[],reachable:reachedEdges(conductors)};
+ const lit=evaluate(wires,on).lit;
+ return {kind:lit?"lit":"normal",route:lit?findPath([...conductors,["L","R"]]):[],reachable:[]};
+}
+function diagnosisMessage(kind){
+ if(kind==="short")return"豆電球を通らず、乾電池の＋と−が導線だけでつながってしまう危険な道があるよ。";
+ if(kind==="bypass")return"スイッチをOFFにしたのに点灯するのは、閉じていないスイッチを通らず電球へ向かう別の道があるからだよ。";
+ if(kind==="open")return"豆電球を光らせたいのに消えている。乾電池の＋極から電球を通って−極まで戻る道のどこかが切れているよ。";
+ return"実験の結果は設計条件に合っているよ。";
+}
 function expected(tests,wires){
  const sig=signature(wires);
  const off=tests?.off,on=tests?.on;
@@ -155,5 +202,5 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+
  (direct?'🏆 時計塔の回路を完成させる':'🏆 設計を完成して灯台に光を戻す')+'</button></div></div></section>';
 }
-window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,expectedDirect,expectedFor,traceStatus,scientificComplete,render};
+window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,diagnose,evidence,diagnosisMessage,expected,expectedDirect,expectedFor,traceStatus,scientificComplete,render};
 })();
