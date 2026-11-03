@@ -39,7 +39,7 @@ try{
        const wrong=id===12?"safe":"lit";
        const wrongValue=wrong===values.a?(id===12?"short":"dark"):wrong;
        await page.locator('[data-transfer-answer="a"][data-transfer-value="'+wrongValue+'"]').click();
-       assert.ok(await page.evaluate(id=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).drafts?.[id]?.answers?.a), "Draft answer should persist in storage");
+       assert.ok(await page.evaluate(id=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).drafts?.[id]?.answers?.a,id), "Draft answer should persist in storage");
        if(id===2){
          await page.reload({waitUntil:"domcontentloaded"});
          assert.equal(await page.locator(".transfer-probe").count(),1,"Reload should reopen the unfinished rescue scenario");
