@@ -19,6 +19,7 @@ const context=vm.createContext({window,document,localStorage,setTimeout(){},cons
 vm.runInContext(readFileSync("games/akari/art.js","utf8"),context,{filename:"art.js"});
 vm.runInContext(readFileSync("games/akari/scenes.js","utf8"),context,{filename:"scenes.js"});
 vm.runInContext(readFileSync("games/akari/character.js","utf8"),context,{filename:"character.js"});
+vm.runInContext(readFileSync("games/akari/transfer.js","utf8"),context,{filename:"transfer.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -27,6 +28,27 @@ const move=i=>el("missionList").listeners.click({target:{closest(s){return s==="
 const saved=()=>JSON.parse(stored["rika-akari-quest-v2"]||"{}");
 const done=i=>assert.ok(saved().completed?.[i],"Mission "+i+" should be completed");
 const wire=(a,b)=>{click({t:a});click({t:b})};
+const transfer=(id,withMistake=false)=>{
+ const puzzle=window.AkariTransfer.get(id);
+ assert.ok(puzzle,"An independent challenge must exist for stage "+id);
+ assert.equal(saved().completed[id],undefined,"Main mission alone must not clear "+id);
+ assert.match(el("workspace").innerHTML,/transfer-puzzle/,"Transfer puzzle must be displayed");
+ if(withMistake){
+  const probe=puzzle.probes[0];
+  click({transferAnswer:probe.id,transferValue:puzzle.choices.find(x=>x!==probe.answer)});
+  for(const x of puzzle.probes.slice(1))click({transferAnswer:x.id,transferValue:x.answer});
+  click({transferReason:puzzle.correct});click({transferVerify:"1"});
+  assert.equal(saved().completed[id],undefined,"Incorrect prediction must not clear "+id);
+  assert.match(el("feedbackText").textContent,/予想/);
+ }
+ for(const probe of puzzle.probes)click({transferAnswer:probe.id,transferValue:probe.answer});
+ const wrongReason=puzzle.reasons.find(([key])=>key!==puzzle.correct)[0];
+ click({transferReason:wrongReason});click({transferVerify:"1"});
+ assert.equal(saved().completed[id],undefined,"Correct outcomes alone cannot bypass the causal explanation for "+id);
+ click({transferReason:puzzle.correct});click({transferVerify:"1"});
+ assert.ok(saved().completed[id],"Understanding the novel cases must unlock stage "+id);
+ assert.ok(saved().notes.some(n=>n.mission===id&&n.key==="transfer:"+id),"Scientific transfer must be saved in notebook");
+};
 move(14);assert.equal(saved().active,1,"Locked final mission cannot be opened");
 wire("P","N");check();assert.match(el("feedbackText").textContent,/ショート/);
 assert.equal(el("sceneCharacter").dataset.mood,"danger","Danger should visibly warn without celebrating");
@@ -37,7 +59,7 @@ assert.equal(el("stageCelebration").hidden,false,"Clear should show nonblocking 
 assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).length,1,"First light should update the map");
 assert.equal(el("restorationTrail").hidden,false,"First clear should send a short pulse to the town");
 assert.match(el("characterArt").innerHTML,/tiranon-sprite-strip/,"Canonical dinosaur walk sprite should mount");
-move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel old light trail");wire("N","R");check();done(2);
+move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel old light trail");wire("N","R");check();transfer(2,true);done(2);
 move(3);for(const choice of ["wood","plastic","iron"])click({choice});check();done(3);
 move(4);
 click({choice:"clip"});check();assert.equal(saved().completed[4],undefined,"No experiment before a prediction");
@@ -45,7 +67,7 @@ assert.match(el("feedbackText").textContent,/予想/);
 click({predict:"dark"});check();assert.match(el("journalPanel").innerHTML||el("feedbackText").textContent,/./);
 for(const [choice,prediction] of [["foil","lit"],["wood","dark"]]){click({choice});click({predict:prediction});check()}
 done(4);assert.equal(saved().completed[4],3,"An incorrect scientific prediction must not cost stars");
-move(5);for(const [choice,prediction] of [["wood","dark"],["plastic","dark"],["clip","lit"]]){click({choice});click({predict:prediction});check()}done(5);
+move(5);for(const [choice,prediction] of [["wood","dark"],["plastic","dark"],["clip","lit"]]){click({choice});click({predict:prediction});check()}transfer(5);done(5);
 move(6);
 click({inspect:"wire"});click({fix:"wire"});check();
 assert.equal(saved().completed[6],undefined,"Cannot fix before evidence diagnosis");
@@ -58,13 +80,13 @@ assert.equal(saved().completed[6],3,"Wrong hypothesis should not cost a star");
 move(7);check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
 assert.equal(saved().completed[7],undefined,"Four switch outcomes alone must not auto-complete");
 click({conclude:"either"});check();assert.equal(saved().completed[7],undefined,"Incorrect interpretation cannot clear");
-click({conclude:"both"});check();done(7);
+click({conclude:"both"});check();transfer(7);done(7);
 move(8);click({design:"parallel"});check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
-click({conclude:"either"});check();done(8);
+click({conclude:"either"});check();transfer(8);done(8);
 move(9);for(const choice of ["small","large"]){click({choice});check()}click({answer:"correct"});check();done(9);
 move(10);for(const choice of ["single","series"]){click({choice});check()}click({answer:"correct"});check();done(10);
 move(11);for(const choice of ["same","reverse"]){click({choice});check()}click({answer:"same"});check();done(11);
-move(12);click({cut:"x"});click({cut:"y"});check();done(12);
+move(12);click({cut:"x"});click({cut:"y"});check();transfer(12,true);done(12);
 move(13);
 for(const key of ["wire","bulb","battery"])click({inspect:key});
 click({suspect:"wire"});click({diagnose:"1"});
@@ -78,7 +100,7 @@ assert.equal(saved().completed[14],undefined,"Correct guesses alone must not com
 for(const verify of ["direction","material","contact"])click({verify});
 click({final:"material",value:"wood"});check();
 assert.equal(saved().completed[14],undefined,"Changing a verified part must invalidate that diagnosis");
-click({verify:"material"});click({final:"material",value:"clip"});click({verify:"material"});check();done(14);
+click({verify:"material"});click({final:"material",value:"clip"});click({verify:"material"});check();transfer(14);done(14);
 assert.equal(Object.keys(saved().completed).length,14,"All 14 missions must be completed");
 assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).length,14,"All 14 map lights must persist");
 assert.equal(saved().active,14);
