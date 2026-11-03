@@ -5,7 +5,7 @@
  * A separate protective panel spans two exposed rails: conductive sheet => dangerous P-N short.
  * No experiment in this simulation should be reproduced with real shorted batteries. */
 const specimens=[
- {id:"clip",name:"鉄のクリップ",secret:"金属製の留め具",conductive:true},
+ {id:"clip",name:"鉄のクリップ",secret:"小さな留め具",conductive:true},
  {id:"foil",name:"アルミはく",secret:"銀色の薄いシート",conductive:true},
  {id:"wood",name:"乾いた木片",secret:"木製の板",conductive:false},
  {id:"plastic",name:"銀色のプラスチック定規",secret:"銀色の定規",conductive:false}
@@ -135,7 +135,7 @@ function notes(raw,stage){
   return trials.map(([contact,o])=>'<div class="garden-record"><strong>'+material(id).name+'</strong><span>'+(stage===4?(contact==="tight"?"接点を合わせた":"片方を浮かせた"):"接点を合わせた")+'</span><span>予想：'+outcomeLabel[o.guess]+'　→　実験：'+outcomeLabel[o.actual]+'</span></div>');
  }).join("")||'<div class="garden-record empty">まだ観察記録がないよ。</div>';
 }
-function testDiagram(id,clamp,measured=false){
+function testDiagram(id,clamp,measured=false,labelOverride=null){
  const result=measured?experiment(id,clamp):null,lit=Boolean(result?.lit);
  const ink=lit?"#ffe9a2":"#a4c9d5",open=clamp==="loose";
  return '<svg class="garden-circuit-svg" role="img" aria-label="電池の＋極、調査材料と2つの金属接点、豆電球の横・底、電池の−極を順番につなぐ仮想回路。片方の接点が浮くとすき間ができる。" viewBox="0 0 610 290">'+
@@ -147,7 +147,7 @@ function testDiagram(id,clamp,measured=false){
  '<path d="'+(open?"M204 90L219 73":"M204 90H238")+'" stroke="'+(open?"#ffb78d":ink)+'" stroke-width="7" fill="none" stroke-linecap="round"/>'+
  '<rect x="238" y="60" width="128" height="62" rx="11" fill="#365b6d" stroke="#c4d9d4" stroke-width="3"/>'+
  '<circle cx="238" cy="90" r="8" fill="#ffddb1"/><circle cx="366" cy="90" r="8" fill="#ffddb1"/>'+
- '<text x="302" y="85" text-anchor="middle" fill="#f3ffff" font-weight="800" font-size="13">'+(material(id)?.name||"試料")+'</text>'+
+ '<text x="302" y="85" text-anchor="middle" fill="#f3ffff" font-weight="800" font-size="13">'+(labelOverride||material(id)?.name||"試料")+'</text>'+
  '<text x="302" y="105" text-anchor="middle" fill="#c5e4e9" font-size="11">金属接点ではさむ</text>'+
  (open?'<path d="M218 75L229 69" stroke="#ffbb91" stroke-width="4"/><text x="210" y="135" fill="#ffe0b7" font-size="13">すき間</text>':"")+
  '<path d="M366 90H495V100M495 205V252H75V211" stroke="'+ink+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
@@ -226,7 +226,7 @@ function display5(raw){
  '<div class="garden-hazard">⚠ ここに出るショートは画面内だけの仮想実験。実物では絶対に試さないでね。乾いた木の性質を扱う模型なので、実際の屋外配線には専用の安全な絶縁部品を使うよ。</div>'+
  '<section class="lab-panel garden-section"><h3>① 見た目ではなく、実験で正体を見つける</h3><p class="lab-sub">同じように光って見える試料もあるよ。先に予想を立てて、電気を通すか確かめてから、使い道を決めよう。</p>'+
  samples+
- (selected?'<div class="garden-rig">'+testDiagram(selected.id,"tight",!!test)+'</div><strong class="garden-current">調査中：'+selected.secret+'</strong>'+
+ (selected?'<div class="garden-rig">'+testDiagram(selected.id,"tight",!!test,test?selected.name:selected.secret)+'</div><strong class="garden-current">調査中：'+selected.secret+'</strong>'+
  (test?'<div class="garden-measured" role="status">予想：'+outcomeLabel[test.guess]+' ／ 実際：'+outcomeLabel[test.actual]+'。材質：'+selected.name+'</div>':
  '<div class="garden-question"><strong>この試料は電気を通す？</strong>'+itemGuesses+'<button type="button" class="garden-try" data-garden-test '+(!s.guess?"disabled":"")+'>🔬 仮想実験で確認する</button></div>'):'<p class="lab-sub">上の試料から1つ選ぼう。</p>')+
  '<div class="garden-journal"><strong>📖 材料の実験記録</strong>'+notes(s,5)+'</div>'+
