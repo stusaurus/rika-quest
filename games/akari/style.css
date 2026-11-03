@@ -503,3 +503,32 @@
 .mastery-track strong{font-size:15px;min-width:12px;text-align:center;color:#237a76}
 
 @media(max-width:740px){.sidebar.open .side-note{display:grid;margin-top:10px;padding:11px}.sidebar.open .mastery-track{align-self:flex-start}}
+
+
+/* Progressive transfer challenge: one new diagram at a time, then review. */
+.transfer-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.transfer-steps button{min-height:45px;border:2px solid #bed8d1;border-radius:11px;background:#edf6ed;color:#426673;font-size:13px;font-weight:900}
+.transfer-steps button.active{border-color:#f3cb78;background:#ffeab0;color:#64522b;box-shadow:0 2px 8px #cda75d57}
+.transfer-steps button.answered:not(.active){border-color:#8dc8ac;background:#d6f4dd;color:#386e5a}
+.transfer-steps button:disabled{opacity:.44;cursor:not-allowed}
+.transfer-focus{max-width:820px;margin:0 auto;width:100%;gap:12px}
+.transfer-focus .transfer-diagram{max-width:590px;margin:0 auto}
+.transfer-focus strong{font-size:15px;min-height:0}
+.transfer-prompt{margin:0;font-size:13px;color:#47727c;line-height:1.5}
+.transfer-next-hint{margin:0;font-size:12px;color:#5e8284}
+.transfer-review{display:grid;gap:10px;background:#ecf5ef;border:2px solid #c3dbd1;border-radius:15px;padding:13px}
+.transfer-review>strong{font-size:17px;color:#2e5a60}
+.transfer-review>p{font-size:12px;margin:0;color:#50767b;line-height:1.65}
+.transfer-review-row{border:1px solid #b9d6d3;border-radius:12px;background:#fafffa;padding:10px;display:grid;gap:8px}
+.transfer-review-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.transfer-review-head strong{font-size:12px;color:#345663;line-height:1.55}
+.transfer-review-head button{flex:none;min-height:37px;font-size:11px;font-weight:900;padding:6px 10px;border:1px solid #9cc5c9;background:#e0f2f2;color:#265869;border-radius:9px}
+.transfer-review-row .transfer-answers button{min-height:38px;font-size:12px}
+.transfer-steps button:focus-visible,.transfer-review-head button:focus-visible{outline:3px solid #efbd6e;outline-offset:2px}
+@media(max-width:740px){
+ .transfer-focus .transfer-diagram{max-width:440px}
+ .transfer-review{padding:10px}
+ .transfer-review-head button{min-height:40px}
+ .transfer-steps button{min-height:44px}
+ .transfer-focus strong{font-size:14px}
+}
