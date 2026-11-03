@@ -117,36 +117,41 @@ function fieldLabel(stage,field,value){
  return records[field]?.[value]||value;
 }
 function svg(stage,c,showResult){
- const p=model(stage,c.id),illum=showResult&&p?.lit,
-  batteryUnits=stage===9?1:(c.cells==="two"?2:1),
-  size=stage===9?(c.size==="large"?"大きい乾電池（単1形）":"小さい乾電池（単4形）"):"",
-  warning=showResult&&p?.warning;
- let batteries="";
- for(let i=0;i<batteryUnits;i++){
-  const x=batteryUnits===1?130:i===0?106:213;
-  const reverse=stage===11&&(c.direction==="reverse"||(c.direction==="opposed"&&i===1));
-  batteries+='<g transform="translate('+x+' 106)'+(reverse?' rotate(180 30 35)':'')+'">'+
-   '<rect x="0" y="0" width="64" height="70" rx="9" fill="'+(stage===9&&c.size==="large"?"#d2a06b":"#c67d66")+'" stroke="#ffe6c1" stroke-width="3"/>'+
-   '<rect x="20" y="-7" width="24" height="10" rx="3" fill="#f6e3a9"/>'+
-   '<text x="31" y="40" text-anchor="middle" fill="white" font-size="18" font-weight="900">1.5V</text>'+
-   '<text x="31" y="61" text-anchor="middle" fill="#fff0d7" font-size="12">'+(reverse?"− ← ＋":"＋ → −")+'</text></g>';
+ const result=model(stage,c.id),lit=Boolean(showResult&&result?.lit),
+   count=stage===9?1:(c.cells==="two"?2:1),
+   unitWidth=count===2?88:116,space=count===2?22:0,
+   start=count===2?167:225,
+   end=start+count*unitWidth+(count-1)*space,
+   bulbColor=showResult?(result?.warning?"#edb39e":result?.kind==="dim"?"#d9c6a5":lit?"#ffe6a5":"#31586f"):"#31586f",
+   wireInk=lit?"#ffe6ab":"#92c3d1";
+ let source="";
+ for(let unit=0;unit<count;unit++){
+  const x=start+unit*(unitWidth+space);
+  const reversed=stage===11&&(c.direction==="reverse"||(c.direction==="opposed"&&unit===1));
+  const h=stage===9&&c.size==="small"?30:42,top=69-h/2;
+  source+='<g data-cell="'+unit+'"><rect x="'+x+'" y="'+top+'" width="'+unitWidth+'" height="'+h+'" rx="9" fill="'+(stage===9&&c.size==="large"?"#d3a06e":"#c47961")+'" stroke="#ffe3b3" stroke-width="3"/>'+
+  '<rect x="'+(reversed?x-9:x+unitWidth-3)+'" y="61" width="12" height="16" rx="3" fill="#f7e3a7"/>'+
+  '<text x="'+(x+unitWidth/2)+'" y="74" fill="#fffdf1" text-anchor="middle" font-size="16" font-weight="900">1.5V</text>'+
+  '<text x="'+(x-15)+'" y="96" text-anchor="middle" fill="#ffefd0" font-size="13">'+(reversed?"＋":"−")+'</text>'+
+  '<text x="'+(x+unitWidth+15)+'" y="96" text-anchor="middle" fill="#ffefd0" font-size="13">'+(reversed?"−":"＋")+'</text></g>';
  }
- const bulbColor=showResult?(warning?"#f0ab99":illum?(p.kind==="dim"?"#dbc8a3":"#ffe6a5"):"#365b73"):"#365b73";
- return '<svg class="battery-lab-svg" role="img" aria-label="乾電池、豆電球、金属接点を通る仮想回路と乾電池の向き" viewBox="0 0 660 300">'+
+ if(count===2)source+='<path d="M'+(start+unitWidth)+' 69H'+(start+unitWidth+space)+'" stroke="#f0ddbb" stroke-width="7"/>';
+ return '<svg class="battery-lab-svg" role="img" aria-label="乾電池の端子から導線、豆電球の金属接点を通り、乾電池に戻る回路。電池2個の場合は直列つなぎ。" viewBox="0 0 660 300">'+
  '<rect width="660" height="300" rx="18" fill="#123146"/>'+
- '<path d="M74 106V48H520V95M520 205V250H74V177" stroke="'+(showResult&&illum?"#ffdda3":"#91bfcd")+'" stroke-width="7" fill="none" stroke-linejoin="round"/>'+
- (batteryUnits===2?'<path d="M168 141H213" stroke="#f3dbae" stroke-width="7"/>':"")+
- batteries+
- '<circle cx="520" cy="149" r="56" fill="'+bulbColor+'" stroke="#e4ebdf" stroke-width="5"/>'+
- '<path d="M500 130L540 171M540 130L500 171" fill="none" stroke="'+(illum?"#9b6d42":"#bed5da")+'" stroke-width="6"/>'+
- '<circle cx="520" cy="96" r="8" fill="#ffeed0"/><circle cx="520" cy="204" r="8" fill="#ffeed0"/>'+
- '<text x="520" y="238" text-anchor="middle" fill="#f1f9eb" font-size="13">豆電球</text>'+
- (stage===10?'<text x="520" y="265" text-anchor="middle" fill="#f6e9d1" font-size="12">定格 '+c.rating+'V</text>':"")+
- (stage===9?'<text x="194" y="220" text-anchor="middle" font-size="15" fill="#f5dfbf">'+size+'</text>':"")+
- (stage===11?'<text x="224" y="223" text-anchor="middle" font-size="13" fill="#f0debf">1.5V の電池を'+(batteryUnits===1?"1個":"2個")+'使用</text>':"")+
- '<text x="14" y="282" fill="#c6edf0" font-size="12">仮想実験：'+(showResult?(warning?"定格超過に注意":p?.kind==="dim"?"弱い点灯":p?.kind==="dark"?"消灯":"点灯"):"実験前（予想をたてよう）")+'</text>'+
+ '<path d="M'+start+' 69H92V254H521V206M521 94V69H'+end+'" stroke="'+wireInk+'" stroke-width="7" fill="none" stroke-linejoin="round" stroke-linecap="round"/>'+
+ source+
+ '<text x="'+(start+(end-start)/2)+'" y="125" fill="#d3eef1" text-anchor="middle" font-size="13">'+(count===2?"2個の乾電池を直列":"乾電池1個")+'</text>'+
+ (stage===9?'<text x="'+(start+(end-start)/2)+'" y="144" fill="#e3f4e5" text-anchor="middle" font-size="12">'+(c.size==="small"?"単4形":"単1形")+'・公称1.5V</text>':"")+
+ '<circle cx="521" cy="150" r="56" fill="'+bulbColor+'" stroke="#e7ebda" stroke-width="5"/>'+
+ '<path d="M499 129L542 172M542 129L499 172" stroke="'+(lit?"#a37539":"#c2d9dc")+'" stroke-width="6" fill="none"/>'+
+ '<circle cx="521" cy="94" r="8" fill="#fceac6"/><circle cx="521" cy="206" r="8" fill="#fceac6"/>'+
+ '<text x="521" y="235" text-anchor="middle" fill="#fff4dc" font-size="13">豆電球</text>'+
+ (stage===10?'<text x="521" y="272" fill="#e2f1ec" text-anchor="middle" font-size="12">定格 '+c.rating+'V用</text>':"")+
+ (stage===11?'<text x="297" y="163" fill="#dbeedc" text-anchor="middle" font-size="13">'+(c.direction==="opposed"?"互いに逆向きの直列つなぎ":c.direction==="aligned"?"同じ向きの直列つなぎ":"乾電池1個の向きの比較")+'</text>':"")+
+ '<text x="20" y="289" fill="#d3edf2" font-size="12">'+(showResult?(result.warning?"仮想判定：定格超過の危険":result.kind==="dim"?"仮想判定：弱い光":result.kind==="dark"?"仮想判定：消灯":"仮想判定：点灯"):"仮想実験前：結果を予想しよう")+'</text>'+
  '</svg>';
 }
+
 function buttonData(field,value,label,selected){
  return '<button type="button" class="battery-option'+(selected===value?" chosen":"")+'" data-battery-field="'+field+'" data-battery-value="'+value+'" aria-pressed="'+(selected===value)+'">'+label+'</button>';
 }
