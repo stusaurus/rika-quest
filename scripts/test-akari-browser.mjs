@@ -154,7 +154,7 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".story-scene.restored").count(),1,"A solved transfer case stays saved after reload");
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="transfer:2")),"Scientific transfer discovery must persist");
-   await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
+   await page.evaluate(()=>{const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));s.completed={};for(let i=1;i<=10;i++)s.completed[i]=3;s.active=11;localStorage.setItem(key,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("#missionTitle").textContent(),"電池の向きのひみつ");
    assert.equal(await page.locator(".battery-art").count(),2,"Compare two detailed battery orientations");
@@ -187,7 +187,7 @@ try{
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
-     for(let i=1;i<=5;i++)s.completed[i]=3;
+     s.completed={};for(let i=1;i<=5;i++)s.completed[i]=3;
      s.active=6;localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
@@ -209,7 +209,7 @@ try{
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
-     for(let i=1;i<=6;i++)s.completed[i]=3;
+     s.completed={};for(let i=1;i<=6;i++)s.completed[i]=3;
      s.active=7;localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
@@ -225,14 +225,14 @@ try{
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-switch-conclusion.png",fullPage:true});
 
-   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));for(let i=1;i<=11;i++)s.completed[i]=3;s.active=12;localStorage.setItem(k,JSON.stringify(s))});
+   await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.completed={};for(let i=1;i<=11;i++)s.completed[i]=3;s.active=12;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-cut="x"]').click();await page.locator('[data-cut="y"]').click();await page.locator("#checkBtn").click();
    await completeTransfer(12,true);
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
-     for(let i=1;i<=12;i++)s.completed[i]=3;
+     s.completed={};for(let i=1;i<=12;i++)s.completed[i]=3;
      s.active=13;localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
@@ -253,7 +253,7 @@ try{
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
-     for(let i=1;i<=13;i++)s.completed[i]=3;
+     s.completed={};for(let i=1;i<=13;i++)s.completed[i]=3;
      s.active=14;localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
