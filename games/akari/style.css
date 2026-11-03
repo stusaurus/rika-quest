@@ -814,3 +814,9 @@
 }
 @media(max-width:375px){.garden-sample strong{font-size:11px}.garden-predictions button{font-size:10px}.garden-contact{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.garden-lab *{transition:none!important;animation:none!important}}
+
+.garden-nav{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.garden-nav button{border-radius:10px;min-height:45px;background:#def3e8;color:#24535a;border:2px solid #8fbdad;font-size:13px;font-weight:800;cursor:pointer}
+.story-scene.garden-powered:not(.restored) .scene-bulb{fill:#ffe6a4!important;filter:drop-shadow(0 0 8px #ffdb84)}
+.story-scene.garden-powered:not(.restored) .scene-glow{opacity:.56}
+@media(max-width:375px){.garden-nav button{font-size:12px}}
