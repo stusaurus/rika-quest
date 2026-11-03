@@ -232,7 +232,17 @@ try{
 
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.completed={};for(let i=1;i<=11;i++)s.completed[i]=3;s.active=12;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
-   await page.locator('[data-cut="x"]').click();await page.locator('[data-cut="y"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator('.short-art [data-line="x"]').count(),1,"Dangerous path X should be distinguishable geometrically");
+   assert.doesNotMatch(await page.locator(".lab-reading").first().textContent(),/赤い導線がショートの原因/,"Unsafe wires must not be color-coded as the answer");
+   await page.locator('[data-cut="normal"]').click();
+   await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Removing the path through the bulb must not work");
+   await page.locator('[data-cut="normal"]').click();
+   await page.locator('[data-cut="x"]').click();
+   assert.equal(await page.locator('.short-art [data-line="x"]').getAttribute("opacity"),".21","Cut wires should visibly dim in the topology drawing");
+   await page.locator('[data-cut="y"]').click();
+   assert.match(await page.locator(".short-art").textContent(),/安全な回路だけが残った/,"Safe repair changes the diagram state");
+   await page.locator("#checkBtn").click();
    await completeTransfer(12,true);
 
    await page.evaluate(()=>{
