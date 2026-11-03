@@ -219,7 +219,32 @@ try{
    assert.equal(await page.locator('.diagnosis-panel.complete').count(),1,"Correct deduction unlocks repair");
    await page.locator('[data-fix="wire"]').click();
    await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Clock tower repair should finish");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Diagnosing fault does not bypass scientific wiring");
+   assert.equal(await page.locator(".builder-direct").count(),1,"Clock tower should unlock basic four-terminal construction");
+   assert.equal(await page.locator('[data-builder-switch]').count(),0,"Basic practice does not yet use switches");
+   assert.equal(await page.locator('[data-builder-t]').count(),4,"Only battery and bulb terminals should be selectable");
+   const tapPractice=async(a,b)=>{
+     await page.locator('[data-builder-t="'+a+'"]').click();
+     await page.locator('[data-builder-t="'+b+'"]').click();
+   };
+   await tapPractice("P","N");
+   await page.locator('[data-builder-test]').click();
+   assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Unsafe direct connection should never pass");
+   await tapPractice("P","N");
+   await tapPractice("P","L");
+   await tapPractice("N","R");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".builder-direct").count(),1,"Reload must resume the basic construction task");
+   assert.equal(await page.locator(".builder-line").count(),2,"Both student-drawn wires must survive reload");
+   await page.locator('[data-builder-test]').click();
+   assert.match(await page.locator(".builder-measure").textContent(),/点灯/,"Closed circuit must light the bulb");
+   assert.equal(await page.locator('[data-builder-submit]').isDisabled(),false,"Only tested safe loop can finish");
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clock-wired.png",fullPage:true});
+   await page.locator('[data-builder-submit]').click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Investigated and rewired clock tower should finish");
+   assert.equal(await page.locator(".builder-direct").count(),0,"After completion workshop must close");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="builder:6")),"Observations should include student-built circuit");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clock-diagnosis.png",fullPage:true});
 
