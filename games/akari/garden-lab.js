@@ -208,7 +208,7 @@ function schematic5(raw){
  '<path d="M80 122H145V140H480M80 252H145V310H480" stroke="'+(short?"#f1a493":"#92becb")+'" stroke-width="5"/>'+
  '<text x="169" y="124" fill="#f3e3ba" font-size="13">＋の露出端子</text>'+
  '<text x="169" y="345" fill="#f3e3ba" font-size="13">−の露出端子</text>'+
- '<path d="M210 140V173M210 236V310M430 140V173M430 236V310" stroke="'+(short?"#eea38f":"#8fbbcb")+'" stroke-width="6" fill="none"/>'+
+ '<path d="M210 140V183M210 227V310M430 140V183M430 227V310" stroke="'+(short?"#eea38f":"#8fbbcb")+'" stroke-width="6" fill="none"/>'+
  slot(210,205,s.slots.guardA)+slot(430,205,s.slots.guardB)+
  '<text x="210" y="258" text-anchor="middle" fill="#e3f1e8" font-size="13">仕切り A</text>'+
  '<text x="430" y="258" text-anchor="middle" fill="#e3f1e8" font-size="13">仕切り B</text>'+
