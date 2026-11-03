@@ -31,7 +31,8 @@ function restoreMissionUI(m){
  if(m.id===6&&!state.completed[m.id]&&state.practiceDraft?.unlocked&&window.AkariBuilder){
   const raw=state.practiceDraft,wires=window.AkariBuilder.normalize(raw.wires).filter(([a,b])=>![a,b].some(t=>t==="S"||t==="T"));
   const sig=window.AkariBuilder.signature(wires),test=raw.tests?.single;
-  base.builder={wires,selected:null,switchOn:false,tests:test?.signature===sig?{single:{...window.AkariBuilder.evaluate(wires,false),signature:sig}}:{}};
+  const savedTrace=window.AkariBuilder.traceStatus("direct",wires,raw.trace).valid&&Array.isArray(raw.trace)?raw.trace.slice():[];
+  base.builder={wires,selected:null,switchOn:false,tests:test?.signature===sig?{single:{...window.AkariBuilder.evaluate(wires,false),signature:sig}}:{},trace:savedTrace};
   base.builderTask="direct";
   return base;
  }
@@ -43,7 +44,8 @@ function restoreMissionUI(m){
     tests[mode]={...window.AkariBuilder.evaluate(wires,mode==="on"),signature};
    }
   }
-  base.builder={wires,selected:null,switchOn:!!raw.switchOn,tests};
+  const savedTrace=window.AkariBuilder.traceStatus("switch",wires,raw.trace).valid&&Array.isArray(raw.trace)?raw.trace.slice():[];
+  base.builder={wires,selected:null,switchOn:!!raw.switchOn,tests,trace:savedTrace};
   return base;
  }
  if(!puzzle||!draft||state.completed[m.id])return base;
@@ -57,8 +59,8 @@ function restoreMissionUI(m){
 }
 function saveBuilderDraft(){
  if(!ui.builder)return;
- const {wires,switchOn,tests}=ui.builder;
- const raw={wires:window.AkariBuilder.normalize(wires),switchOn:!!switchOn,tests:{...tests}};
+ const {wires,switchOn,tests,trace}=ui.builder;
+ const raw={wires:window.AkariBuilder.normalize(wires),switchOn:!!switchOn,tests:{...tests},trace:Array.isArray(trace)?trace.slice():[]};
  if(current().id===6)state.practiceDraft={...raw,unlocked:true};
  else state.builderDraft=raw;
  persist();
@@ -166,13 +168,13 @@ function success(){
   return;
  }
  if(current().id===6&&window.AkariBuilder&&!ui.builderPassed){
-  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{}};ui.builderTask="direct";saveBuilderDraft();}
+  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[]};ui.builderTask="direct";saveBuilderDraft();}
   renderWorkspace();renderHeader();renderMenu();
   setFeedback("🕰 時計塔の追加修理！ 乾電池と豆電球の端子を自分で配線して、実験で点灯を確かめよう。","warning");
   reactCharacter("think","電気の輪を作ってみるノン！");return;
  }
  if(current().id===14&&window.AkariBuilder&&!ui.builderPassed){
-  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{}};saveBuilderDraft();}
+  if(!ui.builder){ui.builder={wires:[],selected:null,switchOn:false,tests:{},trace:[]};saveBuilderDraft();}
   renderWorkspace();renderHeader();renderMenu();
   setFeedback("🔧 最終の設計依頼！ 選択肢ではなく導線を自分でつなぎ、OFFとONの両方を確かめよう。","warning");
   reactCharacter("think","最後は自分で回路を作るノン！");return;
@@ -342,7 +344,7 @@ function renderFinale(){
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,mode=current().mode;
- root.innerHTML=ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch"):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ root.innerHTML=ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[]):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
  const builderView=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null;
@@ -403,6 +405,32 @@ function handleWorkspace(e){
    setFeedback(direction==="bulb"?"豆電球の横と底の端子を見てみよう。":"乾電池の＋と−、スイッチの端子を見てみよう。");
    return;
   }
+  if(target.hasAttribute("data-builder-trace-reset")){
+   b.trace=[];saveBuilderDraft();renderWorkspace();setFeedback("通り道の説明を最初からやり直せるよ。");return;
+  }
+  if(target.hasAttribute("data-builder-trace-back")){
+   b.trace=(b.trace||[]).slice(0,-1);saveBuilderDraft();renderWorkspace();setFeedback("ひとつ前の端子まで戻ったよ。");return;
+  }
+  if(target.hasAttribute("data-builder-trace")){
+   if(!B.expectedFor(direct?"direct":"switch",b.tests,b.wires)){
+    setFeedback("まず回路を安全に点灯させ、必要な実験を記録しよう。","warning");return;
+   }
+   if(!direct&&!b.switchOn){setFeedback("電気の道をたどるにはスイッチをONにしよう。","warning");return;}
+   const id=target.dataset.builderTrace,old=b.trace||[];
+   if(!B.ids.includes(id)||(direct&&(id==="S"||id==="T")))return;
+   if(old.length===0&&id!=="P"){setFeedback("最初は乾電池の＋極から始めよう。","warning");return;}
+   if(old.length&&old.includes(id)){setFeedback("同じ端子は2度通らないよ。ひとつ戻るか、やり直そう。","warning");return;}
+   const next=[...old,id],status=B.traceStatus(direct?"direct":"switch",b.wires,next);
+   if(!status.valid){
+    setFeedback("その2つの端子の間に、電気が通るつながりはあるかな？導線と部品の接点を見直そう。","warning");reactCharacter("think");return;
+   }
+   if(id==="N"&&!status.complete){
+    setFeedback("まだ豆電球"+(direct?"":"とONのスイッチ")+"を通っていないよ。＋極からの通り道を見直そう。","warning");return;
+   }
+   b.trace=next;saveBuilderDraft();renderWorkspace();
+   setFeedback(status.complete?"✨ 正しく通り道を証明できた！ 完成ボタンであかりを戻そう。":"次は実際につながっている端子を選ぼう。",status.complete?"success":"");
+   reactCharacter(status.complete?"discover":"inspect");return;
+  }
   if(target.hasAttribute("data-builder-t")){
    const term=target.dataset.builderT;
    if(!B.ids.includes(term)||(direct&&(term==="S"||term==="T")))return;
@@ -413,12 +441,12 @@ function handleWorkspace(e){
    const index=b.wires.findIndex(pair=>B.edge(...pair)===key);
    if(index>=0)b.wires.splice(index,1);
    else b.wires.push([from,term]);
-   b.tests={};saveBuilderDraft();renderWorkspace();
+   b.tests={};b.trace=[];saveBuilderDraft();renderWorkspace();
    setFeedback(index>=0?"その導線を外したよ。":direct?"導線を追加したよ。回路ができたら通電してみよう。":"導線を追加したよ。OFFとONを両方確かめてみよう。");
    reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-builder-clear")){
-   b.wires=[];b.selected=null;b.tests={};saveBuilderDraft();renderWorkspace();setFeedback("導線をすべて外したよ。新しく設計しよう。");return;
+   b.wires=[];b.selected=null;b.tests={};b.trace=[];saveBuilderDraft();renderWorkspace();setFeedback("導線をすべて外したよ。新しく設計しよう。");return;
   }
   if(target.hasAttribute("data-builder-switch")){
    if(direct)return;
@@ -437,8 +465,8 @@ function handleWorkspace(e){
    reactCharacter(ok?"discover":"think");return;
   }
   if(target.hasAttribute("data-builder-submit")){
-   if(!B.expectedFor(direct?"direct":"switch",b.tests,b.wires)){
-    setFeedback(direct?"乾電池と豆電球の横・底をつなぎ、ショートせず点灯した実験結果を確認しよう。":"ONで点灯・OFFで消灯、ショートなしを両方の実験で確かめよう。","warning");return;}
+   if(!B.scientificComplete(direct?"direct":"switch",b.tests,b.wires,b.trace)){
+    setFeedback("配線と実験結果に加え、乾電池の＋極から豆電球（とスイッチ）を通り−極に戻る経路を順番に証明しよう。","warning");return;}
    const used=B.normalize(b.wires),wiring=used.map(([a,c])=>B.terminals[a].name+"―"+B.terminals[c].name).join("、");
    recordObservation("builder:"+current().id,(direct?"【時計塔の再配線】":"【最終設計】")+wiring+(direct?"。乾電池と電球の2つの接点が輪になり、安全に点灯した。":"。スイッチOFFでは消灯、ONでは点灯。いずれもショートなし。"));
    ui.builderPassed=true;ui.builder=null;clearBuilderDraft();
