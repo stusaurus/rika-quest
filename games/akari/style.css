@@ -486,3 +486,7 @@
  .transfer-heading{padding:13px}.transfer-heading h3{font-size:20px}
 }
 @media(prefers-reduced-motion:reduce){.transfer-puzzle{animation:none!important}}
+
+
+.transfer-progress{display:inline-block;margin-top:12px;padding:7px 11px;background:#0d4058a6;border:1px solid #b5d7c8;border-radius:13px;color:#fff0b9;font-size:12px;font-weight:900;letter-spacing:.015em}
+.transfer-verify:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:grayscale(.35)}
