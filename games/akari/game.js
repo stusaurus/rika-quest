@@ -22,7 +22,7 @@ let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturn
 let reactionToken=0,celebrationToken=0,restorationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 const inspectedItems=[{id:"wood",name:"木の板",description:"木は電気を通しにくそうだね。",correct:false},{id:"iron",name:"鉄のくぎ",description:"鉄は金属！ 電気を通しそうだ。",correct:true},{id:"plastic",name:"プラスチックの定規",description:"プラスチックは電気を通しにくい。",correct:false}];
-function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,notes:[]};}
+function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},notes:[]};}
 function current(){return M[state.active-1]}
 function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
@@ -121,6 +121,7 @@ function renderMenu(){
  if(lampMap)lampMap.innerHTML=M.map(m=>'<span class="map-lamp'+(state.completed[m.id]?' lit':'')+(m.id===state.active?' active':'')+'" title="'+m.id+'：'+escapeHtml(m.name)+'"><span></span></span>').join("");
  const count=Object.keys(state.completed).length;$("starCount").textContent=Object.values(state.completed).reduce((n,x)=>n+(+x||0),0);
  $("summaryNote").textContent=count===14?"すべてのあかりを取り戻した！ 14ミッションクリア！":count+" / 14 ミッションクリア。次のひみつを見つけよう！";
+  const masteryCount=Object.keys(state.masteries||{}).length;const target=$("masteryCount");if(target)target.textContent=String(masteryCount);
 }
 const buildings={
  village:'<path fill="#b95c55" d="M40 91 140 22 240 91Z"/><rect x="64" y="91" width="154" height="141" rx="7" fill="#f2d9af"/><path d="M65 91h153M65 178h153" stroke="#d0a57c" stroke-width="5"/><rect x="128" y="157" width="43" height="75" rx="4" fill="#87614e"/><circle cx="160" cy="190" r="3" fill="#f8d58f"/><rect class="window" x="76" y="120" width="43" height="46" rx="6"/><rect class="window" x="180" y="120" width="27" height="46" rx="6"/><path d="M97 120v46m83-23h27" stroke="#ecd9b4" stroke-width="4"/><path d="M46 93H238" stroke="#ffe6ae" stroke-width="7"/>',
@@ -343,6 +344,7 @@ function handleWorkspace(e){
    }
    const answeredReason=ui.transfer.reason;
    ui.transferPassed=true;ui.transfer=null;
+   state.masteries[current().id]=true;persist();
    const outcomeNames={lit:"点灯",dark:"消灯",short:"ショート（危険）",safe:"正しく点灯"};
    const evidence=p.probes.map(q=>q.name+" → "+outcomeNames[window.AkariTransfer.expected(current().id,q.diagram)]).join("／");
    const causal=p.reasons.find(([k])=>k===answeredReason)?.[1]||"";
