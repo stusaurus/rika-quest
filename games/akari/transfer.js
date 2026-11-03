@@ -94,14 +94,35 @@ function diagram(kind){
  paths+battery+bulb+details+'</svg>';
 }
 function get(id){return puzzles[id]||null;}
-function render(id,answers,reason){
+function render(id,answers,reason,step=0){
  const p=get(id);if(!p)return"";
  const count=p.probes.filter(t=>answers[t.id]).length;
+ const view=Math.max(0,Math.min(3,Number(step)||0));
  const ready=count===3&&!!reason;
- return '<section class="transfer-puzzle"><div class="transfer-heading"><span>🚨 街からの追加依頼</span><h3>'+p.title+'</h3><p>'+p.intro+'</p><p class="transfer-notation">回路の図では、丸の中に×がある記号が豆電球だよ。明るさはまだ表示しないよ。</p><div class="transfer-progress">回路の判断：'+count+' / 3　　理由：'+(reason?"選択済み":"未選択")+'</div></div>'+
- '<div class="transfer-probes">'+p.probes.map((t,index)=>'<div class="transfer-probe"><strong>調査 '+(index+1)+'：'+t.name+'</strong>'+diagram(t.diagram)+'<div class="transfer-answers">'+p.choices.map(value=>'<button type="button" data-transfer-answer="'+t.id+'" data-transfer-value="'+value+'" aria-pressed="'+(answers[t.id]===value)+'" class="'+(answers[t.id]===value?'selected':'')+'">'+labels[value]+'</button>').join("")+'</div></div>').join("")+'</div>'+
- '<div class="transfer-reason"><strong>🧠 どうしてそうなる？</strong><p>3つの予想をつなぐ、正しい理由を選ぼう。</p>'+p.reasons.map(([key,label])=>'<button type="button" data-transfer-reason="'+key+'" aria-pressed="'+(reason===key)+'" class="'+(reason===key?'selected':'')+'">'+label+'</button>').join("")+'</div>'+
- '<button type="button" class="transfer-verify" data-transfer-verify="1"'+(ready?"":" disabled")+' aria-disabled="'+(!ready)+'">🔑 予想と理由を提出して街を救う</button></section>';
+ const tabs='<nav class="transfer-steps" aria-label="追加依頼の進行">'+
+  [0,1,2,3].map(i=>{
+   const label=i===3?"まとめ":String(i+1);
+   const available=i===3?count===3:i===0||!!answers[p.probes[i-1].id]||!!answers[p.probes[i].id];
+   return '<button type="button" data-transfer-jump="'+i+'" aria-current="'+(i===view?'step':'false')+'"'+(available?'':' disabled')+' class="'+(i===view?'active':'')+(i<3&&answers[p.probes[i].id]?' answered':'')+'">'+label+'</button>';
+  }).join("")+'</nav>';
+ let body="";
+ if(view<3){
+  const t=p.probes[view];
+  body='<div class="transfer-probes"><div class="transfer-probe transfer-focus"><strong>調査 '+(view+1)+' / 3：'+t.name+'</strong>'+diagram(t.diagram)+
+   '<p class="transfer-prompt">回路図をよく見て、実験したらどうなるか予想しよう。</p><div class="transfer-answers">'+
+   p.choices.map(value=>'<button type="button" data-transfer-answer="'+t.id+'" data-transfer-value="'+value+'" aria-pressed="'+(answers[t.id]===value)+'" class="'+(answers[t.id]===value?'selected':'')+'">'+labels[value]+'</button>').join("")+
+   '</div><p class="transfer-next-hint">予想を決めると次の調査へ進むよ。</p></div></div>';
+ }else{
+  body='<div class="transfer-review"><strong>📋 3つの予想を見直そう</strong><p>それぞれの結果を比べて、すべてに当てはまる理由を考えよう。必要なら回路図に戻れるよ。</p>'+
+   p.probes.map((t,i)=>'<div class="transfer-review-row"><div class="transfer-review-head"><strong>調査 '+(i+1)+'：'+t.name+'</strong><button type="button" data-transfer-jump="'+i+'">回路図を確認</button></div><div class="transfer-answers">'+
+    p.choices.map(value=>'<button type="button" data-transfer-answer="'+t.id+'" data-transfer-value="'+value+'" aria-pressed="'+(answers[t.id]===value)+'" class="'+(answers[t.id]===value?'selected':'')+'">'+labels[value]+'</button>').join("")+'</div></div>').join("")+'</div>'+
+   '<div class="transfer-reason"><strong>🧠 どうしてそうなる？</strong><p>3つの予想をつなぐ、正しい理由を選ぼう。</p>'+
+    p.reasons.map(([key,label])=>'<button type="button" data-transfer-reason="'+key+'" aria-pressed="'+(reason===key)+'" class="'+(reason===key?'selected':'')+'">'+label+'</button>').join("")+'</div>'+
+   '<button type="button" class="transfer-verify" data-transfer-verify="1"'+(ready?'':' disabled')+' aria-disabled="'+(!ready)+'">🔑 予想と理由を提出して街を救う</button>';
+ }
+ return '<section class="transfer-puzzle"><div class="transfer-heading"><span>🚨 街からの追加依頼</span><h3>'+p.title+'</h3><p>'+p.intro+'</p>'+
+  '<p class="transfer-notation">図の丸の中に×がある記号は豆電球。結果はまだ表示しないよ。</p>'+
+  '<div class="transfer-progress">回路の判断：'+count+' / 3　　理由：'+(reason?"選択済み":"未選択")+'</div></div>'+tabs+body+'</section>';
 }
 function evaluateCircuit(kind){
  if(kind==="short"||kind==="shunt")return"short";
