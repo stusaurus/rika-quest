@@ -106,7 +106,16 @@ assert.match(el("workspace").innerHTML,/builder-direct/,"Basic wiring stage shou
 assert.equal(saved().practiceDraft.wires.length,2,"Unfinished practice circuit must preserve two wires");
 click({builderTest:"1"});
 assert.equal(saved().practiceDraft.tests.single.lit,true,"Safe basic loop must light the bulb during experiment");
-assert.equal(saved().completed[6],undefined,"Correct circuit requires an explicit finish step");
+assert.equal(saved().completed[6],undefined,"Correct circuit requires an explanation of the electricity path");
+assert.equal(basic.scientificComplete("direct",saved().practiceDraft.tests,saved().practiceDraft.wires,[]),false,"Tested correct loop is not enough without proof");
+click({builderSubmit:"1"});assert.equal(saved().completed[6],undefined,"Submission cannot bypass the route explanation");
+click({builderTrace:"L"});assert.match(el("feedbackText").textContent,/＋極/,"Explanation must start from battery positive terminal");
+for(const id of ["P","N"]){click({builderTrace:id})}
+assert.match(el("feedbackText").textContent,/豆電球/,"Cannot jump straight from positive to negative without lamp");
+click({builderTrace:"L"});click({builderTrace:"L"});assert.match(el("feedbackText").textContent,/同じ端子/);
+click({builderTrace:"R"});
+move(5);move(6);assert.deepEqual(Array.from(saved().practiceDraft.trace),["P","L","R"],"Partial scientific path must survive navigation");
+click({builderTrace:"N"});assert.equal(basic.traceStatus("direct",saved().practiceDraft.wires,saved().practiceDraft.trace).complete,true,"Proof must traverse both bulb contacts");
 click({builderSubmit:"1"});done(6);
 assert.equal(saved().practiceDraft,null,"Completed practice wiring must clear its temporary save");
 assert.ok(saved().notes.some(n=>n.mission===6&&n.key==="builder:6"),"Practice construction evidence must be recorded");
@@ -165,7 +174,18 @@ assert.match(el("workspace").innerHTML,/builder-puzzle/,"Custom wires must survi
 assert.equal(saved().builderDraft.wires.length,3,"Three selected wires must survive the reload-ready save format");
 click({builderSwitch:"on"});click({builderTest:"1"});
 assert.equal(saved().builderDraft.tests.on.lit,true,"ON observation must be saved");
-assert.equal(saved().completed[14],undefined,"Both experiments require an explicit design submission");
+assert.equal(saved().completed[14],undefined,"Both experiments require a traced current path");
+assert.equal(builder.scientificComplete("switch",saved().builderDraft.tests,saved().builderDraft.wires,["P","S","T","L","R","N"]),true,"Graph route through ON switch and lamp should qualify");
+assert.equal(builder.traceStatus("switch",saved().builderDraft.wires,["P","S","T","L","N"]).valid,false,"Skipping the lamp's return contact is not physical");
+click({builderSubmit:"1"});assert.equal(saved().completed[14],undefined);
+click({builderTrace:"P"});click({builderTrace:"S"});click({builderTrace:"T"});
+click({builderTrace:"N"});assert.match(el("feedbackText").textContent,/つながり/,"False route must not advance");
+click({builderTraceBack:"1"});assert.deepEqual(Array.from(saved().builderDraft.trace),["P","S"]);
+click({builderTrace:"T"});click({builderTrace:"L"});click({builderTrace:"R"});
+move(13);move(14);
+assert.deepEqual(Array.from(saved().builderDraft.trace),["P","S","T","L","R"],"Stage14 partial reasoning survives reload");
+click({builderTrace:"N"});
+assert.equal(builder.scientificComplete("switch",saved().builderDraft.tests,saved().builderDraft.wires,saved().builderDraft.trace),true);
 click({builderSubmit:"1"});done(14);
 assert.equal(saved().builderDraft,null,"Successful design must erase intermediate wiring draft");
 assert.ok(saved().notes.some(n=>n.key==="builder:14"),"Final hand-built wiring evidence must enter notebook");
