@@ -361,6 +361,7 @@ try{
    assert.equal(await page.locator(".safety-lab").count(),1,"Mission12 becomes three progressive safety designs");
    assert.equal(await page.locator(".safety-svg").count(),1,"Circuit topology must be visible before choosing wires");
    assert.equal(await page.locator(".safety-wire.cut").count(),0,"Dangerous paths must not be highlighted as answers");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-safety-inspection-start.png",fullPage:true});
    await page.locator('[data-safe-guess="lit"]').click();
    await page.locator('[data-safe-test]').click();
    assert.match(await page.locator(".safety-result").textContent(),/ショート/,"Unrepaired path must be an unsafe simulated short");
@@ -395,6 +396,7 @@ try{
    await page.locator('[data-safe-guess="lit"]').click();
    await page.locator('[data-safe-test]').click();
    assert.equal(await page.locator(".safety-reasons").count(),1,"Two minimal disconnections leave a working lamp loop");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-safety-inspection-solved.png",fullPage:true});
    await page.locator('[data-safe-reason="shortcut"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Wrong causal explanation cannot pass the final safety check");
