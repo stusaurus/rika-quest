@@ -678,7 +678,7 @@ function handleWorkspace(e){
    const result=G.experiment("clip",g.clamp);
    g.calibrations[g.clamp]={guess:g.guess,actual:result.kind};g.guess=null;
    ui.garden=g;saveGardenDraft();renderWorkspace();
-   recordObservation("garden:control:"+g.clamp,"【条件比較】同じクリップで"+(g.clamp==="tight"?"両接点を合わせると":"接点を浮かせると")"："+(result.lit?"点灯":"消灯")+"。");
+   recordObservation("garden:control:"+g.clamp,"【条件比較】同じクリップで"+(g.clamp==="tight"?"両接点を合わせると":"接点を浮かせると")+"："+(result.lit?"点灯":"消灯")+"。");
    setFeedback("同じクリップでも、接点によって結果が変わった。もう一方も比べよう。","success");reactCharacter("discover");return;
   }
   if(target.hasAttribute("data-garden-control-reason")){
