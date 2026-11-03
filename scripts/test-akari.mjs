@@ -22,6 +22,7 @@ vm.runInContext(readFileSync("games/akari/character.js","utf8"),context,{filenam
 vm.runInContext(readFileSync("games/akari/transfer.js","utf8"),context,{filename:"transfer.js"});
 vm.runInContext(readFileSync("games/akari/builder.js","utf8"),context,{filename:"builder.js"});
 vm.runInContext(readFileSync("games/akari/switch-lab.js","utf8"),context,{filename:"switch-lab.js"});
+vm.runInContext(readFileSync("games/akari/safety-lab.js","utf8"),context,{filename:"safety-lab.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -205,7 +206,46 @@ move(10);for(const choice of ["single","series"]){click({choice});check()}
 move(11);for(const choice of ["same","reverse"]){click({choice});check()}
  click({answer:"same"});click({why:"single"});check();assert.equal(saved().completed[11],undefined,"Two-battery polarity requires cancellation concept");
  click({why:"cancel"});check();done(11);
-move(12);click({cut:"x"});click({cut:"y"});check();transfer(12,true);done(12);
+move(12);
+const safety=window.AkariSafety;
+assert.equal(safety.stages.length,3,"Port safety rescue must have three distinct topology problems");
+assert.equal(safety.minimumCuts(0),1,"Direct short requires one minimal cut");
+assert.equal(safety.minimumCuts(1),1,"Breaking either branch of a shortcut can be safe");
+assert.equal(safety.minimumCuts(2),2,"Two independent dangerous paths need two minimal cuts");
+for(let i=0;i<3;i++){
+ assert.equal(safety.evaluate(i,[]).kind,"short","Unrepaired case "+i+" is unsafe");
+ assert.equal(safety.evaluate(i,safety.stages[i].wires.map(x=>x.id)).kind,"open","Removing every wire also fails");
+}
+assert.equal(safety.evaluate(0,["C"]).kind,"lit");
+assert.equal(safety.evaluate(1,["A"]).kind,"lit");
+assert.equal(safety.evaluate(1,["C"]).kind,"lit","Alternate minimal repair accepted");
+assert.equal(safety.evaluate(2,["A","C"]).kind,"lit");
+assert.equal(safety.evaluate(2,["A","E"]).kind,"lit","Multiple valid repairs should pass the graph engine");
+assert.equal(safety.evaluate(2,["A"]).kind,"short","One dangerous path still remains");
+assert.match(el("workspace").innerHTML,/safety-diagram/,"Safety route illustration is visible");
+click({safeGuess:"lit"});click({safeTest:"1"});
+assert.equal(saved().completed[12],undefined,"Unsafe predicted lit must never advance");
+click({safeWire:"C"});click({safeGuess:"open"});click({safeTest:"1"});
+assert.equal(saved().safetyDraft.index,0,"Incorrect outcome prediction must not unlock repair");
+click({safeGuess:"lit"});click({safeTest:"1"});
+assert.equal(safety.canAdvance(saved().safetyDraft),true,"Correct virtual measurement unlocks rescue");
+click({safeNext:"1"});
+assert.equal(saved().safetyDraft.index,1,"Next bridge rescue should start from a clean evidence state");
+click({safeWire:"A"});click({safeGuess:"lit"});click({safeTest:"1"});
+assert.equal(safety.canAdvance(saved().safetyDraft),true);
+click({safeNext:"1"});
+assert.equal(saved().safetyDraft.index,2);
+click({safeWire:"A"});click({safeGuess:"lit"});click({safeTest:"1"});
+assert.equal(safety.canAdvance(saved().safetyDraft),false,"A remaining parallel shortcut blocks certification");
+click({safeWire:"C"});
+assert.equal(saved().safetyDraft.measured,null,"Editing any wire must invalidate old evidence");
+click({safeGuess:"lit"});click({safeTest:"1"});
+assert.equal(safety.canAdvance(saved().safetyDraft),true);
+click({safeReason:"shortcut"});check();
+assert.equal(saved().completed[12],undefined,"Unsafe conceptual reason cannot finish");
+click({safeReason:"lamp-path"});check();transfer(12,true);done(12);
+assert.equal(saved().safetyDraft,null,"Completed safety inspection clears temporary work");
+assert.ok(saved().notes.some(x=>x.key==="safety:0"),"Safety repair evidence enters the adventure journal");
 move(13);
 for(const key of ["wire","bulb","battery"])click({inspect:key});
 click({suspect:"wire"});click({diagnose:"1"});
