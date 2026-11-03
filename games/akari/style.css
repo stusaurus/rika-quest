@@ -492,3 +492,8 @@
 .transfer-verify:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:grayscale(.35)}
 
 .transfer-heading .transfer-notation{font-size:11px;color:#d5ebe2;margin-top:7px}
+
+
+.answer-area .reason-subheading{display:block;margin:14px 0 9px;font-size:14px;line-height:1.5;color:#f8eec8}
+.answer-area [data-why]{line-height:1.65;min-height:45px;text-align:left}
+@media(max-width:740px){.answer-area [data-why]{font-size:12px;min-height:48px}.answer-area .reason-subheading{font-size:13px}}
