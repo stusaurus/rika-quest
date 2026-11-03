@@ -33,6 +33,8 @@ const transfer=(id,withMistake=false)=>{
  assert.ok(puzzle,"An independent challenge must exist for stage "+id);
  assert.equal(saved().completed[id],undefined,"Main mission alone must not clear "+id);
  assert.match(el("workspace").innerHTML,/transfer-puzzle/,"Transfer puzzle must be displayed");
+ assert.match(el("workspace").innerHTML,/transfer-focus/,"Only the first unfamiliar circuit is initially presented");
+ assert.doesNotMatch(el("workspace").innerHTML,/class="transfer-reason"/,"Require prediction before showing causal options");
  if(withMistake){
   const probe=puzzle.probes[0];
   click({transferAnswer:probe.id,transferValue:puzzle.choices.find(x=>x!==probe.answer)});
@@ -42,7 +44,8 @@ const transfer=(id,withMistake=false)=>{
   assert.match(el("feedbackText").textContent,/予想/);
  }
  for(const probe of puzzle.probes)click({transferAnswer:probe.id,transferValue:probe.answer});
- const wrongReason=puzzle.reasons.find(([key])=>key!==puzzle.correct)[0];
+ assert.match(el("workspace").innerHTML,/transfer-review-row/,"After three predictions show comparative reasoning review");
+  const wrongReason=puzzle.reasons.find(([key])=>key!==puzzle.correct)[0];
  click({transferReason:wrongReason});click({transferVerify:"1"});
  assert.equal(saved().completed[id],undefined,"Correct outcomes alone cannot bypass the causal explanation for "+id);
  click({transferReason:puzzle.correct});click({transferVerify:"1"});
