@@ -28,6 +28,7 @@ try{
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
+   assert.equal(await page.locator("#startupFallback").count(),0,"Normal browser must replace startup recovery with the interactive circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
    assert.equal(await page.locator("#mapLights .map-lamp").count(),14,"Map must contain fourteen distinct lamps");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),0,"Fresh progress should start unlit");
@@ -186,6 +187,18 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-after.png",fullPage:true});
    assert.deepEqual(errors,[],engine+" "+width+" browser errors");
    console.log("PASS",engine,width+"px","circuit tap, short warning, save, battery art, overflow");
+   if(engine==="chromium"&&width===320){
+     const noJavaScript=await browser.newContext({viewport:{width:320,height:690},javaScriptEnabled:false});
+     const viewer=await noJavaScript.newPage();
+     await viewer.goto(origin+"/games/akari/",{waitUntil:"domcontentloaded"});
+     const recovery=viewer.locator("#startupFallback");
+     assert.equal(await recovery.isVisible(),true,"Script-blocking preview must explain why the circuit is blank");
+     assert.match(await recovery.textContent(),/Safari.*Web版/s,"Recovery must direct users to web playback");
+     const href=await recovery.locator("a").getAttribute("href");
+     assert.match(href||"",/^https:\/\/rawcdn\.githack\.com\/stusaurus\/rika-quest\/[a-f0-9]{40}\/games\/akari\/index\.html$/);
+     await viewer.screenshot({path:"artifacts/akari/no-javascript-recovery-320.png",fullPage:true});
+     await noJavaScript.close();
+   }
    await context.close();count++;
   }finally{await browser.close()}
  }
