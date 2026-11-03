@@ -21,6 +21,7 @@ vm.runInContext(readFileSync("games/akari/scenes.js","utf8"),context,{filename:"
 vm.runInContext(readFileSync("games/akari/character.js","utf8"),context,{filename:"character.js"});
 vm.runInContext(readFileSync("games/akari/transfer.js","utf8"),context,{filename:"transfer.js"});
 vm.runInContext(readFileSync("games/akari/builder.js","utf8"),context,{filename:"builder.js"});
+vm.runInContext(readFileSync("games/akari/switch-lab.js","utf8"),context,{filename:"switch-lab.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -30,6 +31,37 @@ const saved=()=>JSON.parse(stored["rika-akari-quest-v2"]||"{}");
 const done=i=>assert.ok(saved().completed?.[i],"Mission "+i+" should be completed");
 const wire=(a,b)=>{click({t:a});click({t:b})};
 const builderWire=(a,b)=>{click({builderT:a});click({builderT:b})};
+const netWire=(a,b)=>{click({netT:a});click({netT:b})};
+const switchLab=(id,layout)=>{
+ const B=window.AkariSwitchLab,expected=id===7?"both":"either";
+ assert.ok(B,"Switch graph module must load");
+ assert.equal(saved().completed[id],undefined,"Cannot clear switch lesson without the construction task");
+ assert.match(el("workspace").innerHTML,/network-lab/,"Switch network engineering workshop must open");
+ const edges=id===7?[["P","A1"],["A2","B1"],["B2","L"],["R","N"]]:
+  [["P","A1"],["P","B1"],["A2","L"],["B2","L"],["R","N"]];
+ for(const [a,b]of edges)netWire(a,b);
+ assert.equal(saved().switchDrafts[id].wires.length,edges.length,"Network wiring must persist");
+ const cases=B.codes.map(code=>({code,...B.evaluate(edges,code[0]==="1",code[1]==="1")}));
+ assert.deepEqual(cases.map(x=>x.lit),id===7?[false,false,false,true]:[false,true,true,true],"Circuit graph must produce target truth table");
+ assert.equal(B.evaluate([["P","N"]],false,false).short,true,"Direct battery connection is always unsafe");
+ move(id-1);move(id);
+ assert.match(el("workspace").innerHTML,/network-lab/,"Wiring challenge must survive switching missions");
+ click({netTest:"1"});  // 00
+ click({netSwitch:"a"});click({netTest:"1"}); // 10
+ click({netSwitch:"b"});click({netTest:"1"}); // 11
+ click({netSwitch:"a"});click({netTest:"1"}); // 01
+ assert.equal(Object.keys(saved().switchDrafts[id].trials).length,4,"All four switch tests must be recorded");
+ click({netReason:id===7?"either":"both"});
+ click({netSubmit:"1"});
+ assert.equal(saved().completed[id],undefined,"A scientifically wrong explanation cannot unlock stage");
+ click({netReason:expected});
+ click({netSubmit:"1"});
+ done(id);
+ assert.equal(saved().masteries[id],true,"Switch-engineering discovery earns application mastery");
+ assert.equal(saved().switchDrafts[id],undefined,"Successful network design removes its draft");
+ assert.ok(saved().notes.some(n=>n.mission===id&&n.key==="switchbuilder:"+id),"Actual network evidence must be recorded in notebook");
+};
+
 const transfer=(id,withMistake=false)=>{
  const puzzle=window.AkariTransfer.get(id);
  assert.ok(puzzle,"An independent challenge must exist for stage "+id);
@@ -123,9 +155,9 @@ assert.equal(saved().completed[6],3,"Wrong diagnosis should not cost a star");
 move(7);check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
 assert.equal(saved().completed[7],undefined,"Four switch outcomes alone must not auto-complete");
 click({conclude:"either"});check();assert.equal(saved().completed[7],undefined,"Incorrect interpretation cannot clear");
-click({conclude:"both"});check();transfer(7);done(7);
+click({conclude:"both"});check();switchLab(7);done(7);
 move(8);click({design:"parallel"});check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
-click({conclude:"either"});check();transfer(8);done(8);
+click({conclude:"either"});check();switchLab(8);done(8);
 move(9);for(const choice of ["small","large"]){click({choice});check()}
  click({answer:"sameVoltage"});check();assert.equal(saved().completed[9],undefined,"Battery outcome alone must not clear");
  click({why:"size"});check();assert.equal(saved().completed[9],undefined,"Incorrect battery reason must not clear");
