@@ -571,3 +571,13 @@
 @media(max-width:1000px){.builder-layout{grid-template-columns:1fr}}
 @media(max-width:740px){.builder-panel{padding:11px}.builder-board{min-width:570px}.builder-heading{padding:13px}.builder-help{font-size:12px}.builder-measures{grid-template-columns:1fr 1fr}.builder-terminal{width:45px;height:45px}}
 @media(prefers-reduced-motion:reduce){.builder-board *{animation:none!important}}
+
+
+/* Board-only horizontal scrolling: the navigation stays in view on iPhone. */
+.builder-panel{overflow-x:visible}
+.builder-viewport{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border-radius:14px;scrollbar-color:#7fb2b7 #e6f2ed;scrollbar-width:thin;touch-action:pan-x pan-y}
+.builder-viewport:focus-visible{outline:3px solid #f0c77a;outline-offset:3px}
+.builder-nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 0 10px}
+.builder-nav button{min-height:43px;min-width:0;flex:1;border-radius:10px;background:#d7eeed;border:1px solid #96c6c9;color:#285d6a;font-size:12px;font-weight:900;padding:8px 9px}
+.builder-nav button:focus-visible{outline:3px solid #efc477;outline-offset:2px}
+@media(max-width:740px){.builder-nav button{min-height:46px;font-size:12px}.builder-viewport{box-shadow:0 3px 8px #15395130}}
