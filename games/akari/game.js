@@ -33,7 +33,11 @@ function restoreMissionUI(m){
   for(const code of B.codes)if(raw.trials?.[code]?.signature===sig){
    trials[code]={...B.evaluate(wires,code[0]==="1",code[1]==="1"),signature:sig};
   }
-  base.switchLab={wires,selected:null,a:!!raw.a,b:!!raw.b,trials,reason:["both","either"].includes(raw.reason)?raw.reason:null};
+  const code=String(Number(!!raw.a))+String(Number(!!raw.b));
+  const insight=raw.insight?.signature===sig&&raw.insight?.code===code&&
+   raw.insight?.kind===B.discrepancy(m.id,wires,!!raw.a,!!raw.b)?
+   {signature:sig,code,kind:raw.insight.kind}:null;
+  base.switchLab={wires,selected:null,a:!!raw.a,b:!!raw.b,trials,reason:["both","either"].includes(raw.reason)?raw.reason:null,insight};
   return base;
  }
  if(m.id===6&&!state.completed[m.id]&&state.practiceDraft?.unlocked&&window.AkariBuilder){
@@ -69,7 +73,7 @@ function saveSwitchDraft(){
  if(!ui.switchLab)return;
  const B=window.AkariSwitchLab,l=ui.switchLab;
  state.switchDrafts=state.switchDrafts||{};
- state.switchDrafts[current().id]={unlocked:true,wires:B.normalize(l.wires),a:!!l.a,b:!!l.b,trials:{...l.trials},reason:l.reason};
+ state.switchDrafts[current().id]={unlocked:true,wires:B.normalize(l.wires),a:!!l.a,b:!!l.b,trials:{...l.trials},reason:l.reason,insight:l.insight||null};
  persist();
 }
 function clearSwitchDraft(id){
@@ -178,7 +182,7 @@ function startRestorationPulse(firstClear){
 function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
 function success(){
  if([7,8].includes(current().id)&&window.AkariSwitchLab&&!ui.switchLabPassed&&!state.completed[current().id]){
-  if(!ui.switchLab){ui.switchLab={wires:[],selected:null,a:false,b:false,trials:{},reason:null};saveSwitchDraft();}
+  if(!ui.switchLab){ui.switchLab={wires:[],selected:null,a:false,b:false,trials:{},reason:null,insight:null};saveSwitchDraft();}
   renderWorkspace();renderHeader();renderMenu();
   setFeedback("⚡ 新しい設計依頼！ 2つのスイッチを自分で配線して、4通りの結果を比べよう。","warning");
   reactCharacter("think","どうつなぐと条件どおりになるノン？");return;
@@ -368,7 +372,7 @@ function renderFinale(){
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,mode=current().mode;
- root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[]):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
+ root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[]):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
  const builderView=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null;
@@ -433,12 +437,12 @@ function handleWorkspace(e){
    if(first===id){renderWorkspace();return;}
    const code=B.edge(first,id),index=l.wires.findIndex(w=>B.edge(...w)===code);
    if(index<0)l.wires.push([first,id]);else l.wires.splice(index,1);
-   l.trials={};l.reason=null;saveSwitchDraft();renderWorkspace();
+   l.trials={};l.reason=null;l.insight=null;saveSwitchDraft();renderWorkspace();
    setFeedback(index<0?"導線を追加した。4通りを調べると本当の働きがわかるよ。":"導線を外した。実験記録も新しい配線で取り直そう。");
    reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-net-clear")){
-   l.wires=[];l.selected=null;l.trials={};l.reason=null;saveSwitchDraft();renderWorkspace();setFeedback("導線を外した。新しい配線を考えよう。");return;
+   l.wires=[];l.selected=null;l.trials={};l.reason=null;l.insight=null;saveSwitchDraft();renderWorkspace();setFeedback("導線を外した。新しい配線を考えよう。");return;
   }
   if(target.hasAttribute("data-net-switch")){
    const id=target.dataset.netSwitch;if(!["a","b"].includes(id))return;
@@ -448,8 +452,22 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-net-test")){
    const code=Number(l.a)+""+Number(l.b),value=B.evaluate(l.wires,l.a,l.b);
    l.trials[code]={...value,signature:B.signature(l.wires)};saveSwitchDraft();renderWorkspace();
-   if(value.short){setFeedback("⚠ ショート！電池の＋と−が豆電球を通らずつながったよ。実物でまねしないでね。","warning");reactCharacter("danger");return;}
-   setFeedback("A："+(l.a?"ON":"OFF")+" / B："+(l.b?"ON":"OFF")+" → "+(value.lit?"点灯":"消灯")+"。ほかの組み合わせも確かめよう。","success");reactCharacter("discover");return;
+   const problem=B.discrepancy(current().id,l.wires,l.a,l.b);
+   if(value.short){setFeedback("⚠ ショート！ なぜ危険な道ができたか、実験結果をもとに推理しよう。実物では絶対にまねしないでね。","warning");reactCharacter("danger");return;}
+   if(problem){setFeedback("結果が目標の点灯・消灯と違った！ 原因の候補を選んで、回路の道を調べよう。","warning");reactCharacter("think");return;}
+   setFeedback("A："+(l.a?"ON":"OFF")+" / B："+(l.b?"ON":"OFF")+" → "+(value.lit?"点灯":"消灯")+"。この条件は成功！ほかも確かめよう。","success");reactCharacter("discover");return;
+  }
+  if(target.hasAttribute("data-net-cause")){
+   const hypothesis=target.dataset.netCause,code=Number(l.a)+""+Number(l.b),signature=B.signature(l.wires);
+   if(!["open","bypass","short"].includes(hypothesis))return;
+   if(l.trials[code]?.signature!==signature){setFeedback("まず今のスイッチの状態を通電して観察しよう。","warning");return;}
+   const actual=B.discrepancy(current().id,l.wires,l.a,l.b);
+   if(!actual){setFeedback("この組み合わせは条件どおりだよ。別の条件でも試そう。");return;}
+   if(hypothesis!==actual){setFeedback("その予想と、今回の点灯・消灯・ショートは合っているかな？電気の道をもう一度たどろう。","warning");reactCharacter("think");return;}
+   l.insight={code,signature,kind:actual};saveSwitchDraft();renderWorkspace();
+   setFeedback("🔎 原因を発見！"+B.diagnosticMessage(actual),"success");reactCharacter("discover");
+   recordObservation("network-clue:"+current().id+":"+code,
+     "【回路の調査】A"+code[0]+"/B"+code[1]+"の結果が設計条件と異なる。"+B.diagnosticMessage(actual));return;
   }
   if(target.hasAttribute("data-net-reason")){
    if(B.codes.some(code=>l.trials[code]?.signature!==B.signature(l.wires)))return;
