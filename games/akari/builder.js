@@ -53,7 +53,30 @@ function expectedDirect(tests,wires){
  return !!result&&result.signature===sig&&check.safe&&check.lit&&result.safe&&result.lit;
 }
 function expectedFor(task,tests,wires){return task==="direct"?expectedDirect(tests,wires):expected(tests,wires)}
-function render(wires=[],selected=null,switchOn=false,tests={},task="switch"){
+function traceStatus(task,wires,steps){
+ const allowed=task==="direct"?["P","L","R","N"]:ids;
+ const route=Array.isArray(steps)?steps:[];
+ if(route.length===0)return{valid:true,complete:false,viaLamp:false,viaSwitch:false};
+ if(route.length>allowed.length||route[0]!=="P"||route.some(node=>!allowed.includes(node))||new Set(route).size!==route.length)
+  return{valid:false,complete:false,viaLamp:false,viaSwitch:false};
+ const graphEdges=new Set(normalize(wires).filter(([a,b])=>allowed.includes(a)&&allowed.includes(b)).map(([a,b])=>edge(a,b)));
+ graphEdges.add(edge("L","R")); // a real lamp is an electrical load, not a wire
+ if(task!=="direct")graphEdges.add(edge("S","T")); // trace the closed-switch case
+ let viaLamp=false,viaSwitch=false;
+ for(let i=1;i<route.length;i++){
+  const key=edge(route[i-1],route[i]);
+  if(!graphEdges.has(key)||route[i-1]==="N"||(route[i]==="N"&&i!==route.length-1))
+   return{valid:false,complete:false,viaLamp:false,viaSwitch:false};
+  if(key===edge("L","R"))viaLamp=true;
+  if(key===edge("S","T"))viaSwitch=true;
+ }
+ const complete=route.at(-1)==="N"&&viaLamp&&(task==="direct"||viaSwitch);
+ return{valid:true,complete,viaLamp,viaSwitch};
+}
+function scientificComplete(task,tests,wires,trace){
+ return (task==="direct"?expectedDirect(tests,wires):expected(tests,wires))&&traceStatus(task,wires,trace).complete;
+}
+function render(wires=[],selected=null,switchOn=false,tests={},task="switch",trace=[]){
  const direct=task==="direct",segments=normalize(wires);
  const simulation=evaluate(segments,direct?false:switchOn);
  const mode=direct?"single":switchOn?"on":"off";
@@ -113,5 +136,5 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch"){
  '<button type="button" class="builder-submit" data-builder-submit="1"'+(expectedFor(task,tests,segments)?'':' disabled')+'>'+
  (direct?'🏆 時計塔の回路を完成させる':'🏆 設計を完成して灯台に光を戻す')+'</button></div></div></section>';
 }
-window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,expectedDirect,expectedFor,render};
+window.AkariBuilder={ids,terminals,edge,normalize,signature,evaluate,expected,expectedDirect,expectedFor,traceStatus,scientificComplete,render};
 })();
