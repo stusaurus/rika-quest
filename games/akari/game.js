@@ -13,7 +13,7 @@ const M=[
 {id:9,name:"乾電池の大きさ",place:"port",placeName:"月あかり港",mode:"battery",goal:"大きさと明るさを比べよう",story:"港の電池屋さんから質問！ 大きな乾電池なら必ず明るくなるのかな？",instructions:"同じ種類・電圧表示の単4形と単1形を両方試してから答えよう。",discovery:"同じ種類の1.5V乾電池なら、大きさが違っても公称電圧は同じ。ただし使える時間や大きな電流を流す力などは異なる。",hints:["乾電池に書かれた1.5Vという数字を見てみよう。","単4形も単1形も公称電圧は1.5V。大きいから必ず明るいわけではないよ。"]},
 {id:10,name:"ふたつの力",place:"museum",placeName:"ひかり博物館",mode:"battery",goal:"直列つなぎの効果を比べよう",story:"博物館の展示には乾電池を2個使う装置がある。1個のときとの違いを調べよう。",instructions:"乾電池1個と、同じ向きの2個直列つなぎを両方試してから答えよう。",discovery:"同じ1.5Vの乾電池を2個直列にすると、電圧は約3Vになる。対応する豆電球では1個より明るくなることがある。電球の定格を守ろう。",hints:["2個の乾電池を同じ向きに直列につなぐと、電圧が足し合わされるよ。","この装置では2個直列のほうが明るい設定だよ。"]},
 {id:11,name:"電池の向きのひみつ",place:"museum",placeName:"ひかり博物館",mode:"polarity",goal:"乾電池の向きを調べよう",story:"展示の電池を入れ直したら、急に消えちゃった。向きは大切なのかな？",instructions:"同じ向き・逆向きの2つの直列つなぎを両方実験して、光るつなぎ方を答えよう。",discovery:"同じ乾電池2個を直列で逆向きにすると、電圧が打ち消し合い、豆電球は光らない。乾電池1個だけなら向きを逆にしても普通の豆電球は光るよ。",hints:["電池1個の向きではなく、2個の向きの組み合わせだよ。","2個を同じ向きに直列につなぐと電圧が足し合わされるよ。"]},
-{id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"安全に電気が流れる道を残そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"3つの導線を観察し、豆電球を通らずに乾電池の＋極と−極をつなぐ危険な道だけ外そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","豆電球を通らず乾電池へ戻る線と、豆電球へ向かう線を区別してみよう。"]},
+{id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"安全に電気が流れる道を残そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"3か所の回路図を安全点検。外す導線を選び、ショート・点灯・消灯を予測して仮想実験し、最少の修理で豆電球の輪を残そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","豆電球を通らず乾電池へ戻る線と、豆電球へ向かう線を区別してみよう。"]},
 {id:13,name:"灯台の二重故障",place:"lighthouse",placeName:"星あかり灯台",mode:"repair",goal:"2つの故障を見つけよう",story:"灯台が消えて船が帰れない。1か所直しても点灯しないみたい。",instructions:"3つの部品を調べて故障が2か所あることを確かめよう。原因を2つ推理し、修理して通電チェック！",discovery:"複数の故障が重なることもある。電球・導線・接点・乾電池を順番に確認すると落ち着いて直せる。",hints:["1つ直しても消えたままなら、ほかにも故障があるよ。","直したのにまだ消えているなら、どの部品をもう一度調べたい？"]},
 {id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"乾電池の向き・材料・豆電球の接点をそれぞれ調べ、3か所を動作確認してから灯台を点灯させよう。",discovery:"回路は『電源・電気を通す導線・豆電球・確かな接点』の組み合わせ。ひとつひとつ確かめれば、街にあかりを取り戻せる！",hints:["電源・材料・接点をすべて確認してみよう。","電源のつなぎ方、すき間の材料、豆電球の2つの金属接点をそれぞれ確かめよう。"]}
 ];
@@ -22,12 +22,15 @@ let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturn
 let reactionToken=0,celebrationToken=0,restorationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 const inspectedItems=[{id:"wood",name:"木の板",description:"木は電気を通しにくそうだね。",correct:false},{id:"iron",name:"鉄のくぎ",description:"鉄は金属！ 電気を通しそうだ。",correct:true},{id:"plastic",name:"プラスチックの定規",description:"プラスチックは電気を通しにくい。",correct:false}];
-function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},notes:[]};}
+function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,notes:[]};}
 function current(){return M[state.active-1]}
-function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{removed:[]};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
+function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{inspected:[],chosen:null};case"material":return{selected:null,tried:[],prediction:null,predictions:{}};case"repair":return{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{selected:null,tried:[],answer:null,why:null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
+function saveSafetyDraft(){if(current().id===12&&ui.safety){state.safetyDraft=window.AkariSafety.restore(ui.safety);persist();}}
+function clearSafetyDraft(){state.safetyDraft=null;persist();}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
+ if(m.id===12&&!state.completed[m.id]&&window.AkariSafety){base.safety=window.AkariSafety.restore(state.safetyDraft);return base;}
  if([7,8].includes(m.id)&&!state.completed[m.id]&&state.switchDrafts?.[m.id]?.unlocked&&window.AkariSwitchLab){
   const B=window.AkariSwitchLab,raw=state.switchDrafts[m.id],wires=B.normalize(raw.wires),sig=B.signature(wires),trials={};
   for(const code of B.codes)if(raw.trials?.[code]?.signature===sig){
@@ -212,6 +215,7 @@ function success(){
   setFeedback("🔧 最終の設計依頼！ 選択肢ではなく導線を自分でつなぎ、OFFとONの両方を確かめよう。","warning");
   reactCharacter("think","最後は自分で回路を作るノン！");return;
  }
+ if(current().id===12)clearSafetyDraft();
  const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。"+(ui.transferPassed?" 🔍 応用の証 "+Object.keys(state.masteries).length+"/6":""),"success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
@@ -348,14 +352,8 @@ function renderPolarity(){
  return'<div class="experiment-layout"><div class="lab-panel"><h3>🔋 乾電池の向きを変えよう</h3><div class="choices two battery-choices">'+opts.map(x=>choice(x.id,x.name,Art.battery(x.id==="same"?"series":"reverse"),ui.selected===x.id,ui.tried.includes(x.id)?"tried":"")).join("")+'</div><p class="lab-reading">実験済み：'+ui.tried.length+' / 2</p></div><div class="lab-panel"><h3>💡 光り方を観察</h3><div class="science-spotlight">'+Art.bulb(ui.selected==="same"&&ui.tried.includes(ui.selected))+'</div><p class="test-caption">'+(ui.selected&&ui.tried.includes(ui.selected)?ui.selected==="same"?"2個を同じ向きに直列：点灯！":"2個を逆向きに直列：消灯":"乾電池を選んで実験しよう")+'</p>'+analysis+'</div></div>';
 }
 function renderCut(){
- const removed=ui.removed||[];
- const labels=[["normal","導線 Z（長い外側の道）"],["x","導線 X（斜めの道）"],["y","導線 Y（電池の近くの道）"]];
- return '<div class="experiment-layout"><div class="lab-panel"><h3>🧭 電気の道を見つけよう</h3>'+
- Art.shortDiagram(removed)+
- '<p class="lab-reading">豆電球を通らずに乾電池の＋と−がつながる道がないか、指でたどってみよう。実物でショートを試すのは危険だよ。</p></div>'+
- '<div class="lab-panel"><h3>✂ 導線を切り替える</h3><p class="lab-sub">3つの道のうち、危険な近道だけを外そう。外した導線は図から薄く消えるよ。</p>'+
- labels.map(([id,label])=>'<button class="cut-wire'+(removed.includes(id)?' removed':'')+'" data-cut="'+id+'" aria-pressed="'+removed.includes(id)+'"><span>'+label+'</span><strong>'+(removed.includes(id)?"外した ✓":"つながっている")+'</strong></button>').join("")+
- '<p class="lab-reading">外した導線：'+removed.length+' 本。最後に「電気を流してみる」で安全を確認しよう。</p></div></div>';
+ return window.AkariSafety?window.AkariSafety.render(ui.safety):
+  '<div class="lab-panel"><h3>安全点検を読み込めませんでした</h3><p>画面を再読み込みしてください。</p></div>';
 }
 function renderFinale(){
  const opts=[
@@ -418,7 +416,18 @@ function check(){
  if(ui.answer===expected[0]&&ui.why===expected[1]){success();return;}
  setFeedback("記録した2つの実験結果と理由が合っているかな？電圧や向きをもう一度見比べよう。","warning");
  reactCharacter("think");return;}
- if(m.mode==="cut"){if(ui.removed.includes("x")&&ui.removed.includes("y")&&!ui.removed.includes("normal")){success();return;}if(!ui.removed.includes("x")||!ui.removed.includes("y")){fail("⚠ ショートする近道がまだ残っているよ。実物ではとても危険！",true);return;}fail("必要な導線まで外してしまった。豆電球につながる道は残そう。");return;}
+ if(m.mode==="cut"){
+  const B=window.AkariSafety,q=ui.safety;
+  if(!B||!B.canAdvance(q)){
+   setFeedback("予想→仮想実験で安全な点灯を確かめよう。必要な線は残し、危険な道だけ少なく外そう。","warning");return;
+  }
+  if(q.index!==B.stages.length-1){setFeedback("安全な修理ができた！「次の点検へ」を押して進もう。","success");return;}
+  if(q.reason!==B.correctReason){
+   setFeedback("回路が点灯した理由を、乾電池・豆電球の2つの接点・輪のつながりから説明しよう。","warning");return;
+  }
+  recordObservation("safety:"+q.index,"【安全点検】"+B.stages[q.index].name+"：外した導線 "+q.removed.join("、")+"。ショートなしで豆電球が点灯。");
+  success();return;
+ }
  if(m.mode==="finale"){
   if(ui.verified.length!==3){setFeedback("灯台を点灯する前に、乾電池・材料・豆電球の3か所をすべて調べて ✓ にしよう。","warning");return;}
   if(ui.direction==="same"&&ui.material==="clip"&&ui.contact){success();return;}
@@ -696,7 +705,45 @@ function handleWorkspace(e){
   ui.why=value;renderWorkspace();setFeedback("理由を選んだよ。観察した2つの結果と合っているかな？");return;
  }
  if(target.hasAttribute("data-answer")){ui.answer=target.dataset.answer;renderWorkspace();setFeedback("結論を選んだよ。理由も説明してから通電チェック！");return;}
- if(target.hasAttribute("data-cut")){let key=target.dataset.cut;if(ui.removed.includes(key))ui.removed=ui.removed.filter(x=>x!==key);else ui.removed.push(key);renderWorkspace();setFeedback(key==="normal"?"正常な導線まで外すと電気が流れないよ。":"選んだ導線を外したよ。2本の近道を確認しよう。",key==="normal"?"warning":"");return;}
+ if(current().mode==="cut"&&window.AkariSafety){
+  const B=window.AkariSafety,q=ui.safety||B.empty(),job=B.stages[q.index];
+  if(target.hasAttribute("data-safe-wire")){
+   const id=target.dataset.safeWire;
+   if(!job.wires.some(w=>w.id===id))return;
+   q.removed=q.removed.includes(id)?q.removed.filter(x=>x!==id):[...q.removed,id];
+   q.guess=null;q.measured=null;q.reason=null;
+   ui.safety=q;saveSafetyDraft();renderWorkspace();
+   setFeedback("導線"+id+"を"+(q.removed.includes(id)?"外した":"つなぎ直した")+"。新しい状態の結果を予想しよう。");return;
+  }
+  if(target.hasAttribute("data-safe-guess")){
+   const guess=target.dataset.safeGuess;
+   if(!["lit","open","short"].includes(guess))return;
+   q.guess=guess;q.measured=null;saveSafetyDraft();renderWorkspace();
+   setFeedback("予想を決めたよ。仮想実験で確かめてみよう。");return;
+  }
+  if(target.hasAttribute("data-safe-test")){
+   if(!q.guess)return;
+   const result=B.evaluate(q.index,q.removed);
+   q.measured={signature:B.signature(q.index,q.removed),guess:q.guess,actual:result.kind};
+   saveSafetyDraft();renderWorkspace();
+   if(result.short){setFeedback("⚠ 仮想実験：豆電球を通らず乾電池の両極がつながるショートの危険。現実には試さず、図を直そう。","warning");reactCharacter("danger");}
+   else if(!result.lit){setFeedback("回路が切れて消灯した。ショートを避けるだけでなく、豆電球の輪を残そう。","warning");reactCharacter("think");}
+   else if(!B.canAdvance(q)){setFeedback("安全な点灯を確認。予想や切断本数をもう一度考えてみよう。","warning");reactCharacter("think");}
+   else{setFeedback("✨ 安全に点灯！予想と一致し、必要最小限の修理で危険をなくした。","success");reactCharacter("discover");}
+   return;
+  }
+  if(target.hasAttribute("data-safe-next")){
+   if(!B.canAdvance(q)||q.index>=B.stages.length-1)return;
+   recordObservation("safety:"+q.index,"【安全点検】"+job.name+"：導線"+q.removed.join("・")+"を外し、安全な豆電球の輪を残した。");
+   ui.safety={...B.empty(),index:q.index+1};saveSafetyDraft();renderWorkspace();
+   setFeedback("🌉 修理完了！ 次の場所には違う分かれ道がある。図から考えよう。","success");reactCharacter("walk");return;
+  }
+  if(target.hasAttribute("data-safe-reason")){
+   if(!B.canAdvance(q)||q.index!==B.stages.length-1)return;
+   q.reason=target.dataset.safeReason;saveSafetyDraft();renderWorkspace();
+   setFeedback("最後の説明を選んだよ。下の最終確認を押してみよう。");return;
+  }
+ }
  if(target.hasAttribute("data-verify")){
   if(current().mode!=="finale")return;
   const key=target.dataset.verify;if(!["direction","material","contact"].includes(key))return;
@@ -730,7 +777,7 @@ function bind(){
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
