@@ -83,9 +83,16 @@ click({conclude:"either"});check();assert.equal(saved().completed[7],undefined,"
 click({conclude:"both"});check();transfer(7);done(7);
 move(8);click({design:"parallel"});check();click({switch:"a"});check();click({switch:"b"});check();click({switch:"a"});check();
 click({conclude:"either"});check();transfer(8);done(8);
-move(9);for(const choice of ["small","large"]){click({choice});check()}click({answer:"correct"});check();done(9);
-move(10);for(const choice of ["single","series"]){click({choice});check()}click({answer:"correct"});check();done(10);
-move(11);for(const choice of ["same","reverse"]){click({choice});check()}click({answer:"same"});check();done(11);
+move(9);for(const choice of ["small","large"]){click({choice});check()}
+ click({answer:"sameVoltage"});check();assert.equal(saved().completed[9],undefined,"Battery outcome alone must not clear");
+ click({why:"size"});check();assert.equal(saved().completed[9],undefined,"Incorrect battery reason must not clear");
+ click({why:"voltage"});check();done(9);
+move(10);for(const choice of ["single","series"]){click({choice});check()}
+ click({answer:"seriesBrighter"});click({why:"shape"});check();assert.equal(saved().completed[10],undefined,"Brightness needs voltage reasoning");
+ click({why:"seriesAdds"});check();done(10);
+move(11);for(const choice of ["same","reverse"]){click({choice});check()}
+ click({answer:"same"});click({why:"single"});check();assert.equal(saved().completed[11],undefined,"Two-battery polarity requires cancellation concept");
+ click({why:"cancel"});check();done(11);
 move(12);click({cut:"x"});click({cut:"y"});check();transfer(12,true);done(12);
 move(13);
 for(const key of ["wire","bulb","battery"])click({inspect:key});
