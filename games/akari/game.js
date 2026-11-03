@@ -418,6 +418,54 @@ function check(){
 }
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
+ if(ui.switchLab){
+  const B=window.AkariSwitchLab,l=ui.switchLab;
+  if(target.hasAttribute("data-net-view")){
+   const board=$("workspace").querySelector(".network-viewport"),dir=target.dataset.netView;
+   if(!board||!["left","right"].includes(dir))return;
+   board.scrollLeft=dir==="right"?board.scrollWidth-board.clientWidth:0;
+   setFeedback(dir==="right"?"豆電球の横・底の接点を見よう。":"電池と2つのスイッチの端子を見よう。");return;
+  }
+  if(target.hasAttribute("data-net-t")){
+   const id=target.dataset.netT;if(!B.ids.includes(id))return;
+   if(l.selected==null){l.selected=id;renderWorkspace();setFeedback(B.points[id].name+"を選択した。次につなぐ端子を選んでね。");return;}
+   const first=l.selected;l.selected=null;
+   if(first===id){renderWorkspace();return;}
+   const code=B.edge(first,id),index=l.wires.findIndex(w=>B.edge(...w)===code);
+   if(index<0)l.wires.push([first,id]);else l.wires.splice(index,1);
+   l.trials={};l.reason=null;saveSwitchDraft();renderWorkspace();
+   setFeedback(index<0?"導線を追加した。4通りを調べると本当の働きがわかるよ。":"導線を外した。実験記録も新しい配線で取り直そう。");
+   reactCharacter("inspect");return;
+  }
+  if(target.hasAttribute("data-net-clear")){
+   l.wires=[];l.selected=null;l.trials={};l.reason=null;saveSwitchDraft();renderWorkspace();setFeedback("導線を外した。新しい配線を考えよう。");return;
+  }
+  if(target.hasAttribute("data-net-switch")){
+   const id=target.dataset.netSwitch;if(!["a","b"].includes(id))return;
+   l[id]=!l[id];l.selected=null;saveSwitchDraft();renderWorkspace();
+   setFeedback("スイッチ"+id.toUpperCase()+"を"+(l[id]?"ON":"OFF")+"にしたよ。結果を確かめよう。");return;
+  }
+  if(target.hasAttribute("data-net-test")){
+   const code=Number(l.a)+""+Number(l.b),value=B.evaluate(l.wires,l.a,l.b);
+   l.trials[code]={...value,signature:B.signature(l.wires)};saveSwitchDraft();renderWorkspace();
+   if(value.short){setFeedback("⚠ ショート！電池の＋と−が豆電球を通らずつながったよ。実物でまねしないでね。","warning");reactCharacter("danger");return;}
+   setFeedback("A："+(l.a?"ON":"OFF")+" / B："+(l.b?"ON":"OFF")+" → "+(value.lit?"点灯":"消灯")+"。ほかの組み合わせも確かめよう。","success");reactCharacter("discover");return;
+  }
+  if(target.hasAttribute("data-net-reason")){
+   if(B.codes.some(code=>l.trials[code]?.signature!==B.signature(l.wires)))return;
+   const why=target.dataset.netReason;if(!["both","either"].includes(why))return;
+   l.reason=why;saveSwitchDraft();renderWorkspace();setFeedback("理由を選んだ。4つの実験結果と合うかな？");return;
+  }
+  if(target.hasAttribute("data-net-submit")){
+   if(!B.expected(current().id,l.wires,l.trials,l.reason)){
+    setFeedback("配線と4通りの点灯・消灯を比べよう。全部安全で、目的どおりになっているかな？","warning");return;
+   }
+   recordObservation("switchbuilder:"+current().id,"【自分で配線】"+B.normalize(l.wires).map(([a,b])=>B.points[a].name+"―"+B.points[b].name).join("、")+"。4通りの結果："+B.codes.map(code=>"A"+code[0]+"/B"+code[1]+"＝"+(l.trials[code].lit?"点灯":"消灯")).join("／")+"。理由："+(l.reason==="both"?"直列の一本道は両方ONでつながる。":"並列の2本の道はどちらかONでつながる。"));
+   ui.switchLabPassed=true;ui.switchLab=null;clearSwitchDraft(current().id);
+   state.masteries[current().id]=true;persist();success();return;
+  }
+  return;
+ }
  if(ui.builder){
   const B=window.AkariBuilder,b=ui.builder,direct=ui.builderTask==="direct";
   if(target.hasAttribute("data-builder-view")){
@@ -643,7 +691,7 @@ function bind(){
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
  $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
- $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
+ $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
  $("helpBtn").addEventListener("click",()=>modal(true));
