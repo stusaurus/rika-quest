@@ -36,7 +36,30 @@ const entries=[
 ["第1幕","だいいちまく"],["第2幕","だいにまく"],["第3幕","だいさんまく"],["第4幕","だいよんまく"],
 ["最終幕","さいしゅうまく"],["第3学年","だいさんがくねん"]
 ];
+// The essentials stay readable even with the compact setting. Additional
+// everyday words can be shown by choosing "all readings" in help.
+entries.push(
+ ["両方","りょうほう"],["合図","あいず"],["見つける","みつける"],["見つけよう","みつけよう"],
+ ["使って","つかって"],["選び","えらび"],["選ぶ","えらぶ"],["通す","とおす"],
+ ["通り","とおり"],["通らず","とおらず"],["通し","とおし"],["調べる","しらべる"],["調べて","しらべて"],
+ ["作ろう","つくろう"],["作る","つくる"],["直そう","なおそう"],["直す","なおす"],
+ ["変える","かえる"],["変えたら","かえたら"],["入れる","いれる"],["入る","はいる"],
+ ["使う","つかう"],["思う","おもう"],["読める","よめる"],["見た目","みため"],["見分け","みわけ"],
+ ["明かり","あかり"],["灯り","あかり"],["横","よこ"],["底","そこ"],["両端","りょうはし"],
+ ["同じ","おなじ"],["所","ところ"],["違い","ちがい"],["大きさ","おおきさ"],["大きな","おおきな"],
+ ["低い","ひくい"],["高い","たかい"],["長い","ながい"],["短い","みじかい"]
+);
 const dictionary=new Map(entries);
+const essential=new Set([
+ "乾電池","豆電球","電球","電池","電気","電気回路","回路","導線","導体","不導体",
+ "金属","接点","直列","並列","電圧","電流","定格","定格超過","ショート",
+ "実験","予想","観察","条件","結果","材料","検査","調査","修理","故障",
+ "危険","安全","点灯","消灯","短絡","発熱","発火","仮想",
+ "小屋","時計塔","灯台","博物館","街灯","工房","地図","冒険",
+ "鉄","乾いた木","単1形","単4形","仕切り","電源","接触","戻る","通り道",
+ "部品","記録","確かめる","比較","説明","理由","発見","測定","断線",
+ "切れ目","実物","使用","第3学年"
+]);
 const terms=[...dictionary.keys()].sort((a,b)=>b.length-a.length||a.localeCompare(b,"ja"));
 // All dictionary keys consist solely of literal Japanese characters and digits.
 const expression=new RegExp(terms.join("|"),"g");
@@ -68,7 +91,7 @@ function decorate(node){
  const fragment=document.createDocumentFragment();let n=0;
  for(const x of fragments){
   if(!x.reading){fragment.appendChild(document.createTextNode(x.text));continue;}
-  const ruby=document.createElement("ruby");ruby.className="akari-yomi";
+  const ruby=document.createElement("ruby");ruby.className="akari-yomi";ruby.dataset.yomiKind=essential.has(x.text)?"essential":"extra";
   ruby.setAttribute("aria-label",x.text+"（"+x.reading+"）");
   ruby.appendChild(document.createTextNode(x.text));
   const rt=document.createElement("rt");rt.setAttribute("data-yomi",x.reading);rt.setAttribute("aria-hidden","true");
@@ -99,5 +122,5 @@ if(typeof document!=="undefined"){
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});
  else start();
 }
-window.AkariFurigana={entries,dictionary,terms,tokenize,annotate};
+window.AkariFurigana={entries,dictionary,terms,essential,tokenize,annotate};
 })();
