@@ -1065,3 +1065,46 @@
  .akari-yomi rt{font-size:clamp(9px,.62em,11px)}
  .reading-easy .quest-desc{line-height:1.9}
 }
+
+/* Readability pass: keep just one live instruction on the child screen.
+ * A compact progress count replaces the duplicate progress-card explanation. */
+.reading-easy .pacing-guide{
+ display:block;padding:0;background:transparent;border:0;border-radius:0;
+ box-shadow:none;
+}
+.reading-easy .pacing-tip,.reading-easy .pacing-track,.reading-easy .pacing-chapter{display:none}
+.reading-easy .pacing-heading{justify-content:flex-end}
+.reading-easy .pacing-count{
+ font-size:12px;color:#205564;background:#e7f5ed;border:1px solid #b1d3c3;
+ border-radius:999px;padding:3px 10px;
+}
+.reading-task-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 9px}
+.reading-task-row .quest-desc{flex:1 1 140px;min-width:0;margin:0}
+.read-task-btn{
+ flex:0 0 auto;align-self:center;min-width:94px;min-height:44px;
+ padding:8px 10px;background:#e7f2ed;border:2px solid #a0c2ae;border-radius:12px;
+ font-size:14px;font-weight:900;color:#245c5c;cursor:pointer;touch-action:manipulation;
+}
+.read-task-btn[hidden]{display:none!important}
+.read-task-btn[aria-pressed="true"]{background:#ffebb6;border-color:#d4a45a;color:#68451d}
+.read-task-btn:focus-visible{outline:3px solid #dc9c34;outline-offset:3px}
+.reading-easy:not(.furigana-all) ruby.akari-yomi[data-yomi-kind="extra"] rt{display:none}
+.furigana-control{
+ border:1px solid #9fbdbd;border-radius:12px;margin:14px 0;padding:10px 12px;
+ color:#f3faed;background:#224e5b;
+}
+.furigana-control legend{padding:0 5px;font-weight:900;font-size:14px}
+.furigana-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.furigana-choices button{
+ min-height:46px;background:#ebf5ed;color:#24505a;border:2px solid #aacbca;
+ border-radius:10px;font-size:12px;font-weight:900;padding:7px 6px;cursor:pointer;
+}
+.furigana-choices button[aria-pressed="true"]{
+ background:#ffdf98;color:#5d421f;border-color:#b88a41;
+}
+.furigana-choices button:focus-visible{outline:3px solid #ffe2a1;outline-offset:2px}
+@media(max-width:375px){
+ .reading-task-row{gap:7px}
+ .read-task-btn{min-width:83px;padding:6px 8px;font-size:12px}
+ .furigana-choices button{font-size:11px}
+}
