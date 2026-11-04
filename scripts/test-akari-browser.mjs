@@ -173,7 +173,6 @@ try{
    await page.locator("#yomiEssentials").click();
    assert.equal(await page.locator("body.furigana-all").count(),0,"Compact setting can be restored");
    await page.locator("#closeHelpBtn").click();
-   await page.locator("#closeHelpBtn").click();
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-easy-reading-start.png",fullPage:true});
    assert.equal(await page.locator("#missionInstructions").textContent(),"電池と まめ電球を 線で つなごう。","Ruby must not disturb the current simple instruction");
    assert.equal(await page.locator(".pacing-count").count(),1,"A short experiment counter still provides progress");
