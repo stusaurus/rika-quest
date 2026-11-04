@@ -20,9 +20,10 @@
 <script src="./double-fault-lab.js" defer></script>
 <script src="./finale-lab.js" defer></script>
 <script src="./pacing.js" defer></script>
+<script src="./reading.js" defer></script>
 <script src="./game.js" defer></script>
 </head>
-<body>
+<body class="reading-easy">
 <div class="sky-particles" aria-hidden="true"></div>
 <header class="topbar">
   <a class="brand" href="../../index.html" title="Rika Quest トップへ"><span class="brand-symbol">✦</span><span>Rika <strong>Quest</strong><small>理科を、冒険に。</small></span></a>
@@ -57,6 +58,7 @@
     <section class="quest-panel">
       <div class="quest-head">
         <div><span class="eyebrow" id="missionNumber">MISSION 01 / 14</span><h2 id="missionGoal">電気のひみつを見つけよう</h2></div>
+        <button id="readingToggle" class="reading-toggle" type="button" aria-pressed="false" aria-label="くわしい説明の表示を切り替える">📖 くわしく</button>
         <div class="quest-stars" id="questStars" aria-label="このミッションの星">☆ ☆ ☆</div>
       </div>
       <p class="quest-desc" id="missionInstructions"></p>
