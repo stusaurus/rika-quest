@@ -20,6 +20,7 @@ const reasons=[
 const names={bright:"💡 点灯",dark:"◯ 消灯"};
 const group=id=>stations.find(s=>s.id===id);
 const option=(station,id)=>group(station)?.options.find(x=>x.id===id)||null;
+const optionLabel=(station,id)=>option(station,id)?.name||null;
 const initial=()=>({
  active:"battery",selected:{battery:"opposed",material:"plastic",contact:"glass"},
  guess:null,tests:{},installed:{battery:null,material:null,contact:null},
