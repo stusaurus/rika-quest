@@ -968,7 +968,7 @@ function handleWorkspace(e){
    if(d.fixed.length!==2||!d.last||d.last.kind!=="lit")return;
    const reason=target.dataset.dualReason;
    if(!["loop","bulb","one"].includes(reason))return;
-   d.reason=reason;ui.doubleFault=d;saveDoubleFaultDraft();renderWorkspace();
+   d.reason=reason;ui.doubleFault=d;saveDoubleFaultDraft();renderWorkspace();renderScene();
    setFeedback("説明を選んだよ。画面下の最終確認で復旧を報告しよう。");return;
   }
  }
