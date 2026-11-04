@@ -167,7 +167,7 @@ function workbench(wires,lit){
   '<rect x="52" y="180" width="56" height="10" rx="4" fill="url(#workMetal)" stroke="#bdcacf" stroke-width="1.5"/>'+
   '<path d="M80 188V206" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
   '<rect x="67" y="199" width="26" height="9" rx="3" fill="url(#workMetal)" stroke="#e4eff0" stroke-width="1.2"/>'+
-  '<rect x="59" y="100" width="42" height="42" rx="5" fill="#e8f6f1" opacity=".94"/>'+
+  '<rect x="59" y="100" width="42" height="42" rx="5" fill="#fff6cc" opacity=".98"/>'+
   '<text x="80" y="119" text-anchor="middle" fill="#154a65" font-size="15" font-weight="900">1.5 V</text>'+
   '<text x="80" y="135" text-anchor="middle" fill="#23546b" font-size="9" font-weight="800">乾電池</text>'+
   '<text x="123" y="56" text-anchor="middle" fill="#fff1bf" font-size="23" font-weight="900">＋</text>'+
