@@ -859,3 +859,42 @@
  .battery-reason{font-size:12px}.battery-predictions{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:360px){.battery-options .battery-option{font-size:10px}}
+
+/* Mission 13: four independent evidence checks and consecutive circuit-repair tests */
+.dual-lab{display:grid;gap:15px;min-width:0;color:#edf8f5}
+.dual-heading{display:flex;gap:9px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(115deg,#264a68,#327a76);border:1px solid #82b7b0;border-radius:17px;padding:15px}
+.dual-heading>strong{font-size:19px;flex:1 1 210px}.dual-heading small{font-size:12px;color:#d6f5ec}
+.dual-warning{border-left:5px solid #dca456;padding:12px;background:#f6e6b9;color:#55451d;border-radius:10px;line-height:1.7;font-size:12px;font-weight:700}
+.dual-section{display:grid;gap:12px;min-width:0}.dual-section h3{margin:0;font-size:17px}.dual-section .lab-sub{margin:0;line-height:1.65}
+.dual-parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dual-part,.dual-repairs button{min-width:0;display:grid;gap:5px;justify-items:start;align-content:center;text-align:left;min-height:74px;padding:10px;background:#e5f4eb;border:2px solid #93b9bc;border-radius:12px;color:#235467;cursor:pointer}
+.dual-part.chosen{background:#ffe9a8;border-color:#d4a24b}
+.dual-part strong,.dual-repairs strong{font-size:13px;line-height:1.45}.dual-part small,.dual-repairs small{font-size:11px;line-height:1.5}
+.dual-testbench,.dual-predict,.dual-reasoning{display:grid;gap:9px;background:#193f54;border:1px solid #709fa8;border-radius:13px;padding:12px}
+.dual-testbench>strong,.dual-predict>strong{font-size:14px;line-height:1.6}
+.dual-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dual-choices button{min-width:0;border:2px solid #99babe;border-radius:10px;background:#eaf5ef;color:#22525a;font-size:13px;font-weight:800;line-height:1.5;padding:10px;min-height:48px;cursor:pointer}
+.dual-choices button.chosen{background:#ffe6ac;border-color:#d3aa5d;color:#61441b}
+.dual-reasoning .dual-choices{grid-template-columns:1fr}
+.dual-reasoning h3{font-size:16px;margin:0}
+.dual-measure{background:#ffe4a4;border:2px solid #d7ab57;border-radius:12px;min-height:48px;padding:11px;color:#60461e;font-size:14px;font-weight:900;cursor:pointer}
+.dual-measure:disabled,.dual-repairs button:disabled{opacity:.53;cursor:not-allowed}
+.dual-notes{display:grid;gap:7px;padding:10px;border:1px solid #6d9ca7;border-radius:13px}
+.dual-notes>strong{font-size:14px}
+.dual-note{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;line-height:1.6;padding:8px;border-radius:8px;background:#315668;color:#f1f9f5;font-size:12px}
+.dual-note strong{font-size:12px}
+.dual-diagram{max-width:100%;overflow-x:auto;border-radius:13px;border:1px solid #7eabb4;overscroll-behavior-x:contain;background:#102f44}
+.dual-circuit-svg{display:block;width:100%;min-width:470px;height:auto}
+.dual-repairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dual-repairs button.fixed{background:#d3efde;border-color:#75b992;color:#205a42}
+.dual-result{border-left:5px solid #8cd3b0;border-radius:10px;padding:12px;background:#2c625b;color:#f4fff6;font-size:13px;line-height:1.65}
+.dual-result.dark{border-color:#d1b577;background:#625537;color:#fff1d5}
+.story-scene.double-powered:not(.restored) .scene-bulb{fill:#ffebad!important;filter:drop-shadow(0 0 8px #ffd67a)}
+@media(max-width:740px){
+ .dual-heading{padding:11px}.dual-heading>strong{font-size:16px}
+ .dual-parts{grid-template-columns:repeat(2,minmax(0,1fr))}.dual-repairs{grid-template-columns:1fr 1fr}
+ .dual-reasoning .dual-choices{grid-template-columns:1fr}.dual-choices button{font-size:12px}
+ .dual-note{grid-template-columns:1fr;gap:3px}
+}
+@media(max-width:360px){.dual-repairs{grid-template-columns:1fr}.dual-part{padding:8px}.dual-part strong{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.dual-lab *{animation:none!important;transition:none!important}}
