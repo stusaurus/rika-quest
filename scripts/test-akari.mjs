@@ -690,7 +690,7 @@ assert.equal(Object.keys(saved().masteries||{}).length,6,"Every mastered transfe
 assert.equal(el("masteryCount").textContent,"6","Mastery tracker should show six completed scientific transfers");
 assert.equal((el("mapLights").innerHTML.match(/class="map-lamp lit/g)||[]).length,14,"All 14 map lights must persist");
 assert.equal(saved().active,14);
-assert.ok(window.AkariCharacter.moods.includes("walk"),"Mission travel should animate the canonical walk");
+assert.equal(window.AkariCharacter,undefined,"Regular science missions should not load the removed mascot renderer");
 assert.ok(saved().notes.length>=14,"Observation journal should retain a discovery for each completed mission");
 assert.equal(window.AkariTransfer.stages.length,6,"Six scientific transfer checkpoints are required");
 for(const id of window.AkariTransfer.stages){
@@ -713,7 +713,7 @@ assert.ok(landmarks.every(svg=>svg.includes("class=\"window\"")),"Each landmark 
 assert.ok(window.AkariArt.material("clip").includes("<svg"));
 assert.ok(window.AkariArt.circuit("series",false,false).includes("<svg"));
 assert.ok(window.AkariArt.bulb(true).includes("<svg"));
-assert.ok(window.AkariCharacter.render().includes("tiranon-walk-prototype.webp"));
+assert.ok(!el("workspace").innerHTML.includes("tiranon-walk-prototype.webp"),"Science workspace must contain no dinosaur sprite assets");
 assert.equal(el("litPlaceCount").textContent,14,"Restoration progress should reach 14 regions");
 move(1);wire("P","L");wire("N","R");check();assert.equal(el("restorationTrail").hidden,true,"Replay must not trigger a first-clear town pulse");
 assert.equal(Object.keys(saved().masteries||{}).length,6,"Replays must not duplicate reasoning tokens");
