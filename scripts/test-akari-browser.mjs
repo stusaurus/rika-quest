@@ -601,26 +601,63 @@ try{
    assert.equal(await page.locator(".transfer-puzzle").count(),1,"Safe explanation unlocks existing scientific transfer");
    await completeTransfer(12,true);
 
+   // Mission 13: diagnose two independent opens without revealing a ready-made answer.
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
      s.completed={};for(let i=1;i<=12;i++)s.completed[i]=3;
-     s.active=13;localStorage.setItem(key,JSON.stringify(s));
+     s.active=13;s.doubleFaultDraft=null;localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
-   for(const id of ["wire","bulb","battery"])await page.locator('[data-inspect="'+id+'"]').click();
-   await page.locator('[data-suspect="wire"]').click();
-   await page.locator('[data-diagnose]').click();
-   assert.equal(await page.locator('.diagnosis-panel.complete').count(),0,"Double faults need two suspects");
-   await page.locator('[data-suspect="bulb"]').click();
-   await page.locator('[data-diagnose]').click();
-   await page.locator('[data-fix="wire"]').click();
+   assert.equal(await page.locator("#missionTitle").textContent(),"灯台の二重故障");
+   assert.equal(await page.locator(".dual-parts [data-dual-part]").count(),4,"Four parts must be separately tested without giving away faults");
+   assert.equal(await page.locator(".dual-repairs").count(),0,"Repairs cannot be revealed before the investigation");
+   await page.locator('[data-dual-part="battery"]').click();
+   assert.equal(await page.locator('[data-dual-test]').isDisabled(),true,"Safe isolated battery test requires prediction");
+   await page.locator('[data-dual-predict="open"]').click();await page.locator('[data-dual-test]').click();
+   assert.match(await page.locator(".dual-testbench .dual-result").textContent(),/予想.*0V.*実際.*1.5V/s,"Incorrect hypothesis is recorded, never scored as failure");
+   for(const [part,guess] of [["wire","good"],["filament","good"],["contact","open"]]){
+     await page.locator('[data-dual-part="'+part+'"]').click();
+     await page.locator('[data-dual-predict="'+guess+'"]').click();
+     await page.locator('[data-dual-test]').click();
+   }
+   assert.equal(await page.locator(".dual-notes .dual-note").count(),4,"Evidence for all separate components enters notebook");
+   assert.equal(await page.locator(".dual-diagram").count(),1,"Circuit repair topology appears after evidence");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault-evidence.png",fullPage:true});
+   await page.locator('[data-dual-fix="battery"]').click();
+   assert.equal(await page.locator(".dual-repairs button.fixed").count(),0,"A healthy battery must not be treated as a fault");
+   await page.locator('[data-dual-fix="wire"]').click();
+   assert.equal(await page.locator(".dual-repairs button.fixed").count(),1);
+   assert.equal(await page.locator('[data-dual-fix="contact"]').isDisabled(),true,"Must run a second measurement after fixing only one defect");
+   await page.locator('[data-dual-circuit-guess="lit"]').click();
+   await page.locator('[data-dual-circuit-test]').click();
+   assert.equal(await page.locator(".dual-result.dark").count(),1,"The lamp stays dark while a second independent fault remains");
+   assert.equal(await page.locator(".story-scene.double-powered").count(),0,"One repair must not illuminate the lighthouse");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault-first-repair-dark.png",fullPage:true});
+   await page.locator('[data-dual-insight="weak"]').click();
+   assert.equal(await page.locator('[data-dual-fix="contact"]').isDisabled(),true,"Wrong first-dark explanation must not unlock the second repair");
+   await page.locator('[data-dual-insight="other-gap"]').click();
+   assert.equal(await page.locator('[data-dual-fix="contact"]').isDisabled(),false,"Understanding a second open circuit unlocks remaining repair");
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".dual-repairs button.fixed").count(),1,"Interrupted repair is preserved on iPhone reload");
+   assert.equal(await page.locator('[data-dual-fix="contact"]').isDisabled(),false,"Measured dark evidence and explanation persist");
+   await page.locator('[data-dual-fix="contact"]').click();
+   assert.equal(await page.locator(".dual-result.dark").count(),0,"Any new wiring changes invalidate the old measurement");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).doubleFaultDraft.last),null,"Previous powered observations must not be reused after repair");
+   await page.locator('[data-dual-circuit-guess="dark"]').click();await page.locator('[data-dual-circuit-test]').click();
+   assert.equal(await page.locator(".dual-result.lit").count(),1,"Both physical gaps repaired causes a powered circuit");
+   assert.equal(await page.locator(".story-scene.double-powered").count(),0,"Wrong final prediction cannot yet certify the lighthouse");
+   await page.locator('[data-dual-circuit-guess="lit"]').click();await page.locator('[data-dual-circuit-test]').click();
+   assert.equal(await page.locator(".dual-result.lit").count(),1);
+   await page.locator('[data-dual-reason="one"]').click();await page.locator("#checkBtn").click();
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Two physical repairs without correct causal reasoning cannot clear");
+   await page.locator('[data-dual-reason="loop"]').click();
+   assert.equal(await page.locator(".story-scene.double-powered").count(),1,"A verified powered loop lights the simulated scene");
    await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),false,"One of two repairs cannot complete");
-   await page.locator('[data-fix="bulb"]').click();
-   await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Two repairs restore lighthouse");
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Four tests, two repairs, a dark retest, a lit retest and reasoning clear the stage");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).doubleFaultDraft),null,"Final clear removes only temporary diagnosis data");
+   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.key==="double:circuit:wire")),"The first unsuccessful repair is saved in the adventure journal");
    await page.evaluate(()=>window.scrollTo(0,0));
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault.png",fullPage:true});
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault-restored.png",fullPage:true});
 
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
