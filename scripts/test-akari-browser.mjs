@@ -187,22 +187,24 @@ try{
      await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-map.png",fullPage:true});
      await page.locator("#mapToggle").click();
    }
-   assert.equal(await page.locator("#characterArt .tiranon-sprite-strip").count(),1,"Canonical dinosaur guide must render");
-   assert.equal(await page.locator("#characterArt .tiranon-emote-fx").count(),1,"Character should have independent nonwarping expressive effects");
-   await page.locator(".tiranon-sprite-strip").evaluate(async img=>{await img.decode();if(img.naturalWidth<100)throw Error("Walk sprite missing");});
-   const spriteGeometry=await page.evaluate(()=>{
-     const img=document.querySelector(".tiranon-sprite-strip"),frame=document.querySelector(".tiranon-sprite-frame");
-     return {cellRatio:(img.naturalWidth/8)/img.naturalHeight,shownRatio:frame.getBoundingClientRect().width/frame.getBoundingClientRect().height,frames:img.naturalWidth/106};
+   assert.equal(await page.locator("#sceneCharacter").count(),0,"No clipped dinosaur competes with the science illustration");
+   assert.equal(await page.locator("#characterArt").count(),0,"Sprite frame should not consume space in regular play");
+   assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific buildings remain visible after removing the dinosaur");
+   assert.equal(await page.locator(".circuit-svg-v2").count(),1,"Updated detailed physical battery-and-bulb art must render");
+   assert.equal(await page.locator(".circuit-svg-v2 .battery-model").count(),1);
+   assert.equal(await page.locator(".circuit-svg-v2 .bulb-model").count(),1);
+   const contactGeometry=await page.evaluate(()=>{
+     const box=document.querySelector(".circuit-inner").getBoundingClientRect();
+     const pts={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};
+     return Object.entries(pts).map(([id,[x,y]])=>{
+       const button=document.querySelector('[data-t="'+id+'"]').getBoundingClientRect();
+       const cx=button.left+button.width/2,cy=button.top+button.height/2;
+       return {id,dx:Math.abs(cx-(box.left+x*box.width/400)),dy:Math.abs(cy-(box.top+y*box.height/250))};
+     });
    });
-   assert.ok(Math.abs(spriteGeometry.cellRatio-spriteGeometry.shownRatio)<0.025,"Tiranon face and proportions must not stretch: "+JSON.stringify(spriteGeometry));
-   assert.equal(spriteGeometry.frames,8,"Use all eight original Tiranon frames");
-
-   const crowded=await page.evaluate(()=>{
-     const c=document.querySelector("#sceneCharacter").getBoundingClientRect();
-     const t=document.querySelector(".scene-caption").getBoundingClientRect();
-     return c.left<t.right&&c.right>t.left&&c.top<t.bottom&&c.bottom>t.top;
-   });
-   assert.equal(crowded,false,"Character must remain visible outside the mission caption");
+   for(const p of contactGeometry)assert.ok(p.dx<3&&p.dy<3,"Touch target must sit on its electrical contact: "+JSON.stringify(p));
+   assert.ok((await page.locator(".scene-caption").evaluate(e=>e.getBoundingClientRect().width))>160,
+     "The story caption should get usable width now that the character is absent");
 
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
@@ -226,7 +228,7 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
-   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"danger","Short should trigger worried reaction");
+   assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"The danger is explained without mascot reactions");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
    assert.equal(await page.locator(".fx-danger").evaluate(e=>getComputedStyle(e).visibility),"visible","Short must show a distinct caution symbol");
    assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Short must not light the town");
@@ -238,7 +240,7 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
-   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"celebrate","Safe success should cheer");
+   assert.equal(await page.locator("#sceneCharacter").count(),0,"Celebration must use restored lights rather than a cropped character");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"First clear should illuminate one journey map lantern");
@@ -247,14 +249,10 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
 
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
-   await page.emulateMedia({reducedMotion:"no-preference"});
    await page.locator("#nextBtn").click();
-   const walkName=await page.locator(".tiranon-sprite-strip").evaluate(e=>getComputedStyle(e).animationName);
-   assert.match(walkName,/tiranonWalkFrames/,"Only mission travel should play the eight-frame walk");
-   await page.emulateMedia({reducedMotion:"reduce"});
 
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
-   assert.equal(await page.locator("#sceneCharacter").getAttribute("data-mood"),"walk","Next mission triggers a natural short walk");
+   assert.equal(await page.locator(".scene-character").count(),0,"No sprite may return when travelling to the next stage");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Victory badge must not leak to next stage");
    assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Restoration pulse must not leak to next mission");
 
