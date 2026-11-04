@@ -29,6 +29,7 @@ vm.runInContext(readFileSync("games/akari/battery-lab.js","utf8"),context,{filen
 vm.runInContext(readFileSync("games/akari/double-fault-lab.js","utf8"),context,{filename:"double-fault-lab.js"});
 vm.runInContext(readFileSync("games/akari/finale-lab.js","utf8"),context,{filename:"finale-lab.js"});
 vm.runInContext(readFileSync("games/akari/pacing.js","utf8"),context,{filename:"pacing.js"});
+vm.runInContext(readFileSync("games/akari/reading.js","utf8"),context,{filename:"reading.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
