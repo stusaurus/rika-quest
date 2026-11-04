@@ -197,6 +197,9 @@ assert.match(boardSvg,/M80 207L310 206/,"Graph wiring must still connect negativ
 assert.equal((models.battery("series").match(/battery-cell-v2/g)||[]).length,2,"Series diagrams must show exactly two recognisable cells");
 assert.equal((models.battery("small").match(/battery-cell-v2/g)||[]).length,1,"Single-cell diagram should be recognisable");
 assert.match(models.bulb(true),/bulb-art-v2/,"Lamp closeup uses the same realistic contact design");
+assert.match(models.circuit("series",true,true),/class="diagram-battery"/,"Switch schematic should show a small cylindrical battery");
+assert.match(models.circuit("parallel",true,false),/class="diagram-bulb"/,"Switch schematic should show a recognisable bulb");
+assert.match(models.circuit("parallel",false,false),/M318 117H334/,"Even a symbolic circuit must lead to the metal shell rather than the glass");
 move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel old light trail");wire("N","R");check();transfer(2,true);done(2);
 move(3);
 const bridge=window.AkariBridge;
