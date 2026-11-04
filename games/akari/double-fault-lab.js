@@ -103,7 +103,7 @@ function render(raw){
  if(ready){
   repair='<section class="lab-panel dual-section"><h3>② 証拠を使って修理する</h3>'+
   '<p class="lab-sub">'+(first&&!s.firstDark?"1か所直したよ。本当に点灯したかを再実験しよう。":first&&s.firstDark&&s.insight!=="other-gap"?"まだ暗い理由を説明してから、次の修理に進もう。":second?"2か所を修理できた。最後の通電結果を確かめよう。":"4つの実験記録を参考に、原因だと思う場所を1か所修理しよう。")+'</p>'+
-  '<div class="dual-diagram">'+circuitSvg(s)+'</div>'+
+  '<div class="dual-diagram">'+circuitSvg(s)+'</div><div class="dual-nav"><button type="button" data-dual-view="left">◀ 乾電池側</button><button type="button" data-dual-view="right">豆電球側 ▶</button></div>'+
   '<div class="dual-repairs">'+parts.map(p=>{
    const fixed=s.fixed.includes(p.id),can=!fixed&&s.fixed.length<2&&(!first||secondUnlocked(s));
    return '<button type="button" data-dual-fix="'+p.id+'" '+(!can?"disabled":"")+' class="'+(fixed?" fixed":"")+'"><strong>'+p.icon+' '+p.name+'</strong><small>'+(fixed?"✓ 修理済み":s.probes[p.id]?.actual==="good"?"検査では正常":s.probes[p.id]?.actual==="open"?"検査ではつながらない":"まだ調査していない")+'</small></button>';
