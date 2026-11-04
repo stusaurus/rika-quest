@@ -236,7 +236,7 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".story-scene.restored").count(),1,"Previously restored town must remain illuminated after return and reload");
    assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Saved town lights must not fake a closed experiment circuit");
-   assert.match(await page.locator("#missionStory").textContent(),/前の冒険/,"Revisited stage must explain that town was already restored");
+   assert.match(await page.locator("#missionStory").textContent(),/もう一度 ためしてみよう/,"Revisited stage should offer a short child-readable replay invitation");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"Revisiting should retain the first map light");
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
