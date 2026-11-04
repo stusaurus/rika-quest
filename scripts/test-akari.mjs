@@ -122,6 +122,17 @@ const transfer=(id,withMistake=false)=>{
  assert.equal(saved().drafts[id],undefined,"Completed transfer draft must not linger in saved progress");
  assert.ok(saved().notes.some(n=>n.mission===id&&n.key==="transfer:"+id),"Scientific transfer must be saved in notebook");
 };
+const yomi=window.AkariFurigana;
+assert.ok(yomi&&yomi.entries.length>=140,"Furigana dictionary should cover the lesson, the story and core science UI");
+const readingTokens=yomi.tokenize("乾電池と豆電球の接点、電圧、回路を確認する");
+assert.deepEqual(Array.from(readingTokens.filter(x=>x.reading),x=>x.text),["乾電池","豆電球","接点","電圧","回路","確認"],"Compound technical terms must be annotated without splitting or losing kanji");
+assert.deepEqual(Array.from(yomi.tokenize("乾電池"),x=>x.text),["乾電池"],"Longest word should win rather than a nested battery fragment");
+assert.equal(yomi.dictionary.get("直列"),"ちょくれつ");
+assert.equal(yomi.dictionary.get("並列"),"へいれつ");
+assert.equal(yomi.dictionary.get("定格"),"ていかく");
+assert.equal(yomi.dictionary.get("危険"),"きけん");
+assert.equal(yomi.dictionary.get("豆電球"),"まめでんきゅう");
+assert.equal(yomi.tokenize("きょうは じっけん！").filter(x=>x.reading).length,0,"Already-kana text must not get redundant labels");
 const reading=window.AkariReading;
 assert.ok(reading?.validate(),"All 14 stages need age-eight-readable one-line copy");
 assert.ok(reading.copy.slice(1).every(x=>x.steps.length===3),"Every stage must offer one small action per research phase");
