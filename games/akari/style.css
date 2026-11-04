@@ -940,3 +940,43 @@
 }
 @media(max-width:375px){.finale-specimens button{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.finale-lab *{animation:none!important;transition:none!important}}
+
+/* Chapter-wide tempo: a contextual objective, not another quiz or answer hint */
+.science-compass{margin:12px 0 16px;min-width:0}
+.pacing-guide{display:grid;gap:10px;padding:12px 14px;background:linear-gradient(115deg,#20475b,#285966);border:1px solid #86b6b9;border-radius:14px;color:#edfafa;box-shadow:inset 0 1px 0 #ffffff22}
+.pacing-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pacing-chapter{font-size:12px;color:#c9e8e5;font-weight:800;letter-spacing:.01em}
+.pacing-count{font-size:12px;font-weight:900;font-variant-numeric:tabular-nums;color:#ffeaad}
+.pacing-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pacing-segment{display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;min-height:32px;border-radius:8px;background:#163445;color:#a8c4c8;font-size:11px;font-weight:800;line-height:1.45;padding:4px}
+.pacing-segment.current{background:#f6db98;color:#4c3a1a;box-shadow:0 0 0 1px #e6c077}
+.pacing-segment.done{background:#357a68;color:#e9fff3}
+.pacing-tip{display:grid;gap:3px;line-height:1.6}
+.pacing-tip>strong{font-size:13px;color:#fff8d6}
+.pacing-tip>span{font-size:12px;color:#d2e7eb}
+.science-report[hidden]{display:none!important}
+.science-report{margin-top:16px}
+.campaign-report{overflow:hidden;border:2px solid #e2c782;border-radius:20px;background:#204754;color:#f0f9f4}
+.campaign-top{background:radial-gradient(circle at top right,#608a74 0,#336575 50%,#214659 100%);padding:23px 18px;display:grid;gap:8px;text-align:center}
+.campaign-top>span{color:#ffe6a9;font-size:12px;letter-spacing:.12em;font-weight:900}
+.campaign-top strong{color:#fff4b9;font-size:23px;line-height:1.4}
+.campaign-top p{font-size:13px;line-height:1.75;margin:0}
+.campaign-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:5px}
+.campaign-stats span{padding:7px 11px;background:#102e3caa;border:1px solid #9bc1b8;border-radius:9px;color:#eef9e8;font-weight:900;font-size:12px}
+.campaign-chapters{display:grid;gap:6px;padding:13px}
+.campaign-chapter{display:flex;align-items:center;gap:10px;border-radius:12px;background:#335967;padding:11px}
+.campaign-medal{display:grid;place-items:center;flex:0 0 29px;height:29px;background:#efcf80;color:#57421e;border-radius:50%;font-size:14px;font-weight:900}
+.campaign-chapter>div{flex:1;min-width:0}.campaign-chapter strong{font-size:13px;line-height:1.5}
+.campaign-chapter p{margin:3px 0 0;color:#d3e8ea;font-size:11px;line-height:1.6}
+.campaign-check{color:#baf0c5;font-size:22px;font-weight:900}
+.campaign-foot{padding:0 18px 18px;margin:0;color:#dae9e6;font-size:12px;line-height:1.75}
+.battery-next,.finale-next,.dual-next{width:100%;min-height:46px;border:1px solid #9fc6c3;border-radius:10px;background:#dcefeb;color:#215566;font-weight:800;font-size:13px;line-height:1.5;cursor:pointer;padding:10px 12px}
+.battery-next:focus-visible,.finale-next:focus-visible,.dual-next:focus-visible,.pacing-guide:focus-visible{outline:3px solid #fff1ad;outline-offset:3px}
+@media(max-width:740px){
+ .science-compass{margin:10px 0 12px}
+ .pacing-guide{gap:9px;padding:10px}
+ .pacing-track{gap:4px}.pacing-segment{font-size:10px;padding:4px 2px;min-height:32px}
+ .pacing-tip>span{font-size:11px}
+ .campaign-top{padding:20px 12px}.campaign-top strong{font-size:20px}
+ .campaign-chapters{padding:10px}.campaign-chapter{padding:9px}
+}
