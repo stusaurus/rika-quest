@@ -4,22 +4,22 @@
  * is tested with the battery removed, except the battery's isolated voltage check.
  * Battery P to N is never connected directly through a wire. */
 const parts=[
- {id:"battery",name:"乾電池",icon:"🔋",question:"電圧の確認：表示は？",goodLabel:"1.5V（正常）",badLabel:"0V（電圧なし）",kind:"good"},
- {id:"wire",name:"導線のつなぎ目",icon:"〰️",question:"電池を外して、導線の両端のつながりを調べると？",goodLabel:"つながっている",badLabel:"つながらない",kind:"open"},
- {id:"filament",name:"豆電球の内部",icon:"💡",question:"電池を外して、豆電球の金属の横・底の間を確かめると？",goodLabel:"つながっている",badLabel:"つながらない",kind:"good"},
- {id:"contact",name:"豆電球の底の接点",icon:"🔎",question:"電池を外して、底の金属と戻り導線の接触を確認すると？",goodLabel:"つながっている",badLabel:"つながらない",kind:"open"}
+ {id:"battery",name:"乾電池",icon:"🔋",question:"電池は 使えるかな？",goodLabel:"1.5V（正常）",badLabel:"0V（電圧なし）",kind:"good"},
+ {id:"wire",name:"導線のつなぎ目",icon:"〰️",question:"電池を はずして、線を しらべよう。",goodLabel:"つながっている",badLabel:"つながらない",kind:"open"},
+ {id:"filament",name:"豆電球の内部",icon:"💡",question:"電池を はずして、まめ電球を しらべよう。",goodLabel:"つながっている",badLabel:"つながらない",kind:"good"},
+ {id:"contact",name:"豆電球の底の接点",icon:"🔎",question:"電池を はずして、下の 金ぞくを しらべよう。",goodLabel:"つながっている",badLabel:"つながらない",kind:"open"}
 ];
 const known=id=>parts.some(p=>p.id===id);
 const guessAllowed=x=>x==="good"||x==="open";
 const reasons=[
- ["loop","乾電池の＋から導線・豆電球の横と底・戻り導線を通って−へ戻る輪ができた"],
- ["bulb","豆電球のガラスに電気が触れたから"],
- ["one","故障が2か所あっても、片方さえ直せば必ず点灯する"]
+ ["loop","＋から まめ電球を 通って −まで つながった"],
+ ["bulb","ガラスに 電気が さわったから"],
+ ["one","2か所 こわれても、1か所だけ なおせば 光る"]
 ];
 const intermediateReasons=[
- ["other-gap","電気の通り道に、まだ直していないすき間が残っている"],
- ["weak","乾電池は新品でも、2回目の実験では必ず弱くなる"],
- ["one-ok","1か所だけ修理すれば、回路はすでに完成している"]
+ ["other-gap","電気の 道に、まだ すき間が ある"],
+ ["weak","2回目だから 電池が 弱くなった"],
+ ["one-ok","1か所 なおせば、もう 光るはず"]
 ];
 function initial(){return {selected:null,prediction:null,probes:{},fixed:[],circuitGuess:null,firstDark:null,last:null,insight:null,reason:null};}
 function signature(fixed){return [...new Set(Array.isArray(fixed)?fixed.filter(x=>x==="wire"||x==="contact"):[])].sort().join("|")||"none"}
@@ -101,7 +101,7 @@ function render(raw){
  const options=(ids,attribute,picked)=>'<div class="dual-choices">'+ids.map(([id,label])=>'<button type="button" '+attribute+'="'+id+'" class="'+(picked===id?" chosen":"")+'" aria-pressed="'+(picked===id)+'">'+label+'</button>').join("")+'</div>';
  let repair="";
  if(ready){
-  repair='<section class="lab-panel dual-section"><h3>② 証拠を使って修理する</h3>'+
+  repair='<section class="lab-panel dual-section"><h3>② こわれた 所を なおそう</h3>'+
   '<p class="lab-sub">'+(first&&!s.firstDark?"1か所直したよ。本当に点灯したかを再実験しよう。":first&&s.firstDark&&s.insight!=="other-gap"?"まだ暗い理由を説明してから、次の修理に進もう。":second?"2か所を修理できた。最後の通電結果を確かめよう。":"4つの実験記録を参考に、原因だと思う場所を1か所修理しよう。")+'</p>'+
   '<div class="dual-diagram">'+circuitSvg(s)+'</div><div class="dual-nav"><button type="button" data-dual-view="left">◀ 乾電池側</button><button type="button" data-dual-view="right">豆電球側 ▶</button></div>'+
   '<div class="dual-repairs">'+parts.map(p=>{
@@ -110,22 +110,22 @@ function render(raw){
   }).join("")+'</div>'+
   (s.fixed.length>0?'<div class="dual-predict"><strong>⚡ この状態の灯台の光は？</strong>'+
    options([["dark","◯ 消灯"],["lit","💡 点灯"]],"data-dual-circuit-guess",s.circuitGuess)+
-   '<button type="button" class="dual-measure" data-dual-circuit-test '+(!s.circuitGuess?"disabled":"")+'>🔬 修理後の仮想通電</button></div>':"")+
+   '<button type="button" class="dual-measure" data-dual-circuit-test '+(!s.circuitGuess?"disabled":"")+'>🔬 光るか ためす</button></div>':"")+
   (s.last?'<div class="dual-result '+s.last.kind+'" role="status">予想：'+(s.last.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(s.last.kind==="lit"?"点灯":"消灯")+(s.last.kind==="dark"?"。1か所直しても、まだ通り道がつながっていない。":"。豆電球が点灯した！")+'</div>':"")+
-  (first&&s.firstDark?'<div class="dual-reasoning"><h3>③ 1か所直しても消えたまま。どうして？</h3>'+options(intermediateReasons,"data-dual-insight",s.insight)+'</div>':"")+
-  (second&&s.last?.kind==="lit"?'<div class="dual-reasoning"><h3>④ あかりが戻った理由は？</h3>'+options(reasons,"data-dual-reason",s.reason)+'<p class="lab-sub">理由を選んだら、画面下の最終確認を押そう。</p></div>':"")+
+  (first&&s.firstDark?'<div class="dual-reasoning"><h3>③ まだ 消えている。なぜ？</h3>'+options(intermediateReasons,"data-dual-insight",s.insight)+'</div>':"")+
+  (second&&s.last?.kind==="lit"?'<div class="dual-reasoning"><h3>④ どうして 光った？</h3>'+options(reasons,"data-dual-reason",s.reason)+'<p class="lab-sub">理由を選んだら、画面下の最終確認を押そう。</p></div>':"")+
   '</section>';
  }
  return '<div class="dual-lab">'+
  '<div class="dual-heading"><span class="eyebrow">🔎 ミッション 13 / 14</span><strong>星あかり灯台・二重故障調査</strong><small>検査 '+Object.keys(s.probes).length+'/4　｜　修理 '+s.fixed.length+'/2</small></div>'+
  '<div class="dual-warning">これは安全な仮想検査です。導線や接点を調べるときは乾電池を取り外した設定で行います。実物の乾電池をショートさせないでください。</div>'+
- '<section class="lab-panel dual-section"><h3>① 4か所を別々に検査する</h3><p class="lab-sub">回路全体が消灯していても、すべての部品が故障しているとは限らない。電池・導線・豆電球内部・接点を順番に調べよう。</p>'+
+ '<section class="lab-panel dual-section"><h3>① 4か所を しらべよう</h3><p class="lab-sub">回路全体が消灯していても、すべての部品が故障しているとは限らない。電池・導線・豆電球内部・接点を順番に調べよう。</p>'+
  '<div class="dual-parts">'+parts.map(p=>'<button type="button" class="dual-part'+(s.selected===p.id?" chosen":"")+'" data-dual-part="'+p.id+'" aria-pressed="'+(s.selected===p.id)+'"><strong>'+p.icon+' '+p.name+'</strong><small>'+(s.probes[p.id]?"実験済み":"未確認")+'</small></button>').join("")+'</div>'+
  (selection?'<div class="dual-testbench"><strong>🔮 '+selection.question+'</strong>'+
  (trial?'<div class="dual-result" role="status">予想：'+(trial.guess==="good"?selection.goodLabel:selection.badLabel)+' ／ 実際：'+(trial.actual==="good"?selection.goodLabel:selection.badLabel)+(trial.guess===trial.actual?"。予想どおり！":"。予想と違った。結果を記録したよ。")+'</div>':
  options([["good",selection.goodLabel],["open",selection.badLabel]],"data-dual-predict",s.prediction)+
- '<button class="dual-measure" data-dual-test type="button" '+(!s.prediction?"disabled":"")+'>🔬 安全な検査で確かめる</button>')+'</div>':"")+
- '<div class="dual-notes"><strong>📖 検査記録</strong>'+parts.map(p=>'<div class="dual-note"><strong>'+p.name+'</strong><span>'+(s.probes[p.id]?(s.probes[p.id].actual==="good"?p.goodLabel:p.badLabel):"？ 未確認")+'</span></div>').join("")+'</div></section>'+repair+'</div>';
+ '<button class="dual-measure" data-dual-test type="button" '+(!s.prediction?"disabled":"")+'>🔬 しらべてみる</button>')+'</div>':"")+
+ '<details class="dual-notes"><summary>📖 4回の けっかを 見る</summary>'+parts.map(p=>'<div class="dual-note"><strong>'+p.name+'</strong><span>'+(s.probes[p.id]?(s.probes[p.id].actual==="good"?p.goodLabel:p.badLabel):"？ 未確認")+'</span></div>').join("")+'</details></section>'+repair+'</div>';
 }
 window.AkariDoubleFault={parts,initial,normalize,connected,evaluate,signature,allTested,secondUnlocked,canFinish,render,circuitSvg};
 })();
