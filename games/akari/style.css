@@ -1121,3 +1121,8 @@
  .quest-head>.reading-toggle{grid-area:reading;justify-self:end}
  .quest-head h2{overflow-wrap:anywhere}
 }
+
+/* The smaller set of essential readings can be genuinely legible on phones.
+ * Avoid 9px furigana in children-facing controls. */
+.reading-easy .akari-yomi rt{font-size:clamp(11px,.72em,12px);line-height:1.25}
+@media(max-width:740px){.reading-easy .akari-yomi rt{font-size:clamp(11px,.76em,12px)}}
