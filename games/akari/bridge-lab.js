@@ -4,9 +4,9 @@
  * The sample test is simulated; a metal is only proven conductive after prediction and measurement.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
- {id:"battery",name:"橋の入口・乾電池",icon:"🔋",finding:"乾電池の両極から導線が出ている。でも途中の接点が離れている。"},
- {id:"lamp",name:"橋の中央・豆電球",icon:"💡",finding:"豆電球の金属の横と底は残っている。両方とも導線につながる必要がある。"},
- {id:"return",name:"橋の出口・戻り道",icon:"🌉",finding:"電池の−極へ戻る導線にも、もう1か所すき間がある。"}
+ {id:"battery",name:"橋の はじめ・電池",icon:"🔋",finding:"電池から 線が のびている。 でも、すき間が ある！"},
+ {id:"lamp",name:"橋の まんなか・電球",icon:"💡",finding:"まめ電球の 横と 下に 線を つなごう。"},
+ {id:"return",name:"橋の おわり・もどる道",icon:"🌉",finding:"電池の −へ もどる線にも、すき間が ある！"}
 ];
 const materials=[
  {id:"iron",name:"鉄のくぎ",conductive:true,detail:"鉄は金属。"},
@@ -15,9 +15,9 @@ const materials=[
  {id:"plastic",name:"プラスチック片",conductive:false,detail:"プラスチックは通常は電気を通しにくい。"}
 ];
 const reasonOptions=[
- ["both","乾電池の＋から修理A・豆電球・修理Bを通り、−へ戻る輪ができたから"],
- ["one","＋極が豆電球のガラスに触れれば、戻り道がなくてもつくから"],
- ["bright","光って見える材料なら、電気も必ず通すから"]
+ ["both","＋から 電球を 通り、−へ もどる 道が できた"],
+ ["one","ガラスに ＋を つければ、もどる道は いらない"],
+ ["bright","ピカピカなら ぜんぶ 電気が 通る"]
 ];
 const material=id=>materials.find(x=>x.id===id);
 const valid=id=>Boolean(material(id));
@@ -109,8 +109,8 @@ function render(raw){
  const tests=Object.entries(s.tests).map(([id,o])=>'<span class="bridge-record">'+material(id).name+"：予想 "+(o.guess==="lit"?"点灯":"消灯")+" → 実際 "+(o.actual==="lit"?"点灯":"消灯")+'</span>').join("");
  return '<div class="bridge-lab">'+
  '<div class="bridge-quest-strip"><strong>🌉 こもれび橋・復旧作戦</strong><span>現地調査 '+s.inspected.length+'/3　｜　実験 '+Object.keys(s.tests).length+'/4　｜　回路 '+(lit?"点灯":"未復旧")+'</span></div>'+
- '<section class="lab-panel bridge-section"><h3>① 橋を歩いて故障を調査</h3><p class="lab-sub">3つの場所をタップ。まず事実を集めよう。まだ材料の正解はわからない。</p><div class="bridge-sites">'+details+'</div></section>'+
- (step>=1?'<section class="lab-panel bridge-section"><h3>② 材料を調べて通電を予想</h3><p class="lab-sub">好きな材料を選んで、豆電球の実験装置に一つずつ挟もう。予想が外れても減点はないよ。</p>'+
+ '<section class="lab-panel bridge-section"><h3>① 橋の 3か所を 見よう</h3><p class="lab-sub">3つの場所をタップ。まず事実を集めよう。まだ材料の正解はわからない。</p><div class="bridge-sites">'+details+'</div></section>'+
+ (step>=1?'<section class="lab-panel bridge-section"><h3>② 材料を ためしてみよう</h3><p class="lab-sub">好きな材料を選んで、豆電球の実験装置に一つずつ挟もう。予想が外れても減点はないよ。</p>'+
  '<div class="bridge-materials">'+source+'</div>'+
  '<div class="bridge-test-box">'+
  (selected?'<strong>🔮 '+selected.name+'を実験装置に挟むと？</strong>'+
@@ -121,13 +121,13 @@ function render(raw){
  '</div><div class="bridge-log"><strong>📖 実験の記録</strong><div>'+ (tests||'<span class="bridge-record">まだ測定結果はないよ。</span>')+'</div></div>'+
  (step===1?'<p class="bridge-proceed">⚡ 回路修理へ進むには、電気を通す2種類・通さない1種類の実験結果を集めよう。</p>':"")+
  '</section>':"")+
- (step===2?'<section class="lab-panel bridge-section"><h3>③ 橋の回路を修理する</h3><p class="lab-sub">橋の手前と奥の2つのすき間を、実験済みの材料で埋めよう。どちらかが切れていても、豆電球はつかない。</p>'+
+ (step===2?'<section class="lab-panel bridge-section"><h3>③ 橋の 2か所を なおそう</h3><p class="lab-sub">橋の手前と奥の2つのすき間を、実験済みの材料で埋めよう。どちらかが切れていても、豆電球はつかない。</p>'+
  '<div class="bridge-circuit">'+circuit(s.slots,lit)+'</div>'+
  '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>修理 '+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"未修理")+'</span><small>'+(!selected?"実験済み材料を選択":!s.tests[selected.id]?"選んだ材料を先に実験":"選択中の材料をはめる")+'</small></button>').join("")+'</div>'+
  '<div class="bridge-predict"><strong>🔮 修理した回路に電気を流すと？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
  '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 修理した回路を仮想通電</button></div>'+
  (s.repairResult?'<div class="bridge-outcome '+(lit?"lit":"dark")+'" role="status">予想：'+(s.repairResult.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(lit?"点灯":"消灯")+(lit?"。橋のあかりがともった！":"。実験結果を比べて、2つのすき間の材料を見直そう。")+'</div>':"")+
- (lit?'<div class="bridge-why"><h3>④ なぜ光ったのだろう？</h3><p class="lab-sub">実際に組み立てた回路を見て、理由を選ぼう。</p>'+
+ (lit?'<div class="bridge-why"><h3>④ どうして 光った？</h3><p class="lab-sub">実際に組み立てた回路を見て、理由を選ぼう。</p>'+
  reasonOptions.map(([id,text])=>'<button type="button" data-bridge-reason="'+id+'" class="'+(s.reason===id?" chosen":"")+'" aria-pressed="'+(s.reason===id)+'">'+text+'</button>').join("")+
  '<p class="lab-sub">理由を選んだら、画面下の「橋の復旧を確認する」でクリア。</p></div>':"")+'</section>':"")+
  '</div>';
