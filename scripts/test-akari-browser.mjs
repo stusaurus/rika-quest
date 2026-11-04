@@ -141,6 +141,7 @@ try{
    assert.equal(await extraYomi.evaluate(el=>getComputedStyle(el).display),"none","Extra ruby should not crowd the default screen");
    assert.equal(await page.locator(".pacing-tip").first().evaluate(el=>getComputedStyle(el).display),"none","Avoid duplicating the live task text with the progress card");
    assert.equal(await page.locator(".reading-task-row").evaluate(el=>el.scrollWidth <= el.clientWidth+2),true,"Task and audio control must fit the phone width");
+   assert.equal(await page.locator(".quest-head").evaluate(el=>el.scrollWidth <= el.clientWidth+2),true,"Mission title, stars and reading mode must not overflow on 320px phones");
    assert.equal(await page.locator("#readTaskBtn").evaluate(el=>el.hidden),!(await page.evaluate(()=>typeof window.speechSynthesis?.speak==="function"&&typeof window.SpeechSynthesisUtterance==="function")),"Audio button must match native speech capability");
 
    assert.match(await page.locator("#missionStory").textContent(),/小屋が まっくら/,"Default copy must fit third grade");
