@@ -31,6 +31,7 @@ vm.runInContext(readFileSync("games/akari/finale-lab.js","utf8"),context,{filena
 vm.runInContext(readFileSync("games/akari/pacing.js","utf8"),context,{filename:"pacing.js"});
 vm.runInContext(readFileSync("games/akari/reading.js","utf8"),context,{filename:"reading.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
+vm.runInContext(readFileSync("games/akari/furigana.js","utf8"),context,{filename:"furigana.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
 const check=()=>el("checkBtn").listeners.click();
