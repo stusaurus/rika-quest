@@ -67,9 +67,26 @@ function material(id){
 function circuit(design,a,b){
  const parallel=design==="parallel",on=parallel?(a||b):(a&&b);
  const S=(x,y,v,label)=>'<g><circle cx="'+x+'" cy="'+y+'" r="4" fill="#f5e0b8"/><circle cx="'+(x+30)+'" cy="'+y+'" r="4" fill="#f5e0b8"/><path d="M'+x+' '+y+'L'+(x+25)+' '+(v?y:y-16)+'" fill="none" stroke="'+(v?'#9bf4b8':'#ffc09f')+'" stroke-width="5" stroke-linecap="round"/><text x="'+(x+15)+'" y="'+(y-22)+'" text-anchor="middle" font-size="13" fill="#fff">'+label+'</text></g>';
- const common='<rect x="20" y="92" width="48" height="58" rx="9" fill="#c47b54" stroke="#ecd1a6" stroke-width="3"/><text x="44" y="115" font-size="13" text-anchor="middle" fill="#fff">＋</text><text x="44" y="136" font-size="13" text-anchor="middle" fill="#fff">−</text>'
- +'<path d="M44 92V58H110M310 58H348V91M348 144V192H44V151" fill="none" stroke="#ffd4a4" stroke-width="5" stroke-linejoin="round"/>'
- +'<circle cx="348" cy="118" r="28" fill="'+(on?'#ffefad':'#537d91')+'" stroke="#d9e8e8" stroke-width="4"/><path d="M333 117H363M348 104V131" stroke="#ffffe4" stroke-width="3"/>';
+ const common='<g class="diagram-battery">'+
+ '<rect x="26" y="91" width="36" height="60" rx="7" fill="#277f97" stroke="#d4edf0" stroke-width="2.2"/>'+
+ '<path d="M31 98V140" stroke="#99d4da" stroke-width="3" stroke-linecap="round"/>'+
+ '<rect x="32" y="111" width="24" height="24" rx="3" fill="#f3f9f2"/>'+
+ '<text x="44" y="125" text-anchor="middle" font-size="9" fill="#245267" font-weight="900">1.5 V</text>'+
+ '<rect x="37" y="85" width="14" height="8" rx="3" fill="url(#metal)" stroke="#eef6f1" stroke-width="1.2"/>'+
+ '<path d="M29 152H59" stroke="#c0d0d5" stroke-width="5" stroke-linecap="round"/>'+
+ '<text x="71" y="98" fill="#ffe8ad" font-weight="900" font-size="15">＋</text>'+
+ '<text x="71" y="153" fill="#dceff2" font-weight="900" font-size="15">−</text></g>'+
+ '<path d="M44 90V58H110M310 58H318V117M348 157V192H44V152" fill="none" stroke="#e5d2b7" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>'+
+ '<g class="diagram-bulb">'+
+ (on?'<ellipse cx="349" cy="107" rx="36" ry="43" fill="#ffe69a" opacity=".34" filter="url(#glow)"/>':'')+
+ '<path d="M337 135Q327 125 326 110Q325 88 341 82Q350 78 359 84Q371 93 369 111Q367 125 359 135Z" fill="'+(on?'#fff0ab':'#d1e5e9')+'" fill-opacity="'+(on?'.97':'.84')+'" stroke="#f1f6f0" stroke-width="3"/>'+
+ '<path d="M341 132V112L347 107L353 113L359 107V132" fill="none" stroke="'+(on?'#fff4be':'#ac7956')+'" stroke-width="3"/>'+
+ '<rect x="335" y="133" width="27" height="18" rx="3" fill="url(#metal)" stroke="#dae8e6" stroke-width="1.4"/>'+
+ '<path d="M337 139H360M337 145H360" stroke="#728d9b" stroke-width="2"/>'+
+ '<path d="M318 117H334" stroke="#d3c7b4" stroke-width="5" stroke-linecap="round"/>'+
+ '<rect x="340" y="151" width="16" height="5" rx="2" fill="#243f53"/>'+
+ '<circle cx="348" cy="157" r="4" fill="#f2d39a" stroke="#fcf1d5" stroke-width="1.3"/>'+
+ '</g>';
  const routes=parallel?
  '<path d="M110 58V90M110 90V144M110 90H154M184 90H276M110 144H154M184 144H276M276 90V58M276 144V90M276 58H310" stroke="#f9dab4" fill="none" stroke-width="5"/>'+S(154,90,a,'A')+S(154,144,b,'B'):
  '<path d="M110 58H154M184 58H232M262 58H310" stroke="#f9dab4" fill="none" stroke-width="5"/>'+S(154,58,a,'A')+S(232,58,b,'B');
