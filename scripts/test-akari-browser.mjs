@@ -622,11 +622,15 @@ try{
    }
    assert.equal(await page.locator(".dual-notes .dual-note").count(),4,"Evidence for all separate components enters notebook");
    assert.equal(await page.locator(".dual-diagram").count(),1,"Circuit repair topology appears after evidence");
+   await page.locator('[data-dual-view="right"]').click();
+   if(width<740)assert.ok(await page.locator(".dual-diagram").evaluate(el=>el.scrollLeft)>10,"Mobile lighthouse circuit can be navigated to bulb contact");
+
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-double-fault-evidence.png",fullPage:true});
    await page.locator('[data-dual-fix="battery"]').click();
    assert.equal(await page.locator(".dual-repairs button.fixed").count(),0,"A healthy battery must not be treated as a fault");
    await page.locator('[data-dual-fix="wire"]').click();
    assert.equal(await page.locator(".dual-repairs button.fixed").count(),1);
+   if(width<740)assert.ok(await page.locator(".dual-diagram").evaluate(el=>el.scrollLeft)>10,"Circuit pan is preserved when first wire is repaired");
    assert.equal(await page.locator('[data-dual-fix="contact"]').isDisabled(),true,"Must run a second measurement after fixing only one defect");
    await page.locator('[data-dual-circuit-guess="lit"]').click();
    await page.locator('[data-dual-circuit-test]').click();
