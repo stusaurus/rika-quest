@@ -11,73 +11,73 @@ const chapters=[
 const count=x=>Array.isArray(x)?x.length:Object.keys(x&&typeof x==="object"?x:{}).length;
 const chapter=id=>chapters.find(x=>id>=x.from&&id<=x.to)||chapters[0];
 function status(id,ui={},completed=false){
- if(completed)return {phase:3,label:"発見を記録できた！",detail:"この場所のあかりが戻った。次の冒険や、観察手帳を見よう。",count:""};
+ if(completed)return {phase:3,label:"できた！",detail:"この場所のあかりが戻った。次の冒険や、観察手帳を見よう。",count:""};
  if(ui.transfer){
   const index=Math.min(3,count(ui.transfer.answers));
-  return {phase:3,label:"応用問題に挑戦",detail:"初めて見る回路を観察し、点灯の予想と理由を確かめよう。",count:index+" / 3 回路"};
+  return {phase:3,label:"あたらしい 回路に ちょうせん",detail:"初めて見る回路を観察し、点灯の予想と理由を確かめよう。",count:index+" / 3 回路"};
  }
  if(ui.builder){
   const tests=ui.builder.tests||{};
   const n=count(tests);
-  return {phase:3,label:"自由配線に挑戦",detail:"自分で導線をつなぎ、測定結果と電気の通り道を確認しよう。",count:n+" 通りの測定"};
+  return {phase:3,label:"自分で 線を つなごう",detail:"自分で導線をつなぎ、測定結果と電気の通り道を確認しよう。",count:n+" 通りの測定"};
  }
  if(ui.switchLab){
   const n=count(ui.switchLab.trials);
-  return {phase:3,label:"設計を実験で証明",detail:"配線を作り、スイッチ4通りの点灯・消灯を説明しよう。",count:n+" / 4 通り"};
+  return {phase:3,label:"4回 ためして みよう",detail:"配線を作り、スイッチ4通りの点灯・消灯を説明しよう。",count:n+" / 4 通り"};
  }
  if(id<=2){
   const n=count(ui.wires),correct=n>=2;
-  return {phase:correct?2:1,label:correct?"回路のつながりを確かめよう":"豆電球につながる道を作ろう",detail:"乾電池の＋極から豆電球の2つの金属接点を通り、−極へ戻れるかな？",count:n+" 本の導線"};
+  return {phase:correct?2:1,label:correct?"光るか ためそう":"まめ電球を つなごう",detail:"乾電池の＋極から豆電球の2つの金属接点を通り、−極へ戻れるかな？",count:n+" 本の導線"};
  }
  if(id===3){
   const b=ui.bridge||{},ins=count(b.inspected),tested=count(b.tests),slots=count(Object.values(b.slots||{}).filter(Boolean));
-  if(ins<3)return {phase:1,label:"橋の3か所を調べる",detail:"消えた理由を、目で見える証拠から探そう。",count:ins+" / 3 か所"};
-  if(!b.repairResult||slots<2)return {phase:2,label:"材料を比べ、2か所を修理する",detail:"予想と実験の結果を比べてから、回路のすき間を直そう。",count:tested+" 種類を実験"};
-  return {phase:3,label:"修理結果の理由を考える",detail:"豆電球を通る電気の輪ができたか、結果から説明しよう。",count:slots+" / 2 修理"};
+  if(ins<3)return {phase:1,label:"橋の 3か所を 見よう",detail:"消えた理由を、目で見える証拠から探そう。",count:ins+" / 3 か所"};
+  if(!b.repairResult||slots<2)return {phase:2,label:"材料を ためして なおそう",detail:"予想と実験の結果を比べてから、回路のすき間を直そう。",count:tested+" 種類を実験"};
+  return {phase:3,label:"どうして 光った？",detail:"豆電球を通る電気の輪ができたか、結果から説明しよう。",count:slots+" / 2 修理"};
  }
  if(id===4){
   const g=ui.garden||{},cal=count(g.calibrations),n=count(g.trials);
-  if(cal<2||g.calibrationReason!=="control")return {phase:1,label:"同じ材料で接点を比べる",detail:"変える条件は1つだけ。点灯結果の違いを観察しよう。",count:cal+" / 2 接点条件"};
-  if(!g.finalReason)return {phase:2,label:"条件をそろえて材料実験",detail:"鉄・アルミ・木・プラスチックで結果の違いを確かめよう。",count:n+" 種類を調査"};
-  return {phase:3,label:"実験から規則を説明する",detail:"材料の性質と、接点のつなぎ方を区別して説明しよう。",count:n+" 種類を調査"};
+  if(cal<2||g.calibrationReason!=="control")return {phase:1,label:"同じ クリップで ためそう",detail:"変える条件は1つだけ。点灯結果の違いを観察しよう。",count:cal+" / 2 接点条件"};
+  if(!g.finalReason)return {phase:2,label:"つなぎ方を そろえて ためそう",detail:"鉄・アルミ・木・プラスチックで結果の違いを確かめよう。",count:n+" 種類を調査"};
+  return {phase:3,label:"けっかから わかったことは？",detail:"材料の性質と、接点のつなぎ方を区別して説明しよう。",count:n+" 種類を調査"};
  }
  if(id===5){
   const g=ui.garden||{},n=count(g.tests),installed=Object.values(g.slots||{}).filter(Boolean).length;
-  if(n<3)return {phase:1,label:"材料を実験で見分ける",detail:"色や光り方にだまされず、予想と通電結果を比較しよう。",count:n+" 種類の実験"};
-  if(!g.measurement)return {phase:2,label:"電気の道と仕切りを設計",detail:"電気を流す部分と、電池の両極を隔てる部分を使い分けよう。",count:installed+" / 3 部品"};
-  return {phase:3,label:"安全な回路を説明する",detail:"通電する部分・隔てる部分の両方の役割を確認しよう。",count:installed+" / 3 部品"};
+  if(n<3)return {phase:1,label:"材料を ためそう",detail:"色や光り方にだまされず、予想と通電結果を比較しよう。",count:n+" 種類の実験"};
+  if(!g.measurement)return {phase:2,label:"3か所に 材料を おこう",detail:"電気を流す部分と、電池の両極を隔てる部分を使い分けよう。",count:installed+" / 3 部品"};
+  return {phase:3,label:"どうして 安全に 光った？",detail:"通電する部分・隔てる部分の両方の役割を確認しよう。",count:installed+" / 3 部品"};
  }
  if(id===6){
   const n=count(ui.inspected),fixed=count(ui.fixed);
-  return {phase:fixed?2:1,label:fixed?"修理した回路を確かめる":"故障の証拠を探す",detail:"部品の状態を調べ、消灯の原因を特定しよう。",count:n+" か所を検査"};
+  return {phase:fixed?2:1,label:fixed?"なおしたら ためそう":"こわれた 所は どこ？",detail:"部品の状態を調べ、消灯の原因を特定しよう。",count:n+" か所を検査"};
  }
  if(id===7||id===8){
   const n=count(ui.trials);
-  return {phase:n===4?3:2,label:n===4?"4通りをもとに考える":"スイッチの条件を測る",detail:"2つのスイッチを切り替えて、どんなときに点灯するか比べよう。",count:n+" / 4 通り"};
+  return {phase:n===4?3:2,label:n===4?"4回の けっかから 考えよう":"スイッチを かえて ためそう",detail:"2つのスイッチを切り替えて、どんなときに点灯するか比べよう。",count:n+" / 4 通り"};
  }
  if(id>=9&&id<=11){
   const b=ui.batteryLab||{},n=count(b.trials);
-  if(n<4)return {phase:1,label:"電池の条件を変えて比較",detail:"同じ回路の条件を1つずつ変えて、予想から実験しよう。",count:n+" / 4 実験"};
-  if(!b.service)return {phase:2,label:"観察した結果を現場に使う",detail:"どの電源と豆電球を採用するか、実験結果から選ぼう。",count:"4 / 4 実験"};
-  return {phase:3,label:"選んだ理由を説明する",detail:"結果だけでなく、電圧や電池の向きとの関係を確かめよう。",count:"4 / 4 実験"};
+  if(n<4)return {phase:1,label:"電池を かえて ためそう",detail:"同じ回路の条件を1つずつ変えて、予想から実験しよう。",count:n+" / 4 実験"};
+  if(!b.service)return {phase:2,label:"どれを つかう？",detail:"どの電源と豆電球を採用するか、実験結果から選ぼう。",count:"4 / 4 実験"};
+  return {phase:3,label:"どうして それを えらんだ？",detail:"結果だけでなく、電圧や電池の向きとの関係を確かめよう。",count:"4 / 4 実験"};
  }
  if(id===12){
   const s=ui.safety||{};
-  return {phase:Math.min(3,(s.index??0)+1),label:(s.index??0)===2?"最後の安全点検":"危険な電気の近道を調べる",detail:"危険な道を減らしても、豆電球を通る輪は残せるかな？",count:((s.index??0)+1)+" / 3 点検"};
+  return {phase:Math.min(3,(s.index??0)+1),label:(s.index??0)===2?"あぶない 道を なくそう":"あぶない 道は どれ？",detail:"危険な道を減らしても、豆電球を通る輪は残せるかな？",count:((s.index??0)+1)+" / 3 点検"};
  }
  if(id===13){
   const d=ui.doubleFault||{},n=count(d.probes),fixed=count(d.fixed);
-  if(n<4)return {phase:1,label:"4つの部品を検査する",detail:"電池を外した安全な仮想検査で、どこがつながらないか調べよう。",count:n+" / 4 か所"};
-  if(fixed<2||!d.last||d.last.kind!=="lit")return {phase:2,label:"修理してから再測定する",detail:"1か所直したあとも、もう一度点灯を調べよう。",count:fixed+" / 2 修理"};
-  return {phase:3,label:"2つの故障を説明する",detail:"なぜ片方だけでは光らず、両方直すと光ったのだろう？",count:fixed+" / 2 修理"};
+  if(n<4)return {phase:1,label:"4つの 部品を しらべよう",detail:"電池を外した安全な仮想検査で、どこがつながらないか調べよう。",count:n+" / 4 か所"};
+  if(fixed<2||!d.last||d.last.kind!=="lit")return {phase:2,label:"なおして もう一度 ためそう",detail:"1か所直したあとも、もう一度点灯を調べよう。",count:fixed+" / 2 修理"};
+  return {phase:3,label:"2か所 なおすと 光るのは なぜ？",detail:"なぜ片方だけでは光らず、両方直すと光ったのだろう？",count:fixed+" / 2 修理"};
  }
  if(id===14){
   const f=ui.finale||{},n=Object.values(f.tests||{}).reduce((a,v)=>a+count(v),0),installed=Object.values(f.installed||{}).filter(Boolean).length;
-  if(n<6)return {phase:1,label:"3つの調査場所で比較する",detail:"2条件ずつ、合計6通りを予想してから実験しよう。",count:n+" / 6 実験"};
-  if(!f.overall||f.overall.kind!=="bright")return {phase:2,label:"調査した3部品を組み合わせる",detail:"証拠をもとに取り付け、灯台全体の点灯を仮想実験しよう。",count:installed+" / 3 部品"};
-  return {phase:3,label:"最後の科学的な説明",detail:"閉じた電気の輪を、部品と接点から説明しよう。",count:"6 / 6 実験"};
+  if(n<6)return {phase:1,label:"6つ ためしてみよう",detail:"2条件ずつ、合計6通りを予想してから実験しよう。",count:n+" / 6 実験"};
+  if(!f.overall||f.overall.kind!=="bright")return {phase:2,label:"3つの 部品を つなごう",detail:"証拠をもとに取り付け、灯台全体の点灯を仮想実験しよう。",count:installed+" / 3 部品"};
+  return {phase:3,label:"どうして 光った？",detail:"閉じた電気の輪を、部品と接点から説明しよう。",count:"6 / 6 実験"};
  }
- return {phase:1,label:"実験の準備",detail:"予想を立て、結果とその理由を確かめよう。",count:""};
+ return {phase:1,label:"じっけんの じゅんび",detail:"予想を立て、結果とその理由を確かめよう。",count:""};
 }
 function render(id,ui,completed){
  const c=chapter(id),p=status(id,ui,completed),stages=["調べる","実験する","考えて直す"];
