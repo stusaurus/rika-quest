@@ -790,6 +790,17 @@ function handleWorkspace(e){
  }
  if(["battery","polarity"].includes(current().mode)&&window.AkariBatteryLab){
   const B=window.AkariBatteryLab,id=current().id,q=ui.batteryLab||B.initial(id);
+  if(target.hasAttribute("data-battery-next")){
+   const currentTest=B.get(id,B.selectedId(id,q));
+   if(!currentTest||!q.trials[currentTest.id])return;
+   const next=B.nextUntested(id,q);
+   if(!next)return;
+   if(id===9){q.size=next.size;q.phase=next.phase;}
+   else if(id===10){q.cells=next.cells;q.rating=next.rating;}
+   else{q.cells=next.cells;q.direction=next.direction;}
+   q.guess=null;ui.batteryLab=q;saveBatteryDraft();renderWorkspace();
+   setFeedback("次の条件に切り替えたよ。結果を自分で予想して、実験しよう。");return;
+  }
   if(target.hasAttribute("data-battery-field")){
    const field=target.dataset.batteryField,val=target.dataset.batteryValue;
    const choices=id===9?{size:["small","large"],phase:["early","late"]}:id===10?{cells:["one","two"],rating:["1.5","3"]}:{cells:["one","two"],direction:["forward","reverse","aligned","opposed"]};
@@ -1074,6 +1085,14 @@ function handleWorkspace(e){
  }
  if(current().mode==="finale"&&window.AkariFinaleLab){
   const B=window.AkariFinaleLab,q=ui.finale||B.initial();
+  if(target.hasAttribute("data-finale-next")){
+   if(!q.tests[q.active]?.[q.selected[q.active]])return;
+   const next=B.nextUntested(q);
+   if(!next)return;
+   q.active=next.station;q.selected[next.station]=next.option;q.guess=null;
+   ui.finale=q;saveFinaleDraft();renderWorkspace();
+   setFeedback("次の未実験の条件を用意した。結果を予想してから仮想実験しよう。");return;
+  }
   if(target.hasAttribute("data-finale-view")){
    const panel=$("workspace").querySelector(".finale-circuit"),view=target.dataset.finaleView;
    if(!panel||!["left","right"].includes(view))return;
