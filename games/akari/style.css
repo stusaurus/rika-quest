@@ -902,3 +902,41 @@
 .dual-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .dual-nav button{min-height:45px;border:2px solid #91bbaf;border-radius:10px;background:#def4e8;color:#245267;font-size:13px;font-weight:800;cursor:pointer}
 @media(max-width:375px){.dual-nav button{font-size:12px}}
+
+/* Finale 14 — six independent comparisons, evidence log, circuit assembly */
+.finale-lab{display:grid;gap:14px;min-width:0;color:#effbfa}
+.finale-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:16px;border:1px solid #a3c2a4;border-radius:17px;background:linear-gradient(120deg,#245269,#366e6a)}
+.finale-head strong{font-size:20px;flex:1 1 240px}.finale-head small{font-size:12px;color:#e0f6df}
+.finale-security,.finale-reminder{font-size:12px;line-height:1.7;color:#584323;background:#f7e5bb;border-radius:10px;border-left:4px solid #d09a53;padding:10px 12px;margin:0}
+.finale-section{display:grid;gap:12px;min-width:0}.finale-section h3{margin:0;font-size:17px}.finale-section .lab-sub{margin:0;line-height:1.65}
+.finale-stations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.finale-stations button,.finale-specimens button,.finale-choices button,.finale-reasons button,.finale-view button{background:#e5f4e9;border:2px solid #95bbc5;color:#244953;border-radius:12px;padding:10px;min-height:48px;font-size:12px;font-weight:800;line-height:1.45;cursor:pointer}
+.finale-stations button{display:grid;gap:5px;text-align:center;align-content:center}.finale-stations small{color:#527271}
+.finale-stations button.selected,.finale-specimens button.selected,.finale-choices button.selected,.finale-reasons button.selected{background:#ffedb1;border-color:#d6a64b;color:#60481c}
+.finale-investigate{display:grid;gap:11px;border:1px solid #78a7ac;background:#173e53;padding:14px;border-radius:15px}
+.finale-investigate h3{margin:0}.finale-investigate>p{font-size:13px;margin:0;line-height:1.7}
+.finale-specimens,.finale-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.finale-specimens button{display:grid;gap:6px;justify-items:center}.finale-specimens small{font-size:10px;color:#5c736f}
+.finale-measure,.finale-place button{min-height:48px;border:2px solid #d4a65a;border-radius:11px;background:#ffe7ab;color:#5e431c;font-size:14px;font-weight:900;padding:10px 12px;cursor:pointer}
+.finale-measure:disabled,.finale-place button:disabled{opacity:.5;cursor:not-allowed}
+.finale-result{background:#2e6960;color:#edfff7;border:1px solid #8ac8b7;padding:12px;border-radius:11px;font-size:13px;line-height:1.7}
+.finale-place{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:center;gap:9px}.finale-place span{font-size:12px;line-height:1.5}
+.finale-log{display:grid;gap:7px;border:1px solid #6f9da5;border-radius:12px;padding:12px}
+.finale-log>strong{font-size:13px}.finale-log-item{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,2fr);gap:8px;background:#285566;border-radius:8px;padding:9px;font-size:12px;line-height:1.6}
+.finale-log-item strong{font-size:12px}
+.finale-circuit{max-width:100%;overflow-x:auto;background:#112f43;border:1px solid #78a3b1;border-radius:14px;overscroll-behavior-x:contain}
+.finale-circuit-svg{width:100%;min-width:630px;height:auto;display:block}
+.finale-view{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.finale-master-test,.finale-reasons{display:grid;gap:10px;border:1px solid #6a9fab;padding:13px;border-radius:13px}
+.finale-master-test>strong{font-size:14px}.finale-reasons button{text-align:left}
+.story-scene.finale-powered:not(.restored) .scene-glow{opacity:.7}
+.story-scene.finale-powered:not(.restored) .scene-bulb{fill:#fff0ad!important;filter:drop-shadow(0 0 10px #ffe082)}
+@media(max-width:740px){
+ .finale-lab{gap:11px}.finale-head{padding:12px}.finale-head strong{font-size:17px}
+ .finale-section{gap:10px}.finale-stations{grid-template-columns:1fr}.finale-stations button{display:grid;grid-template-columns:minmax(0,1fr) auto;text-align:left;min-height:47px}
+ .finale-place{grid-template-columns:1fr}.finale-log-item{grid-template-columns:1fr}
+ .finale-circuit-svg{min-width:630px}.finale-section .lab-sub{font-size:12px}
+ .finale-stations strong{font-size:12px}
+}
+@media(max-width:375px){.finale-specimens button{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.finale-lab *{animation:none!important;transition:none!important}}
