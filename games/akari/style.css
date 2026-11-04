@@ -1126,3 +1126,45 @@
  * Avoid 9px furigana in children-facing controls. */
 .reading-easy .akari-yomi rt{font-size:clamp(11px,.72em,12px);line-height:1.25}
 @media(max-width:740px){.reading-easy .akari-yomi rt{font-size:clamp(11px,.76em,12px)}}
+
+/* Stage-scene cleanup: no clipped/competing mascot. The animated town and
+   earned restoration, not a character sprite, are the visual reward. */
+.story-scene{height:300px}
+.story-scene .scene-character{display:none!important}
+.scene-caption{max-width:min(470px,68%);padding:13px 17px 15px;z-index:7}
+.scene-caption h1{line-height:1.45}
+.scene-caption p{line-height:1.65}
+.story-scene .landmark{pointer-events:none}
+/* Physically meaningful terminals. Coordinates agree with SVG 400×250 viewBox. */
+.circuit-inner .terminal[data-t="P"]{left:20%;top:17.2%;background:#c95645;border-color:#fff0d1}
+.circuit-inner .terminal[data-t="N"]{left:20%;top:82.8%;background:#376a9b;border-color:#e0effc}
+.circuit-inner .terminal[data-t="L"]{left:61.25%;top:57.6%;background:#976e2c;border-color:#fff0c6}
+.circuit-inner .terminal[data-t="R"]{left:77.5%;top:82.4%;background:#976e2c;border-color:#fff0c6}
+.circuit-inner .terminal.selected{background:#ffce65!important;border-color:#fff5c8;color:#503a18}
+.circuit-inner .terminal-label{
+ color:#eff7f4;text-shadow:0 2px 4px #0d2638;
+ background:#163748a8;border:1px solid #5e8595;
+ border-radius:7px;padding:2px 5px;line-height:1.4;white-space:nowrap;
+}
+.circuit-inner .label-p{left:20%;top:-6%}
+.circuit-inner .label-n{left:20%;top:96%}
+.circuit-inner .label-l{left:61%;top:71%}
+.circuit-inner .label-r{left:77.5%;top:96%}
+/* Visual hierarchy: the object's real contacts matter more than the decorative board. */
+.circuit-svg-v2 .battery-model,.circuit-svg-v2 .bulb-model{filter:drop-shadow(0 4px 3px #0e253d70)}
+.circuit-svg-v2 .wire{stroke:#f6e1b0}
+.circuit-svg-v2 .wire.danger{stroke:#ff6d5e}
+.circuit-board .circuit-help{font-size:12px;line-height:1.55}
+@media(max-width:740px){
+ .story-scene{height:265px}
+ .scene-caption{left:12px;bottom:15px;max-width:76%;padding:10px 12px}
+ .scene-caption h1{font-size:clamp(17px,5.2vw,23px)}
+ .scene-caption p{font-size:12px}
+ .circuit-inner .terminal{min-width:42px;min-height:42px}
+ .circuit-inner .terminal-label{font-size:10px;padding:2px 4px}
+}
+@media(max-width:375px){
+ .scene-caption{max-width:79%}
+ .circuit-inner .terminal{min-width:40px;min-height:40px}
+ .circuit-inner .label-n,.circuit-inner .label-r{top:96%}
+}
