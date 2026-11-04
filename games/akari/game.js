@@ -23,22 +23,59 @@ let reactionToken=0,celebrationToken=0,restorationToken=0;
 const readingKey="rika-akari-reading-v1";
 let detailMode=false;
 try{detailMode=localStorage.getItem(readingKey)==="full";}catch(e){}
+const yomiKey="rika-akari-yomi-v1";
+let allYomi=false,activeSpeech=null,spokenTask="";
+try{allYomi=localStorage.getItem(yomiKey)==="all";}catch(e){}
+function voiceAvailable(){
+ return typeof window.speechSynthesis?.speak==="function"&&typeof window.SpeechSynthesisUtterance==="function";
+}
+function updateSpeechButton(){
+ const b=$("readTaskBtn");if(!b)return;
+ b.hidden=!voiceAvailable();
+ b.textContent=activeSpeech?"⏹ とめる":"🔊 よんで";
+ b.setAttribute("aria-pressed",String(!!activeSpeech));
+}
+function stopReadingTask(){
+ const spoken=activeSpeech;activeSpeech=null;spokenTask="";
+ if(spoken&&typeof window.speechSynthesis?.cancel==="function"){
+  try{window.speechSynthesis.cancel();}catch(e){}
+ }
+ updateSpeechButton();
+}
+function speakReadingTask(){
+ if(!voiceAvailable()){setFeedback("この たんまつでは よみあげが できないよ。","warning");return;}
+ if(activeSpeech){stopReadingTask();return;}
+ const text=readingTask();if(!text)return;
+ const u=new window.SpeechSynthesisUtterance(text);
+ u.lang="ja-JP";u.rate=.87;u.pitch=1;
+ u.onend=()=>{if(activeSpeech===u){activeSpeech=null;spokenTask="";updateSpeechButton();}};
+ u.onerror=()=>{if(activeSpeech===u){activeSpeech=null;spokenTask="";updateSpeechButton();setFeedback("よみあげが できなかったよ。もじを みてね。","warning");}};
+ activeSpeech=u;spokenTask=text;updateSpeechButton();
+ try{window.speechSynthesis.cancel?.();window.speechSynthesis.speak(u);}
+ catch(e){activeSpeech=null;spokenTask="";updateSpeechButton();setFeedback("よみあげが できなかったよ。もじを みてね。","warning");}
+}
 function readingTask(){
  const m=current(),phase=window.AkariPacing?.status(m.id,ui,stageComplete).phase||1;
  return window.AkariReading?.prompt(m.id,phase,ui,stageComplete)||m.instructions;
 }
 function applyReading(){
- const m=current();
+ const m=current(),task=readingTask();
+ if(activeSpeech&&spokenTask!==task)stopReadingTask();
  const intro=$("missionStory"),instructions=$("missionInstructions"),button=$("readingToggle");
  if(intro)intro.textContent=stageComplete?"やった！ あかりが もどった！":
    state.completed[m.id]?"もう一度 ためしてみよう！":
    detailMode?m.story:(window.AkariReading?.sample(m.id).story||m.story);
- if(instructions)instructions.textContent=detailMode?m.instructions:readingTask();
+ if(instructions)instructions.textContent=detailMode?m.instructions:task;
+ updateSpeechButton();
  if(button){button.textContent=detailMode?"🔎 みじかく":"📖 くわしく";button.setAttribute("aria-pressed",String(detailMode));}
  if(document.body?.classList){
   document.body.classList.toggle("reading-easy",!detailMode);
   document.body.classList.toggle("reading-full",detailMode);
+  document.body.classList.toggle("furigana-all",allYomi);
  }
+ const few=$("yomiEssentials"),all=$("yomiAll");
+ if(few)few.setAttribute("aria-pressed",String(!allYomi));
+ if(all)all.setAttribute("aria-pressed",String(allYomi));
 }
 
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
@@ -188,7 +225,7 @@ function renderJournal(){
  entries.forEach(message=>{const p=document.createElement("p");p.className="journal-entry";p.textContent="✦ "+message;rows.appendChild(p)});
 }
 function unlocked(){let id=1;while(id<=14&&state.completed[id])id++;return Math.min(id,14)}
-function changeMission(id){if(id>unlocked()&&!state.completed[id])return;state.active=id;ui=restoreMissionUI(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();reactCharacter("walk");window.scrollTo({top:0,behavior:"smooth"});}
+function changeMission(id){if(id>unlocked()&&!state.completed[id])return;stopReadingTask();state.active=id;ui=restoreMissionUI(current());hintIndex=0;failures=0;stageComplete=false;resetPresentation();persist();renderAll();reactCharacter("walk");window.scrollTo({top:0,behavior:"smooth"});}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function setFeedback(t,type=""){const e=$("feedback");e.className="feedback"+(type?" "+type:"");$("feedbackText").textContent=t;}
 function playTone(ok){if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;soundCtx=soundCtx||new C();const now=soundCtx.currentTime;(ok?[523,659,784,1046]:[220,175]).forEach((freq,i)=>{const oscillator=soundCtx.createOscillator(),gain=soundCtx.createGain(),start=now+i*.12;oscillator.type=ok?"sine":"triangle";oscillator.frequency.value=freq;oscillator.connect(gain);gain.connect(soundCtx.destination);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.065,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.22);oscillator.start(start);oscillator.stop(start+.23);});}catch(e){}}
@@ -1182,12 +1219,21 @@ function bind(){
  $("missionList").addEventListener("click",e=>{const b=e.target.closest("[data-mission]");if(b)changeMission(+b.dataset.mission)});
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
+ $("readTaskBtn").addEventListener("click",speakReadingTask);
+ $("yomiEssentials").addEventListener("click",()=>{
+  allYomi=false;try{localStorage.setItem(yomiKey,"essentials");}catch(e){}
+  applyReading();
+ });
+ $("yomiAll").addEventListener("click",()=>{
+  allYomi=true;try{localStorage.setItem(yomiKey,"all");}catch(e){}
+  applyReading();
+ });
  $("readingToggle").addEventListener("click",()=>{
   detailMode=!detailMode;try{localStorage.setItem(readingKey,detailMode?"full":"easy");}catch(e){}
   applyReading();
  });
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{stopReadingTask();clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
