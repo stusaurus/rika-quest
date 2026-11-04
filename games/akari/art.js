@@ -45,7 +45,8 @@ function bulb(on=false,short=false){
   '<path d="M86 138H137M86 147H137M86 156H137M86 165H137" stroke="#6c8795" stroke-width="3.5"/>'+
   '<path d="M82 144H43" stroke="#b5c8ce" stroke-width="7" stroke-linecap="round"/>'+
   '<circle cx="43" cy="144" r="6" fill="#f8d795" stroke="#f6efd5" stroke-width="1.5"/>'+
-  '<path d="M111 173V184" stroke="#c4d1cf" stroke-width="8" stroke-linecap="round"/>'+
+  '<rect x="99" y="170" width="24" height="10" rx="3" fill="#233a48" stroke="#6c8793" stroke-width="1.2"/>'+
+  '<path d="M111 181V184" stroke="#c4d1cf" stroke-width="8" stroke-linecap="round"/>'+
   '<circle cx="111" cy="183" r="7" fill="#f8d795" stroke="#f6efd5" stroke-width="1.5"/>'+
   '<text x="12" y="133" fill="#f7f4e7" font-size="10" font-weight="800">横の金属</text>'+
   '<text x="128" y="188" fill="#f7f4e7" font-size="10" font-weight="800">底の接点</text>',
@@ -182,8 +183,8 @@ function workbench(wires,lit){
   '<path d="M288 146H333M288 154H333M288 162H333M288 170H333" fill="none" stroke="#617788" stroke-width="3"/>'+
   '<path d="M246 144H284" fill="none" stroke="#a6b9bc" stroke-width="8" stroke-linecap="round"/>'+
   '<circle cx="247" cy="144" r="6.5" fill="#f7d799" stroke="#d2a75e" stroke-width="1.5"/>'+
-  '<path d="M310 180V205" fill="none" stroke="#b8c6cb" stroke-width="8" stroke-linecap="round"/>'+
-  '<rect x="300" y="178" width="20" height="7" rx="3" fill="#e7f0eb" stroke="#91a4b5" stroke-width="1.2"/>'+
+  '<rect x="295" y="177" width="30" height="10" rx="3" fill="#233a48" stroke="#6c8793" stroke-width="1.2"/>'+
+  '<path d="M310 189V205" fill="none" stroke="#b8c6cb" stroke-width="8" stroke-linecap="round"/>'+
   '<circle cx="310" cy="206" r="6.5" fill="#f7d799" stroke="#d2a75e" stroke-width="1.5"/></g>';
  return '<svg class="circuit-svg circuit-svg-v2" viewBox="0 0 400 250" aria-label="実物に近い乾電池と豆電球。乾電池の上は＋極、下は−極。豆電球の左に金属の横、下に底の接点がある" role="img">'+
   defs+
