@@ -13,24 +13,24 @@ const specimens=[
 const material=id=>specimens.find(s=>s.id===id)||null;
 const modes=[["tight","両方の金属接点ではさむ"],["loose","片方の接点を浮かせる"]];
 const reasons4=[
- ["control","同じ金属でも接点が離れると回路が切れて、点灯しない"],
- ["identity","鉄のクリップを使えば、どんな接点の状態でも必ず光る"],
- ["battery","豆電球が消えたのは、乾電池の色が変わったから"]
+ ["control","同じ鉄でも、すき間があると 光らない"],
+ ["identity","鉄なら、すき間があっても 光る"],
+ ["battery","電池の色が かわったから"]
 ];
 const conclusions4=[
- ["material","条件をそろえると、金属は通しやすく、乾いた木やプラスチックは通しにくい"],
- ["shiny","銀色で光るものは、材質にかかわらず必ず通す"],
- ["dark","一度消灯した材料は、いつも電気を通さないと決めてよい"]
+ ["material","同じ つなぎ方で ためすと、金ぞくは 電気を 通す"],
+ ["shiny","銀色なら ぜんぶ 電気を 通す"],
+ ["dark","1回 消えたら、その材料は いつも 光らない"]
 ];
 const paths5=[
- ["loop","乾電池の＋から豆電球を通って−に戻るところに、電気を通す部品が必要"],
- ["glass","豆電球のガラス部分に金属を置くだけで光る"],
- ["wood","電気が通る道を木やプラスチックで切ると明るくなる"]
+ ["loop","電気が 通る 道には、金ぞくを 使う"],
+ ["glass","ガラスに 金ぞくを つければ 光る"],
+ ["wood","電気の 道を 木で ふさぐと 光る"]
 ];
 const covers5=[
- ["insulate","露出した＋と−の端子を隔てる場所は、電気を通しにくい材料で分ける"],
- ["metal","端子を隔てるところに金属を入れたほうが、いつも安全"],
- ["color","銀色なら通すかどうかに関係なく、安全と判断できる"]
+ ["insulate","＋と−が 直接つながらないように ふせぐ"],
+ ["metal","＋と−の あいだは 金ぞくが 安全"],
+ ["color","銀色なら いつでも 安全"]
 ];
 const outcomeLabel={lit:"💡 点灯",dark:"◯ 消灯",short:"⚠ ショートの危険"};
 const initial=(stage)=>stage===4?
@@ -168,7 +168,7 @@ function display4(raw){
  const guess=(prefix,disabled)=>'<div class="garden-predictions">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-garden-guess="'+id+'" class="'+(s.guess===id?" chosen":"")+'" aria-pressed="'+(s.guess===id)+'" '+(disabled?"disabled":"")+'>'+label+'</button>').join("")+'</div>';
  const trialResult=measured=>measured?'<div class="garden-measured" role="status">予想 '+outcomeLabel[measured.guess]+' → 実際 '+outcomeLabel[measured.actual]+'。'+(measured.guess===measured.actual?"予想どおり！":"予想が違っても、大切な発見だよ。")+'</div>':"";
  return '<div class="garden-lab"><div class="garden-heading"><span class="eyebrow">🌿 調査 4 / 14</span><strong>実験工房・原因を見つけよう</strong><small>基準実験 '+Object.keys(s.calibrations).length+'/2　｜　材料比較 '+proof.done+'/4</small></div>'+
- '<section class="lab-panel garden-section"><h3>① 接点の違いで結果は変わる？</h3><p class="lab-sub">同じ鉄のクリップで、接点のしめ方だけを変えよう。消灯したとき、すぐに「電気を通さない」と決めてもよいかな？</p>'+
+ '<section class="lab-panel garden-section"><h3>① クリップを つないでみよう</h3><p class="lab-sub">同じ鉄のクリップで、接点のしめ方だけを変えよう。消灯したとき、すぐに「電気を通さない」と決めてもよいかな？</p>'+
  '<div class="garden-contacts">'+modeButton("loose","片方の接点が浮いている")+modeButton("tight","両方しっかりつける")+'</div>'+
  '<div class="garden-rig">'+testDiagram("clip",s.clamp,!!trial)+'</div>'+
  (trialResult(trial))+
@@ -176,15 +176,15 @@ function display4(raw){
  (Object.keys(s.calibrations).length===2?'<div class="garden-explain"><strong>2回の結果を比べて、どう説明する？</strong>'+
  reasons4.map(([id,label])=>'<button type="button" class="'+(s.calibrationReason===id?" chosen":"")+'" data-garden-control-reason="'+id+'">'+label+'</button>').join("")+'</div>':
  '<p class="lab-sub">両方の接点条件を調べよう。あと '+(2-Object.keys(s.calibrations).length)+' 回。</p>')+'</section>'+
- (ready?'<section class="lab-panel garden-section"><h3>② 条件をそろえて材料を比べよう</h3><p class="lab-sub">実験条件は自由に変更できる。ただし、材料の違いを比較するときは両方の金属接点をしっかりつなごう。</p>'+
+ (ready?'<section class="lab-panel garden-section"><h3>② 材料を くらべよう</h3><p class="lab-sub">実験条件は自由に変更できる。ただし、材料の違いを比較するときは両方の金属接点をしっかりつなごう。</p>'+
  '<div class="garden-samples">'+specimens.map(m=>'<button type="button" class="garden-sample'+(s.selected===m.id?" chosen":"")+'" data-garden-sample="'+m.id+'" aria-pressed="'+(s.selected===m.id)+'"><span>'+iconMaterial(m.id)+'</span><strong>'+m.name+'</strong><small>'+(s.trials[m.id]?.tight?"比較済み":"調査中")+'</small></button>').join("")+'</div>'+
  (sample?'<div class="garden-rig">'+testDiagram(sample.id,s.clamp,!!current)+'</div>'+
  '<p class="lab-sub">選択中：'+sample.name+' ／ '+(s.clamp==="tight"?"両接点に接触":"片方の接点が浮いている")+'</p>'+
  trialResult(current)+
  '<div class="garden-question"><strong>通電結果を予想しよう</strong>'+guess("sample",!!current)+
- '<button type="button" class="garden-try" data-garden-test '+(!s.guess||current?"disabled":"")+'>🔬 材料を仮想通電</button></div>':
+ '<button type="button" class="garden-try" data-garden-test '+(!s.guess||current?"disabled":"")+'>🔬 光るか ためす</button></div>':
  '<p class="lab-sub">まず試してみたい材料を選ぼう。</p>')+
- '<div class="garden-journal"><strong>📖 実験の証拠</strong>'+notes(s,4)+'</div>'+
+ '<details class="garden-journal"><summary>📖 ためした けっかを 見る</summary>'+notes(s,4)+'</details>'+
  '<p class="garden-goal">比較の条件：金属2種類と金属でないもの1種類を、接点をそろえて測ろう。今：'+proof.metals+' / 2 金属、'+proof.nonmetals+' / 1 その他</p>'+
  ((proof.metals>=2&&proof.nonmetals>=1)?
  '<div class="garden-explain"><strong>③ 実験から導いた結論は？</strong>'+conclusions4.map(([id,label])=>'<button type="button" class="'+(s.finalReason===id?" chosen":"")+'" data-garden-material-reason="'+id+'">'+label+'</button>').join("")+
@@ -224,21 +224,21 @@ function display5(raw){
  const role=(key,label,detail)=>'<button type="button" class="garden-slot" data-garden-slot="'+key+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>'+label+'</strong><span>'+(material(s.slots[key])?.name||"まだ決まっていない")+'</span><small>'+detail+'</small></button>';
  return '<div class="garden-lab"><div class="garden-heading"><span class="eyebrow">🕵️ 調査 5 / 14</span><strong>にせものの金属・夜の庭の修理</strong><small>材質の実験 '+e.done+'/4　｜　設置 '+Object.values(s.slots).filter(Boolean).length+'/3</small></div>'+
  '<div class="garden-hazard">⚠ ここに出るショートは画面内だけの仮想実験。実物では絶対に試さないでね。乾いた木の性質を扱う模型なので、実際の屋外配線には専用の安全な絶縁部品を使うよ。</div>'+
- '<section class="lab-panel garden-section"><h3>① 見た目ではなく、実験で正体を見つける</h3><p class="lab-sub">同じように光って見える試料もあるよ。先に予想を立てて、電気を通すか確かめてから、使い道を決めよう。</p>'+
+ '<section class="lab-panel garden-section"><h3>① 見た目で 決めずに ためそう</h3><p class="lab-sub">同じように光って見える試料もあるよ。先に予想を立てて、電気を通すか確かめてから、使い道を決めよう。</p>'+
  samples+
  (selected?'<div class="garden-rig">'+testDiagram(selected.id,"tight",!!test,test?selected.name:selected.secret)+'</div><strong class="garden-current">調査中：'+selected.secret+'</strong>'+
  (test?'<div class="garden-measured" role="status">予想：'+outcomeLabel[test.guess]+' ／ 実際：'+outcomeLabel[test.actual]+'。材質：'+selected.name+'</div>':
  '<div class="garden-question"><strong>この試料は電気を通す？</strong>'+itemGuesses+'<button type="button" class="garden-try" data-garden-test '+(!s.guess?"disabled":"")+'>🔬 仮想実験で確認する</button></div>'):'<p class="lab-sub">上の試料から1つ選ぼう。</p>')+
- '<div class="garden-journal"><strong>📖 材料の実験記録</strong>'+notes(s,5)+'</div>'+
+ '<details class="garden-journal"><summary>📖 ためした けっかを 見る</summary>'+notes(s,5)+'</details>'+
  '<p class="garden-goal">修理に必要な実験：導体1種類以上、絶縁に使える不導体2種類。記録：'+e.conductors+' / 1 導体、'+e.nonconductors+' / 2 不導体</p></section>'+
- (ready?'<section class="lab-panel garden-section"><h3>② 明かりの配線と、危険を防ぐ仕切りを設計</h3><p class="lab-sub">上で選択した実験済みの試料を下の3か所へ置こう。主回路には導体、電池の＋と−の露出端子を隔てる2か所には何を置く？</p>'+
+ (ready?'<section class="lab-panel garden-section"><h3>② 3か所に 材料を おこう</h3><p class="lab-sub">上で選択した実験済みの試料を下の3か所へ置こう。主回路には導体、電池の＋と−の露出端子を隔てる2か所には何を置く？</p>'+
  '<div class="garden-schematic">'+schematic5(s)+'</div><div class="garden-nav"><button type="button" data-garden-view="left">◀ 乾電池側</button><button type="button" data-garden-view="right">豆電球側 ▶</button></div>'+
  '<div class="garden-slots">'+role("link","回路のつなぎ目","豆電球へ電気を通す道")+role("guardA","仕切り A","＋・−の露出した端子の間")+role("guardB","仕切り B","＋・−の露出した端子の間")+'</div>'+
  '<div class="garden-question"><strong>この設計を仮想通電したらどうなる？</strong>'+
  '<div class="garden-predictions">'+[["lit","💡 点灯"],["dark","◯ 消灯"],["short","⚠ ショート"]].map(([id,label])=>'<button type="button" data-garden-design-guess="'+id+'" class="'+(s.prediction===id?" chosen":"")+'" aria-pressed="'+(s.prediction===id)+'">'+label+'</button>').join("")+'</div>'+
- '<button type="button" class="garden-try" data-garden-design-test '+(!Object.values(s.slots).every(Boolean)||!s.prediction?"disabled":"")+'>🔬 設計した設備を仮想実験</button></div>'+
+ '<button type="button" class="garden-try" data-garden-design-test '+(!Object.values(s.slots).every(Boolean)||!s.prediction?"disabled":"")+'>🔬 つないで ためす</button></div>'+
  (s.measurement?'<div class="garden-measured '+(result?.short?"danger":"")+'" role="status">予想：'+outcomeLabel[s.measurement.prediction]+' ／ 実際：'+outcomeLabel[s.measurement.actual]+(result?.short?"。電池の＋と−が電球を通らずつながる危険な近道がある！":result?.lit?"。安全な配線で庭にあかりが戻った！":"。電気の輪が途中で切れている。")+'</div>':"")+
- (result?.lit?'<div class="garden-explain"><h3>③ なぜ安全に明かりをつけられた？</h3><strong>電気を通す修理部品の役割</strong>'+paths5.map(([id,label])=>'<button type="button" class="'+(s.pathReason===id?" chosen":"")+'" data-garden-path-reason="'+id+'">'+label+'</button>').join("")+
+ (result?.lit?'<div class="garden-explain"><h3>③ どうして うまくいった？</h3><strong>電気を通す修理部品の役割</strong>'+paths5.map(([id,label])=>'<button type="button" class="'+(s.pathReason===id?" chosen":"")+'" data-garden-path-reason="'+id+'">'+label+'</button>').join("")+
  '<strong>電気を通しにくい仕切りの役割</strong>'+covers5.map(([id,label])=>'<button type="button" class="'+(s.guardReason===id?" chosen":"")+'" data-garden-cover-reason="'+id+'">'+label+'</button>').join("")+
  '<p class="lab-sub">両方答えて、画面下の「安全な修理を確認する」を押そう。</p></div>':"")+
  '</section>':"")+'</div>';
