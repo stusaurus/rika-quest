@@ -1031,3 +1031,37 @@
  box-shadow:0 5px 0 #bc884e;
 }
 .reading-easy .action-row #resetBtn{font-size:12px}
+
+/* 小学3年生の よみがな：読みを rt に出し、元の文章を変えない。 */
+.akari-yomi{
+ ruby-position:over;
+ ruby-align:center;
+ white-space:nowrap;
+ font-variant-east-asian:normal;
+ text-decoration:none;
+}
+.akari-yomi rt{
+ font-size:clamp(9px,.59em,11px);
+ font-weight:700;
+ line-height:1.2;
+ letter-spacing:0;
+ white-space:nowrap;
+ color:inherit;
+}
+.akari-yomi rt::before{content:attr(data-yomi)}
+.reading-full .akari-yomi rt{display:none}
+.reading-easy .akari-yomi{ruby-position:over}
+.reading-easy .quest-desc,.reading-easy .pacing-tip,.reading-easy .mission-item,
+.reading-easy .battery-record,.reading-easy .finale-log-item,.reading-easy .garden-record{
+ line-height:1.85;
+}
+.reading-easy .action-row .btn,.reading-easy .battery-option,.reading-easy .finale-specimen,
+.reading-easy .battery-reason,.reading-easy .finale-reason,
+.reading-easy .mission-item{
+ overflow-wrap:normal;
+ word-break:normal;
+}
+@media(max-width:740px){
+ .akari-yomi rt{font-size:clamp(9px,.62em,11px)}
+ .reading-easy .quest-desc{line-height:1.9}
+}
