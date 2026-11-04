@@ -3,11 +3,9 @@ const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
 const scenes=readFileSync("games/akari/scenes.js","utf8");
-const character=readFileSync("games/akari/character.js","utf8");
 const transfer=readFileSync("games/akari/transfer.js","utf8");
 const builder=readFileSync("games/akari/builder.js","utf8");
 const switchLab=readFileSync("games/akari/switch-lab.js","utf8");
-const characterSprite=readFileSync("games/akari/assets/tiranon-walk-prototype.webp").toString("base64");
 const safetyLab=readFileSync("games/akari/safety-lab.js","utf8");
 const bridgeLab=readFileSync("games/akari/bridge-lab.js","utf8");
 const gardenLab=readFileSync("games/akari/garden-lab.js","utf8");
@@ -27,7 +25,6 @@ let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
-output=replaceOne(output,'<script src="./character.js" defer></script>',inlineScript(character));
 output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScript(transfer));
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
 output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
@@ -40,7 +37,6 @@ output=replaceOne(output,'<script src="./finale-lab.js" defer></script>',inlineS
 output=replaceOne(output,'<script src="./pacing.js" defer></script>',inlineScript(pacing));
 output=replaceOne(output,'<script src="./reading.js" defer></script>',inlineScript(reading));
 output=replaceOne(output,'<script src="./furigana.js" defer></script>',inlineScript(furigana));
-output=output.replace("./assets/tiranon-walk-prototype.webp","data:image/webp;base64,"+characterSprite);
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
  output=output.replace(
