@@ -44,7 +44,10 @@ function tokenize(value){
  const text=String(value),out=[];let end=0;
  for(const match of text.matchAll(expression)){
   if(match.index>end)out.push({text:text.slice(end,match.index),reading:null});
-  out.push({text:match[0],reading:dictionary.get(match[0])});
+  const reading=dictionary.get(match[0]);
+  const following=text.slice(match.index+match[0].length);
+  const written=following.startsWith("（"+reading+"）")||following.startsWith("("+reading+")");
+  out.push({text:match[0],reading:written?null:reading});
   end=match.index+match[0].length;
  }
  if(end<text.length)out.push({text:text.slice(end),reading:null});
