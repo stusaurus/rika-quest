@@ -130,6 +130,12 @@ try{
    await page.goto(origin+"/games/akari/",{waitUntil:"domcontentloaded"});
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
+   await page.locator("#missionGoal ruby.akari-yomi").first().waitFor();
+   assert.equal(await page.locator("#missionGoal").textContent(),"小屋のあかりをつけよう","Readings must never corrupt the underlying answer or sentence");
+   assert.equal(await page.locator("#missionGoal ruby.akari-yomi").first().getAttribute("aria-label"),"小屋（こや）","The difficult kanji must expose its reading in accessibility");
+   assert.match(await page.locator("#missionGoal ruby.akari-yomi rt").first().evaluate(el=>getComputedStyle(el,"::before").content),/こや/,"Ruby reading should actually be visible in the mobile browser");
+   assert.ok(await page.locator("#missionList ruby.akari-yomi").count()>5,"Mission map must also show readings in dynamically rendered titles");
+
    assert.match(await page.locator("#missionStory").textContent(),/小屋が まっくら/,"Default copy must fit third grade");
    assert.ok((await page.locator("#missionInstructions").textContent()).length<=40,"Only one short action is visible by default");
    assert.equal(await page.locator("body.reading-easy").count(),1,"Short child-friendly mode should be enabled by default");
@@ -138,10 +144,12 @@ try{
    assert.match(await page.locator("#missionStory").textContent(),/村の小屋がまっくら/,"Teacher view restores nuanced original story");
    assert.match(await page.locator("#missionInstructions").textContent(),/乾電池の＋と−/,"Detailed instructions remain accessible");
    assert.equal(await page.locator("body.reading-full").count(),1);
+   assert.equal(await page.locator("#missionGoal ruby.akari-yomi rt").first().evaluate(el=>getComputedStyle(el).display),"none","Teacher mode should hide redundant visual kana without deleting original text");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator("body.reading-full").count(),1,"Reading mode must survive a reload");
    await page.locator("#readingToggle").click();
    assert.equal(await page.locator("body.reading-easy").count(),1);
+   assert.notEqual(await page.locator("#missionGoal ruby.akari-yomi rt").first().evaluate(el=>getComputedStyle(el).display),"none","Switching back to child mode should restore ruby automatically");
    assert.ok((await page.locator("#missionInstructions").textContent()).length<=40);
    await page.locator("#helpBtn").click();
    assert.equal(await page.locator("#helpModal .kid-help-steps li").count(),4,"Game instructions should start with just four easy steps");
@@ -256,6 +264,9 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"乾電池の大きさ");
    assert.equal(await page.locator(".battery-lab-svg").count(),1,"Battery lab should show a controlled virtual circuit diagram");
    assert.equal(await page.locator(".battery-record").count(),4,"Four crossed size/time observations");
+   await page.locator(".battery-caution ruby.akari-yomi").first().waitFor();
+   assert.ok(await page.locator(".battery-caution ruby.akari-yomi").count()>=2,"Scientific safety warnings must also have kana readings when needed");
+
    assert.equal(await page.locator(".battery-notebook").evaluate(el=>el.tagName),"DETAILS","Four-row notebook is folded until the learner asks");
    assert.equal(await page.locator(".battery-notebook").getAttribute("open"),null);
    assert.equal(await page.locator("#scienceCompass .pacing-segment").count(),3,"Guide shows three learning phases");
