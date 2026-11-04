@@ -4,18 +4,18 @@
  * This is a safe low-voltage simulation, not instructions for shorting cells or overdriving lamps.
  * Two equal 1.5V cells are paired with a 3V rated ordinary filament bulb. */
 const stations=[
- {id:"battery",title:"乾電池2個の向き",icon:"🔋",question:"同じ乾電池2個を直列に入れた。3V用の豆電球はどうなる？",
-  options:[{id:"opposed",name:"2個を互いに逆向き",detail:"同じ乾電池の電圧が打ち消し合う"},{id:"aligned",name:"2個を同じ向き",detail:"1.5V＋1.5V＝約3V"}]},
- {id:"material",title:"回路のすき間の材料",icon:"🔩",question:"豆電球の手前のすき間に材料を挟んだ。電気は通る？",
-  options:[{id:"plastic",name:"銀色のプラスチック片",detail:"光って見えるが電気を通しにくい"},{id:"clip",name:"鉄のクリップ",detail:"金属なので電気を通す"}]},
- {id:"contact",title:"豆電球の2つの接点",icon:"💡",question:"豆電球のどこに導線を触れさせると電気の輪になる？",
-  options:[{id:"glass",name:"ガラスと底の金属",detail:"ガラスは導線とつながらない"},{id:"both",name:"横の金属と底の金属",detail:"両方の金属接点を通る"}]}
+ {id:"battery",title:"乾電池2個の向き",icon:"🔋",question:"電池2この 向きを かえたら 光る？",
+  options:[{id:"opposed",name:"2個を互いに逆向き",detail:"電池2この 力が うちけし合う"},{id:"aligned",name:"2個を同じ向き",detail:"電池2この 力が たされる"}]},
+ {id:"material",title:"回路のすき間の材料",icon:"🔩",question:"この 材料を はさむと 光る？",
+  options:[{id:"plastic",name:"銀色のプラスチック片",detail:"ピカピカでも 電気は 通りにくい"},{id:"clip",name:"鉄のクリップ",detail:"金属なので電気を通す"}]},
+ {id:"contact",title:"豆電球の2つの接点",icon:"💡",question:"まめ電球の どこに 線を つなぐ？",
+  options:[{id:"glass",name:"ガラスと底の金属",detail:"ガラスは 電気が 通りにくい"},{id:"both",name:"横の金属と底の金属",detail:"横と 下の 金ぞくを つなぐ"}]}
 ];
 const correct={battery:"aligned",material:"clip",contact:"both"};
 const reasons=[
- ["loop","乾電池の＋から、金属の導線・豆電球の横と底を通り、−へ戻る輪が閉じたから"],
- ["color","銀色のものを使えば、どんな素材でも電気を通すから"],
- ["glass","豆電球のガラスに乾電池の＋が触れれば光るから"]
+ ["loop","＋から まめ電球を 通って −まで ひと回りできた"],
+ ["color","銀色の ものなら ぜんぶ 電気が 通る"],
+ ["glass","ガラスに 電池を つければ 光る"]
 ];
 const names={bright:"💡 点灯",dark:"◯ 消灯"};
 const group=id=>stations.find(s=>s.id===id);
@@ -116,20 +116,20 @@ function render(raw){
  const compare=stations.map(station=>'<div class="finale-log-item"><strong>'+station.icon+' '+station.title+'</strong><span>'+station.options.map(o=>(s.tests[station.id]?.[o.id]?o.name+"："+names[s.tests[station.id][o.id].actual]:"まだ "+o.name+" を実験していない")).join(" / ")+'</span></div>').join("");
  return '<div class="finale-lab"><div class="finale-head"><span class="eyebrow">🌟 ラストミッション</span><strong>灯台の科学捜査と最終修復</strong><small>実験 '+count+' / 6　・　設置 '+stations.filter(x=>s.installed[x.id]).length+' / 3</small></div>'+
  '<div class="finale-security">⚠ 乾電池・回路を危険な状態でつなぐ実験は、画面内の安全な仮想実験です。実際の電池のショートや定格超過は試さないでね。</div>'+
- '<section class="lab-panel finale-section"><h3>① 3つの現場を調べ、6つの実験をする</h3><p class="lab-sub">見た目で正解を決めず、電池の向き、材料、豆電球の接点をそれぞれ2条件ずつ調査しよう。</p>'+
+ '<section class="lab-panel finale-section"><h3>① 6つ ためしてみよう</h3><p class="lab-sub">電池・材料・まめ電球を 2つずつ くらべよう。</p>'+
  '<div class="finale-stations">'+stations.map(x=>'<button type="button" data-finale-station="'+x.id+'" class="'+(s.active===x.id?" selected":"")+'" aria-pressed="'+(s.active===x.id)+'"><strong>'+x.icon+' '+x.title+'</strong><small>'+x.options.filter(o=>s.tests[x.id]?.[o.id]).length+' / 2</small></button>').join("")+'</div>'+
  '<div class="finale-investigate"><h3>'+stage.icon+' '+stage.title+'</h3><p>'+stage.question+'</p><div class="finale-specimens">'+options+'</div>'+
  (tested?'<div class="finale-result">予想：'+names[tested.guess]+' ／ 実際：'+names[tested.actual]+'。'+(tested.actual===tested.guess?"予想どおり。":"予想が外れた！その理由を比べよう。")+'</div>':
- '<p class="lab-sub">現在の条件で点灯するか予想してね。</p><div class="finale-choices">'+[["bright","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-finale-guess="'+id+'" class="'+(s.guess===id?" selected":"")+'" aria-pressed="'+(s.guess===id)+'">'+label+'</button>').join("")+'</div><button type="button" class="finale-measure" data-finale-test '+(!s.guess?"disabled":"")+'>🔬 条件を変えて仮想実験</button>')+
- '<div class="finale-place"><button type="button" data-finale-install '+(!tested?"disabled":"")+'>🔧 この試験済みの条件を灯台へ採用</button><span>設置済み：'+(optionLabel(s.active,s.installed[stage.id])||"未設置")+'</span></div>'+
- (tested&&!ready?'<button type="button" class="finale-next" data-finale-next="1">🔎 次の未実験の条件を調べる</button>':"")+'</div>'+
- '<div class="finale-log"><strong>📖 6つの比較記録</strong>'+compare+'</div></section>'+
- (ready?'<section class="lab-panel finale-section"><h3>② 3つを組み合わせて、灯台を点灯させよう</h3><p class="lab-sub">各部品を実験結果から選び、全体の回路で点灯するか予想してから通電しよう。</p>'+
+ '<p class="lab-sub">現在の条件で点灯するか予想してね。</p><div class="finale-choices">'+[["bright","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-finale-guess="'+id+'" class="'+(s.guess===id?" selected":"")+'" aria-pressed="'+(s.guess===id)+'">'+label+'</button>').join("")+'</div><button type="button" class="finale-measure" data-finale-test '+(!s.guess?"disabled":"")+'>🔬 光るか ためす</button>')+
+ '<div class="finale-place"><button type="button" data-finale-install '+(!tested?"disabled":"")+'>🔧 これを 灯台に つける</button><span>設置済み：'+(optionLabel(s.active,s.installed[stage.id])||"未設置")+'</span></div>'+
+ (tested&&!ready?'<button type="button" class="finale-next" data-finale-next="1">🔎 つぎを ためす</button>':"")+'</div>'+
+ '<details class="finale-log"><summary>📖 6回の けっかを 見る</summary>'+compare+'</details></section>'+
+ (ready?'<section class="lab-panel finale-section"><h3>② 灯台を 光らせよう</h3><p class="lab-sub">各部品を実験結果から選び、全体の回路で点灯するか予想してから通電しよう。</p>'+
  '<div class="finale-circuit">'+circuit(s)+'</div><div class="finale-view"><button type="button" data-finale-view="left">◀ 乾電池側</button><button type="button" data-finale-view="right">豆電球側 ▶</button></div>'+
  (assembled?'<div class="finale-master-test"><strong>全部つないだら、光ると思う？</strong><div class="finale-choices">'+[["bright","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-finale-overall-guess="'+id+'" class="'+(s.overallGuess===id?" selected":"")+'">'+label+'</button>').join("")+'</div>'+
- '<button type="button" class="finale-measure" data-finale-overall-test '+(!s.overallGuess?"disabled":"")+'>⚡ 灯台の回路を仮想通電</button></div>':'<p class="finale-reminder">まず調査した3つの条件を上の「灯台へ採用」でそれぞれ設置しよう。</p>')+
+ '<button type="button" class="finale-measure" data-finale-overall-test '+(!s.overallGuess?"disabled":"")+'>⚡ 灯台を ためす</button></div>':'<p class="finale-reminder">まず調査した3つの条件を上の「灯台へ採用」でそれぞれ設置しよう。</p>')+
  (s.overall?'<div class="finale-result" role="status">予想：'+names[s.overall.guess]+' ／ 実際：'+names[s.overall.kind]+(lit?"。灯台をともす回路ができた！":"。回路がどこかで切れている。3つの部品の実験結果を見直そう。")+'</div>':"")+
- (lit?'<div class="finale-reasons"><h3>③ なぜ点灯する回路になったのかな？</h3>'+reasons.map(([id,label])=>'<button type="button" data-finale-reason="'+id+'" class="'+(s.reason===id?" selected":"")+'">'+label+'</button>').join("")+'<p class="lab-sub">正しい理由まで確認できたら、画面下の「最終回路を確認する」を押そう。</p></div>':"")+
+ (lit?'<div class="finale-reasons"><h3>③ どうして 光った？</h3>'+reasons.map(([id,label])=>'<button type="button" data-finale-reason="'+id+'" class="'+(s.reason===id?" selected":"")+'">'+label+'</button>').join("")+'<p class="lab-sub">正しい理由まで確認できたら、画面下の「最終回路を確認する」を押そう。</p></div>':"")+
  '</section>':"")+'</div>';
 }
 window.AkariFinaleLab={stations,correct,reasons,initial,option,trialResult,signature,evaluate,normalize,evidence,nextUntested,canFinish,render,circuit};
