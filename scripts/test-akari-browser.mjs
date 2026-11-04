@@ -230,7 +230,7 @@ try{
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"The danger is explained without mascot reactions");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
-   assert.equal(await page.locator(".fx-danger").evaluate(e=>getComputedStyle(e).visibility),"visible","Short must show a distinct caution symbol");
+   assert.match(await page.locator("#spark").evaluate(e=>getComputedStyle(e,"::before").content),/⚡/,"Short hazard remains clearly signaled without mascot effects");
    assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Short must not light the town");
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-danger.png",fullPage:true});
