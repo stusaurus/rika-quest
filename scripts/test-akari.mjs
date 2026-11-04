@@ -18,7 +18,6 @@ const localStorage={getItem(k){return stored[k]||null},setItem(k,v){stored[k]=v}
 const context=vm.createContext({window,document,localStorage,setTimeout(){},console});
 vm.runInContext(readFileSync("games/akari/art.js","utf8"),context,{filename:"art.js"});
 vm.runInContext(readFileSync("games/akari/scenes.js","utf8"),context,{filename:"scenes.js"});
-vm.runInContext(readFileSync("games/akari/character.js","utf8"),context,{filename:"character.js"});
 vm.runInContext(readFileSync("games/akari/transfer.js","utf8"),context,{filename:"transfer.js"});
 vm.runInContext(readFileSync("games/akari/builder.js","utf8"),context,{filename:"builder.js"});
 vm.runInContext(readFileSync("games/akari/switch-lab.js","utf8"),context,{filename:"switch-lab.js"});
