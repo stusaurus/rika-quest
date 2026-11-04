@@ -294,7 +294,7 @@ try{
    await page.locator('[data-battery-reason="voltage"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Size, endurance and nominal voltage evidence completes rescue");
    assert.equal(await page.locator("#nextBtn").isVisible(),true,"The next adventure is visibly available after success");
-   await page.locator("#nextBtn").press("Enter"); // Keyboard-accessible navigation avoids pointer stabilization during layout changes.
+   await page.locator("#nextBtn").click(); // Real pointer interaction: child-friendly button must stay stable.
 
    // Mission 10: varied series-cell voltage AND bulb voltage rating; never encourage overvolting real bulbs.
    assert.equal(await page.locator("#missionTitle").textContent(),"ふたつの力");
