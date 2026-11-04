@@ -1,0 +1,18 @@
+/* QA screenshot refinements: make the mission title and terminals fully visible. */
+.circuit-board:not(.zoomed){min-height:390px}
+.circuit-board:not(.zoomed) .circuit-inner{top:50%}
+@media(max-width:740px){
+ .sidebar{padding:6px 9px}
+ .story-scene{height:94px}
+ .story-scene .landmark{height:83px;width:93px;right:3%;bottom:2px}
+ .story-scene .scene-caption h1{font-size:16px}
+ .story-scene .scene-caption p{display:none}
+ .quest-head{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"heading heading" "stars reading";row-gap:5px}
+ .quest-head>div:first-child{grid-area:heading}
+ .quest-head>.quest-stars{grid-area:stars;justify-self:start}
+ .quest-head>.reading-toggle{grid-area:reading;justify-self:end}
+ .quest-head h2{font-size:clamp(16px,4.7vw,19px)}
+ .circuit-board:not(.zoomed){min-height:305px}
+ .circuit-board:not(.zoomed) .circuit-inner{top:49%}
+ .circuit-legend small{display:none}
+}

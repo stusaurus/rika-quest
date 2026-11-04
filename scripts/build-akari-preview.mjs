@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
 const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
+const polish=readFileSync("games/akari/design-polish.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
 const scenes=readFileSync("games/akari/scenes.js","utf8");
 const transfer=readFileSync("games/akari/transfer.js","utf8");
@@ -22,6 +23,7 @@ function replaceOne(source,what,withText){
 }
 function inlineScript(source){return "<script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
