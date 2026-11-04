@@ -1019,3 +1019,7 @@
 .word-help dt{font-weight:900;color:#ffe4a7}.word-help dd{margin:0;color:#f2f8eb}
 .kid-help-steps{padding-left:24px;line-height:1.9;font-size:15px}
 @media(max-width:375px){.word-help dl{grid-template-columns:1fr;gap:2px}.word-help dd{padding-bottom:7px}}
+
+/* Avoid moving a large primary button under a child's finger or a test pointer. */
+.reading-easy .action-row .btn:hover{transform:none}
+@media(hover:none){.action-row .btn:hover{transform:none}}
