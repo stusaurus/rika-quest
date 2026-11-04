@@ -135,6 +135,13 @@ try{
    assert.equal(await page.locator("#missionGoal ruby.akari-yomi").first().getAttribute("aria-label"),"小屋（こや）","The difficult kanji must expose its reading in accessibility");
    assert.match(await page.locator("#missionGoal ruby.akari-yomi rt").first().evaluate(el=>getComputedStyle(el,"::before").content),/こや/,"Ruby reading should actually be visible in the mobile browser");
    assert.ok(await page.locator("#missionList ruby.akari-yomi").count()>5,"Mission map must also show readings in dynamically rendered titles");
+   assert.equal(await page.locator("#missionGoal ruby[data-yomi-kind='essential']").count(),1,"Core science and mission terms keep their readings in the compact mode");
+   const extraYomi=page.locator("#missionList ruby[data-yomi-kind='extra'] rt").first();
+   assert.ok(await extraYomi.count()>0,"Optional everyday readings remain available");
+   assert.equal(await extraYomi.evaluate(el=>getComputedStyle(el).display),"none","Extra ruby should not crowd the default screen");
+   assert.equal(await page.locator(".pacing-tip").first().evaluate(el=>getComputedStyle(el).display),"none","Avoid duplicating the live task text with the progress card");
+   assert.equal(await page.locator(".reading-task-row").evaluate(el=>el.scrollWidth <= el.clientWidth+2),true,"Task and audio control must fit the phone width");
+   assert.equal(await page.locator("#readTaskBtn").evaluate(el=>el.hidden),!(await page.evaluate(()=>typeof window.speechSynthesis?.speak==="function"&&typeof window.SpeechSynthesisUtterance==="function")),"Audio button must match native speech capability");
 
    assert.match(await page.locator("#missionStory").textContent(),/小屋が まっくら/,"Default copy must fit third grade");
    assert.ok((await page.locator("#missionInstructions").textContent()).length<=40,"Only one short action is visible by default");
@@ -154,8 +161,21 @@ try{
    await page.locator("#helpBtn").click();
    assert.equal(await page.locator("#helpModal .kid-help-steps li").count(),4,"Game instructions should start with just four easy steps");
    assert.equal(await page.locator("#helpModal .help-more").getAttribute("open"),null,"Advanced how-to content starts folded");
+   assert.equal(await page.locator("#yomiEssentials").getAttribute("aria-pressed"),"true","Only core readings show by default");
+   await page.locator("#yomiAll").click();
+   assert.equal(await page.locator("body.furigana-all").count(),1,"All reading mode is activated without changing the science game");
+   assert.notEqual(await extraYomi.evaluate(el=>getComputedStyle(el).display),"none","Previously omitted story readings appear on demand");
+   await page.locator("#closeHelpBtn").click();
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("body.furigana-all").count(),1,"Extra furigana choice should be remembered");
+   await page.locator("#helpBtn").click();
+   await page.locator("#yomiEssentials").click();
+   assert.equal(await page.locator("body.furigana-all").count(),0,"Compact setting can be restored");
+   await page.locator("#closeHelpBtn").click();
    await page.locator("#closeHelpBtn").click();
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-easy-reading-start.png",fullPage:true});
+   assert.equal(await page.locator("#missionInstructions").textContent(),"電池と まめ電球を 線で つなごう。","Ruby must not disturb the current simple instruction");
+   assert.equal(await page.locator(".pacing-count").count(),1,"A short experiment counter still provides progress");
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#startupFallback").count(),0,"Normal browser must replace startup recovery with the interactive circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
