@@ -238,12 +238,19 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"乾電池の大きさ");
    assert.equal(await page.locator(".battery-lab-svg").count(),1,"Battery lab should show a controlled virtual circuit diagram");
    assert.equal(await page.locator(".battery-record").count(),4,"Four crossed size/time observations");
+   assert.equal(await page.locator("#scienceCompass .pacing-segment").count(),3,"Guide shows three learning phases");
+   assert.match(await page.locator(".pacing-chapter").textContent(),/第4幕/,"Stage9 should identify the battery story chapter");
+   assert.equal(await page.locator(".pacing-guide").getAttribute("data-guide-phase"),"1","A new investigation begins at the evidence phase");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"No correct conclusion without experimental evidence");
    assert.equal(await page.locator('[data-battery-test]').isDisabled(),true,"The test button requires a prediction");
    assert.equal(await page.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem("rika-akari-quest-v2")).batteryDrafts?.[9]?.trials||{}).length),0,"Battery experiment requires scientific prediction");
    await page.locator('[data-battery-guess="dim"]').click();await page.locator('[data-battery-test]').click();
    assert.match(await page.locator(".battery-predict-card .battery-result").textContent(),/予想.*弱い光.*実際.*点灯/s,"Prediction and actual are compared without penalty");
+   assert.equal(await page.locator('[data-battery-next]').count(),1,"A completed trial gives an optional next-condition shortcut");
+   await page.locator('[data-battery-next]').click();
+   assert.equal(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem("rika-akari-quest-v2")).batteryDrafts[9];return s.size+":"+s.phase}),"large:early","A one-tap shortcut advances to a new experiment");
+   assert.equal(await page.locator('[data-battery-test]').isDisabled(),true,"The shortcut never skips the next scientific prediction");
    const batteryField=async(key,val)=>page.locator('[data-battery-field="'+key+'"][data-battery-value="'+val+'"]').click();
    await batteryField("size","large");
    await page.locator('[data-battery-guess="bright"]').click();await page.locator('[data-battery-test]').click();
@@ -252,6 +259,7 @@ try{
    await batteryField("size","small");
    await page.locator('[data-battery-guess="bright"]').click();await page.locator('[data-battery-test]').click();
    assert.equal(await page.locator(".battery-record.tested").count(),4,"Every size/duration combination recorded");
+   assert.equal(await page.locator(".pacing-guide").getAttribute("data-guide-phase"),"2","Four observations advance the guide to application");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery9-controlled-comparison.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".battery-record.tested").count(),4,"Saved long-watch observations survive iPhone reload");
@@ -686,6 +694,10 @@ try{
      return result.actual;
    };
    assert.equal(await experimentFinale("battery","opposed","bright"),"dark","Opposing matched sources cancel voltage in virtual circuit");
+   assert.equal(await page.locator('[data-finale-next]').count(),1,"An optional shortcut finds the next untested final experiment");
+   await page.locator('[data-finale-next]').click();
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).finaleDraft.selected.battery),"aligned","Finale shortcut selects next missing test");
+   assert.equal(await page.locator('[data-finale-test]').isDisabled(),true,"Finale shortcut never performs or guesses the science");
    assert.equal(await experimentFinale("battery","aligned","bright"),"bright","Aligned two-source chain gives designed operating voltage");
    await page.locator('[data-finale-install]').click();
    assert.equal(await experimentFinale("material","plastic","bright"),"dark","Metallic-looking plastic remains insulating");
@@ -695,6 +707,7 @@ try{
    assert.equal(await experimentFinale("contact","both","bright"),"bright","Lamp side and bottom contacts complete load connection");
    await page.locator('[data-finale-install]').click();
    assert.equal(await page.locator(".finale-circuit").count(),1,"Six contrasting measurements should unlock integrated circuit diagram");
+   assert.equal(await page.locator(".pacing-guide").getAttribute("data-guide-phase"),"2","Final objective switches to assembly only when six tests are complete");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-finale-investigation-evidence.png",fullPage:true});
    await page.locator('[data-finale-view="right"]').click();
    if(width<740)assert.ok(await page.locator(".finale-circuit").evaluate(el=>el.scrollLeft)>10,"Touch control must show right-hand bulb contact");
@@ -798,6 +811,10 @@ try{
    assert.equal(await page.locator("#celebrationTitle").textContent(),"灯台の光が戻った！");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"14","All 14 places should light");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),14,"Final restoration must illuminate every map lamp");
+   assert.equal(await page.locator("#scienceReport").isVisible(),true,"Finishing the final experiment must unlock campaign recap");
+   assert.equal(await page.locator("#scienceReport .campaign-chapter").count(),5,"The conclusion contains five earned learning discoveries");
+   assert.match(await page.locator("#scienceReport").textContent(),/14のあかりが戻った/,"The ending celebrates all restored locations");
+   assert.equal(await page.locator(".pacing-guide").getAttribute("data-guide-phase"),"3","Completed adventure remains in the reflection phase");
 
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-lighthouse-after.png",fullPage:true});
