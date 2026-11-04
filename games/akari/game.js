@@ -15,16 +15,16 @@ const M=[
 {id:11,name:"電池の向きのひみつ",place:"museum",placeName:"ひかり博物館",mode:"polarity",goal:"乾電池の向きを調べよう",story:"展示の電池を入れ直したら、急に消えちゃった。向きは大切なのかな？",instructions:"電池1個・2個直列の向きを変える4通りを予想して実験。1個を逆向きにした場合と2個を互いに逆向きにした場合を区別して復旧しよう。",discovery:"普通の豆電球は乾電池1個の向きを逆にしても光る。同じ乾電池2個を互いに逆向きに直列につなぐと電圧が打ち消し合い、光らない。",hints:["電池1個の向きではなく、2個の向きの組み合わせだよ。","2個を同じ向きに直列につなぐと電圧が足し合わされるよ。"]},
 {id:12,name:"危険な近道",place:"port",placeName:"月あかり港",mode:"cut",goal:"安全に電気が流れる道を残そう",story:"船の作業灯に危険な近道が2本！ 電気が豆電球を通らず、電池が熱くなりそう。",instructions:"3か所の回路図を安全点検。外す導線を選び、ショート・点灯・消灯を予測して仮想実験し、最少の修理で豆電球の輪を残そう。",discovery:"豆電球を通らず、乾電池の＋と−がほぼ直接つながるとショート。大きな電流が流れ発熱・発火の危険がある。実物では絶対に試さないでね。",hints:["豆電球を通っていない『近道』を探そう。","豆電球を通らず乾電池へ戻る線と、豆電球へ向かう線を区別してみよう。"]},
 {id:13,name:"灯台の二重故障",place:"lighthouse",placeName:"星あかり灯台",mode:"repair",goal:"2つの故障を見つけよう",story:"灯台が消えて船が帰れない。1か所直しても点灯しないみたい。",instructions:"電池・導線・豆電球内部・接点を別々に予想・仮想検査。証拠から1か所を修理→再通電→消灯の原因を推理→2か所目を修理して点灯させよう。",discovery:"電池や豆電球が正常でも、導線や接点が2か所同時に切れていることがある。1か所直しただけでは回路が閉じず、豆電球は光らない。検査結果から順序よく原因を絞り込もう。",hints:["全体の消灯だけで原因は決められない。電源・導線・フィラメント・接点をそれぞれ安全な仮想検査で確かめよう。","1か所を直しても消灯するなら、乾電池の＋から豆電球を通り−まで戻る道のどこが切れているか、残りの検査記録を見直そう。"]},
-{id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"乾電池の向き・材料・豆電球の接点をそれぞれ調べ、3か所を動作確認してから灯台を点灯させよう。",discovery:"回路は『電源・電気を通す導線・豆電球・確かな接点』の組み合わせ。ひとつひとつ確かめれば、街にあかりを取り戻せる！",hints:["電源・材料・接点をすべて確認してみよう。","電源のつなぎ方、すき間の材料、豆電球の2つの金属接点をそれぞれ確かめよう。"]}
+{id:14,name:"ひかりを取り戻せ！",place:"lighthouse",placeName:"星あかり灯台",mode:"finale",goal:"最終ミッション！ 灯台をともそう",story:"最後の夜。乾電池、材料、豆電球の3つに問題が！ ここまでの発見を使って灯台を救おう。",instructions:"3か所×2条件の合計6つの仮想実験で違いを確かめ、実験済みの部品を取り付けて灯台全体を予想・通電。根拠を説明したら最後の応用へ進もう。",discovery:"乾電池の向き・導体の性質・豆電球の2つの金属接点を実験で確かめ、3つを組み合わせて閉じた回路にすると、灯台に明かりがともる。",hints:["電源・材料・接点をすべて確認してみよう。","電源のつなぎ方、すき間の材料、豆電球の2つの金属接点をそれぞれ確かめよう。"]}
 ];
 const $=id=>document.getElementById(id), storageKey="rika-akari-quest-v2";
 let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturnFocus=null,soundCtx=null;
 let reactionToken=0,celebrationToken=0,restorationToken=0;
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 
-function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},doubleFaultDraft:d.doubleFaultDraft&&typeof d.doubleFaultDraft==="object"&&!Array.isArray(d.doubleFaultDraft)?d.doubleFaultDraft:null,batteryDrafts:d.batteryDrafts&&typeof d.batteryDrafts==="object"&&!Array.isArray(d.batteryDrafts)?Object.fromEntries(Object.entries(d.batteryDrafts).filter(([key,value])=>[9,10,11].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},batteryDrafts:{},doubleFaultDraft:null,notes:[]};}
+function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},finaleDraft:d.finaleDraft&&typeof d.finaleDraft==="object"&&!Array.isArray(d.finaleDraft)?d.finaleDraft:null,doubleFaultDraft:d.doubleFaultDraft&&typeof d.doubleFaultDraft==="object"&&!Array.isArray(d.doubleFaultDraft)?d.doubleFaultDraft:null,batteryDrafts:d.batteryDrafts&&typeof d.batteryDrafts==="object"&&!Array.isArray(d.batteryDrafts)?Object.fromEntries(Object.entries(d.batteryDrafts).filter(([key,value])=>[9,10,11].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},batteryDrafts:{},doubleFaultDraft:null,finaleDraft:null,notes:[]};}
 function current(){return M[state.active-1]}
-function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{garden:window.AkariGarden?window.AkariGarden.initial(m.id):null};case"repair":return m.id===13?{doubleFault:window.AkariDoubleFault?window.AkariDoubleFault.initial():null}:{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{batteryLab:window.AkariBatteryLab?window.AkariBatteryLab.initial(m.id):null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{direction:"reverse",material:"wood",contact:false,verified:[],checked:{}}}}
+function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{garden:window.AkariGarden?window.AkariGarden.initial(m.id):null};case"repair":return m.id===13?{doubleFault:window.AkariDoubleFault?window.AkariDoubleFault.initial():null}:{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{batteryLab:window.AkariBatteryLab?window.AkariBatteryLab.initial(m.id):null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{finale:window.AkariFinaleLab?window.AkariFinaleLab.initial():null}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
 function saveSafetyDraft(){if(current().id===12&&ui.safety){state.safetyDraft=window.AkariSafety.restore(ui.safety);persist();}}
 function clearSafetyDraft(){state.safetyDraft=null;persist();}
@@ -55,8 +55,14 @@ function saveDoubleFaultDraft(){
  state.doubleFaultDraft=window.AkariDoubleFault.normalize(ui.doubleFault);persist();
 }
 function clearDoubleFaultDraft(){state.doubleFaultDraft=null;persist();}
+function saveFinaleDraft(){
+ if(current().id!==14||!window.AkariFinaleLab||!ui.finale)return;
+ state.finaleDraft=window.AkariFinaleLab.normalize(ui.finale);persist();
+}
+function clearFinaleDraft(){state.finaleDraft=null;persist();}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
+ if(m.id===14&&window.AkariFinaleLab)base.finale=window.AkariFinaleLab.normalize(state.completed[14]?null:state.finaleDraft);
  if(m.id===3&&window.AkariBridge){base.bridge=window.AkariBridge.normalize(state.completed[3]?null:state.bridgeDraft);return base;}
  if(m.id===13&&window.AkariDoubleFault){base.doubleFault=window.AkariDoubleFault.normalize(state.completed[13]?null:state.doubleFaultDraft);return base;}
  if([9,10,11].includes(m.id)&&window.AkariBatteryLab){base.batteryLab=window.AkariBatteryLab.normalize(m.id,state.completed[m.id]?null:state.batteryDrafts?.[m.id]);return base;}
@@ -253,6 +259,7 @@ function success(){
  if([4,5].includes(current().id))clearGardenDraft(current().id);
  if([9,10,11].includes(current().id))clearBatteryDraft(current().id);
  if(current().id===13)clearDoubleFaultDraft();
+ if(current().id===14)clearFinaleDraft();
  const firstClear=!state.completed[current().id];const stars=Math.max(1,3-(hintIndex?1:0)-(failures>=2?1:0));stageComplete=true;state.completed[current().id]=Math.max(stars,state.completed[current().id]||0);persist();renderAll();recordObservation("clear:"+current().id,current().discovery);setFeedback("✦ 大成功！ "+current().placeName+"にあかりが戻った！ ★"+stars+"つ獲得。"+(ui.transferPassed?" 🔍 応用の証 "+Object.keys(state.masteries).length+"/6":""),"success");reactCharacter("celebrate");showCelebration(stars);startRestorationPulse(firstClear);playTone(true);}
 function icon(place){return{village:"🏡",bridge:"🌉",garden:"🌿",tower:"🕰",port:"⚓",museum:"🏛",lighthouse:"🌟"}[place]||"✦"}
 function renderMenu(){
@@ -273,12 +280,12 @@ const buildings={
  lighthouse:'<path d="M89 231 110 47 186 47 207 231Z" fill="#f2e5ce"/><path d="M105 89H192L195 115H101ZM98 165H201L204 189H95Z" fill="#c76f66"/><path d="M93 48H207L183 21H120Z" fill="#587d9e"/><rect class="window" x="115" y="48" width="67" height="39" fill="#38556c"/><rect class="window" x="134" y="135" width="36" height="26" rx="6"/><rect x="121" y="202" width="49" height="29" rx="13" fill="#7a8179"/>'
 };
 function renderScene(){
- const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete||!!state.completed[m.id]);scene.classList.toggle("bridge-powered",m.id===3&&!!window.AkariBridge?.sceneLit(ui.bridge));scene.classList.toggle("garden-powered",m.id===5&&!!window.AkariGarden?.measured5(ui.garden)&&!!window.AkariGarden?.evaluate5(ui.garden.slots).lit);scene.classList.toggle("double-powered",m.id===13&&!!window.AkariDoubleFault?.canFinish(ui.doubleFault));$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":state.completed[m.id]?"この場所には、前の冒険であかりをともしたよ。もう一度実験してみよう！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
+ const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete||!!state.completed[m.id]);scene.classList.toggle("bridge-powered",m.id===3&&!!window.AkariBridge?.sceneLit(ui.bridge));scene.classList.toggle("garden-powered",m.id===5&&!!window.AkariGarden?.measured5(ui.garden)&&!!window.AkariGarden?.evaluate5(ui.garden.slots).lit);scene.classList.toggle("finale-powered",m.id===14&&!!ui.finale?.overall&&ui.finale.overall.kind==="bright"&&ui.finale.overall.signature===window.AkariFinaleLab?.signature(ui.finale.installed));scene.classList.toggle("double-powered",m.id===13&&!!window.AkariDoubleFault?.canFinish(ui.doubleFault));$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":state.completed[m.id]?"この場所には、前の冒険であかりをともしたよ。もう一度実験してみよう！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
 }
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
- $("checkBtn").hidden=stageComplete||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
+ $("checkBtn").hidden=stageComplete||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="次の冒険へ ➜";
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
@@ -350,26 +357,10 @@ function renderCut(){
  return window.AkariSafety?window.AkariSafety.render(ui.safety):
   '<div class="lab-panel"><h3>安全点検を読み込めませんでした</h3><p>画面を再読み込みしてください。</p></div>';
 }
-function renderFinale(){
- const opts=[
-  ["direction","① 乾電池2個の向き",[["reverse","逆向き"],["same","同じ向き"]]],
-  ["material","② すき間にはさむ材料",[["wood","木の棒"],["clip","鉄のクリップ"]]],
-  ["contact","③ 豆電球の接点",[[false,"はずれたまま"],[true,"底と横をしっかり接続"]]]
- ];
- const tasks=opts.map(([key,title,options])=>{
-  const verified=ui.verified.includes(key),wasChecked=Object.hasOwn(ui.checked,key);
-  const mark=verified?"✓ 動作確認 OK":wasChecked?"⚠ まだつながっていない":"？ 未確認";
-  const tag=verified?" ok":wasChecked?" needs-fix":"";
-  return'<div class="final-question verification-step'+tag+'"><strong>'+title+'</strong><div class="toggle-row">'+
-   options.map(([value,label])=>'<button class="toggle'+(ui[key]===value?' on':'')+'" data-final="'+key+'" data-value="'+String(value)+'" aria-pressed="'+(ui[key]===value)+'">'+label+'</button>').join("")+
-   '</div><div class="verify-row"><button class="verify-part" type="button" data-verify="'+key+'">🔎 この部分を調べる</button><span class="verification-status">'+mark+'</span></div></div>';
- }).join("");
- return'<div class="experiment-layout"><div class="lab-panel"><h3>🌟 灯台の最終修理</h3><p class="lab-sub">3か所の不具合を調べ、すべて動作確認してから灯台のあかりをつけよう。</p><div class="science-spotlight">'+Art.battery(ui.direction==="same"?"series":"reverse")+'</div><div class="science-spotlight">'+Art.bulb(stageComplete)+'</div><div class="lab-reading">確認済み：'+ui.verified.length+' / 3 か所</div></div><div class="lab-panel"><h3>🛠 3か所を調査する</h3>'+tasks+
- '<p class="finale-guidance">部品を選んだら「この部分を調べる」で確かめよう。全部が ✓ になったら最後の通電！</p></div></div>';
-}
+function renderFinale(){return window.AkariFinaleLab?window.AkariFinaleLab.render(ui.finale):'<div class="lab-panel">最後の実験室が読み込めませんでした。再読み込みしてください。</div>';}
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
- const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,previousDouble=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null,doublePosition=previousDouble?previousDouble.scrollLeft:0,mode=current().mode;
+ const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,previousDouble=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null,doublePosition=previousDouble?previousDouble.scrollLeft:0,previousFinale=typeof root.querySelector==="function"?root.querySelector(".finale-circuit"):null,finalePosition=previousFinale?previousFinale.scrollLeft:0,mode=current().mode;
  root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[],ui.builder.insight):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
@@ -381,6 +372,8 @@ function renderWorkspace(){
  if(gardenView)gardenView.scrollLeft=gardenPosition;
  const doubleView=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null;
  if(doubleView)doubleView.scrollLeft=doublePosition;
+ const finaleView=typeof root.querySelector==="function"?root.querySelector(".finale-circuit"):null;
+ if(finaleView)finaleView.scrollLeft=finalePosition;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
@@ -445,9 +438,12 @@ function check(){
   success();return;
  }
  if(m.mode==="finale"){
-  if(ui.verified.length!==3){setFeedback("灯台を点灯する前に、乾電池・材料・豆電球の3か所をすべて調べて ✓ にしよう。","warning");return;}
-  if(ui.direction==="same"&&ui.material==="clip"&&ui.contact){success();return;}
-  fail("部品の設定が変わっているみたい。3か所をもう一度確かめよう。");return;
+  const B=window.AkariFinaleLab;
+  if(!B?.canFinish(ui.finale)){
+   setFeedback("3つの現場で6条件の実験を完成し、試験済みの部品を設置して全体の点灯を予想・測定。理由まで説明しよう。","warning");return;
+  }
+  recordObservation("final:proof","【最終科学調査】6つの比較実験で電池の向き・金属の性質・豆電球の2接点を調べ、約3Vの閉じた回路を組み立てて灯台を点灯させた。");
+  success();return;
  }
 }
 function handleWorkspace(e){
@@ -1063,31 +1059,68 @@ function handleWorkspace(e){
    setFeedback("最後の説明を選んだよ。下の最終確認を押してみよう。");return;
   }
  }
- if(target.hasAttribute("data-verify")){
-  if(current().mode!=="finale")return;
-  const key=target.dataset.verify;if(!["direction","material","contact"].includes(key))return;
-  const ok=key==="direction"?ui.direction==="same":key==="material"?ui.material==="clip":ui.contact;
-  ui.checked[key]=ok;
-  if(ok&&!ui.verified.includes(key)){
-   ui.verified.push(key);
-   const observation={
-    direction:"乾電池2個を同じ向きに直列接続：電圧が加わる。",
-    material:"すき間に鉄のクリップを接続：電気が通る。",
-    contact:"豆電球の底と横の金属部分を接続：電気の通り道がつながる。"
-   }[key];
-   recordObservation("final:"+key,observation);
+ if(current().mode==="finale"&&window.AkariFinaleLab){
+  const B=window.AkariFinaleLab,q=ui.finale||B.initial();
+  if(target.hasAttribute("data-finale-view")){
+   const panel=$("workspace").querySelector(".finale-circuit"),view=target.dataset.finaleView;
+   if(!panel||!["left","right"].includes(view))return;
+   panel.scrollLeft=view==="right"?panel.scrollWidth-panel.clientWidth:0;
+   setFeedback(view==="right"?"豆電球の2つの金属接点と戻り道をたどろう。":"乾電池の向きから回路をたどろう。");return;
   }
-  renderWorkspace();
-  setFeedback(ok?"✓ 動作確認 OK！ "+ui.verified.length+" / 3 か所を修理したよ。":"⚠ この部分はまだ直っていない。選び直して再確認しよう。",ok?"success":"warning");
-  if(ok)reactCharacter("discover");else reactCharacter("think");
-  return;
- }
- if(target.hasAttribute("data-final")){
-  const key=target.dataset.final,raw=target.dataset.value;
-  if(!["direction","material","contact"].includes(key))return;
-  const value=key==="contact"?raw==="true":raw;
-  if(ui[key]!==value){ui.checked={...ui.checked};delete ui.checked[key];ui.verified=ui.verified.filter(x=>x!==key);}
-  ui[key]=value;renderWorkspace();setFeedback("設定を変更したよ。この部分を調べて確かめよう。");return;
+  if(target.hasAttribute("data-finale-station")){
+   const id=target.dataset.finaleStation;if(!B.stations.some(x=>x.id===id))return;
+   q.active=id;q.guess=null;ui.finale=q;saveFinaleDraft();renderWorkspace();
+   setFeedback("検査する場所を切り替えた。別の条件と比較しよう。");return;
+  }
+  if(target.hasAttribute("data-finale-option")){
+   const id=target.dataset.finaleOption;if(!B.option(q.active,id))return;
+   q.selected[q.active]=id;q.guess=null;ui.finale=q;saveFinaleDraft();renderWorkspace();
+   setFeedback("試験の条件を選んだ。点灯するか予想してから測ろう。");return;
+  }
+  if(target.hasAttribute("data-finale-guess")){
+   const guess=target.dataset.finaleGuess;
+   if(!["bright","dark"].includes(guess)||q.tests[q.active]?.[q.selected[q.active]])return;
+   q.guess=guess;ui.finale=q;saveFinaleDraft();renderWorkspace();
+   setFeedback("予想を書き込んだ。安全な仮想検査で確かめよう。");return;
+  }
+  if(target.hasAttribute("data-finale-test")){
+   const station=q.active,value=q.selected[station];
+   if(!q.guess||q.tests[station]?.[value]||!B.option(station,value))return;
+   const actual=B.trialResult(station,value),guess=q.guess;
+   q.tests[station]=q.tests[station]||{};q.tests[station][value]={actual,guess};
+   q.guess=null;ui.finale=q;saveFinaleDraft();renderWorkspace();
+   recordObservation("final:trial:"+station+":"+value,"【最終試験】"+B.stations.find(s=>s.id===station).title+"「"+B.option(station,value).name+"」→予想 "+(guess==="bright"?"点灯":"消灯")+"、実際 "+(actual==="bright"?"点灯":"消灯")+"。");
+   setFeedback("実験結果を記録した。予想が外れても減点はないよ。別の条件も調べよう。","success");
+   reactCharacter("discover");return;
+  }
+  if(target.hasAttribute("data-finale-install")){
+   const station=q.active,value=q.selected[station];
+   if(!q.tests[station]?.[value])return;
+   q.installed[station]=value;q.overallGuess=null;q.overall=null;q.reason=null;
+   ui.finale=q;saveFinaleDraft();renderWorkspace();renderScene();
+   setFeedback("試験済みの部品を灯台の回路へ設置した。前の回路の通電結果は使えないよ。");reactCharacter("inspect");return;
+  }
+  if(target.hasAttribute("data-finale-overall-guess")){
+   if(!B.evidence(q)||!B.stations.every(x=>q.installed[x.id]))return;
+   const guess=target.dataset.finaleOverallGuess;if(!["bright","dark"].includes(guess))return;
+   q.overallGuess=guess;q.overall=null;q.reason=null;ui.finale=q;saveFinaleDraft();renderWorkspace();renderScene();
+   setFeedback("3部品を組み合わせた回路の結果を予想した。仮想通電で確認しよう。");return;
+  }
+  if(target.hasAttribute("data-finale-overall-test")){
+   if(!B.evidence(q)||!B.stations.every(x=>q.installed[x.id])||!q.overallGuess)return;
+   const result=B.evaluate(q.installed);
+   q.overall={signature:B.signature(q.installed),guess:q.overallGuess,kind:result.kind};
+   q.reason=null;ui.finale=q;saveFinaleDraft();renderWorkspace();renderScene();
+   recordObservation("final:assembled:"+B.signature(q.installed),"【灯台の仮想通電】3つの部品を組み立て、予想 "+(q.overallGuess==="bright"?"点灯":"消灯")+"／実際 "+(result.kind==="bright"?"点灯":"消灯")+"。");
+   setFeedback(result.closed?"🌟 灯台の光が戻った！最後に回路が光った理由を考えよう。":"まだ暗い。電池・材料・接点の試験結果をもとに設置を見直そう。",result.closed?"success":"warning");
+   reactCharacter(result.closed?"discover":"think");return;
+  }
+  if(target.hasAttribute("data-finale-reason")){
+   if(q.overall?.kind!=="bright"||q.overall.signature!==B.signature(q.installed))return;
+   const reason=target.dataset.finaleReason;if(!B.reasons.some(([id])=>id===reason))return;
+   q.reason=reason;ui.finale=q;saveFinaleDraft();renderWorkspace();
+   setFeedback("理由を選んだ。実験記録・全体の点灯・科学的な説明が一致したら最後の依頼に進めるよ。");return;
+  }
  }
 }
 function modal(open){const box=$("helpModal");box.hidden=!open;if(open){helpReturnFocus=document.activeElement;$("closeHelpBtn").focus();}else if(helpReturnFocus&&typeof helpReturnFocus.focus==="function")helpReturnFocus.focus();}
@@ -1096,7 +1129,7 @@ function bind(){
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
