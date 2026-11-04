@@ -20,6 +20,27 @@ const M=[
 const $=id=>document.getElementById(id), storageKey="rika-akari-quest-v2";
 let state=readSave(),ui={},stageComplete=false,hintIndex=0,failures=0,helpReturnFocus=null,soundCtx=null;
 let reactionToken=0,celebrationToken=0,restorationToken=0;
+const readingKey="rika-akari-reading-v1";
+let detailMode=false;
+try{detailMode=localStorage.getItem(readingKey)==="full";}catch(e){}
+function readingTask(){
+ const m=current(),phase=window.AkariPacing?.status(m.id,ui,stageComplete).phase||1;
+ return window.AkariReading?.prompt(m.id,phase,ui,stageComplete)||m.instructions;
+}
+function applyReading(){
+ const m=current();
+ const intro=$("missionStory"),instructions=$("missionInstructions"),button=$("readingToggle");
+ if(intro)intro.textContent=stageComplete?"やった！ あかりが もどった！":
+   state.completed[m.id]?"もう一度 ためしてみよう！":
+   detailMode?m.story:(window.AkariReading?.sample(m.id).story||m.story);
+ if(instructions)instructions.textContent=detailMode?m.instructions:readingTask();
+ if(button){button.textContent=detailMode?"🔎 みじかく":"📖 くわしく";button.setAttribute("aria-pressed",String(detailMode));}
+ if(document.body?.classList){
+  document.body.classList.toggle("reading-easy",!detailMode);
+  document.body.classList.toggle("reading-full",detailMode);
+ }
+}
+
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 
 function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},finaleDraft:d.finaleDraft&&typeof d.finaleDraft==="object"&&!Array.isArray(d.finaleDraft)?d.finaleDraft:null,doubleFaultDraft:d.doubleFaultDraft&&typeof d.doubleFaultDraft==="object"&&!Array.isArray(d.doubleFaultDraft)?d.doubleFaultDraft:null,batteryDrafts:d.batteryDrafts&&typeof d.batteryDrafts==="object"&&!Array.isArray(d.batteryDrafts)?Object.fromEntries(Object.entries(d.batteryDrafts).filter(([key,value])=>[9,10,11].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},batteryDrafts:{},doubleFaultDraft:null,finaleDraft:null,notes:[]};}
@@ -369,6 +390,7 @@ function renderPacing(){
   if(html)report.innerHTML=html;
   else report.innerHTML="";
  }
+ applyReading();
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
@@ -1160,6 +1182,10 @@ function bind(){
  $("missionList").addEventListener("click",e=>{const b=e.target.closest("[data-mission]");if(b)changeMission(+b.dataset.mission)});
  $("workspace").addEventListener("click",handleWorkspace);
  $("checkBtn").addEventListener("click",check);
+ $("readingToggle").addEventListener("click",()=>{
+  detailMode=!detailMode;try{localStorage.setItem(readingKey,detailMode?"full":"easy");}catch(e){}
+  applyReading();
+ });
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
  $("resetBtn").addEventListener("click",()=>{clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
