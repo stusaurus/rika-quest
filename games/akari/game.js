@@ -358,6 +358,18 @@ function renderCut(){
   '<div class="lab-panel"><h3>安全点検を読み込めませんでした</h3><p>画面を再読み込みしてください。</p></div>';
 }
 function renderFinale(){return window.AkariFinaleLab?window.AkariFinaleLab.render(ui.finale):'<div class="lab-panel">最後の実験室が読み込めませんでした。再読み込みしてください。</div>';}
+function renderPacing(){
+ const target=$("scienceCompass"),report=$("scienceReport");
+ if(window.AkariPacing&&target){
+  target.innerHTML=window.AkariPacing.render(current().id,ui,stageComplete);
+ }
+ if(report){
+  const html=window.AkariPacing?.report(state)||"";
+  report.hidden=!html;
+  if(html)report.innerHTML=html;
+  else report.innerHTML="";
+ }
+}
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,previousDouble=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null,doublePosition=previousDouble?previousDouble.scrollLeft:0,previousFinale=typeof root.querySelector==="function"?root.querySelector(".finale-circuit"):null,finalePosition=previousFinale?previousFinale.scrollLeft:0,mode=current().mode;
@@ -374,6 +386,7 @@ function renderWorkspace(){
  if(doubleView)doubleView.scrollLeft=doublePosition;
  const finaleView=typeof root.querySelector==="function"?root.querySelector(".finale-circuit"):null;
  if(finaleView)finaleView.scrollLeft=finalePosition;
+ renderPacing();
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
