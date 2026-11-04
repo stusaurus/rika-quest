@@ -62,6 +62,15 @@ function selectedId(stage,s){
  if(stage===10)return s.cells+":"+s.rating;
  return s.cells+":"+s.direction;
 }
+function nextUntested(stage,raw){
+ const s=normalize(stage,raw),items=all(stage);
+ const now=items.findIndex(item=>item.id===selectedId(stage,s));
+ for(let i=1;i<=items.length;i++){
+  const item=items[(now+i+items.length)%items.length];
+  if(item&&!s.trials[item.id])return item;
+ }
+ return null;
+}
 function deployment(stage,id){if(stage===9)return id==="large";if(stage===10)return id==="two:3";return id==="two:aligned"}
 function normalize(stage,raw){
  const s=initial(stage);if(!raw||typeof raw!=="object")return s;
@@ -205,7 +214,8 @@ function render(stage,raw){
  '<div class="battery-predict-card"><strong>🔮 '+config.label+'：豆電球はどうなる？</strong>'+
  (observed?'<div class="battery-result">予想：'+outcomes[observed.guess]+' ／ 実際：'+outcomes[observed.actual]+(observed.guess===observed.actual?"。予想どおり。":"。予想と違っても大切な発見！")+'</div>':predictions+
  '<button type="button" class="battery-test" data-battery-test '+(!s.guess?"disabled":"")+'>⚡ 安全な仮想実験で確認する</button>')+
- '</div><div class="battery-notebook"><strong>📖 実験ノート</strong>'+cards(stage,s)+'</div></section>'+service+'</div>';
+ '</div>'+(observed&&!allDone?'<button type="button" class="battery-next" data-battery-next="1">🔎 次の未実験の条件へ進む（予想はもう一度考えよう）</button>':"")+
+ '<div class="battery-notebook"><strong>📖 実験ノート</strong>'+cards(stage,s)+'</div></section>'+service+'</div>';
 }
-window.AkariBatteryLab={configs,outcomes,reasons,all,get,model,initial,normalize,evidence,canFinish,selectedId,serviceActual,render,svg};
+window.AkariBatteryLab={configs,outcomes,reasons,all,get,model,initial,normalize,evidence,canFinish,selectedId,nextUntested,serviceActual,render,svg};
 })();
