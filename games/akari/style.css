@@ -1108,3 +1108,16 @@
  .read-task-btn{min-width:83px;padding:6px 8px;font-size:12px}
  .furigana-choices button{font-size:11px}
 }
+
+/* Keep the title, stars and reading settings from squeezing each other at 320px. */
+@media(max-width:740px){
+ .quest-head{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"heading stars" "reading reading";column-gap:8px;row-gap:7px;
+  align-items:start;
+ }
+ .quest-head>div:first-child{grid-area:heading;min-width:0}
+ .quest-head>.quest-stars{grid-area:stars;align-self:start}
+ .quest-head>.reading-toggle{grid-area:reading;justify-self:end}
+ .quest-head h2{overflow-wrap:anywhere}
+}
