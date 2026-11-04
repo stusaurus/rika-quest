@@ -151,7 +151,7 @@ function workbench(wires,lit){
   return '<path d="M'+p[0]+' '+p[1]+'L'+q[0]+' '+q[1]+'" fill="none" class="wire'+(lit?' lit':'')+(danger?' danger':'')+'" stroke-linecap="round" stroke-width="7"/>';
  }).join("");
  const defs='<defs>'+
-  '<linearGradient id="workCell" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1c607a"/><stop offset=".16" stop-color="#4da3b5"/><stop offset=".52" stop-color="#2d829b"/><stop offset="1" stop-color="#164b66"/></linearGradient>'+
+  '<linearGradient id="workCell" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dd4d3c"/><stop offset=".25" stop-color="#e86146"/><stop offset=".35" stop-color="#ffdf58"/><stop offset=".70" stop-color="#f5ca45"/><stop offset=".83" stop-color="#3994d5"/><stop offset="1" stop-color="#1763ad"/></linearGradient>'+
   '<linearGradient id="workMetal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7a8e99"/><stop offset=".24" stop-color="#f5faf9"/><stop offset=".56" stop-color="#cad7db"/><stop offset=".85" stop-color="#819aa5"/><stop offset="1" stop-color="#536b7b"/></linearGradient>'+
   '<linearGradient id="workGlass" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="'+(lit?'#fff6ca':'#e6f7f8')+'" stop-opacity="'+(lit?".98":".86")+'"/><stop offset=".65" stop-color="'+(lit?'#ffe5a5':'#bad5dc')+'" stop-opacity="'+(lit?".95":".69")+'"/><stop offset="1" stop-color="'+(lit?'#fff1cb':'#96b6c0')+'" stop-opacity=".70"/></linearGradient>'+
   '<filter id="workGlow"><feGaussianBlur stdDeviation="9"/></filter></defs>';
