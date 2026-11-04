@@ -1011,3 +1011,11 @@
  .reading-easy .battery-section h3,.reading-easy .finale-section h3,.reading-easy .garden-section h3{font-size:15px}
  .reading-easy .pacing-guide{padding:8px 10px}
 }
+
+.help-more,.word-help{margin:12px 0;padding:10px 12px;border-radius:12px;border:1px solid #9fbcb8;background:#264b5a;color:#f2f8eb}
+.help-more>summary,.word-help>summary{font-size:14px;line-height:1.5;font-weight:900;cursor:pointer;min-height:28px}
+.help-more[open],.word-help[open]{padding-bottom:13px}
+.word-help dl{display:grid;grid-template-columns:minmax(0,105px) minmax(0,1fr);gap:7px 12px;font-size:13px;line-height:1.6;margin:12px 0 0}
+.word-help dt{font-weight:900;color:#ffe4a7}.word-help dd{margin:0;color:#f2f8eb}
+.kid-help-steps{padding-left:24px;line-height:1.9;font-size:15px}
+@media(max-width:375px){.word-help dl{grid-template-columns:1fr;gap:2px}.word-help dd{padding-bottom:7px}}
