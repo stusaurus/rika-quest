@@ -4,36 +4,55 @@ const wrap=(view,body,label="",css="")=>'<svg class="science-illustration '+css+
 const defs='<defs><linearGradient id="metal" x2="1" y2="1"><stop stop-color="#fbfffa"/><stop offset=".37" stop-color="#b5cbd3"/><stop offset=".71" stop-color="#e5f2ed"/><stop offset="1" stop-color="#738c99"/></linearGradient><linearGradient id="cell" x2="0" y2="1"><stop stop-color="#f8d99c"/><stop offset=".52" stop-color="#e7a15f"/><stop offset="1" stop-color="#c67450"/></linearGradient><radialGradient id="glass"><stop stop-color="#fffbdd"/><stop offset=".7" stop-color="#f4e0a6"/><stop offset="1" stop-color="#adcdcb" stop-opacity=".7"/></radialGradient><filter id="glow"><feGaussianBlur stdDeviation="7"/></filter></defs>';
 const plate=(x,y,w,h,fill="#233f56")=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="13" fill="'+fill+'" stroke="#62899e" stroke-width="2"/>';
 function battery(kind="small",active=true){
- const count=(kind==="series"||kind==="reverse")?2:1,reverse=kind==="reverse",wide=kind==="large";
- const cells=Array.from({length:count},(_,i)=>{
-  const x=count===1?85:32+i*112,y=34,w=wide?92:78,h=112,plusTop=!(reverse&&i===1);
-  const topContact=plusTop?'<rect x="'+(x+28)+'" y="'+(y-8)+'" width="'+(w-56)+'" height="10" rx="4" fill="url(#metal)"/>':'<rect x="'+(x+9)+'" y="'+(y-4)+'" width="'+(w-18)+'" height="5" rx="2" fill="#dce5da"/>';
-  const bottomContact=plusTop?'<rect x="'+(x+9)+'" y="'+(y+h-2)+'" width="'+(w-18)+'" height="6" rx="2" fill="#bdc9c4"/>':'<rect x="'+(x+28)+'" y="'+(y+h-1)+'" width="'+(w-56)+'" height="10" rx="4" fill="url(#metal)"/>';
-  return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" fill="url(#cell)" stroke="#fbe1aa" stroke-width="3"/>'
-   +'<rect x="'+(x+7)+'" y="'+(y+13)+'" width="'+(w-14)+'" height="70" rx="7" fill="#be6351" stroke="#faad86" stroke-width="2"/>'
-   +'<path d="M'+(x+13)+' '+(y+20)+'v43" stroke="#f6c498" stroke-width="4" opacity=".7"/>'
-   +'<rect x="'+(x+9)+'" y="'+(y+88)+'" width="'+(w-18)+'" height="18" rx="3" fill="#e8e9d9"/>'
-   +topContact+bottomContact
-   +'<text x="'+(x+w/2)+'" y="'+(y+56)+'" text-anchor="middle" font-size="24" font-weight="900" fill="#fff">1.5V</text>'
-   +'<text x="'+(x+w/2)+'" y="'+(plusTop?y+25:y+104)+'" text-anchor="middle" font-size="21" font-weight="900" fill="'+(plusTop?'#fff':'#27465d')+'">＋</text>'
-   +'<text x="'+(x+w/2)+'" y="'+(plusTop?y+104:y+25)+'" text-anchor="middle" font-size="20" font-weight="900" fill="'+(plusTop?'#27465d':'#fff')+'">−</text></g>';
+ const count=kind==="series"||kind==="reverse"?2:1,reverse=kind==="reverse",wide=kind==="large";
+ const sw=wide?74:count===2?58:57;
+ const xs=count===1?[130-sw/2]:[55,147];
+ const scheme='<defs><linearGradient id="batteryWrapV2" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#14536c"/><stop offset=".22" stop-color="#53a5af"/><stop offset=".55" stop-color="#2b8399"/><stop offset="1" stop-color="#154860"/></linearGradient></defs>';
+ const cells=xs.map((x,i)=>{
+  const plusTop=!(reverse&&i===1),y=38,h=100,mid=x+sw/2;
+  const top=plusTop?
+    '<rect x="'+(mid-11)+'" y="29" width="22" height="11" rx="4" fill="url(#metal)" stroke="#f3f8f6" stroke-width="1.5"/>':
+    '<path d="M'+(x+3)+' 39H'+(x+sw-3)+'" stroke="#cbdde2" stroke-width="7" stroke-linecap="round"/>';
+  const bottom=plusTop?
+    '<path d="M'+(x+3)+' 139H'+(x+sw-3)+'" stroke="#b4c6cf" stroke-width="7" stroke-linecap="round"/>':
+    '<rect x="'+(mid-11)+'" y="137" width="22" height="11" rx="4" fill="url(#metal)" stroke="#f3f8f6" stroke-width="1.5"/>';
+  return '<g class="battery-cell-v2">'+
+    '<rect x="'+x+'" y="'+y+'" width="'+sw+'" height="'+h+'" rx="12" fill="url(#batteryWrapV2)" stroke="#b8e2e7" stroke-width="2.6"/>'+
+    '<path d="M'+(x+8)+' 48V126" stroke="#bde7e2" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="'+(x+7)+'" y="64" width="'+(sw-14)+'" height="43" rx="5" fill="#f7faf3" fill-opacity=".95"/>'+
+    '<text x="'+mid+'" y="82" text-anchor="middle" fill="#23596c" font-size="14" font-weight="900">1.5V</text>'+
+    '<text x="'+mid+'" y="96" text-anchor="middle" fill="#23596c" font-size="10" font-weight="900">乾電池</text>'+
+    top+bottom+
+    '<text x="'+mid+'" y="24" text-anchor="middle" fill="#ffefb6" font-size="19" font-weight="900">'+(plusTop?'＋':'−')+'</text>'+
+    '<text x="'+mid+'" y="163" text-anchor="middle" fill="#eaf3ee" font-size="19" font-weight="900">'+(plusTop?'−':'＋')+'</text></g>';
  }).join("");
- const wire=count===2?'<path d="M71 150 C70 183 113 182 128 162 C143 145 142 56 181 25" fill="none" stroke="#ffe4b6" stroke-width="6" stroke-linecap="round"/><path d="M71 150 C70 183 113 182 128 162 C143 145 142 56 181 25" fill="none" stroke="#bd8f56" stroke-width="2" stroke-linecap="round"/>':'';
- const foot=count===2?(reverse?"逆向きの直列（電圧は相殺）":"同じ向きの直列（約3V）"):(wide?"単1形・公称1.5V":"単4形・公称1.5V");
- return wrap("0 0 260 190",defs+plate(3,3,254,184)+cells+wire+'<text x="130" y="178" text-anchor="middle" fill="#d6f7f2" font-size="12" font-weight="700">'+foot+'</text>',count===2?(reverse?"乾電池2個の逆向き直列つなぎ":"乾電池2個の同じ向きの直列つなぎ"):(wide?"単1形乾電池":"単4形乾電池"),"battery-art"+(active?" active":""));
+ const wire=count===2?'<path d="M84 141Q99 178 130 163Q137 151 137 33Q151 26 175 30" stroke="#efd49e" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="6 4"/>':'';
+ const foot=count===2?(reverse?"2こ・ぎゃく向き":"2こ・同じ向き"):(wide?"単1形　1.5V":"単4形　1.5V");
+ const description=count===2?(reverse?"乾電池2個を逆向きにつないだ模型":"乾電池2個を同じ向きにつないだ模型"):(wide?"大きな単1形乾電池の模型":"小さな単4形乾電池の模型");
+ return wrap("0 0 260 190",defs+scheme+plate(3,3,254,184,"#1e4154")+wire+cells+
+  '<text x="130" y="182" text-anchor="middle" fill="#e9f5e8" font-size="12" font-weight="800">'+foot+'</text>',
+  description,"battery-art battery-art-v2"+(active?" active":""));
 }
 function bulb(on=false,short=false){
- return wrap("0 0 220 205",defs+plate(5,4,210,196,'#21455e')+
- (on?'<ellipse cx="111" cy="81" rx="78" ry="70" fill="#ffed9c" opacity=".35" filter="url(#glow)"/>':'')+
- '<path d="M87 124Q49 86 63 56Q77 20 111 21Q154 23 160 58Q171 94 136 124Z" fill="'+(on?'url(#glass)':'#8cadbd')+'" fill-opacity="'+(on?'.96':'.44')+'" stroke="'+(on?'#fff4bb':'#b2d4e0')+'" stroke-width="5"/>'+
- '<path d="M86 104 101 91 112 100 122 90 136 103" fill="none" stroke="'+(on?'#fff6d3':'#dfb989')+'" stroke-width="4" stroke-linecap="round"/><path d="M101 93V128M122 91V128" stroke="#d5d2c3" stroke-width="4"/>'+
- '<rect x="82" y="123" width="60" height="47" rx="9" fill="url(#metal)" stroke="#a5bec6" stroke-width="3"/><path d="M87 133H136M87 146H136M90 158H134" stroke="#7793a0" stroke-width="4"/><rect x="100" y="169" width="24" height="8" rx="3" fill="#ebc18a" stroke="#fff1d3" stroke-width="2"/>'+
- '<path d="M73 148H39M112 176V191" stroke="#f2cb8e" stroke-width="5" fill="none"/>'+
- '<circle cx="39" cy="148" r="7" fill="#eadcbb"/><circle cx="112" cy="190" r="7" fill="#eadcbb"/>'+
- '<text x="10" y="141" fill="#cce5f0" font-size="10">金属の横</text><text x="127" y="189" fill="#cce5f0" font-size="10">底の接点</text>',
- "豆電球の金属の横部分と底の接点"+(on?"、点灯中":""),
- "bulb-art");
+ const glass='<path d="M86 128C78 115 63 100 64 78C64 47 83 25 111 25C141 25 159 48 160 78C160 101 147 116 136 128Z" fill="'+(on?'url(#glass)':'#d8edf0')+'" fill-opacity="'+(on?'.95':'.78')+'" stroke="'+(on?'#fff0b1':'#d4edf0')+'" stroke-width="4"/>';
+ const filament='<path d="M98 133V98L104 94L111 103L119 94L127 99V133" stroke="'+(on?'#fff2b2':'#ad7c4e')+'" stroke-width="3.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M98 100V139M127 100V139" stroke="#a2b4b8" stroke-width="2.4" fill="none"/>';
+ return wrap("0 0 220 205",defs+plate(5,4,210,196,"#214659")+
+  (on?'<ellipse cx="111" cy="76" rx="74" ry="67" fill="#ffe59a" opacity=".30" filter="url(#glow)"/>':'')+
+  glass+'<path d="M82 78Q85 48 99 41" stroke="#fff" stroke-opacity=".65" stroke-width="5" fill="none" stroke-linecap="round"/>'+
+  filament+
+  '<rect x="83" y="128" width="57" height="44" rx="5" fill="url(#metal)" stroke="#e4f1ec" stroke-width="2.5"/>'+
+  '<path d="M86 138H137M86 147H137M86 156H137M86 165H137" stroke="#6c8795" stroke-width="3.5"/>'+
+  '<path d="M82 144H43" stroke="#b5c8ce" stroke-width="7" stroke-linecap="round"/>'+
+  '<circle cx="43" cy="144" r="6" fill="#f8d795" stroke="#f6efd5" stroke-width="1.5"/>'+
+  '<path d="M111 173V184" stroke="#c4d1cf" stroke-width="8" stroke-linecap="round"/>'+
+  '<circle cx="111" cy="183" r="7" fill="#f8d795" stroke="#f6efd5" stroke-width="1.5"/>'+
+  '<text x="12" y="133" fill="#f7f4e7" font-size="10" font-weight="800">横の金属</text>'+
+  '<text x="128" y="188" fill="#f7f4e7" font-size="10" font-weight="800">底の接点</text>',
+ "豆電球。ガラス部分と、側面の金属および底の接点が明確に分かれる模型"+(on?"。点灯中":""),
+ "bulb-art bulb-art-v2");
 }
+
 function material(id){
  let obj={
  clip:'<path d="M120 49Q171 31 175 75L175 140Q170 173 138 169Q110 164 110 134L110 80Q110 61 124 62Q139 64 140 80L140 137Q142 148 130 146Q121 142 122 128" fill="none" stroke="#476c81" stroke-width="15" stroke-linecap="round"/><path d="M120 49Q171 31 175 75L175 140Q170 173 138 169Q110 164 110 134L110 80Q110 61 124 62Q139 64 140 80L140 137Q142 148 130 146Q121 142 122 128" fill="none" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>',
