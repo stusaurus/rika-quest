@@ -132,6 +132,8 @@ assert.equal(yomi.dictionary.get("並列"),"へいれつ");
 assert.equal(yomi.dictionary.get("定格"),"ていかく");
 assert.equal(yomi.dictionary.get("危険"),"きけん");
 assert.equal(yomi.dictionary.get("豆電球"),"まめでんきゅう");
+assert.equal(yomi.tokenize("回路（かいろ）").filter(x=>x.reading).length,0,"Words already followed by printed kana must not be annotated twice");
+assert.equal(yomi.tokenize("乾電池（かんでんち）").filter(x=>x.reading).length,0,"A science glossary with an existing reading must remain visually compact");
 assert.equal(yomi.tokenize("きょうは じっけん！").filter(x=>x.reading).length,0,"Already-kana text must not get redundant labels");
 const reading=window.AkariReading;
 assert.ok(reading?.validate(),"All 14 stages need age-eight-readable one-line copy");
