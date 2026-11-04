@@ -6,65 +6,65 @@
  * The lamp is drawn unlit in every probe so the picture never leaks the answer.
  */
 const puzzles={
- 2:{title:"街灯の分かれ道",intro:"別の街灯も消えてしまった。配線図から、点灯するか予想しよう。",choices:["lit","dark"],
+ 2:{title:"街灯の分かれ道",intro:"新しい 回路だよ。 光るか よそうしよう。",choices:["lit","dark"],
  probes:[
   {id:"a",name:"街灯A：＋極と電球の横だけをつないだ",diagram:"open",answer:"dark"},
   {id:"b",name:"街灯B：＋極を横、−極を底につないだ",diagram:"loop",answer:"lit"},
   {id:"c",name:"街灯C：＋極を底、−極を横につないだ",diagram:"reverseLoop",answer:"lit"}
  ],reasons:[
-  ["path","乾電池の＋と−が、豆電球の2つの接点を通る輪になっているかが大切"],
-  ["plus","＋極が電球に触れていれば、−極をつながなくても光る"],
-  ["direction","豆電球は＋極を横につながないと絶対に光らない"]
+  ["path","電池の ＋から 電球を 通って −へ もどる 道が ある"],
+  ["plus","＋だけ つなげば、−は いらない"],
+  ["direction","＋を 電球の 横に つながないと 光らない"]
  ],correct:"path",discovery:"豆電球の横と底の2つの金属接点が回路につながれば、乾電池1個の向きは逆でも点灯する。"},
- 5:{title:"見た目にだまされない！",intro:"同じ色の物でも、材料は違う。配線のすき間にはさんだときの結果を予想しよう。",choices:["lit","dark"],
+ 5:{title:"見た目にだまされない！",intro:"この 材料を はさんだら 光るかな？",choices:["lit","dark"],
  probes:[
   {id:"a",name:"銀色のプラスチック定規をはさむ",diagram:"plastic",answer:"dark"},
   {id:"b",name:"小さな鉄のクリップをはさむ",diagram:"clip",answer:"lit"},
   {id:"c",name:"薄いアルミはくをはさむ",diagram:"foil",answer:"lit"}
  ],reasons:[
-  ["look","銀色で光っている物は、どれでも電気を通す"],
-  ["material","電気の通りやすさは、物の色や形より、材料の性質で決まる"],
-  ["length","すき間にはさむ物が短ければ、どんな材料でも電気が通る"]
+  ["look","銀色なら、なんでも 電気が 通る"],
+  ["material","色でなく、何で できているかが 大事"],
+  ["length","小さい ものなら、なんでも 電気が 通る"]
  ],correct:"material",discovery:"見た目が金属に似ていても、プラスチックは電気を通しにくい。鉄とアルミは金属なので通す。"},
- 7:{title:"時計塔の二重ロック",intro:"今度はスイッチが3つ！2つで見つけた直列の法則を使えるかな？",choices:["lit","dark"],
+ 7:{title:"時計塔の二重ロック",intro:"スイッチが 3つ！ どんなとき 光る？",choices:["lit","dark"],
  probes:[
   {id:"a",name:"AとBがON、CがOFF",diagram:"series110",answer:"dark"},
   {id:"b",name:"A・B・CすべてON",diagram:"series111",answer:"lit"},
   {id:"c",name:"AがOFF、BとCがON",diagram:"series011",answer:"dark"}
  ],reasons:[
-  ["both","直列では3つとも閉じて、はじめて電気の一本道がつながる"],
-  ["one","直列でも3つのうち1つが閉じていれば光る"],
-  ["count","2つスイッチがあれば、ON・OFFに関係なく必ず明るくなる"]
+  ["both","1本の 道だから、3つとも ONが ひつよう"],
+  ["one","3つの うち 1つ ONなら 光る"],
+  ["count","スイッチが あれば いつでも 光る"]
  ],correct:"both",discovery:"直列スイッチの通り道は1本。どこか1か所でも開けば消灯する。"},
- 8:{title:"港の遠隔スイッチ",intro:"港の照明を3か所から操作するよ。2本で見つけた並列の法則を3本に使おう。",choices:["lit","dark"],
+ 8:{title:"港の遠隔スイッチ",intro:"3つの スイッチを ためそう。",choices:["lit","dark"],
  probes:[
   {id:"a",name:"AとBがOFF、CがON",diagram:"parallel001",answer:"lit"},
   {id:"b",name:"A・B・CすべてOFF",diagram:"parallel000",answer:"dark"},
   {id:"c",name:"AがON、BとCがOFF",diagram:"parallel100",answer:"lit"}
  ],reasons:[
-  ["both","並列では3つともONでなければ点灯しない"],
-  ["either","並列は道が3本。どれか1本でも閉じれば電気の道がつながる"],
-  ["open","並列なら全部OFFでも電流が流れる"]
+  ["both","3つとも ONでないと 光らない"],
+  ["either","道は 3本。1本でも つながれば 光る"],
+  ["open","ぜんぶ OFFでも 光る"]
  ],correct:"either",discovery:"スイッチが並列なら、どちらかの道がつながっていれば豆電球は点灯する。"},
- 12:{title:"危険な近道を見破れ！",intro:"修理の前に、別の3つの回路が安全かを考えよう。実物の乾電池でショートを試すのは禁止。",choices:["short","safe"],
+ 12:{title:"危険な近道を見破れ！",intro:"この 3つは 安全かな？ 本物で ショートは しないでね。",choices:["short","safe"],
  probes:[
   {id:"a",name:"豆電球を通らず＋極と−極を導線でつなぐ",diagram:"short",answer:"short"},
   {id:"b",name:"乾電池の＋と−を電球の横と底につなぐ",diagram:"loop",answer:"safe"},
   {id:"c",name:"電球をつないだまま、＋と−を別の導線でも直結する",diagram:"shunt",answer:"short"}
  ],reasons:[
-  ["off","豆電球が消灯した回路は、どれでも安全"],
-  ["battery","乾電池の＋と−を直接つなぐ道があると、豆電球の有無にかかわらずショートして危険"],
-  ["thin","導線が細ければショートしても危なくない"]
+  ["off","消えていれば、いつでも 安全"],
+  ["battery","＋と −が 直接つながると あぶない"],
+  ["thin","細い 線なら ショートしても 安全"]
  ],correct:"battery",discovery:"豆電球と並んで直接の近道があっても、乾電池の＋と−が導線だけでつながれば危険なショート。"},
- 14:{title:"最後の夜の応用試験",intro:"修理した知識を別の回路に応用！ 2つの接点と材料に注意して判断しよう。",choices:["lit","dark"],
+ 14:{title:"最後の夜の応用試験",intro:"さいごの なぞ！ 電気の 道を たどろう。",choices:["lit","dark"],
  probes:[
   {id:"a",name:"金属のクリップ、電球の横と底の接点を両方つなぐ",diagram:"clip",answer:"lit"},
   {id:"b",name:"木の棒をはさみ、電球の両方の接点をつなぐ",diagram:"wood",answer:"dark"},
   {id:"c",name:"アルミはくを使うが、電球の底の接点だけ外れている",diagram:"bottomGap",answer:"dark"}
  ],reasons:[
-  ["battery","乾電池を2個使えば、途中が切れていても点灯する"],
-  ["closed","乾電池から豆電球の両接点へ電気を通す材料で輪ができていることが必要"],
-  ["foil","金属を1か所使えば、ほかの接点が外れていても点灯する"]
+  ["battery","電池が 2こなら、道が 切れても 光る"],
+  ["closed","電池の ＋から 電球を 通って −へ もどる 道が ある"],
+  ["foil","金ぞくが 1つ あれば、すき間が あっても 光る"]
  ],correct:"closed",discovery:"電源、導体、電球の2つの金属接点が、切れ目のない回路になることが最も大切。"}
 };
 const labels={lit:"💡 点灯",dark:"◯ 消灯",short:"⚠ ショート（危険）",safe:"💡 正しく点灯"};
