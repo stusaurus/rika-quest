@@ -13,19 +13,19 @@ const outcomes={
 const colors={bright:"#ffe9a3",dim:"#f8dfba",dark:"#52768a",risk:"#ffc4a0"};
 const reasons={
  9:[
-  ["voltage","同じ種類の新品乾電池では、大きさが違っても表示の公称電圧はともに1.5V"],
-  ["size","大きい乾電池のほうが、電池1個の電圧は必ず高い"],
-  ["shape","乾電池の太さで、豆電球の明るさは最初から決まる"]
+  ["voltage","大きさが ちがっても、新しい 電池は どちらも 1.5V"],
+  ["size","大きな 電池は、いつも 1この 力が 強い"],
+  ["shape","電池が 太いほど、はじめから 明るい"]
  ],
  10:[
-  ["series","同じ向きの同種の乾電池を直列につなぐと電圧は加わる。豆電球の定格にも合わせる"],
-  ["always","電池を増やせば、どんな豆電球でも安全に明るくできる"],
-  ["weight","豆電球を明るくするのは、電池が重くなるから"]
+  ["series","電池を 2こ 同じ向きに つなぐと、電圧が たされる"],
+  ["always","電池を ふやせば、どの 電球でも 安全"],
+  ["weight","電池が 重くなるから 光る"]
  ],
  11:[
-  ["cancel","同じ乾電池2個を逆向きに直列につなぐと電圧が打ち消し合う。普通の豆電球は1個なら向きに関係なく光る"],
-  ["bulb","豆電球は電気が逆方向に流れると必ず消える"],
-  ["size","向きを逆にすると乾電池そのものの大きさが減る"]
+  ["cancel","電池1こなら 向きを かえても 光る。2こを ぎゃく向きに すると 消える"],
+  ["bulb","電池を ぎゃくに すると、どんなときも 消える"],
+  ["size","向きを かえると、電池が 小さくなる"]
  ]
 };
 const configs={
@@ -199,23 +199,23 @@ function render(stage,raw){
  const reason=(reasons[stage]||[]).map(([id,label])=>'<button type="button" class="battery-reason'+(s.reason===id?" chosen":"")+'" data-battery-reason="'+id+'" aria-pressed="'+(s.reason===id)+'">'+label+'</button>').join("");
  const guessChoices=(stage===9?["bright","dim"]:stage===10?["bright","dim","risk"]:["bright","dark"]);
  const predictions='<div class="battery-predictions">'+guessChoices.map(k=>'<button type="button" class="'+(s.guess===k?" chosen":"")+'" data-battery-guess="'+k+'" aria-pressed="'+(s.guess===k)+'" '+(observed?"disabled":"")+'>'+outcomes[k]+'</button>').join("")+'</div>';
- const service=allDone?'<section class="lab-panel battery-section"><h3>② 実験結果を使って現場を救う</h3><p class="lab-sub">'+serviceText(stage)+'</p>'+
+ const service=allDone?'<section class="lab-panel battery-section"><h3>② どれを 使う？</h3><p class="lab-sub">'+serviceText(stage)+'</p>'+
  '<div class="battery-service-options">'+serviceOptions(stage).map(([id,label])=>'<button class="battery-option'+(s.choice===id?" chosen":"")+'" type="button" data-battery-service="'+id+'" aria-pressed="'+(s.choice===id)+'">'+label+'</button>').join("")+'</div>'+
  (s.choice?'<div class="battery-service-predict"><strong>この設備をつなぐとどうなる？</strong><div class="battery-predictions">'+
  ["bright","dim","dark",...(stage===10?["risk"]:[])].map(k=>'<button type="button" class="'+(s.serviceGuess===k?" chosen":"")+'" data-battery-service-guess="'+k+'" aria-pressed="'+(s.serviceGuess===k)+'">'+outcomes[k]+'</button>').join("")+
- '</div><button class="battery-test" type="button" data-battery-service-test '+(!s.serviceGuess?"disabled":"")+'>🔬 現場で仮想通電</button></div>':"")+
+ '</div><button class="battery-test" type="button" data-battery-service-test '+(!s.serviceGuess?"disabled":"")+'>🔬 つないで ためす</button></div>':"")+
  (s.service?'<div class="battery-result" role="status">予想：'+outcomes[s.service.guess]+' ／ 実際：'+outcomes[s.service.actual]+(s.service.guess===s.service.actual?"。実験結果と一致！":"。予想と違った。記録を見直そう。")+'</div>':"")+
- '<div class="battery-science"><h3>③ なぜそうなる？</h3><p class="lab-sub">3つの科学的な説明のうち、実験記録と合うものを選ぼう。</p>'+reason+'</div>'+
- '<p class="lab-sub">現場の実験結果・理由の説明がそろったら、画面下の「点灯のしくみを確認」で完了。</p></section>':"";
+ '<div class="battery-science"><h3>③ どうして？</h3><p class="lab-sub">ためした けっかに あう 理由は どれ？</p>'+reason+'</div>'+
+ '<p class="lab-sub">できたら、画面下の ボタンを おそう。</p></section>':"";
  return '<div class="battery-expedition"><div class="battery-head"><span class="eyebrow">🔋 ミッション '+stage+' / 14</span><strong>'+title(stage)+'</strong><small>実験記録 '+Object.keys(s.trials).length+' / '+all(stage).length+'</small></div>'+
  '<div class="battery-caution">※ 仮想実験です。電池をショートさせたり、定格を超える豆電球を実物で試したりしないでね。'+(stage===9?"乾電池の持続時間は容量や使い方で変わるため、長時間後の結果は一例です。":"")+'</div>'+
- '<section class="lab-panel battery-section"><h3>① 条件を決め、予想してから実験する</h3><p class="lab-sub">'+instruction(stage)+'</p><div class="battery-controls">'+selection(stage,s)+'</div>'+
+ '<section class="lab-panel battery-section"><h3>① よそうして ためそう</h3><p class="lab-sub">'+instruction(stage)+'</p><div class="battery-controls">'+selection(stage,s)+'</div>'+
  '<div class="battery-diagram">'+svg(stage,config,!!observed)+'</div>'+
  '<div class="battery-predict-card"><strong>🔮 '+config.label+'：豆電球はどうなる？</strong>'+
  (observed?'<div class="battery-result">予想：'+outcomes[observed.guess]+' ／ 実際：'+outcomes[observed.actual]+(observed.guess===observed.actual?"。予想どおり。":"。予想と違っても大切な発見！")+'</div>':predictions+
- '<button type="button" class="battery-test" data-battery-test '+(!s.guess?"disabled":"")+'>⚡ 安全な仮想実験で確認する</button>')+
+ '<button type="button" class="battery-test" data-battery-test '+(!s.guess?"disabled":"")+'>⚡ 光るか ためす</button>')+
  '</div>'+(observed&&!allDone?'<button type="button" class="battery-next" data-battery-next="1">🔎 次の未実験の条件へ進む（予想はもう一度考えよう）</button>':"")+
- '<div class="battery-notebook"><strong>📖 実験ノート</strong>'+cards(stage,s)+'</div></section>'+service+'</div>';
+ '<details class="battery-notebook"><summary>📖 4回の けっかを 見る</summary>'+cards(stage,s)+'</details></section>'+service+'</div>';
 }
 window.AkariBatteryLab={configs,outcomes,reasons,all,get,model,initial,normalize,evidence,canFinish,selectedId,nextUntested,serviceActual,render,svg};
 })();
