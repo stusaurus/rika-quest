@@ -69,6 +69,15 @@ function normalize(raw){
  if(reasons.some(([id])=>id===raw.reason))s.reason=raw.reason;
  return s;
 }
+function nextUntested(raw){
+ const s=normalize(raw),options=stations.flatMap(station=>station.options.map(item=>({station:station.id,option:item.id})));
+ const current=options.findIndex(x=>x.station===s.active&&x.option===s.selected[x.station]);
+ for(let i=1;i<=options.length;i++){
+  const entry=options[(current+i+options.length)%options.length];
+  if(entry&&!s.tests[entry.station]?.[entry.option])return entry;
+ }
+ return null;
+}
 function evidence(raw){
  const s=normalize(raw);
  return stations.every(station=>station.options.every(o=>s.tests[station.id]?.[o.id]?.actual===trialResult(station.id,o.id)));
@@ -112,7 +121,8 @@ function render(raw){
  '<div class="finale-investigate"><h3>'+stage.icon+' '+stage.title+'</h3><p>'+stage.question+'</p><div class="finale-specimens">'+options+'</div>'+
  (tested?'<div class="finale-result">予想：'+names[tested.guess]+' ／ 実際：'+names[tested.actual]+'。'+(tested.actual===tested.guess?"予想どおり。":"予想が外れた！その理由を比べよう。")+'</div>':
  '<p class="lab-sub">現在の条件で点灯するか予想してね。</p><div class="finale-choices">'+[["bright","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-finale-guess="'+id+'" class="'+(s.guess===id?" selected":"")+'" aria-pressed="'+(s.guess===id)+'">'+label+'</button>').join("")+'</div><button type="button" class="finale-measure" data-finale-test '+(!s.guess?"disabled":"")+'>🔬 条件を変えて仮想実験</button>')+
- '<div class="finale-place"><button type="button" data-finale-install '+(!tested?"disabled":"")+'>🔧 この試験済みの条件を灯台へ採用</button><span>設置済み：'+(optionLabel(s.active,s.installed[stage.id])||"未設置")+'</span></div></div>'+
+ '<div class="finale-place"><button type="button" data-finale-install '+(!tested?"disabled":"")+'>🔧 この試験済みの条件を灯台へ採用</button><span>設置済み：'+(optionLabel(s.active,s.installed[stage.id])||"未設置")+'</span></div>'+
+ (tested&&!ready?'<button type="button" class="finale-next" data-finale-next="1">🔎 次の未実験の条件を調べる</button>':"")+'</div>'+
  '<div class="finale-log"><strong>📖 6つの比較記録</strong>'+compare+'</div></section>'+
  (ready?'<section class="lab-panel finale-section"><h3>② 3つを組み合わせて、灯台を点灯させよう</h3><p class="lab-sub">各部品を実験結果から選び、全体の回路で点灯するか予想してから通電しよう。</p>'+
  '<div class="finale-circuit">'+circuit(s)+'</div><div class="finale-view"><button type="button" data-finale-view="left">◀ 乾電池側</button><button type="button" data-finale-view="right">豆電球側 ▶</button></div>'+
@@ -122,5 +132,5 @@ function render(raw){
  (lit?'<div class="finale-reasons"><h3>③ なぜ点灯する回路になったのかな？</h3>'+reasons.map(([id,label])=>'<button type="button" data-finale-reason="'+id+'" class="'+(s.reason===id?" selected":"")+'">'+label+'</button>').join("")+'<p class="lab-sub">正しい理由まで確認できたら、画面下の「最終回路を確認する」を押そう。</p></div>':"")+
  '</section>':"")+'</div>';
 }
-window.AkariFinaleLab={stations,correct,reasons,initial,option,trialResult,signature,evaluate,normalize,evidence,canFinish,render,circuit};
+window.AkariFinaleLab={stations,correct,reasons,initial,option,trialResult,signature,evaluate,normalize,evidence,nextUntested,canFinish,render,circuit};
 })();
