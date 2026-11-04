@@ -27,6 +27,7 @@ vm.runInContext(readFileSync("games/akari/bridge-lab.js","utf8"),context,{filena
 vm.runInContext(readFileSync("games/akari/garden-lab.js","utf8"),context,{filename:"garden-lab.js"});
 vm.runInContext(readFileSync("games/akari/battery-lab.js","utf8"),context,{filename:"battery-lab.js"});
 vm.runInContext(readFileSync("games/akari/double-fault-lab.js","utf8"),context,{filename:"double-fault-lab.js"});
+vm.runInContext(readFileSync("games/akari/finale-lab.js","utf8"),context,{filename:"finale-lab.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
 const click=dataset=>el("workspace").listeners.click({target:{closest(s){return s==="button"?button(dataset):null}}});
@@ -490,12 +491,54 @@ assert.equal(saved().doubleFaultDraft,null,"Temporary diagnosis data must be cle
 assert.ok(saved().notes.some(n=>n.key==="double:circuit:wire"),"The dark intermediate repair is recorded");
 assert.ok(saved().notes.some(n=>n.key==="double:circuit:contact|wire"),"Final powered loop evidence is recorded");
 assert.equal(dual.normalize({probes:{wire:{actual:"good",guess:"good"}},fixed:["wire"]}).fixed.length,0,"False trial data may not unlock repair");
-move(14);click({final:"direction",value:"same"});click({final:"material",value:"clip"});click({final:"contact",value:"true"});check();
-assert.equal(saved().completed[14],undefined,"Correct guesses alone must not complete final mission");
-for(const verify of ["direction","material","contact"])click({verify});
-click({final:"material",value:"wood"});check();
-assert.equal(saved().completed[14],undefined,"Changing a verified part must invalidate that diagnosis");
-click({verify:"material"});click({final:"material",value:"clip"});click({verify:"material"});check();transfer(14);
+move(14);
+const finale=window.AkariFinaleLab;
+assert.ok(finale,"Final six-experiment investigation must be installed");
+assert.equal(finale.stations.length,3,"Three independent investigation stations");
+for(const station of finale.stations)assert.equal(station.options.length,2,"Each station has two comparable experiments");
+assert.equal(finale.evaluate({battery:"aligned",material:"clip",contact:"both"}).closed,true,"The whole battery-material-lamp loop closes only with three working conditions");
+for(const key of ["battery","material","contact"]){
+ const broken={battery:"aligned",material:"clip",contact:"both"};
+ broken[key]={battery:"opposed",material:"plastic",contact:"glass"}[key];
+ assert.equal(finale.evaluate(broken).closed,false,"Any single open fault should prevent current: "+key);
+}
+check();assert.equal(saved().completed[14],undefined,"Final case cannot be cleared by a lucky guess");
+assert.match(el("workspace").innerHTML,/finale-stations/,"Three station choices are visible");
+click({finaleTest:"1"});assert.equal(saved().finaleDraft?.tests?.battery,undefined,"A scientific prediction is needed before measurement");
+const doTrial=(station,value,guess,actual)=>{
+ click({finaleStation:station});click({finaleOption:value});
+ click({finaleGuess:guess});click({finaleTest:"1"});
+ assert.equal(saved().finaleDraft.tests[station][value].actual,actual,"Observation must follow physical model for "+station+"/"+value);
+};
+doTrial("battery","opposed","bright","dark");
+doTrial("battery","aligned","bright","bright");
+click({finaleInstall:"1"});assert.equal(saved().finaleDraft.installed.battery,"aligned");
+doTrial("material","plastic","bright","dark");
+click({finaleInstall:"1"});assert.equal(saved().finaleDraft.installed.material,"plastic");
+doTrial("material","clip","dark","bright");
+doTrial("contact","glass","bright","dark");
+doTrial("contact","both","bright","bright");
+click({finaleInstall:"1"});
+assert.equal(finale.evidence(saved().finaleDraft),true,"All six independent trial observations required");
+assert.equal(saved().finaleDraft.installed.contact,"both");
+move(13);move(14);
+assert.equal(finale.evidence(saved().finaleDraft),true,"Full final evidence survives mission revisit");
+assert.equal(saved().finaleDraft.installed.material,"plastic","Installed-but-wrong materials remain visible when revisiting");
+click({finaleOverallGuess:"bright"});click({finaleOverallTest:"1"});
+assert.equal(saved().finaleDraft.overall.kind,"dark","Insulating gap causes darkness despite correct battery and contact");
+check();assert.equal(saved().completed[14],undefined,"Unlit assembled circuit cannot bypass final investigation");
+click({finaleStation:"material"});click({finaleOption:"clip"});click({finaleInstall:"1"});
+assert.equal(saved().finaleDraft.overall,null,"Changing a component invalidates old whole-circuit measurement");
+click({finaleOverallGuess:"dark"});click({finaleOverallTest:"1"});
+assert.equal(saved().finaleDraft.overall.kind,"bright","Observation wins over mistaken hypothesis");
+check();assert.equal(saved().completed[14],undefined,"Incorrect prediction must not certify the full repair");
+click({finaleOverallGuess:"bright"});click({finaleOverallTest:"1"});
+click({finaleReason:"glass"});check();assert.equal(saved().completed[14],undefined,"Scientific misconception must be rejected");
+click({finaleReason:"loop"});check();transfer(14);
+assert.ok(saved().notes.some(n=>n.key==="final:proof"),"Final independent evidence belongs in science notebook");
+const tampered={tests:{battery:{aligned:{guess:"bright",actual:"dark"}}},installed:{battery:"aligned"}};
+assert.equal(finale.normalize(tampered).installed.battery,null,"False saved measurements must not unlock final installation");
+
 const builder=window.AkariBuilder;
 assert.equal(builder.evaluate([["P","N"]],false).short,true,"Direct battery connection must always be hazardous");
 assert.equal(builder.evaluate([["P","L"],["R","N"]],false).lit,true,"Bypassing switch can power bulb even when OFF and must fail objective");
