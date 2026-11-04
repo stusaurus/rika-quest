@@ -130,6 +130,24 @@ try{
    await page.goto(origin+"/games/akari/",{waitUntil:"domcontentloaded"});
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
+   assert.match(await page.locator("#missionStory").textContent(),/小屋が まっくら/,"Default copy must fit third grade");
+   assert.ok((await page.locator("#missionInstructions").textContent()).length<=40,"Only one short action is visible by default");
+   assert.equal(await page.locator("body.reading-easy").count(),1,"Short child-friendly mode should be enabled by default");
+   assert.equal(await page.locator("#readingToggle").textContent(),"📖 くわしく");
+   await page.locator("#readingToggle").click();
+   assert.match(await page.locator("#missionStory").textContent(),/村の小屋がまっくら/,"Teacher view restores nuanced original story");
+   assert.match(await page.locator("#missionInstructions").textContent(),/乾電池の＋と−/,"Detailed instructions remain accessible");
+   assert.equal(await page.locator("body.reading-full").count(),1);
+   await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("body.reading-full").count(),1,"Reading mode must survive a reload");
+   await page.locator("#readingToggle").click();
+   assert.equal(await page.locator("body.reading-easy").count(),1);
+   assert.ok((await page.locator("#missionInstructions").textContent()).length<=40);
+   await page.locator("#helpBtn").click();
+   assert.equal(await page.locator("#helpModal .kid-help-steps li").count(),4,"Game instructions should start with just four easy steps");
+   assert.equal(await page.locator("#helpModal .help-more").getAttribute("open"),null,"Advanced how-to content starts folded");
+   await page.locator("#closeHelpBtn").click();
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-easy-reading-start.png",fullPage:true});
    assert.ok(await page.locator("#workspace svg").count()>0,"Game must render an illustrated circuit");
    assert.equal(await page.locator("#startupFallback").count(),0,"Normal browser must replace startup recovery with the interactive circuit");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific scene illustration should load");
@@ -238,6 +256,8 @@ try{
    assert.equal(await page.locator("#missionTitle").textContent(),"乾電池の大きさ");
    assert.equal(await page.locator(".battery-lab-svg").count(),1,"Battery lab should show a controlled virtual circuit diagram");
    assert.equal(await page.locator(".battery-record").count(),4,"Four crossed size/time observations");
+   assert.equal(await page.locator(".battery-notebook").evaluate(el=>el.tagName),"DETAILS","Four-row notebook is folded until the learner asks");
+   assert.equal(await page.locator(".battery-notebook").getAttribute("open"),null);
    assert.equal(await page.locator("#scienceCompass .pacing-segment").count(),3,"Guide shows three learning phases");
    assert.match(await page.locator(".pacing-chapter").textContent(),/第4幕/,"Stage9 should identify the battery story chapter");
    assert.equal(await page.locator(".pacing-guide").getAttribute("data-guide-phase"),"1","A new investigation begins at the evidence phase");
@@ -684,6 +704,7 @@ try{
    assert.equal(await page.locator(".finale-stations button").count(),3,"Finale must contain three separate science investigations");
    assert.equal(await page.locator(".finale-circuit").count(),0,"Final assembled circuit should require experimental evidence");
    assert.equal(await page.locator(".finale-log-item").count(),3,"Independent evidence log for battery, material and contacts");
+   assert.equal(await page.locator(".finale-log").evaluate(el=>el.tagName),"DETAILS","Six experiment notes stay optional");
    assert.equal(await page.locator('[data-finale-test]').isDisabled(),true,"Prediction required before testing");
    const experimentFinale=async(station,value,guess)=>{
      await page.locator('[data-finale-station="'+station+'"]').click();
