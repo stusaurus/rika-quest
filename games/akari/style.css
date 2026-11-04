@@ -1023,3 +1023,11 @@
 /* Avoid moving a large primary button under a child's finger or a test pointer. */
 .reading-easy .action-row .btn:hover{transform:none}
 @media(hover:none){.action-row .btn:hover{transform:none}}
+
+/* After a discovery, make the single meaningful next action obvious. */
+.reading-easy .action-row #nextBtn:not([hidden]){
+ order:-1;flex:1 1 100%;min-height:56px;font-size:18px;
+ transform:none!important;transition:none!important;
+ box-shadow:0 5px 0 #bc884e;
+}
+.reading-easy .action-row #resetBtn{font-size:12px}
