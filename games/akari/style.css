@@ -898,3 +898,7 @@
 }
 @media(max-width:360px){.dual-repairs{grid-template-columns:1fr}.dual-part{padding:8px}.dual-part strong{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.dual-lab *{animation:none!important;transition:none!important}}
+
+.dual-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dual-nav button{min-height:45px;border:2px solid #91bbaf;border-radius:10px;background:#def4e8;color:#245267;font-size:13px;font-weight:800;cursor:pointer}
+@media(max-width:375px){.dual-nav button{font-size:12px}}
