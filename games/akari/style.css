@@ -985,7 +985,7 @@
  * Scientific notes and detailed explanations remain available on demand. */
 .reading-toggle{flex:0 0 auto;align-self:center;background:#f3e7bc;border:2px solid #d4a863;border-radius:999px;min-height:43px;color:#583e24;font-weight:900;font-size:13px;padding:8px 15px;cursor:pointer}
 .reading-toggle:focus-visible{outline:3px solid #fff5c2;outline-offset:3px}
-.reading-easy .quest-desc{font-size:16px;line-height:1.7;font-weight:800;color:#f0f7e8;letter-spacing:.01em}
+.reading-easy .quest-desc{font-size:16px;line-height:1.7;font-weight:800;color:#22556a;letter-spacing:.01em}
 .reading-easy .scene-caption p{font-size:14px;line-height:1.6}
 .reading-easy .pacing-guide{padding:9px 12px;gap:4px}
 .reading-easy .pacing-track,.reading-easy .pacing-chapter,.reading-easy .pacing-tip>span{display:none}
