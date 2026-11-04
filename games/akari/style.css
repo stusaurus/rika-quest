@@ -980,3 +980,34 @@
  .campaign-top{padding:20px 12px}.campaign-top strong{font-size:20px}
  .campaign-chapters{padding:10px}.campaign-chapter{padding:9px}
 }
+
+/* Grade 3 by default: one immediate task, one decision at a time.
+ * Scientific notes and detailed explanations remain available on demand. */
+.reading-toggle{flex:0 0 auto;align-self:center;background:#f3e7bc;border:2px solid #d4a863;border-radius:999px;min-height:43px;color:#583e24;font-weight:900;font-size:13px;padding:8px 15px;cursor:pointer}
+.reading-toggle:focus-visible{outline:3px solid #fff5c2;outline-offset:3px}
+.reading-easy .quest-desc{font-size:16px;line-height:1.7;font-weight:800;color:#f0f7e8;letter-spacing:.01em}
+.reading-easy .scene-caption p{font-size:14px;line-height:1.6}
+.reading-easy .pacing-guide{padding:9px 12px;gap:4px}
+.reading-easy .pacing-track,.reading-easy .pacing-chapter,.reading-easy .pacing-tip>span{display:none}
+.reading-easy .pacing-heading{justify-content:flex-end}
+.reading-easy .pacing-count{font-size:12px;color:#fce7ad}
+.reading-easy .pacing-tip>strong{font-size:14px;line-height:1.5}
+.reading-easy .science-compass{margin:8px 0 10px}
+.reading-easy .battery-head,.reading-easy .finale-head,.reading-easy .garden-heading{display:none}
+.reading-easy .battery-section>.lab-sub,.reading-easy .finale-section>.lab-sub,.reading-easy .garden-section>.lab-sub{display:none}
+.reading-easy .garden-explain>.lab-sub,.reading-easy .battery-science>.lab-sub{display:none}
+.reading-easy .battery-section,.reading-easy .finale-section,.reading-easy .garden-section{gap:9px}
+.reading-easy .battery-option,.reading-easy .garden-contact,.reading-easy .finale-stations button,.reading-easy .finale-specimens button{font-size:13px;min-height:47px}
+.reading-easy .battery-section h3,.reading-easy .finale-section h3,.reading-easy .garden-section h3{font-size:16px}
+.reading-easy .journal,.reading-easy .battery-notebook,.reading-easy .garden-journal,.reading-easy .finale-log,.reading-easy .dual-notes{font-size:13px}
+.reading-easy .battery-notebook:not([open]) .battery-record,.reading-easy .garden-journal:not([open]) .garden-record,.reading-easy .finale-log:not([open]) .finale-log-item,.reading-easy .dual-notes:not([open]) .dual-note{display:none}
+.battery-notebook>summary,.garden-journal>summary,.finale-log>summary,.dual-notes>summary{list-style-position:inside;cursor:pointer;font-weight:900;font-size:14px;padding:5px;color:#f6f7e9;line-height:1.6}
+.battery-notebook>summary:focus-visible,.garden-journal>summary:focus-visible,.finale-log>summary:focus-visible,.dual-notes>summary:focus-visible{outline:3px solid #f9d58e;outline-offset:3px;border-radius:4px}
+.battery-notebook[open],.garden-journal[open],.finale-log[open],.dual-notes[open]{gap:9px}
+.reading-easy .feedback{font-size:14px;line-height:1.6}
+@media(max-width:740px){
+ .reading-toggle{font-size:12px;min-height:42px;padding:8px 11px}
+ .reading-easy .quest-desc{font-size:15px}
+ .reading-easy .battery-section h3,.reading-easy .finale-section h3,.reading-easy .garden-section h3{font-size:15px}
+ .reading-easy .pacing-guide{padding:8px 10px}
+}
