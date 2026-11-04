@@ -369,7 +369,7 @@ function renderFinale(){
 }
 function renderWorkspace(){
  const root=$("workspace"),old=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
- const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,mode=current().mode;
+ const position=old?old.scrollLeft:0,previousBuilder=typeof root.querySelector==="function"?root.querySelector(".builder-viewport"):null,builderPosition=previousBuilder?previousBuilder.scrollLeft:0,previousSafety=typeof root.querySelector==="function"?root.querySelector(".safety-diagram"):null,safetyPosition=previousSafety?previousSafety.scrollLeft:0,previousGarden=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null,gardenPosition=previousGarden?previousGarden.scrollLeft:0,previousDouble=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null,doublePosition=previousDouble?previousDouble.scrollLeft:0,mode=current().mode;
  root.innerHTML=ui.switchLab&&window.AkariSwitchLab?window.AkariSwitchLab.render(current().id,ui.switchLab.wires,ui.switchLab.selected,ui.switchLab.a,ui.switchLab.b,ui.switchLab.trials,ui.switchLab.reason,ui.switchLab.insight):ui.builder&&window.AkariBuilder?window.AkariBuilder.render(ui.builder.wires,ui.builder.selected,ui.builder.switchOn,ui.builder.tests,ui.builderTask||"switch",ui.builder.trace||[],ui.builder.insight):ui.transfer&&window.AkariTransfer?window.AkariTransfer.render(current().id,ui.transfer.answers,ui.transfer.reason,ui.transfer.step):mode==="wire"?renderWire():mode==="explore"?renderExplore():mode==="material"?renderMaterial():mode==="repair"?renderRepair():mode==="logic"?renderLogic():mode==="battery"?renderBattery():mode==="polarity"?renderPolarity():mode==="cut"?renderCut():renderFinale();
  const board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;
  if(board&&ui.zoomed)board.scrollLeft=position;
@@ -379,6 +379,8 @@ function renderWorkspace(){
  if(safetyView)safetyView.scrollLeft=safetyPosition;
  const gardenView=typeof root.querySelector==="function"?root.querySelector(".garden-schematic"):null;
  if(gardenView)gardenView.scrollLeft=gardenPosition;
+ const doubleView=typeof root.querySelector==="function"?root.querySelector(".dual-diagram"):null;
+ if(doubleView)doubleView.scrollLeft=doublePosition;
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
 function check(){
@@ -900,6 +902,12 @@ function handleWorkspace(e){
  renderWorkspace();reactCharacter("inspect");return;}
  if(current().id===13&&window.AkariDoubleFault){
   const D=window.AkariDoubleFault,d=ui.doubleFault||D.initial();
+  if(target.hasAttribute("data-dual-view")){
+   const direction=target.dataset.dualView,board=$("workspace").querySelector(".dual-diagram");
+   if(!board||!["left","right"].includes(direction))return;
+   board.scrollLeft=direction==="right"?board.scrollWidth-board.clientWidth:0;
+   setFeedback(direction==="right"?"豆電球の横・底と戻り道の接点を確かめよう。":"乾電池の＋・−から導線の道をたどろう。");return;
+  }
   if(target.hasAttribute("data-dual-part")){
    const id=target.dataset.dualPart;
    if(!D.parts.some(p=>p.id===id))return;
