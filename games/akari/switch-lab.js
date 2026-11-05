@@ -92,7 +92,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
  const problem=tested?discrepancy(stage,wiring,a,b):null;
  const insightSolved=!!problem&&insight?.code===code&&insight.signature===sig&&insight.kind===problem;
  const evidence=pathEvidence(wiring,a,b);
- const illuminated=tested&&((result.lit&&!problem)||insightSolved);
+ const illuminated=result.lit&&!result.short; // The bulb and current path react immediately when the circuit closes.
  const route=illuminated?evidence.route:[];
  const routeArt=route.slice(1).map((node,i)=>{
   const from=route[i],u=points[from],v=points[node],id=edge(from,node),danger=evidence.kind==="short",tone=danger?"#ff9f89":"#ffeb8b";
