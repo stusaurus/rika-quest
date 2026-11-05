@@ -811,7 +811,7 @@ body[data-visual-theme="reference-rebuild"].gesture-first .circuit-inner .termin
 }
 @media(max-width:740px){
  body[data-visual-theme="reference-rebuild"].gesture-first .workspace:not(:has(.circuit-board.zoomed)) .circuit-toolbar .circuit-zoom-btn{
-  position:absolute;right:8px;left:auto;top:7px;
+  position:absolute;left:8px;right:auto;top:7px;
   margin:0;padding:0;width:40px;max-width:40px;
   height:37px;min-height:37px;font-size:0;z-index:15
  }
