@@ -132,30 +132,97 @@
  }
  function bindWireDrawing(){
   const root=get("workspace");if(!root)return;
-  let drag=null,trail=null,suppressTrustedClick=false;
-  const erase=()=>{if(trail){trail.remove();trail=null;}};
-  const center=button=>{
-   const r=button.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};
+  const ns="http://www.w3.org/2000/svg";
+  const storage="rika-akari-freehand-wires-v1";
+  const contact={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
+  const pair=(a,b)=>[a,b].sort().join("");
+  const clamp=(x,min,max)=>Math.max(min,Math.min(max,x));
+  const rounded=n=>Math.round(clamp(n,-20,420)*10)/10;
+  let shapes={};
+  try{
+   const saved=JSON.parse(read(storage,"{}"));
+   if(saved&&typeof saved==="object"&&!Array.isArray(saved))shapes=saved;
+  }catch{}
+  const saveShapes=()=>store(storage,JSON.stringify(shapes));
+  // An SVG coordinate is stable on mobile, desktop, magnification and after reload.
+  const svgPoint=(svg,x,y)=>{
+   const matrix=svg.getScreenCTM();
+   if(!matrix)return null;
+   const p=new DOMPoint(x,y).matrixTransform(matrix.inverse());
+   return [rounded(clamp(p.x,0,400)),rounded(clamp(p.y,0,250))];
+  };
+  const dOf=points=>points.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" ");
+  const validPoints=points=>Array.isArray(points)&&points.length>=2&&points.length<=180&&
+   points.every(p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&n>=0&&n<=400));
+  const blocked=([x,y])=>(x>49&&x<173&&y>115&&y<182)||
+    (x>279&&x<353&&y>38&&y<135)||
+    (x>289&&x<336&&y>133&&y<187);
+  const intersectsDevice=points=>{
+   for(let i=1;i<points.length;i++){
+    const a=points[i-1],b=points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    for(let j=0,n=Math.max(1,Math.ceil(length/2));j<=n;j++){
+     const q=[a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n];
+     if(blocked(q))return true;
+    }
+   }
+   return false;
+  };
+  const drawSaved=()=>{
+   const svg=root.querySelector(".circuit-svg-v2");
+   if(!svg)return;
+   const n=mission(),saved=shapes[n]||{};
+   const active=new Set();
+   svg.querySelectorAll(".lead-on-top[data-visual-wire]").forEach(g=>{
+    const key=g.dataset.visualWire;
+    active.add(key);
+    g.removeAttribute("data-freehand");
+    const points=saved[key];
+    if(!validPoints(points)||intersectsDevice(points))return;
+    const d=dOf(points);
+    g.querySelectorAll("path").forEach(path=>path.setAttribute("d",d));
+    g.dataset.freehand="true";
+   });
+   // Disconnecting or restarting the mission removes obsolete drawings, too.
+   let dirty=false;
+   if(shapes[n])for(const key of Object.keys(saved)){
+    if(!active.has(key)){delete saved[key];dirty=true;}
+   }
+   if(dirty)saveShapes();
+  };
+  let drag=null,preview=null,suppressTrustedClick=false;
+  const discard=()=>{if(preview){preview.remove();preview=null;}};
+  const makePreview=svg=>{
+   const g=document.createElementNS(ns,"g");
+   g.setAttribute("class","wire-freehand-preview");
+   const outline=document.createElementNS(ns,"path");
+   outline.setAttribute("class","wire-outline");
+   const line=document.createElementNS(ns,"path");
+   line.setAttribute("class","wire-freehand-trace");
+   g.append(outline,line);svg.append(g);
+   return g;
   };
   root.addEventListener("pointerdown",e=>{
    if(e.button!==0||drag)return;
    const button=e.target.closest(".circuit-inner .terminal[data-t]");
-   if(!button)return;
-   const start=center(button);
-   drag={pointerId:e.pointerId,from:button.dataset.t,x:start.x,y:start.y,moved:false};
+   const svg=root.querySelector(".circuit-svg-v2");
+   if(!button||!svg||!contact[button.dataset.t])return;
+   const start=contact[button.dataset.t];
+   drag={id:e.pointerId,from:button.dataset.t,svg,x:e.clientX,y:e.clientY,
+     moved:false,points:[start.slice()]};
   });
   document.addEventListener("pointermove",e=>{
-   if(!drag||e.pointerId!==drag.pointerId)return;
-   const dx=e.clientX-drag.x,dy=e.clientY-drag.y,length=Math.hypot(dx,dy);
-   if(length<11&&!drag.moved)return;
+   if(!drag||e.pointerId!==drag.id)return;
+   if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<9)return;
    drag.moved=true;
-   if(!trail){
-    trail=document.createElement("div");trail.className="wire-drag-trail";
-    trail.setAttribute("aria-hidden","true");document.body.appendChild(trail);
+   if(!preview)preview=makePreview(drag.svg);
+   const p=svgPoint(drag.svg,e.clientX,e.clientY);
+   if(p){
+    const last=drag.points[drag.points.length-1];
+    if(Math.hypot(p[0]-last[0],p[1]-last[1])>=1.5&&drag.points.length<175)drag.points.push(p);
+    const d=dOf(drag.points);
+    preview.querySelectorAll("path").forEach(path=>path.setAttribute("d",d));
+    preview.classList.toggle("crosses-device",intersectsDevice(drag.points));
    }
-   trail.style.left=drag.x+"px";trail.style.top=drag.y+"px";
-   trail.style.width=length+"px";
-   trail.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";
    if(e.cancelable)e.preventDefault();
   },{passive:false});
   root.addEventListener("click",e=>{
@@ -164,24 +231,45 @@
    }
   },true);
   document.addEventListener("pointerup",e=>{
-   if(!drag||e.pointerId!==drag.pointerId)return;
-   const previous=drag;drag=null;erase();
+   if(!drag||e.pointerId!==drag.id)return;
+   const previous=drag;drag=null;discard();
    if(!previous.moved)return;
    const hit=document.elementFromPoint(e.clientX,e.clientY)?.closest(".circuit-inner .terminal[data-t]");
-   if(!hit||!root.contains(hit)||hit.dataset.t===previous.from)return;
-   const end=hit.dataset.t;
+   if(!hit||!root.contains(hit)||!contact[hit.dataset.t]||hit.dataset.t===previous.from){
+    const help=root.querySelector(".circuit-help");
+    if(help)help.textContent="さいごは まるで ゆびを はなそう";
+    return;
+   }
+   const dest=hit.dataset.t,key=pair(previous.from,dest);
    if(e.cancelable)e.preventDefault();
-   // Use the game's existing click handler for both the experiment and short-circuit rules.
+   const finish=contact[dest];
+   const points=previous.points.concat([finish.slice()]);
+   const good=validPoints(points)&&!intersectsDevice(points);
+   // The game engine remains authoritative: reuse its normal terminal-click rules.
    const clickTerminal=id=>root.querySelector('.circuit-inner .terminal[data-t="'+id+'"]')?.click();
-   const currentlySelected=root.querySelector(".circuit-inner .terminal.selected");
-   if(currentlySelected)currentlySelected.click();
-   clickTerminal(previous.from);
-   clickTerminal(end);
-   // Ignore a browser-generated click that may follow pointerup; programmatic clicks are untrusted.
+   const selected=root.querySelector(".circuit-inner .terminal.selected");
+   if(selected)selected.click();
+   clickTerminal(previous.from);clickTerminal(dest);
+   const exists=!!root.querySelector('.lead-on-top[data-visual-wire="'+key+'"]');
+   if(exists){
+    const n=mission();
+    if(good){
+     (shapes[n]??={})[key]=points;
+    }else if(shapes[n])delete shapes[n][key];
+    saveShapes();drawSaved();
+    if(!good){
+     const help=root.querySelector(".circuit-help");
+     if(help)help.textContent="ぶひんを よけて どう線を とおしたよ";
+    }
+   }
    suppressTrustedClick=true;
    setTimeout(()=>{suppressTrustedClick=false},70);
   },true);
-  document.addEventListener("pointercancel",()=>{drag=null;erase();},true);
+  document.addEventListener("pointercancel",e=>{
+   if(drag&&drag.id===e.pointerId){drag=null;discard();}
+  },true);
+  new MutationObserver(drawSaved).observe(root,{childList:true,subtree:false});
+  drawSaved();
  }
  function init(){
   setup();decorate();refresh();bindWireDrawing();

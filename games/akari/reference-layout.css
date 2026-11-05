@@ -919,3 +919,22 @@ body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top .wire{
 body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top .wire.danger{
  stroke:#e34434!important;stroke-width:8.5;
 }
+
+
+/* True freehand wires: the finger traces the visible wire in SVG coordinates. */
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-freehand-preview{
+ pointer-events:none;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-freehand-preview .wire-outline{
+ fill:none;stroke:#ffffff;stroke-width:12;opacity:.9;
+ stroke-linejoin:round;stroke-linecap:round;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-freehand-preview .wire-freehand-trace{
+ fill:none;stroke:#217de8;stroke-width:7;stroke-linejoin:round;stroke-linecap:round;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-freehand-preview.crosses-device .wire-freehand-trace{
+ stroke:#e8a12b;stroke-dasharray:8 5;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top[data-freehand="true"] .wire{
+ stroke-linejoin:round;stroke-linecap:round;
+}

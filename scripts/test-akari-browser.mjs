@@ -242,6 +242,40 @@ try{
    assert.equal(dragRoute[0].ordered,true,"Lead must be stacked in front of the device illustrations");
    await page.locator('[data-unwire="0"]').click();
 
+   // Draw a curved route *around* the battery. Its actual finger path must stay visible,
+   // rather than being replaced with an arbitrary preset after releasing the pointer.
+   const sketch=await page.evaluate(()=>{
+     const svg=document.querySelector(".circuit-svg-v2"),m=svg.getScreenCTM();
+     return [[25,100],[25,85],[207,85],[244,112],[244,145]].map(([x,y])=>{
+       const p=new DOMPoint(x,y).matrixTransform(m);return {x:p.x,y:p.y};
+     });
+   });
+   const handStart=await page.locator('[data-t="P"]').boundingBox();
+   const handEnd=await page.locator('[data-t="L"]').boundingBox();
+   await page.mouse.move(handStart.x+handStart.width/2,handStart.y+handStart.height/2);
+   await page.mouse.down();
+   for(const p of sketch)await page.mouse.move(p.x,p.y,{steps:5});
+   await page.mouse.move(handEnd.x+handEnd.width/2,handEnd.y+handEnd.height/2,{steps:5});
+   await page.mouse.up();
+   assert.equal(await page.locator('.lead-on-top[data-freehand="true"]').count(),1,
+     "The student's safe hand-drawn wire should be retained");
+   const drawnD=await page.locator('.lead-on-top[data-freehand="true"] .wire').getAttribute("d");
+   assert.ok(drawnD.startsWith("M42 151 L")&&drawnD.split("L").length>8,
+     "Many real finger points should survive, not the former fixed Bezier route");
+   assert.equal(await page.evaluate(()=>{
+     const store=JSON.parse(localStorage.getItem("rika-akari-freehand-wires-v1"));
+     return Array.isArray(store?.["1"]?.LP)&&store["1"].LP.length>8;
+   }),true,"Freehand trace is locally saved along with its endpoints");
+   await page.locator('[data-t="N"]').click();
+   assert.equal(await page.locator('.lead-on-top[data-freehand="true"] .wire').getAttribute("d"),drawnD,
+     "The finger trace survives a circuit re-render without drifting");
+   await page.locator('[data-t="N"]').click();
+   await page.locator('[data-unwire="0"]').click();
+   assert.equal(await page.evaluate(()=>{
+     const store=JSON.parse(localStorage.getItem("rika-akari-freehand-wires-v1"));
+     return !!store?.["1"]?.LP;
+   }),false,"Removing the wire must remove its saved freehand trace");
+
    assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
      "Current task must receive readable width without a character overlay");
 
