@@ -74,7 +74,7 @@
  root.addEventListener("pointerdown",e=>{
   if(gesture||e.button!==0||!e.isPrimary)return;
   if(e.target.closest("button,input,select,textarea,a,summary,[role=button]"))return;
-  const board=e.target.closest(".circuit-board,.builder-board,.network-board");
+  const board=e.target.closest(".circuit-board,.builder-board,.network-board") || e.target.closest(".builder-viewport,.network-viewport")?.querySelector(".builder-board,.network-board");
   if(!board||!root.contains(board)||!viewportPaths(board).length)return;
   // Starting on a contact is for *joining*, not cutting.
   if(e.target.closest(".terminal,.builder-terminal"))return;
