@@ -81,7 +81,7 @@ try{
      // A sideways finger stroke across the student's lead must remove it,
      // without tapping either contact or deleting unrelated wires.
      const cutAcross=await page.locator('.network-board .student-wire[data-student-wire="N-P"] .student-wire-ink').evaluate(path=>{
-       const length=path.getTotalLength(),at=length/2;
+       // Cut the visible lead above the battery, not through the battery artwork.\n       const length=path.getTotalLength(),at=length*0.13;
        const p=path.getPointAtLength(at);
        const before=path.getPointAtLength(Math.max(0,at-12));
        const after=path.getPointAtLength(Math.min(length,at+12));
