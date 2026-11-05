@@ -16,12 +16,12 @@ const trialsFor = wires => Object.fromEntries(lab.codes.map(code => [code, {
  signature:lab.signature(wires)
 }]));
 test("series requires both switches; four observations unlock only the matching reasoning",()=>{
- assert.deepEqual(lab.codes.map(c=>lab.evaluate(series,c[0]==="1",c[1]==="1").lit),[false,false,false,true]);
+ assert.deepEqual(Array.from(lab.codes,c=>lab.evaluate(series,c[0]==="1",c[1]==="1").lit),[false,false,false,true]);
  assert.equal(lab.expected(7,series,trialsFor(series),"both"),true);
  assert.equal(lab.expected(7,series,trialsFor(series),"either"),false);
 });
 test("parallel lights with either switch and rejects the wrong reasoning",()=>{
- assert.deepEqual(lab.codes.map(c=>lab.evaluate(parallel,c[0]==="1",c[1]==="1").lit),[false,true,true,true]);
+ assert.deepEqual(Array.from(lab.codes,c=>lab.evaluate(parallel,c[0]==="1",c[1]==="1").lit),[false,true,true,true]);
  assert.equal(lab.expected(8,parallel,trialsFor(parallel),"either"),true);
  assert.equal(lab.expected(8,parallel,trialsFor(parallel),"both"),false);
 });
