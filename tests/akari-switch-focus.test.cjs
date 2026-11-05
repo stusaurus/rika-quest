@@ -81,3 +81,17 @@ test("visual feedback styles respect reduced-motion and retain visible short war
  assert.match(css,/\.builder-live\.live-lit/);
  assert.match(css,/@media\(prefers-reduced-motion:no-preference\)/);
 });
+
+test("the bulb and visible current path illuminate without waiting for four trials",()=>{
+ const html=lab.render(7,series,null,true,true,{},"both");
+ assert.match(html,/builder-live live-lit/);
+ assert.match(html,/network-flow-segment/);
+ assert.match(html,/data-flow-edge="A1-A2"/);
+ assert.match(html,/4つ の けっか|4つの|あと 4つ/);
+});
+test("an open circuit never shows a lit current path",()=>{
+ const broken=series.filter(([a,b])=>!(a==="A2"&&b==="B1"));
+ const html=lab.render(7,broken,null,true,true,{});
+ assert.doesNotMatch(html,/network-flow-segment/);
+ assert.match(html,/builder-live live-dark/);
+});
