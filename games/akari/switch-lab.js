@@ -121,7 +121,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   return `<button type="button" class="network-trial ${valid?"measured":""} ${code===k?"current":""}"
    data-net-case="${k}" aria-pressed="${code===k}" ${wiring.length?"":"disabled"}
    aria-label="スイッチA ${stateA}、B ${stateB}：${spoken}。この組み合わせにする">
-   <span class="network-trial-switches"><span>A <b class="${stateA==="ON"?"on":""}">${stateA}</b></span><span>B <b class="${stateB==="ON"?"on":""}">${stateB}</b></span></span>
+   <span class="network-trial-switches"><span class="network-switch-mini"><span>A</span><i class="network-switch-track ${stateA==="ON"?"on":""}" aria-hidden="true"><i></i></i><b>${stateA}</b></span><span class="network-switch-mini"><span>B</span><i class="network-switch-track ${stateB==="ON"?"on":""}" aria-hidden="true"><i></i></i><b>${stateB}</b></span></span>
    <span class="network-trial-outcome">${outcome}</span></button>`;
  }).join("");
  const count=codes.filter(k=>trials[k]?.signature===sig).length;
