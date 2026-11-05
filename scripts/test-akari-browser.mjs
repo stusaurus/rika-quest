@@ -37,6 +37,22 @@ try{
     for(const p of via)await page.mouse.move(p.x,p.y,{steps:7});
     await page.mouse.move(end.x+end.width/2,end.y+end.height/2,{steps:7});await page.mouse.up();
     const stroke=page.locator(board+' .student-wire[data-handdrawn="true"] .student-wire-ink');
+    if(await stroke.count()!==1){
+      const debug=await page.evaluate(()=>({
+        wiringAvailable:!!window.AkariWireCanvas,
+        mission:document.getElementById("missionNumber")?.textContent,
+        lines:[...document.querySelectorAll(".student-wire")].map(el=>({
+          wire:el.dataset.studentWire,handdrawn:el.dataset.handdrawn,
+          path:el.querySelector(".student-wire-ink")?.getAttribute("d")?.slice(0,150)
+        })),
+        selected:[...document.querySelectorAll(".builder-terminal.selected")].map(el=>el.dataset.builderT||el.dataset.netT),
+        stored:localStorage.getItem("rika-akari-other-handdrawn-v1"),
+        feedback:document.getElementById("feedbackText")?.textContent,
+        board:[...document.querySelectorAll(".builder-board")].map(el=>el.className),
+        preview:document.querySelectorAll(".other-wire-preview").length
+      }));
+      console.log("FREEHAND_DIAGNOSTIC",JSON.stringify({mode,debug}));
+    }
     assert.equal(await stroke.count(),1,mode+" must retain the child's own line");
     const d=await stroke.getAttribute("d");
     assert.ok(d.startsWith(mode==="builder"?"M85 118":"M75 108")&&d.split("L").length>8,"Preserve freehand points instead of a straight wire");
