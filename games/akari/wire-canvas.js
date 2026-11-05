@@ -122,6 +122,7 @@
   svg.append(group);return group;
  }
  root.addEventListener("pointerdown",e=>{
+  suppress=false; // A new physical press is intentional, not the prior drag's synthetic click.
   if(drag||e.button!==0)return;
   const target=e.target.closest(".builder-terminal[data-builder-t],.builder-terminal[data-net-t]");
   const c=target&&context(target);if(!c)return;

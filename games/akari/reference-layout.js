@@ -202,6 +202,7 @@
    return g;
   };
   root.addEventListener("pointerdown",e=>{
+   suppressTrustedClick=false; // Allow an immediate intentional tap after a drag.
    if(e.button!==0||drag)return;
    const button=e.target.closest(".circuit-inner .terminal[data-t]");
    const svg=root.querySelector(".circuit-svg-v2");
