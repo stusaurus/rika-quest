@@ -190,6 +190,15 @@ try{
    assert.equal(await page.locator("#sceneCharacter").count(),0,"No clipped dinosaur competes with the science illustration");
    assert.equal(await page.locator("#characterArt").count(),0,"Sprite frame should not consume space in regular play");
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific buildings remain visible after removing the dinosaur");
+   assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
+   assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
+   assert.equal(await page.locator("#predictStep").isVisible(),true,"Show one clear prediction choice at the start");
+   assert.equal(await page.locator("#connectStep").isVisible(),false,"Avoid three simultaneous instruction cards");
+   assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning step appears after the experiment");
+   await page.locator('[data-prediction="lit"]').click();
+   assert.equal(await page.locator("#predictStep").isVisible(),false,"Prediction panel should collapse after selection");
+   assert.equal(await page.locator("#connectStep").isVisible(),true,"Only the next physical action should remain visible");
+   assert.equal(await page.locator("#checkBtn").textContent(),"⚡ ためす","Early stage should use a short action label");
    assert.equal(await page.locator(".circuit-svg-v2").count(),1,"Updated detailed physical battery-and-bulb art must render");
    assert.equal(await page.locator(".circuit-svg-v2 .battery-model").count(),1);
    assert.equal(await page.locator(".circuit-svg-v2 .bulb-model").count(),1);
