@@ -63,3 +63,21 @@ test("a cut lead can break a previously complete series circuit",()=>{
  assert.equal(lab.evaluate(disconnected,true,true).lit,false);
  assert.equal(lab.expected(7,disconnected,trialsFor(series),"both"),false);
 });
+
+test("visual feedback follows measured circuit truth for lit, dark and short states",()=>{
+ const lit=lab.render(7,series,null,true,true,trialsFor(series));
+ const dark=lab.render(7,series,null,false,false,trialsFor(series));
+ const shortWires=[["P","N"]];
+ const unsafe=lab.render(7,shortWires,null,false,false,trialsFor(shortWires));
+ assert.match(lit,/builder-live live-lit/);
+ assert.match(lit,/network-trial measured current trial-lit/);
+ assert.match(dark,/builder-live live-dark/);
+ assert.match(unsafe,/builder-live live-short/);
+ assert.match(unsafe,/trial-short/);
+});
+test("visual feedback styles respect reduced-motion and retain visible short warnings",()=>{
+ const css=fs.readFileSync(path.join(root,"games/akari/switch-focus.css"),"utf8");
+ assert.match(css,/\.builder-live\.live-short/);
+ assert.match(css,/\.builder-live\.live-lit/);
+ assert.match(css,/@media\(prefers-reduced-motion:no-preference\)/);
+});
