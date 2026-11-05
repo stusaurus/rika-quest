@@ -37,8 +37,13 @@ jobs:
       - name: Run full 14-mission simulation
         run: node scripts/test-akari.mjs
       - name: Install Playwright and browsers
+        timeout-minutes: 10
+        env:
+          CI: 'true'
+          npm_config_audit: 'false'
+          npm_config_fund: 'false'
         run: |
-          npm install --no-save playwright@1.56.1
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium webkit
       - name: Verify real mobile / desktop interactions
         run: node scripts/test-akari-browser.mjs
