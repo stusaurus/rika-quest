@@ -79,3 +79,11 @@
  .network-lab .builder-live.live-lit{animation:akari-switch-glow .42s ease-out}
  @keyframes akari-switch-glow{0%{box-shadow:0 0 0 0 #a3df8f}45%{box-shadow:0 0 0 7px #a3df8f66}100%{box-shadow:inset 0 0 0 2px #75b98c}}
 }
+
+/* Show a physical-looking bulb state on every observation card. */
+.network-lab .network-trial-outcome{display:flex;align-items:center;justify-content:center;gap:7px}
+.network-lab .network-trial-outcome::before{content:"";display:inline-block;flex:none;width:19px;height:19px;border-radius:50%;border:2px solid #8c9ea8;background:#d7e0e4;box-shadow:inset 0 -3px 0 #7c909955}
+.network-lab .network-trial.trial-lit.measured .network-trial-outcome::before{border-color:#c99121;background:#ffdc60;box-shadow:0 0 0 3px #f6d87055,0 0 12px #ffc83b}
+.network-lab .network-trial.trial-dark.measured .network-trial-outcome::before{background:#8fa8b6;border-color:#58788a}
+.network-lab .network-trial.trial-short.measured .network-trial-outcome::before{content:"!";font-size:14px;line-height:17px;text-align:center;font-weight:900;color:#fff;border-color:#b33226;background:#c74435;box-shadow:0 0 0 2px #e8a49b66}
+@media(max-width:360px){.network-lab .network-trial-outcome{gap:4px}.network-lab .network-trial-outcome::before{width:16px;height:16px}}
