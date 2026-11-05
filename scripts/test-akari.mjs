@@ -29,6 +29,7 @@ vm.runInContext(readFileSync("games/akari/double-fault-lab.js","utf8"),context,{
 vm.runInContext(readFileSync("games/akari/finale-lab.js","utf8"),context,{filename:"finale-lab.js"});
 vm.runInContext(readFileSync("games/akari/pacing.js","utf8"),context,{filename:"pacing.js"});
 vm.runInContext(readFileSync("games/akari/reading.js","utf8"),context,{filename:"reading.js"});
+vm.runInContext(readFileSync("games/akari/free-lab-model.js","utf8"),context,{filename:"free-lab-model.js"});
 vm.runInContext(readFileSync("games/akari/game.js","utf8"),context,{filename:"game.js"});
 vm.runInContext(readFileSync("games/akari/furigana.js","utf8"),context,{filename:"furigana.js"});
 const button=dataset=>({hasAttribute(attr){return Object.hasOwn(dataset,attr.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))},dataset});
@@ -732,4 +733,43 @@ assert.ok(!el("workspace").innerHTML.includes("tiranon-walk-prototype.webp"),"Sc
 assert.equal(el("litPlaceCount").textContent,14,"Restoration progress should reach 14 regions");
 move(1);wire("P","L");wire("N","R");check();assert.equal(el("restorationTrail").hidden,true,"Replay must not trigger a first-clear town pulse");
 assert.equal(Object.keys(saved().masteries||{}).length,6,"Replays must not duplicate reasoning tokens");
+// Independent hands-on model: physical connections must determine the live light.
+const L=window.AkariFreeLabModel;
+const initial=L.defaultState();
+assert.equal(L.simulate(initial).litCount,0,"Unwired lamp remains dark");
+const loop={...initial,wires:[
+ {from:"b1:P",to:"l1:L"},{from:"b1:N",to:"l1:R"}
+]};
+const one=L.simulate(loop);
+assert.equal(one.short,false,"One normal loop must not short");
+assert.equal(one.litCount,1,"One complete loop must light instantly");
+assert.equal(one.bulbs[0].level,"normal","One nominal cell makes the lamp normally bright");
+const cut={...loop,wires:loop.wires.slice(0,1)};
+assert.equal(L.simulate(cut).litCount,0,"Cutting one return lead extinguishes lamp immediately");
+const bypass={...loop,wires:[...loop.wires,{from:"b1:P",to:"b1:N"}]};
+assert.equal(L.simulate(bypass).short,true,"A bare wire between battery poles is hazardous");
+assert.equal(L.simulate(bypass).litCount,0,"A battery short never counts as a successful lamp");
+const secondCell={...initial,nodes:[...initial.nodes,{id:"b2",type:"battery",x:24,y:68}],
+ wires:[{from:"b1:N",to:"b2:P"},{from:"b1:P",to:"l1:L"},{from:"b2:N",to:"l1:R"}]};
+const cells=L.simulate(secondCell);
+assert.equal(cells.short,false,"Two cells in series are a valid circuit");
+assert.equal(cells.litCount,1,"Two series cells still light one bulb");
+assert.ok(cells.bulbs[0].ratio>one.bulbs[0].ratio*2,"Two series cells yield a brighter model bulb");
+const secondBulb={...initial,nodes:[...initial.nodes,{id:"l2",type:"bulb",x:75,y:62}],
+ wires:[{from:"b1:P",to:"l1:L"},{from:"l1:R",to:"l2:L"},{from:"l2:R",to:"b1:N"}]};
+const series=L.simulate(secondBulb);
+assert.equal(series.litCount,2,"Two bulbs in series should both light");
+assert.ok(series.bulbs.every(x=>x.ratio<one.bulbs[0].ratio),"Series lamps are dimmer than one lamp");
+const parallel={...secondBulb,wires:[
+ ...loop.wires,{from:"b1:P",to:"l2:L"},{from:"b1:N",to:"l2:R"}
+]};
+assert.equal(L.simulate(parallel).litCount,2,"Two parallel lamps both light");
+const openSwitch={...initial,nodes:[...initial.nodes,{id:"s2",type:"switch",x:50,y:72,on:false}],
+ wires:[{from:"b1:P",to:"s2:A"},{from:"s2:B",to:"l1:L"},{from:"l1:R",to:"b1:N"}]};
+assert.equal(L.simulate(openSwitch).litCount,0,"An open switch breaks the path");
+assert.equal(L.simulate({...openSwitch,nodes:openSwitch.nodes.map(n=>n.id==="s2"?{...n,on:true}:n)}).litCount,1,
+ "Closing the switch lights the lamp without a test button");
+const invalid=L.sanitize({...initial,wires:[{from:"b1:P",to:"invalid:A"},{from:"b1:P",to:"l1:L"}]});
+assert.equal(invalid.wires.length,1,"Invalid terminal references are rejected when loading saved experiments");
+
 console.log("Akari Quest: 14/14 missions passed; dangerous battery short rejected; art templates rendered.");
