@@ -6,6 +6,7 @@
 
 ## 現在遊べるゲーム
 
+- [あかりクエスト（14ミッション）](https://stusaurus.github.io/rika-quest/games/akari/) — 豆電球・導体・回路・ショートの安全学習（開発中）
 - [フリコ・クエスト v0.36](https://stusaurus.github.io/rika-quest/games/furiko/) — 21ステージ・49問・2ボス（開発中）
 
 ## 今後の追加予定
@@ -16,6 +17,7 @@
 
 - `index.html` — ゲーム一覧のトップページ
 - `games/furiko/index.html` — フリコ・クエストの起動ページ
+- `games/akari/` — あかりクエスト（14ミッション、描画・学習図・状態保存を独立管理）
 - `games/furiko/manifest.json` — 現行ゲームの分割ファイル情報
 - `games/furiko/parts/` — v0.36 のゲーム本体（GitHub連携の転送制約に対応した24ファイル）
 - `scripts/check-game.mjs` — ゲーム本体の欠落・JavaScript構文検証

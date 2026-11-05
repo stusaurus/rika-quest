@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#122744">
+<meta name="description" content="Rika Quest 明かりをつけよう。配線・実験・故障修理をしながら明かりのひみつを解き明かそう。">
+<title>あかりクエスト | Rika Quest</title>
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./design-polish.css">
+<link rel="stylesheet" href="./reference-layout.css">
+<link rel="stylesheet" href="./wire-effects.css">
+<link rel="stylesheet" href="./free-lab.css">
+<link rel="stylesheet" href="./switch-focus.css">
+<script src="./art.js" defer></script>
+<script src="./scenes.js" defer></script>
+<script src="./transfer.js" defer></script>
+<script src="./builder.js" defer></script>
+<script src="./switch-lab.js" defer></script>
+<script src="./safety-lab.js" defer></script>
+<script src="./bridge-lab.js" defer></script>
+<script src="./garden-lab.js" defer></script>
+<script src="./battery-lab.js" defer></script>
+<script src="./double-fault-lab.js" defer></script>
+<script src="./finale-lab.js" defer></script>
+<script src="./pacing.js" defer></script>
+<script src="./reading.js" defer></script>
+<script src="./game.js" defer></script>
+<script src="./furigana.js" defer></script>
+<script src="./reference-layout.js" defer></script>
+<script src="./wire-canvas.js" defer></script>
+<script src="./wire-cut.js" defer></script>
+<script src="./free-lab-model.js" defer></script>
+<script src="./free-lab.js" defer></script>
+<script src="./short-effects.js" defer></script>
+</head>
+<body class="reading-easy" data-visual-theme="reference-rebuild">
+<div class="sky-particles" aria-hidden="true"></div>
+<header class="topbar">
+  <a class="brand" href="../../index.html" title="Rika Quest トップへ"><span class="brand-symbol">✦</span><span>Rika <strong>Quest</strong><small>理科を、冒険に。</small></span></a>
+  <div class="game-title"><span class="chapter-pill">第3学年・電気</span><span>あかり<span class="title-highlight">クエスト</span></span></div>
+  <div class="top-actions">
+    <span class="star-count" title="獲得した星の数">★ <b id="starCount">0</b><small>/ 42</small></span>
+    <button class="icon-btn" id="soundBtn" type="button" aria-label="音を切り替える" aria-pressed="false">♫</button>
+    <button class="icon-btn" id="helpBtn" type="button" aria-label="あそびかた">?</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-heading"><span>冒険の地図</span><button id="mapToggle" class="map-toggle" type="button" aria-expanded="false" aria-controls="missionList">開く ▾</button></div>
+    <div class="map-illustration" aria-hidden="true"><div class="map-path"></div><span class="map-point a">✦</span><span class="map-point b">⚡</span><span class="map-point c">✦</span><span class="map-point d">☀</span><div class="map-light-grid" id="mapLights" aria-hidden="true"></div></div>
+    <nav id="missionList" class="mission-list" aria-label="ミッションを選ぶ"></nav>
+    <div class="side-note"><b>冒険ノート</b><span id="summaryNote">ひみつを見つけて、街にあかりをともそう。</span><span class="mastery-track">🔍 応用の証 <strong id="masteryCount">0</strong> / 6</span></div>
+  </aside>
+  <main class="main">
+    <section class="story-scene" id="storyScene" aria-label="冒険の舞台">
+      <div class="scene-cloud cloud-a"></div><div class="scene-cloud cloud-b"></div><div class="sun-disc"></div>
+      <div class="far-hills"></div><div class="near-hills"></div>
+      <div id="sceneProps" class="scene-props" aria-hidden="true"></div><div id="landmark" class="landmark" aria-hidden="true"></div>
+      <div class="scene-floor"></div><div class="scene-lights" id="sceneLights" aria-hidden="true"></div>
+      <div id="restorationTrail" class="scene-restoration-trail" aria-hidden="true" hidden><svg viewBox="0 0 900 330" preserveAspectRatio="none" focusable="false"><path class="restoration-arc" d="M305 287Q430 85 675 125"/><circle class="restoration-core" cx="675" cy="125" r="11"/><path class="restoration-spark" d="M676 88L682 104L698 110L682 116L676 132L670 116L654 110L670 104Z"/><path class="restoration-spark" d="M704 137L708 145L716 149L708 153L704 161L700 153L692 149L700 145Z"/></svg></div>
+      <div class="scene-glow" aria-hidden="true"></div>
+      <!-- Character intentionally absent from regular play: the circuit and the restored town are the visual focus. -->
+      <div id="sceneProgress" class="scene-progress" aria-label="あかりを取り戻した場所">✦ <span id="litPlaceCount">0</span> / 14 か所</div>
+      <div id="stageCelebration" class="stage-celebration" hidden aria-hidden="true"><span class="celebration-sparks">✦ ★ ✦</span><strong id="celebrationTitle">あかりがともった！</strong><span class="celebration-stars" id="celebrationStars">★★★</span></div>
+      <div class="scene-caption"><span class="place-chip" id="placeLabel">ひかりの村</span><h1 id="missionTitle">あかりをつけよう</h1><p id="missionStory"></p></div>
+      <div id="spark" class="spark" aria-live="polite"></div>
+    </section>
+    <section class="quest-panel">
+      <div class="quest-head">
+        <div><span class="eyebrow" id="missionNumber">MISSION 01 / 14</span><h2 id="missionGoal">電気のひみつを見つけよう</h2></div>
+        <button id="readingToggle" class="reading-toggle" type="button" aria-pressed="false" aria-label="くわしい説明の表示を切り替える">📖 くわしく</button>
+        <div class="quest-stars" id="questStars" aria-label="このミッションの星">☆ ☆ ☆</div>
+      </div>
+      <div class="reading-task-row">
+        <p class="quest-desc" id="missionInstructions"></p>
+        <button id="readTaskBtn" class="read-task-btn" type="button" aria-pressed="false" aria-label="いま やることを よみあげる" hidden>🔊 よんで</button>
+      </div>
+      <section id="scienceCompass" class="science-compass" aria-label="現在の研究の進み具合"></section>
+      <div id="workspace" class="workspace"><div id="startupFallback" class="startup-fallback" role="status"><strong>ゲームの実験画面を読み込めませんでした</strong><p>iPhoneのファイルプレビューでは、ゲーム用プログラムが動かず白い空白になる場合があります。この表示は故障ではありません。Web版をSafariで開いて試してください。</p><a class="startup-open-web" href="https://rawcdn.githack.com/stusaurus/rika-quest/a45e52b643eb1e21e435e5c6b57ecfbcfdd6f47f/games/akari/index.html" target="_blank" rel="noopener noreferrer">Safariで動くWeb版を開く ↗</a><small>リンク先が確認画面の場合は、表示先を確かめて「Continue／続ける」を選んでください。</small></div></div>
+      <details id="journalPanel" class="journal"><summary>📖 冒険の観察手帳 <span class="journal-count">0件の記録</span></summary><div class="journal-rows"></div><p class="journal-foot">この手帳は端末に保存され、やりなおしても消えません。</p></details>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"><span class="feedback-icon">✦</span><span id="feedbackText">いろいろ試してみよう！</span></div>
+      <div class="action-row">
+        <button class="btn btn-light" type="button" id="hintBtn">💡 ヒント</button>
+        <button class="btn btn-light" type="button" id="resetBtn">↺ この問題をやりなおす</button>
+        <button class="btn btn-primary" type="button" id="checkBtn">⚡ 電気を流してみる</button>
+        <button class="btn btn-gold" type="button" id="nextBtn" hidden>次の冒険へ ➜</button>
+      </div>
+      <div class="discovery" id="discovery" hidden><span class="discovery-badge">✦ 発見！</span><details class="discovery-more"><summary>🔍 もっと しる</summary><p id="discoveryText"></p></details></div>
+      <section id="scienceReport" class="science-report" hidden aria-label="14ミッションの学習成果"></section>
+    </section>
+    <footer class="footer"><span>Rika Quest · 明かりをつけよう</span><span>実験はゲームの中で安全に。実物の乾電池をショートさせないでください。</span></footer>
+  </main>
+</div>
+<div class="modal-backdrop" id="helpModal" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <button id="closeHelpBtn" class="modal-close" type="button" aria-label="閉じる">×</button>
+    <h2 id="helpTitle">冒険のあそびかた</h2>
+    <p>あかりを つける ぼうけんだよ！</p>
+    <ol class="kid-help-steps">
+      <li>地図から 場所を えらぼう。</li>
+      <li>「いま やること」を 見よう。</li>
+      <li>よそうして、じっけんで たしかめよう。</li>
+      <li>まちがえても だいじょうぶ。もう一度 考えよう！</li>
+    </ol>
+    <fieldset class="furigana-control" aria-label="よみがなの かず">
+      <legend>よみがなの かず</legend>
+      <div class="furigana-choices">
+        <button id="yomiEssentials" type="button" aria-pressed="true">たいせつな ことば</button>
+        <button id="yomiAll" type="button" aria-pressed="false">ぜんぶの よみがな</button>
+      </div>
+    </fieldset>
+    <details class="word-help">
+      <summary>🔎 むずかしい ことばの いみ</summary>
+      <dl>
+        <dt>回路（かいろ）</dt><dd>電気が ぐるっと ひと回りする 道。</dd>
+        <dt>接点（せってん）</dt><dd>金ぞくどうしが ふれる 所。</dd>
+        <dt>直列（ちょくれつ）</dt><dd>わかれ道のない、1本の つなぎ方。</dd>
+        <dt>並列（へいれつ）</dt><dd>電気の 道が わかれる つなぎ方。</dd>
+        <dt>電圧（でんあつ）</dt><dd>電気を 流そうとする 力の めやす。</dd>
+        <dt>定格（ていかく）</dt><dd>その 電球に あった 電圧の めやす。</dd>
+        <dt>ショート</dt><dd>電球を 通らず、電池の ＋と −が つながる あぶない こと。</dd>
+      </dl>
+    </details>
+    <details class="help-more">
+      <summary>先生や 大人と くわしく 見る</summary>
+      <ol><li>地図からミッションを選ぶ（最初は1つ目から）。</li><li>回路の丸い端子を順番にタップすると、導線をつなげられるよ。</li><li>橋では、現地調査→材料の予想と実験→2か所の回路修理→理由の説明で復旧しよう。</li><li>庭の実験工房では、まず同じクリップの接点を変えて比較しよう。材料の性質を比べるときは接点の条件をそろえるよ。</li><li>にせものの金属では、材料を実験で見分け、電気を通す道と、＋・−を隔てる仕切りを設計しよう。危険なショートは画面上だけの仮想実験だよ。</li><li>予想を外しても減点はないよ。実験結果の理由を考えてね。</li><li>スイッチは4通りの結果を記録し、自分でわかったことを選ぼう。</li><li>乾電池のミッション9〜11では、条件を変えた実験を記録し、現場に合う電池と豆電球を選び、点灯する理由まで説明しよう。</li><li>灯台の二重故障では、4つの部品を調べ、1か所直しても消える理由を再実験から考え、もう1か所を修理するよ。</li><li>最後の灯台では、3つの部品をそれぞれ2条件ずつ予想・実験し、6つの比較結果から部品を選んで点灯させよう。</li><li>冒険の節目では別の回路の追加依頼があるよ。3つの結果を予想して、どうしてそうなるか説明しよう。予想を外しても減点はないよ。</li><li>あかりがつくだけでは終わらない場面もあるよ。実験結果と根拠を説明して、星を集めて次の場所へ。</li></ol>
+    </details>
+    <p class="safety">⚠ 乾電池の＋極と−極を直接つなぐ「ショート」は危険です。実物では絶対にしないでね。</p>
+    <button id="closeHelpSecondary" class="btn btn-primary" type="button">冒険に戻る</button>
+  </section>
+</div>
+</body>
+</html>

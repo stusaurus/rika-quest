@@ -1,0 +1,105 @@
+/* STEP: Keep the circuit as the primary interaction and the four experiments nearby. */
+.network-lab .builder-heading{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin-bottom:8px}
+.network-lab .builder-heading>span{display:none}
+.network-lab .builder-heading h3{margin:0;font-size:clamp(17px,2vw,23px)}
+.network-lab .builder-heading p{flex-basis:100%;margin:0;font-size:13px;line-height:1.45}
+.network-lab .builder-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.network-lab .builder-layout>.builder-panel{min-width:0}
+.network-lab .builder-layout>.builder-panel:first-child{order:0}
+.network-lab .builder-layout>.builder-panel:last-child{order:1}
+.network-lab .builder-layout>.builder-panel:last-child>h3{font-size:17px;margin:0 0 4px}
+.network-lab .builder-layout>.builder-panel:last-child>.builder-help,
+.network-lab .network-choice-note{display:none}
+.network-lab .network-switches{display:flex;gap:8px;margin:6px 0}
+.network-lab .network-switches button{min-height:44px;flex:1}
+.network-lab .builder-live{font-size:clamp(18px,2.5vw,25px);margin:5px 0;font-weight:900}
+.network-lab .network-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.network-lab .network-trial{min-height:76px}
+.network-lab .network-comparison{margin:5px 0;font-size:13px}
+.network-lab .network-reason{margin-top:10px}
+.network-lab .network-reason strong{display:block;font-size:16px;margin-bottom:8px}
+.network-lab .network-reason button{min-height:46px}
+@media(max-width:650px){
+ .network-lab .network-results{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .network-lab .builder-heading p{font-size:12px}
+ .network-lab .builder-panel{padding:9px}
+ .network-lab .network-trial{min-height:76px}
+}
+
+/* Switch positions are recognizable without reading ON/OFF. */
+.network-lab .network-trial-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}
+.network-lab .network-switch-mini{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;font-weight:900;color:#244e62;font-size:13px}
+.network-lab .network-switch-mini>b{font-size:10px;letter-spacing:.03em}
+.network-lab .network-switch-track{display:block;position:relative;width:46px;height:25px;border-radius:20px;background:#aab8c1;border:2px solid #78909d;box-sizing:border-box;transition:background .15s}
+.network-lab .network-switch-track>i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0004;transition:transform .15s}
+.network-lab .network-switch-track.on{background:#2c9b75;border-color:#197758}
+.network-lab .network-switch-track.on>i{transform:translateX(20px)}
+.network-lab .network-trial.current .network-switch-track{outline:2px solid #d69d42;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.network-lab .network-switch-track,.network-lab .network-switch-track>i{transition:none}}
+@media(max-width:360px){.network-lab .network-switch-track{width:40px}.network-lab .network-switch-track.on>i{transform:translateX(14px)}}
+
+/* Grade-three reasoning: two large, visual, accessible choices. */
+.network-lab .network-reason-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.network-lab .network-reason-choices>button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:120px;padding:9px 6px;white-space:normal;text-align:center}
+.network-lab .network-reason-choices>button.chosen{outline:3px solid #e6a33d;outline-offset:1px}
+.network-lab .network-reason-diagram{display:flex;align-items:center;justify-content:center;min-height:43px;font-weight:900;color:#1e6675;font-size:clamp(12px,2.7vw,17px);letter-spacing:-.03em}
+.network-lab .network-reason-parallel{flex-direction:column;gap:0;line-height:1.05;font-size:clamp(12px,2.5vw,17px)}
+.network-lab .network-reason-title{font-size:18px;font-weight:900}
+.network-lab .network-reason-choices small{font-size:12px;line-height:1.3}
+@media(max-width:360px){.network-lab .network-reason-title{font-size:16px}.network-lab .network-reason-choices small{font-size:11px}}
+
+/* STEP: The four cases are tactile controls, not passive report cards. */
+.network-lab .network-choice-note{display:block;margin:2px 0 6px;font-size:12px;font-weight:800;color:#25546a}
+.network-lab .network-trial{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 5px;border:2px solid transparent;border-radius:13px;min-width:0;cursor:pointer;touch-action:manipulation}
+.network-lab .network-trial.current{border-color:#e3a536;box-shadow:0 0 0 2px #e3a53655;background:#fff7e7}
+.network-lab .network-trial:focus-visible{outline:3px solid #176f9b;outline-offset:3px}
+.network-lab .network-trial:disabled{cursor:default;opacity:.7}
+.network-lab .network-trial-outcome{font-size:clamp(13px,2vw,17px);font-weight:900;line-height:1.3;min-height:22px;text-align:center}
+.network-lab .network-trial.measured:not(.current) .network-trial-outcome{color:#225f58}
+.network-lab .network-trial.current::after{content:"いま";position:absolute;top:-9px;right:3px;background:#8d5914;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-weight:900}
+@media(max-width:650px){
+ .network-lab .network-results{gap:10px}
+ .network-lab .network-trial{min-height:108px}
+ .network-lab .network-switch-mini{font-size:13px}
+ .network-lab .network-trial-outcome{font-size:15px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .network-lab .network-trial:active:not(:disabled){transform:scale(.98)}
+}
+
+/* Immediate feedback follows the electrical simulation, never a guessed answer. */
+.network-lab .builder-live{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;transition:background-color .18s,color .18s,box-shadow .18s}
+.network-lab .builder-live.live-lit{color:#215f41;background:#e4f7db;box-shadow:inset 0 0 0 2px #75b98c}
+.network-lab .builder-live.live-dark{color:#365568;background:#e7eef1}
+.network-lab .builder-live.live-short{color:#a12c21;background:#ffe5df;box-shadow:inset 0 0 0 2px #e27a68}
+.network-lab .network-trial.trial-lit.measured .network-trial-outcome{color:#1d7144}
+.network-lab .network-trial.trial-short.measured .network-trial-outcome{color:#ad3529}
+.network-lab .network-trial.trial-dark.measured .network-trial-outcome{color:#31556c}
+@media(prefers-reduced-motion:no-preference){
+ .network-lab .builder-live.live-lit{animation:akari-switch-glow .42s ease-out}
+ @keyframes akari-switch-glow{0%{box-shadow:0 0 0 0 #a3df8f}45%{box-shadow:0 0 0 7px #a3df8f66}100%{box-shadow:inset 0 0 0 2px #75b98c}}
+}
+
+/* Show a physical-looking bulb state on every observation card. */
+.network-lab .network-trial-outcome{display:flex;align-items:center;justify-content:center;gap:7px}
+.network-lab .network-trial-outcome::before{content:"";display:inline-block;flex:none;width:19px;height:19px;border-radius:50%;border:2px solid #8c9ea8;background:#d7e0e4;box-shadow:inset 0 -3px 0 #7c909955}
+.network-lab .network-trial.trial-lit.measured .network-trial-outcome::before{border-color:#c99121;background:#ffdc60;box-shadow:0 0 0 3px #f6d87055,0 0 12px #ffc83b}
+.network-lab .network-trial.trial-dark.measured .network-trial-outcome::before{background:#8fa8b6;border-color:#58788a}
+.network-lab .network-trial.trial-short.measured .network-trial-outcome::before{content:"!";font-size:14px;line-height:17px;text-align:center;font-weight:900;color:#fff;border-color:#b33226;background:#c74435;box-shadow:0 0 0 2px #e8a49b66}
+@media(max-width:360px){.network-lab .network-trial-outcome{gap:4px}.network-lab .network-trial-outcome::before{width:16px;height:16px}}
+
+/* The answer is a choice between two visibly different circuit paths. */
+.network-lab .network-reason-choices>button{border:2px solid #8daab4;border-radius:16px;background:#f5fafb;transition:border-color .12s,background-color .12s}
+.network-lab .network-reason-choices>button.chosen{border-color:#d28d18;background:#fff3d7;box-shadow:0 0 0 2px #f1c97588}
+.network-lab .network-reason-choices>button:focus-visible{outline:3px solid #1477a1;outline-offset:3px}
+.network-lab .network-reason-diagram{width:100%;min-height:58px;border-radius:11px;background:#e6f1f1;color:#174e5f;overflow:hidden}
+.network-lab .network-reason-path{white-space:nowrap;font-size:clamp(12px,2.8vw,20px);letter-spacing:-.07em}
+.network-lab .network-reason-parallel{font-family:ui-monospace,monospace;line-height:1.25;letter-spacing:-.08em}
+.network-lab .network-reason-title{font-size:clamp(19px,3vw,24px)}
+.network-lab .network-reason-choices small{font-weight:800;color:#315e6a}
+@media(max-width:360px){.network-lab .network-reason-choices{gap:6px}.network-lab .network-reason-choices>button{padding:8px 3px}.network-lab .network-reason-path{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.network-lab .network-reason-choices>button{transition:none}}
+
+/* Unobserved is not the same as OFF: show a question mark until the child tries it. */
+.network-lab .network-trial.trial-unknown .network-trial-outcome::before{content:"?";font-size:13px;font-weight:900;line-height:17px;text-align:center;color:#526c7b;border:2px dashed #8c9ea8;background:#f2f5f6;box-shadow:none}
+@media(max-width:360px){.network-lab .network-trial.trial-unknown .network-trial-outcome::before{font-size:11px;line-height:14px}}
