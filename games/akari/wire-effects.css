@@ -3,12 +3,16 @@
 .network-board .builder-terminal[data-net-t]{touch-action:none}
 .builder-board .student-wire,.network-board .student-wire,
 .builder-board .other-wire-preview,.network-board .other-wire-preview{pointer-events:none}
+/* Only student-wire groups are removable. Fixed component wiring retains its
+   muted original colors. Use shape and contrast as well as hue for young players. */
 .builder-board .student-wire-ink,.network-board .student-wire-ink{
- stroke-width:7;stroke-linecap:round;stroke-linejoin:round;
+ stroke:#ffca42!important;stroke-width:8!important;
+ stroke-linecap:round;stroke-linejoin:round;
  filter:drop-shadow(0 1px 2px #001d3b77)
 }
 .builder-board .student-wire-outline,.network-board .student-wire-outline{
- stroke-width:13;stroke:#ffffff;opacity:.80;stroke-linecap:round;stroke-linejoin:round
+ stroke-width:15!important;stroke:#68421c!important;opacity:1!important;
+ stroke-linecap:round;stroke-linejoin:round
 }
 .other-wire-preview .other-wire-preview-halo{
  stroke:#fff;stroke-width:13;opacity:.9;stroke-linecap:round;stroke-linejoin:round
