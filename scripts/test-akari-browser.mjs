@@ -60,6 +60,8 @@ try{
      // An incorrect prediction must not expose the dangerous route.
      const networkTrace=await drawShortByHand("network");
      assert.match(await page.locator(".network-lab .builder-live").textContent(),/ショート/,"A short shows at once, before recording the switch experiment");
+     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
+     assert.equal(await page.locator(".short-alert").isVisible(),true,"Network short animation starts at connection time");
       await page.locator('[data-net-test]').click();
       await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
       assert.match(await page.locator(".short-alert").textContent(),/ショート/,"A short animates on the switch network");
@@ -724,6 +726,8 @@ try{
    };
    const clockTrace=await drawShortByHand("builder");
      assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ショート/,"The clock immediately signals its battery short");
+     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
+     assert.equal(await page.locator(".short-alert").isVisible(),true,"Clock short animation starts when the wire touches");
     await page.locator('[data-builder-test]').click();
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
     assert.match(await page.locator(".short-alert").textContent(),/ショート/,"Clock circuit warns with animation");

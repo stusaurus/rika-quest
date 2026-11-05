@@ -522,6 +522,13 @@ function check(){
   success();return;
  }
 }
+function warnNewShort(before,after){
+ if(before||!after)return false;
+ window.AkariEffects?.shortCircuit?.();
+ setFeedback("⚠ ショート！ あぶない！ せんを はずそう。","warning");
+ reactCharacter("danger");
+ return true;
+}
 function handleWorkspace(e){
  const target=e.target.closest("button");if(!target||stageComplete)return;
  if(ui.switchLab){
@@ -537,10 +544,12 @@ function handleWorkspace(e){
    if(l.selected==null){l.selected=id;renderWorkspace();setFeedback(B.points[id].name+"を選択した。次につなぐ端子を選んでね。");return;}
    const first=l.selected;l.selected=null;
    if(first===id){renderWorkspace();return;}
+   const shortBefore=B.evaluate(l.wires,l.a,l.b).short;
    const code=B.edge(first,id),index=l.wires.findIndex(w=>B.edge(...w)===code);
    if(index<0)l.wires.push([first,id]);else l.wires.splice(index,1);
    l.trials={};l.reason=null;l.insight=null;saveSwitchDraft();renderWorkspace();
-   setFeedback(index<0?"導線を追加した。4通りを調べると本当の働きがわかるよ。":"導線を外した。実験記録も新しい配線で取り直そう。");
+   if(warnNewShort(shortBefore,B.evaluate(l.wires,l.a,l.b).short))return;
+   setFeedback(index<0?"導線が つながったよ。":"✂️ 1本 はずしたよ。");
    reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-net-clear")){
@@ -548,8 +557,10 @@ function handleWorkspace(e){
   }
   if(target.hasAttribute("data-net-switch")){
    const id=target.dataset.netSwitch;if(!["a","b"].includes(id))return;
+   const shortBefore=B.evaluate(l.wires,l.a,l.b).short;
    l[id]=!l[id];l.selected=null;saveSwitchDraft();renderWorkspace();
-   setFeedback("スイッチ"+id.toUpperCase()+"を"+(l[id]?"ON":"OFF")+"にしたよ。結果を確かめよう。");return;
+   if(warnNewShort(shortBefore,B.evaluate(l.wires,l.a,l.b).short))return;
+   setFeedback("スイッチ"+id.toUpperCase()+"を"+(l[id]?"ON":"OFF")+"にしたよ。");return;
   }
   if(target.hasAttribute("data-net-test")){
    const code=Number(l.a)+""+Number(l.b),value=B.evaluate(l.wires,l.a,l.b);
@@ -629,12 +640,14 @@ function handleWorkspace(e){
    if(b.selected===null){b.selected=term;renderWorkspace();setFeedback("選んだ端子："+B.terminals[term].name+"。次につなぐ端子をタップしよう。");return;}
    const from=b.selected;b.selected=null;
    if(from===term){renderWorkspace();setFeedback("端子の選択を解除したよ。");return;}
+   const shortBefore=B.evaluate(b.wires,direct?false:b.switchOn).short;
    const key=B.edge(from,term);
    const index=b.wires.findIndex(pair=>B.edge(...pair)===key);
    if(index>=0)b.wires.splice(index,1);
    else b.wires.push([from,term]);
    b.tests={};b.trace=[];b.insight=null;saveBuilderDraft();renderWorkspace();
-   setFeedback(index>=0?"その導線を外したよ。":direct?"導線を追加したよ。回路ができたら通電してみよう。":"導線を追加したよ。OFFとONを両方確かめてみよう。");
+   if(warnNewShort(shortBefore,B.evaluate(b.wires,direct?false:b.switchOn).short))return;
+   setFeedback(index>=0?"✂️ 1本 はずしたよ。":"導線が つながったよ。");
    reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-builder-clear")){
@@ -643,8 +656,10 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-builder-switch")){
    if(direct)return;
    const mode=target.dataset.builderSwitch;if(!["on","off"].includes(mode))return;
+   const shortBefore=B.evaluate(b.wires,b.switchOn).short;
    b.switchOn=mode==="on";b.selected=null;saveBuilderDraft();renderWorkspace();
-   setFeedback("スイッチを"+(b.switchOn?"ON":"OFF")+"に切り替えた。通電実験で確認しよう。");return;
+   if(warnNewShort(shortBefore,B.evaluate(b.wires,b.switchOn).short))return;
+   setFeedback("スイッチを"+(b.switchOn?"ON":"OFF")+"にしたよ。");return;
   }
   if(target.hasAttribute("data-builder-test")){
    const mode=direct?"single":b.switchOn?"on":"off";
