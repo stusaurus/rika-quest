@@ -156,9 +156,14 @@
   if(!drag||drag.pointerId!==e.pointerId)return;
   const old=drag;drag=null;erase();
   if(!old.moved)return;
-  const hit=document.elementFromPoint(e.clientX,e.clientY)?.closest(old.config.terminal);
+  const hit=document.elementFromPoint(e.clientX,e.clientY)?.closest(old.config.terminal)||
+    [...old.board.querySelectorAll(old.config.terminal)].find(btn=>{
+      const r=btn.getBoundingClientRect(),pad=12;
+      return e.clientX>=r.left-pad&&e.clientX<=r.right+pad&&
+        e.clientY>=r.top-pad&&e.clientY<=r.bottom+pad;
+    });
   const target=hit&&context(hit);
-  if(!target||target.config.id!==old.config.id||target.id===old.id)return;
+  if(!target||target.board!==old.board||target.id===old.id)return;
   const code=pair(old.id,target.id),stage=dataKey(old.config),points=[...old.points,target.point.slice()];
   if(e.cancelable)e.preventDefault();
   const getTerminal=id=>root.querySelector(old.config.board+" "+old.config.terminal+"[data-"+(old.config.id==="builder"?"builder-t":"net-t")+'="'+id+'"]');
