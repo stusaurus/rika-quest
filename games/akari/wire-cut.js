@@ -25,7 +25,10 @@
   if(len<1||Math.abs(det)/len<0.4)return false;
   const ux=c.x-a.x,uy=c.y-a.y;
   const t=(ux*wy-uy*wx)/det,u=(ux*vy-uy*vx)/det;
-  return t>0.02&&t<0.98&&u>=0&&u<=1;
+  // A finger can cross a wire exactly at a pointermove endpoint.
+  // Excluding the ends misses such valid crossings, especially with evenly spaced samples.
+  const eps=1e-6;
+  return t>=-eps&&t<=1+eps&&u>=-eps&&u<=1+eps;
  };
  const screenPoints=path=>{
   if(typeof path.getTotalLength!=="function")return [];
