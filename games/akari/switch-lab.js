@@ -118,7 +118,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   const stateA=k[0]==="1"?"ON":"OFF",stateB=k[1]==="1"?"ON":"OFF";
   const outcome=valid?(t.short?"⚠ ショート":t.lit?"💡 つく":"◯ きえる"):"❔ まだ";
   const spoken=valid?(t.short?"ショート":t.lit?"点灯":"消灯"):"まだ観察していない";
-  return `<button type="button" class="network-trial ${valid?"measured":""} ${code===k?"current":""}"
+  return `<button type="button" class="network-trial ${valid?"measured":""} ${code===k?"current":""} ${valid?(t.short?"trial-short":t.lit?"trial-lit":"trial-dark"):"trial-unknown"}"
    data-net-case="${k}" aria-pressed="${code===k}" ${wiring.length?"":"disabled"}
    aria-label="スイッチA ${stateA}、B ${stateB}：${spoken}。この組み合わせにする">
    <span class="network-trial-switches"><span class="network-switch-mini"><span>A</span><i class="network-switch-track ${stateA==="ON"?"on":""}" aria-hidden="true"><i></i></i><b>${stateA}</b></span><span class="network-switch-mini"><span>B</span><i class="network-switch-track ${stateB==="ON"?"on":""}" aria-hidden="true"><i></i></i><b>${stateB}</b></span></span>
@@ -150,7 +150,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   <div class="builder-panel"><h3>🔬 4通りの通電実験</h3>
    <p class="builder-help">スイッチを うごかして 4つの けっかを くらべよう。</p>
    <div class="network-switches"><button type="button" data-net-switch="a" aria-pressed="${a}" class="${a?"on":""}">A：${a?"ON":"OFF"}</button><button type="button" data-net-switch="b" aria-pressed="${b}" class="${b?"on":""}">B：${b?"ON":"OFF"}</button></div>
-   <p class="builder-live">${result.short?"⚠ ショート！":result.lit?"💡 ついている":"◯ きえている"}</p>
+   <p class="builder-live ${result.short?"live-short":result.lit?"live-lit":"live-dark"}" role="status" aria-live="polite">${result.short?"⚠ ショート！":result.lit?"💡 ついている":"◯ きえている"}</p>
    ${observedProgress}
    <p class="network-choice-note">カードを おすと スイッチが かわるよ</p>
    ${comparison}<div class="network-results" role="group" aria-label="4通りのスイッチの組み合わせ">${results}</div>${inspection}
