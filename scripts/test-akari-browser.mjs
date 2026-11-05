@@ -340,11 +340,17 @@ try{
      const motion=await page.locator(".short-flames").evaluate(e=>({name:getComputedStyle(e).animationName,duration:getComputedStyle(e).animationDuration}));
      assert.notEqual(motion.name,"none","The fire must animate at normal motion settings");
      assert.match(motion.duration,/s/,"Fire animation should have a defined duration");
-     await page.waitForTimeout(380);
-     await page.screenshot({path:"artifacts/akari/chromium-1440-short-flames-motion.png",fullPage:true,animations:"allow"});
+     await page.waitForTimeout(180);
+     await page.screenshot({path:"artifacts/akari/chromium-1440-short-flames-motion.png",animations:"allow"});
+     // The warning is intentionally transient (1.9 seconds). The full-page screenshot
+     // can consume that lifetime, so trigger a fresh event before testing the a11y mode.
      await page.emulateMedia({reducedMotion:"reduce"});
+     await page.evaluate(()=>window.AkariEffects.shortCircuit());
+     await page.locator(".short-event").waitFor({state:"visible"});
      assert.equal(await page.locator(".short-flames").evaluate(e=>getComputedStyle(e).animationName),"none",
-       "Reduce-motion setting should keep the hazard notice without flicker");
+       "Reduced motion must show the safety message without animated flames");
+     assert.equal(await page.locator(".short-alert").isVisible(),true,
+       "Reduced motion must not hide the safety warning");
    }
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
    assert.match(await page.locator("#spark").evaluate(e=>getComputedStyle(e,"::before").content),/⚡/,"Short hazard remains clearly signaled without mascot effects");
