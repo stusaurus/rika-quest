@@ -157,10 +157,10 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    ${count===4?`<div class="network-reason"><strong>🧠 どんな つなぎ方？</strong>
     <div class="network-reason-choices" role="group" aria-label="回路のつながり方を選ぶ">
      <button type="button" data-net-reason="both" aria-pressed="${reason==="both"}" class="${reason==="both"?"chosen":""}" aria-label="AとBを両方入れると光る。一本道">
-      <span class="network-reason-diagram" aria-hidden="true"><span class="network-reason-path">● ━ A ━ B ━ 💡</span></span><span class="network-reason-title">Aも Bも</span><small>2つ とも いれる</small>
+      <span class="network-reason-diagram" aria-hidden="true"><span class="network-reason-path">🔋 ━ A ━ B ━ 💡</span></span><span class="network-reason-title">Aも Bも</span><small>2つ とも ON</small>
      </button>
      <button type="button" data-net-reason="either" aria-pressed="${reason==="either"}" class="${reason==="either"?"chosen":""}" aria-label="AかBのどちらかを入れると光る。二つの道">
-      <span class="network-reason-diagram network-reason-parallel" aria-hidden="true"><span>┏━ A ━┓</span><span>●　　　 💡</span><span>┗━ B ━┛</span></span><span class="network-reason-title">Aか B</span><small>どちらか いれる</small>
+      <span class="network-reason-diagram network-reason-parallel" aria-hidden="true"><span>┏━ A ━┓</span><span>🔋　　　💡</span><span>┗━ B ━┛</span></span><span class="network-reason-title">Aか B</span><small>どちらか ON</small>
      </button>
     </div>
    </div>`:`<p class="builder-hint">${wiring.length?"あと "+(4-count)+"つ の けっかを みよう":"まず どう線を つなごう"}</p>`}
