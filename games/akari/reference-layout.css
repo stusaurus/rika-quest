@@ -452,3 +452,34 @@ body[data-visual-theme="reference-rebuild"] #sidebar.open .mission-list{
  body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.science-report{order:10}
  body[data-visual-theme="reference-rebuild"] .main>.footer{order:11}
 }
+
+
+/* Final desktop reference alignment, verified against 1440px screenshot. */
+@media(min-width:741px){
+ body[data-visual-theme="reference-rebuild"].reading-easy .main{
+  grid-template-areas:
+   "heading heading"
+   "task task"
+   "steps workplace"
+   "steps feedback"
+   "steps actions"
+   "journal journal"
+   "discovery discovery"
+   "report report"
+   "footer footer";
+ }
+ body[data-visual-theme="reference-rebuild"] .circuit-board:not(.zoomed){
+  min-height:515px;
+ }
+ body[data-visual-theme="reference-rebuild"] .circuit-board:not(.zoomed) .circuit-inner{
+  width:min(680px,calc(100% - 46px));
+  top:54%;
+ }
+ body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal-label{font-size:12px}
+ body[data-visual-theme="reference-rebuild"] .reading-easy .reading-task-row .quest-desc{
+  font-size:clamp(20px,2vw,27px);
+ }
+ body[data-visual-theme="reference-rebuild"] .quest-head h2{
+  font-size:clamp(26px,2.9vw,38px)
+ }
+}
