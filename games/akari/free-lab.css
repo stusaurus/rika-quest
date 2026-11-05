@@ -125,3 +125,10 @@
 @media(prefers-reduced-motion:reduce){
  .free-bulb-art:before{transition:none}
 }
+/* The safety sequence reuses the same non-strobing short animation in this lab. */
+.free-lab-board .short-event{--fx-x:23%;--fx-y:28%}
+.free-lab-record{margin-top:10px;border-top:1px dashed #a1c9cf;padding-top:8px;font-size:12px}
+.free-lab-record summary{cursor:pointer;min-height:35px;font-weight:900}
+.free-lab-record #freeSaveRecord{min-height:36px;border-radius:10px;border:2px solid #7ba7ae;
+ padding:6px 12px;background:#fff;font-size:12px;font-weight:900;color:#245567}
+.free-lab-record #freeLabRecordRows p{padding:6px 7px;margin:4px 0;background:#fffdf5;border-radius:8px}

@@ -7,8 +7,9 @@
   const current=++token;
   requestAnimationFrame(()=>{
    if(current!==token)return;
-   const workspace=document.getElementById("workspace");
-   const board=workspace?.querySelector(".circuit-board,.builder-board,.garden-design,.garden-schematic,.lab-panel");
+   const free=document.getElementById("freeLabPanel");
+   const workspace=free&&!free.hidden?free:document.getElementById("workspace");
+   const board=workspace?.querySelector(".free-lab-board,.circuit-board,.builder-board,.garden-design,.garden-schematic,.lab-panel");
    if(!board)return;
    workspace.querySelectorAll(".short-event").forEach(node=>node.remove());
    const event=document.createElement("div");

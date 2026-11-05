@@ -265,17 +265,28 @@ try{
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Closing the switch instantly lights the wired lamp");
    await page.locator('[data-free-switch="s3"]').click();
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Opening the switch instantly turns it off");
+   await labWire("b1:P","b1:N");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/ショート/,"Short across battery poles is detected instantly in the free lab");
+   await page.locator(".free-lab-board .short-event").waitFor({state:"visible",timeout:1500});
+   assert.equal(await page.locator(".free-lab-board .short-alert").isVisible(),true,"Lab short invokes the same safety animation");
+   await page.locator("#freeLabClear").click();
+   assert.equal(await page.locator("#freeLabLines .free-wire").count(),0,"Clearing wires makes the experiment safe again");
    await page.locator('[data-free-preset="cells"]').click();
    await labWire("b1:N","b2:P");await labWire("b1:P","l3:L");await labWire("b2:N","l3:R");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Two cells in series illuminate the mini lamp");
    assert.equal(await page.locator("#freeLabStatus").evaluate(e=>e.classList.contains("caution")),true,
      "The simple model warns about high brightness instead of teaching unsafe overvoltage");
+   await page.locator(".free-lab-record summary").click();
+   await page.locator("#freeSaveRecord").click();
+   assert.equal(await page.locator("#freeLabRecordRows p").count(),1,"Student observations can be saved separately from story progress");
    const savedLayout=await page.evaluate(()=>window.AkariFreeLab.getState());
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator("#freeLabToggle").click();
    assert.equal(await page.locator(".free-battery").count(),2,"Extra battery survives reload in the child's lab");
    assert.equal(await page.locator("#freeLabLines .free-wire").count(),3,"The saved student's series circuit survives reload");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Saved physical wiring is re-simulated immediately");
+   await page.locator(".free-lab-record summary").click();
+   assert.equal(await page.locator("#freeLabRecordRows p").count(),1,"Free experiment observations persist after reload");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-free-lab.png",fullPage:true});
    await page.locator("#freeLabClose").click();
    assert.equal(await page.locator("#freeLabPanel").isVisible(),false,"Return to story mode hides the workshop");

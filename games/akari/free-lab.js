@@ -4,11 +4,34 @@
 (function(){
  const M=window.AkariFreeLabModel;
  if(!M)return;
- const key="rika-akari-free-lab-v1",labels={battery:"かんでんち",bulb:"まめでんきゅう",switch:"スイッチ"};
- let state=M.defaultState(),chosen=null,open=false,gesture=null,suppressClick=0,rendered=null;
+ const key="rika-akari-free-lab-v1",noteKey="rika-akari-free-lab-notes-v1",
+  labels={battery:"かんでんち",bulb:"まめでんきゅう",switch:"スイッチ"};
+ let state=M.defaultState(),chosen=null,open=false,gesture=null,suppressClick=0,rendered=null,records=[];
+ try{const saved=localStorage.getItem(noteKey);if(saved){const parsed=JSON.parse(saved);
+  if(Array.isArray(parsed))records=parsed.slice(-12).filter(x=>x&&typeof x==="object");
+ }}catch{}
  try{const saved=localStorage.getItem(key);if(saved)state=M.sanitize(JSON.parse(saved));}catch{}
  const get=id=>document.getElementById(id);
  const persist=()=>{try{localStorage.setItem(key,JSON.stringify(state));}catch{}};
+ const showRecords=()=>{
+  const target=get("freeLabRecordRows");if(!target)return;
+  target.textContent="";
+  [...records].reverse().forEach((entry,i)=>{
+   const row=document.createElement("p");
+   row.textContent=(records.length-i)+"｜でんち"+entry.cells+"・でんきゅう"+entry.bulbs+
+    " → "+(entry.short?"⚠ ショート":entry.lit+"こ ついた");
+   target.append(row);
+  });
+ };
+ const record=()=>{
+  const result=M.simulate(state);
+  records.push({cells:state.nodes.filter(n=>n.type==="battery").length,
+   bulbs:state.nodes.filter(n=>n.type==="bulb").length,
+   lit:result.litCount,short:result.short});
+  records=records.slice(-12);
+  try{localStorage.setItem(noteKey,JSON.stringify(records));}catch{}
+  showRecords();
+ };
  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
  const center=(rect)=>({x:rect.left+rect.width/2,y:rect.top+rect.height/2});
  const board=()=>get("freeLabBoard");
@@ -84,6 +107,7 @@
  const safetyText='⚠ これは ゲームの じっけん。ほんものの でんちを ショートさせないでね。';
  function render(){
   const experiment=get("freeLabPanel");if(!experiment)return;
+  const wasShort=!!rendered?.short;
   const result=M.simulate(state),counts={battery:0,bulb:0,switch:0};
   state.nodes.forEach(n=>counts[n.type]++);
   const header=get("freeLabStatus");header.className="free-lab-status"+(result.short?" danger":result.high?" caution":result.litCount?" lit":"");
@@ -99,6 +123,7 @@
    '<svg class="free-lab-lines" id="freeLabLines" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>'+
    partsHtml(result);
   rendered=result;renderWires();
+  if(!wasShort&&result.short)window.AkariEffects?.shortCircuit?.();
   get("freeLabCount").textContent="でんち "+counts.battery+"・でんきゅう "+counts.bulb+"・スイッチ "+counts.switch;
  }
  function addPart(type){
@@ -249,6 +274,8 @@
    '<div class="free-lab-status" id="freeLabStatus" role="status" aria-live="polite"></div>'+
    '<p class="free-lab-note" id="freeLabNote"></p>'+
    '<div class="free-lab-bottom"><span id="freeLabCount"></span><button type="button" id="freeLabClear">✂ せんを ぜんぶ けす</button></div>'+
+   '<details class="free-lab-record"><summary>📒 じっけんの きろく</summary>'+
+   '<button type="button" id="freeSaveRecord">✎ いまの けっかを きろく</button><div id="freeLabRecordRows"></div></details>'+
    '<details class="free-lab-preset"><summary>🔎 もっと じっけん</summary><p>どの つなぎかたで ひかるかな？</p>'+
    '<div class="free-lab-examples"><button data-free-preset="basic">① はじめの わ</button>'+
    '<button data-free-preset="switch">② スイッチ</button>'+
@@ -260,16 +287,17 @@
   const setOpen=value=>{
    open=value;section.hidden=!value;document.body.classList.toggle("akari-free-active",value);
    toggle.setAttribute("aria-expanded",String(value));toggle.textContent=value?"↩ ぼうけんに もどる":"🧪 じゆう実験";
-   if(value)render();
+   if(value){render();showRecords();}
   };
   toggle.addEventListener("click",()=>setOpen(!open));
   get("freeLabClose").addEventListener("click",()=>setOpen(false));
   section.addEventListener("click",e=>{
-   if(Date.now()<suppressClick&&e.target.closest("[data-free-port],[data-free-move]"))return;
+   if(Date.now()<suppressClick&&e.target.closest("[data-free-move]"))return;
    const add=e.target.closest("[data-free-add]");if(add){addPart(add.dataset.freeAdd);return;}
    const preset=e.target.closest("[data-free-preset]");if(preset){presets(preset.dataset.freePreset);return;}
    if(e.target.closest("#freeRemove")){removePart();return;}
    if(e.target.closest("#freeLabClear")){state.wires=[];persist();render();return;}
+   if(e.target.closest("#freeSaveRecord")){record();return;}
    const flip=e.target.closest("[data-free-switch]");
    if(flip){const item=state.nodes.find(n=>n.id===flip.dataset.freeSwitch);if(item){item.on=!item.on;persist();render();}return;}
    const port=e.target.closest("[data-free-port]");
