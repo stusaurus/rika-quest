@@ -193,6 +193,8 @@ try{
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
    assert.equal(await page.locator("#predictStep").isVisible(),true,"Show one clear prediction choice at the start");
+   assert.equal(await page.locator("#designPredictionChoices .prediction-option").count(),3,"Offer lit, unlit, and unsure without filling the screen with text");
+   assert.equal(await page.locator('[data-prediction="unsure"]').count(),1,"Unsure is a valid scientific prediction before trying");
    assert.equal(await page.locator("#connectStep").isVisible(),false,"Avoid three simultaneous instruction cards");
    assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning step appears after the experiment");
    await page.locator('[data-prediction="lit"]').click();
@@ -272,6 +274,15 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
 
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
+   await page.locator("#thinkStep").waitFor({state:"visible"});
+   assert.equal(await page.locator(".reason-option").count(),3,"One visual reason question has three plausible choices");
+   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"Science reasoning, not just a lit bulb, is needed to advance");
+   await page.locator('[data-first-reason="cut"]').click();
+   assert.match(await page.locator("#designComparisonNote").textContent(),/もういちど/,"Wrong explanation redirects attention to the actual circuit");
+   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"Incorrect causal reasoning must not unlock next mission");
+   await page.locator('[data-first-reason="loop"]').click();
+   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Correct explanation unlocks the next mission");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1"))["1"]),"loop","First explanation persists as a learning choice");
    await page.locator("#nextBtn").click();
 
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
@@ -291,6 +302,11 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();await page.locator("#checkBtn").click();
    await completeTransfer(2,true);
+   await page.locator("#thinkStep").waitFor({state:"visible"});
+   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"The repaired streetlight still needs a short cause choice");
+   await page.locator('[data-first-reason="joined"]').click();
+   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Correct repair explanation makes next stage available");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1"))["2"]),"joined","Reason for stage two should persist");
    assert.equal(await page.locator("#masteryCount").textContent(),"1","First successful transfer earns a reasoning token");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".story-scene.restored").count(),1,"A solved transfer case stays saved after reload");

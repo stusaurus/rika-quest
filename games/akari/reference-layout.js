@@ -5,6 +5,14 @@
  const read=(k,d)=>{try{return localStorage.getItem(k)||d}catch{return d}};
  const store=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
  let predictions={};try{predictions=JSON.parse(read("rika-akari-predictions-v1","{}"))||{}}catch{predictions={}};
+ let reasons={};try{reasons=JSON.parse(read("rika-akari-first-reasons-v1","{}"))||{}}catch{reasons={}};
+ let reasonFeedback="";
+ const reasonsByMission={
+  1:{title:"どうして ついた？",correct:"loop",success:"ぐるっと つながった！",
+    choices:[["loop","🔁","わに なった"],["cut","✂️","せんが きれた"],["extra","🔋","電池が ふえた"]]},
+  2:{title:"どこを なおした？",correct:"joined",success:"すきまが なくなった！",
+    choices:[["joined","🔗","せんを つないだ"],["removed","✂️","せんを はずした"],["extra","🔋","電池を ふやした"]]}
+ };
  const mission=()=>Number((get("missionNumber")?.textContent||"MISSION 01 / 14").match(/(\d+)\s*\/\s*14/)?.[1]||1);
  function setup(){
   document.body.dataset.visualTheme="reference-rebuild";
@@ -27,17 +35,30 @@
     '<div class="prediction-options" id="designPredictionChoices">',
     '<button type="button" class="prediction-option" data-prediction="lit" aria-label="あかりが つくと おもう" aria-pressed="false"><span aria-hidden="true">💡</span><small>つく</small></button>',
     '<button type="button" class="prediction-option" data-prediction="dark" aria-label="あかりが つかないと おもう" aria-pressed="false"><span aria-hidden="true">◯</span><small>つかない</small></button>',
+    '<button type="button" class="prediction-option" data-prediction="unsure" aria-label="まだ わからない" aria-pressed="false"><span aria-hidden="true">❔</span><small>まだ</small></button>',
     '</div></section>',
     '<section class="learning-step" id="connectStep">',
     '<h3><span class="step-index" aria-hidden="true">☝</span><span id="guideActionLabel">つなぐ</span></h3>',
     '<div class="gesture-demo" aria-hidden="true"><span class="gesture-node"></span><span class="gesture-line"></span><span class="gesture-node"></span></div>',
     '<p id="guideActionText">まるを 2つ おそう</p></section>',
     '<section class="learning-step" id="thinkStep">',
-    '<h3><span class="step-index" aria-hidden="true">💡</span>けっか</h3>',
-    '<p id="designComparisonNote">どうして ついたのかな？</p></section>'
+    '<h3><span class="step-index" aria-hidden="true">💡</span>かんがえる</h3>',
+    '<p id="designComparisonNote" aria-live="polite">どうして ついた？</p>',
+    '<div class="reason-choices" id="reasonChoices" role="group" aria-label="じっけんの わけを えらぶ"></div></section>'
    ].join("");
    main.insertBefore(steps,main.querySelector(".story-scene"));
    steps.addEventListener("click",e=>{
+    const reasoning=e.target.closest("[data-first-reason]");
+    if(reasoning){
+     const n=mission(),question=reasonsByMission[n];
+     if(!question||reasons[n]===question.correct)return;
+     if(reasoning.dataset.firstReason===question.correct){
+      reasons[n]=question.correct;
+      store("rika-akari-first-reasons-v1",JSON.stringify(reasons));
+      reasonFeedback=question.success;
+     }else reasonFeedback="せんの つながりを もういちど みよう";
+     refresh();return;
+    }
     const b=e.target.closest("[data-prediction]");if(!b)return;
     predictions[mission()]=b.dataset.prediction;
     store("rika-akari-predictions-v1",JSON.stringify(predictions));refresh();
@@ -87,7 +108,25 @@
   const name=get("guideActionLabel"),hint=get("guideActionText"),compare=get("designComparisonNote");
   if(name)name.textContent=stage==="test"?"ためす":"つなぐ";
   if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="test"?"みどりの ボタンを おそう":"まるから まるへ なぞろう";
-  if(compare)compare.textContent=predictions[n]==="lit"?"よそうと おなじ？":"よそうと ちがった？";
+  const question=reasonsByMission[n],reasonChoices=get("reasonChoices");
+  if(question&&reasonChoices){
+   if(reasonChoices.dataset.mission!==String(n)){
+    reasonChoices.dataset.mission=String(n);
+    reasonFeedback="";
+    reasonChoices.innerHTML=question.choices.map(([id,icon,label])=>
+     '<button type="button" class="reason-option" data-first-reason="'+id+'" aria-pressed="false">'+
+     '<span aria-hidden="true">'+icon+'</span><small>'+label+'</small></button>'
+    ).join("");
+   }
+   reasonChoices.querySelectorAll("[data-first-reason]").forEach(b=>{
+    const chosen=reasons[n]===b.dataset.firstReason;
+    b.setAttribute("aria-pressed",String(chosen));
+    b.disabled=!!reasons[n];
+   });
+   if(compare)compare.textContent=reasons[n]===question.correct?question.success:reasonFeedback||question.title;
+  }else if(compare)compare.textContent="どうして そうなった？";
+  const next=get("nextBtn");
+  if(next&&firstSteps&&!next.hidden)next.disabled=!reasons[n];
   const command=board?.querySelector(".circuit-help");
   if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="test"?"できたら『ためす』を タップ":"なぞるか 2つの まるを タップ";
  }
