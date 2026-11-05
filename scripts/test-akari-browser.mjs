@@ -94,6 +94,14 @@ try{
          return {x:q.x,y:q.y};
        });
      });
+     const cutDebug=await page.evaluate(([a,b])=>({
+       wireCutLoaded:!!window.AkariWireCut,
+       start:document.elementFromPoint(a.x,a.y)?.outerHTML.slice(0,240),
+       end:document.elementFromPoint(b.x,b.y)?.outerHTML.slice(0,240),
+       startPoint:a,endPoint:b,
+       board:document.querySelector(".network-board")?.getBoundingClientRect().toJSON()
+     }),cutAcross);
+     console.log("Wire-cut gesture diagnostics",JSON.stringify(cutDebug));
      await page.mouse.move(cutAcross[0].x,cutAcross[0].y);
      await page.mouse.down();
      await page.mouse.move(cutAcross[1].x,cutAcross[1].y,{steps:18});
