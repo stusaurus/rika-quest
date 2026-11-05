@@ -427,3 +427,28 @@ body[data-visual-theme="reference-rebuild"] .top-progress-dots i.done{
  body[data-visual-theme="reference-rebuild"] .topbar .star-count{display:none}
  body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal{min-width:36px;min-height:36px}
 }
+
+
+/* Reference visual QA: navigation and priority of information on small screens. */
+body[data-visual-theme="reference-rebuild"] #sidebar.open .map-illustration{
+ display:block!important;position:absolute;right:0;top:54px;
+ width:min(320px,90vw);height:98px;margin:0;
+ border:2px solid #9abfdd;border-radius:12px;
+ box-shadow:0 5px 12px #244d6c77;z-index:46
+}
+body[data-visual-theme="reference-rebuild"] #sidebar.open .mission-list{
+ top:150px;max-height:calc(65vh - 98px)
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.quest-head{order:1}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.reading-task-row{order:2}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>#scienceCompass{order:3}
+ body[data-visual-theme="reference-rebuild"] .main>.learning-steps{order:4}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>#workspace{order:5}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.feedback{order:6}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.action-row{order:7}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.journal{order:8}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.discovery{order:9}
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>.science-report{order:10}
+ body[data-visual-theme="reference-rebuild"] .main>.footer{order:11}
+}
