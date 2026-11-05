@@ -80,6 +80,9 @@ try{
       assert.equal(await page.locator('.network-line[data-handdrawn="true"] .student-wire-ink').getAttribute("d"),networkTrace,"Network shape persists after reload");
      // A sideways finger stroke across the student's lead must remove it,
      // without tapping either contact or deleting unrelated wires.
+     // Restore the circuit to the viewport after the preceding reload/scenario steps.
+     // Pointer input sent to offscreen coordinates cannot reach the circuit.
+     await page.locator(".network-board").scrollIntoViewIfNeeded();
      const cutAcross=await page.locator('.network-board .student-wire[data-student-wire="N-P"] .student-wire-ink').evaluate(path=>{
        // Cut the visible lead above the battery, not through the battery artwork.
        const length=path.getTotalLength(),at=length*0.13;
