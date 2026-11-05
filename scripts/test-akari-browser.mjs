@@ -78,8 +78,24 @@ try{
      await page.reload({waitUntil:"domcontentloaded"});
      assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"A solved fault cause persists after reload");
       assert.equal(await page.locator('.network-line[data-handdrawn="true"] .student-wire-ink').getAttribute("d"),networkTrace,"Network shape persists after reload");
-     await tap("P","N");
-     assert.equal(await page.locator(".network-diagnosis.solved").count(),0,"Rewiring invalidates old diagnostic evidence");
+     // A sideways finger stroke across the student's lead must remove it,
+     // without tapping either contact or deleting unrelated wires.
+     const cutAcross=await page.locator(".network-board svg").evaluate(svg=>{
+       const m=svg.getScreenCTM();
+       return [[30,220],[120,220]].map(([x,y])=>{
+         const p=new DOMPoint(x,y).matrixTransform(m);
+         return {x:p.x,y:p.y};
+       });
+     });
+     await page.mouse.move(cutAcross[0].x,cutAcross[0].y);
+     await page.mouse.down();
+     await page.mouse.move(cutAcross[1].x,cutAcross[1].y,{steps:18});
+     await page.mouse.up();
+     assert.equal(await page.locator('.network-line[data-student-wire="N-P"]').count(),0,
+       "Swiping across a wire removes the connection");
+     assert.equal(await page.locator(".network-diagnosis.solved").count(),0,
+       "Cutting a wire invalidates the earlier diagnosis");
+
      if(id===8){
        // The lamp can glow while both switches are OFF if wires bypass them.
        for(const [a,b] of [["P","L"],["R","N"]])await tap(a,b);
