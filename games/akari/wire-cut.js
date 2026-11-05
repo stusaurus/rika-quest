@@ -9,7 +9,7 @@
   if(board.matches(".circuit-board"))
    return [...board.querySelectorAll(".lead-on-top[data-visual-wire] .wire")]
      .map(path=>({path,group:path.closest("[data-visual-wire]"),kind:"wire",key:path.closest("[data-visual-wire]").dataset.visualWire}));
-  const kind=board.matches(".builder-board")?"builder":"network";
+  const kind=board.closest(".network-lab")?"network":"builder";
   return [...board.querySelectorAll(".student-wire[data-student-wire] .student-wire-ink")]
     .map(path=>({path,group:path.closest("[data-student-wire]"),kind,key:path.closest("[data-student-wire]").dataset.studentWire}));
  };
