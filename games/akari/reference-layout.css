@@ -688,9 +688,17 @@ body[data-visual-theme="reference-rebuild"].gesture-first .footer{font-size:10px
 body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .circuit-inner .terminal-label{
  display:none!important
 }
-body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-scene .scene-caption,
 body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .footer{
  display:none!important
+}
+body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-scene .scene-caption{
+ width:max-content;max-width:170px;padding:4px 6px;opacity:.62
+}
+body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-scene .scene-caption h1{
+ font-size:11px;line-height:1.25;margin:0
+}
+body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-scene .scene-caption .place-chip{
+ display:none
 }
 @media(max-width:740px){
  body[data-visual-theme="reference-rebuild"].gesture-first .topbar{
