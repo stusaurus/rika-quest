@@ -44,3 +44,22 @@ test("wire-cut dispatch distinguishes switch and builder workspaces",()=>{
  assert.match(source,/board\.closest\("\.network-lab"\)\?"network":"builder"/);
  assert.match(source,/akari-wire-cut/);
 });
+
+test("changing the wiring invalidates previously observed results",()=>{
+ const old=trialsFor(series);
+ const changed=[...series,["P","B1"]];
+ assert.notEqual(lab.signature(series),lab.signature(changed));
+ assert.equal(lab.expected(7,changed,old,"both"),false);
+});
+test("all four case cards reflect the currently selected switch state",()=>{
+ const html=lab.render(8,parallel,null,true,false,trialsFor(parallel));
+ assert.equal((html.match(/data-net-case="/g)||[]).length,4);
+ assert.match(html,/data-net-case="10" aria-pressed="true"/);
+ assert.match(html,/data-net-case="00" aria-pressed="false"/);
+});
+test("a cut lead can break a previously complete series circuit",()=>{
+ const disconnected=series.filter(([a,b])=>!(a==="A2"&&b==="B1"));
+ assert.equal(lab.evaluate(series,true,true).lit,true);
+ assert.equal(lab.evaluate(disconnected,true,true).lit,false);
+ assert.equal(lab.expected(7,disconnected,trialsFor(series),"both"),false);
+});
