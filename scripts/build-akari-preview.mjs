@@ -3,6 +3,7 @@ const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
 const polish=readFileSync("games/akari/design-polish.css","utf8");
 const referenceCss=readFileSync("games/akari/reference-layout.css","utf8");
+const wireCss=readFileSync("games/akari/wire-effects.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
 const scenes=readFileSync("games/akari/scenes.js","utf8");
 const transfer=readFileSync("games/akari/transfer.js","utf8");
@@ -19,6 +20,8 @@ const reading=readFileSync("games/akari/reading.js","utf8");
 const game=readFileSync("games/akari/game.js","utf8");
 const furigana=readFileSync("games/akari/furigana.js","utf8");
 const referenceJs=readFileSync("games/akari/reference-layout.js","utf8");
+const wireCanvas=readFileSync("games/akari/wire-canvas.js","utf8");
+const shortEffects=readFileSync("games/akari/short-effects.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
  return source.replace(what,withText);
@@ -27,6 +30,7 @@ function inlineScript(source){return "<script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./reference-layout.css">',"<style>\n"+referenceCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css">',"<style>\n"+wireCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js\" defer></script>",inlineScript(scenes));
@@ -43,6 +47,8 @@ output=replaceOne(output,'<script src="./pacing.js" defer></script>',inlineScrip
 output=replaceOne(output,'<script src="./reading.js" defer></script>',inlineScript(reading));
 output=replaceOne(output,'<script src="./furigana.js" defer></script>',inlineScript(furigana));
 output=replaceOne(output,'<script src="./reference-layout.js" defer></script>',inlineScript(referenceJs));
+output=replaceOne(output,'<script src="./wire-canvas.js" defer></script>',inlineScript(wireCanvas));
+output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
  output=output.replace(

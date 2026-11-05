@@ -23,6 +23,30 @@ try{
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,hasTouch:engine==="webkit",isMobile:engine==="webkit",reducedMotion:"reduce"});
    const page=await context.newPage(),errors=[];
+   const drawShortByHand=async(mode)=>{
+    const attr=mode==="builder"?"data-builder-t":"data-net-t";
+    const board=mode==="builder"?".builder-puzzle .builder-board":".network-lab .network-board";
+    const start=await page.locator('['+attr+'="P"]').boundingBox();
+    const end=await page.locator('['+attr+'="N"]').boundingBox();
+    assert.ok(start&&end,"Finger drawing endpoints must be visible");
+    const via=await page.locator(board+" svg").evaluate((svg,pts)=>{
+      const m=svg.getScreenCTM();
+      return pts.map(([x,y])=>{const p=new DOMPoint(x,y).matrixTransform(m);return {x:p.x,y:p.y};});
+    },mode==="builder"?[[200,118],[200,340]]:[[170,108],[170,330]]);
+    await page.mouse.move(start.x+start.width/2,start.y+start.height/2);await page.mouse.down();
+    for(const p of via)await page.mouse.move(p.x,p.y,{steps:7});
+    await page.mouse.move(end.x+end.width/2,end.y+end.height/2,{steps:7});await page.mouse.up();
+    const stroke=page.locator(board+' .student-wire[data-handdrawn="true"] .student-wire-ink');
+    assert.equal(await stroke.count(),1,mode+" must retain the child's own line");
+    const d=await stroke.getAttribute("d");
+    assert.ok(d.startsWith(mode==="builder"?"M85 118":"M75 108")&&d.split("L").length>8,"Preserve freehand points instead of a straight wire");
+    assert.equal(await page.evaluate(kind=>{
+      const all=JSON.parse(localStorage.getItem("rika-akari-other-handdrawn-v1"));
+      const stage=Number(document.getElementById("missionNumber").textContent.match(/(\d+)\s*\/\s*14/)[1]);
+      return Object.values(all[kind+":"+stage]||{}).some(points=>points.length>8);
+    },mode),true,"Freehand points survive in local storage");
+    return d;
+   };
    const completeNetwork=async(id)=>{
      const wires=id===7?[["P","A1"],["A2","B1"],["B2","L"],["R","N"]]:
        [["P","A1"],["P","B1"],["A2","L"],["B2","L"],["R","N"]];
@@ -33,7 +57,10 @@ try{
      await page.locator('[data-net-view="left"]').click();
      const tap=async(a,b)=>{await page.locator('[data-net-t="'+a+'"]').click();await page.locator('[data-net-t="'+b+'"]').click()};
      // An incorrect prediction must not expose the dangerous route.
-     await tap("P","N");await page.locator('[data-net-test]').click();
+     const networkTrace=await drawShortByHand("network");
+      await page.locator('[data-net-test]').click();
+      await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
+      assert.match(await page.locator(".short-alert").textContent(),/ショート/,"A short animates on the switch network");
      assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is unsafe");
      assert.equal(await page.locator(".network-diagnosis").count(),1,"Unsafe outcome opens science-based fault diagnosis");
      assert.equal(await page.locator(".network-flow-segment").count(),0,"Dangerous shortcut not spoiled before hypothesis");
@@ -45,6 +72,7 @@ try{
      assert.equal(await page.locator(".network-trial.measured").count(),1,"Diagnosing must not erase recorded observation");
      await page.reload({waitUntil:"domcontentloaded"});
      assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"A solved fault cause persists after reload");
+      assert.equal(await page.locator('.network-line[data-handdrawn="true"] .student-wire-ink').getAttribute("d"),networkTrace,"Network shape persists after reload");
      await tap("P","N");
      assert.equal(await page.locator(".network-diagnosis.solved").count(),0,"Rewiring invalidates old diagnostic evidence");
      if(id===8){
@@ -303,6 +331,9 @@ try{
    assert.equal((await wireRoute()).every(p=>p.battery===0),true,"The short lead must also travel outside the battery body");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"The danger is explained without mascot reactions");
+    await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
+    assert.equal(await page.locator(".short-flames span").count(),3,"The short event shows fire");
+    assert.equal(await page.locator(".short-smoke span").count(),3,"The short event then shows smoke");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
    assert.match(await page.locator("#spark").evaluate(e=>getComputedStyle(e,"::before").content),/⚡/,"Short hazard remains clearly signaled without mascot effects");
    assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Short must not light the town");
@@ -629,8 +660,10 @@ try{
      await page.locator('[data-builder-t="'+a+'"]').click();
      await page.locator('[data-builder-t="'+b+'"]').click();
    };
-   await tapPractice("P","N");
-   await page.locator('[data-builder-test]').click();
+   const clockTrace=await drawShortByHand("builder");
+    await page.locator('[data-builder-test]').click();
+    await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
+    assert.match(await page.locator(".short-alert").textContent(),/ショート/,"Clock circuit warns with animation");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Unsafe direct connection should never pass");
    assert.equal(await page.locator(".builder-diagnostic-flow").count(),0,"Danger path is hidden until scientific cause is identified");
    await page.locator('[data-builder-cause="open"]').click();
@@ -641,6 +674,7 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clock-short-diagnosed.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),1,"Clock fault evidence persists on reload");
+    assert.equal(await page.locator('.builder-line[data-handdrawn="true"] .student-wire-ink').getAttribute("d"),clockTrace,"Clock curve survives reload");
    await tapPractice("P","N");
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),0,"Rewiring invalidates the old diagnosis");
    await tapPractice("P","L");
@@ -898,8 +932,9 @@ try{
    await page.locator('[data-builder-view="battery"]').click();
    assert.equal(await page.locator(".builder-viewport").evaluate(e=>e.scrollLeft),0,"Battery navigation returns to first endpoints");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"Builder completion locked until both tests succeed");
-   await tapPair("P","N");
-   await page.locator('[data-builder-test]').click();
+   await drawShortByHand("builder");
+    await page.locator('[data-builder-test]').click();
+    await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is a hazard");
    assert.equal(await page.locator("#discovery").isVisible(),false,"Unsafe circuit must not clear");
    await page.locator('[data-builder-cause="short"]').click();

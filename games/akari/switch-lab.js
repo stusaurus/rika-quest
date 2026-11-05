@@ -111,7 +111,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   '<strong>'+(problem?"⚠ 条件と合わない":"✓ この組み合わせは成功")+'</strong></div>':"";
  const reachable=problem==="open"&&insightSolved?reachableContacts(wiring,a,b):[];
 
- const lineArt=wiring.map(([u,v],i)=>`<path d="M${points[u].x} ${points[u].y}L${points[v].x} ${points[v].y}" stroke="${i%2?"#a8dedb":"#f1d49f"}" fill="none" stroke-width="6" stroke-linecap="round"/>`).join("");
+ const lineArt=wiring.map(([u,v],i)=>`<g class="network-line student-wire" data-student-wire="${edge(u,v)}"><path class="student-wire-outline" d="M${points[u].x} ${points[u].y}L${points[v].x} ${points[v].y}" stroke="#fff" opacity=".82" fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path class="student-wire-ink" d="M${points[u].x} ${points[u].y}L${points[v].x} ${points[v].y}" stroke="${i%2?"#a8dedb":"#f1d49f"}" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>`).join("");
  const controls=ids.map(id=>`<button type="button" data-net-t="${id}" class="builder-terminal ${selected===id?"selected":""} ${reachable.includes(id)?"network-reachable":""}" style="left:${points[id].x/9.2}%;top:${points[id].y/4.45}%" aria-pressed="${selected===id}" aria-label="${points[id].name}">${id}</button>`).join("");
  const results=codes.map(k=>{
   const t=trials[k],valid=t?.signature===sig;
@@ -123,7 +123,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   <div class="builder-heading"><span>⚡ 街からの設計依頼</span><h3>${stage===7?"時計塔の二重ロック":"港の2か所スイッチ"}</h3>
   <p>${stage===7?"2つのスイッチが両方ONのときだけ点灯する回路を作ろう。":"どちらかのスイッチがONなら点灯する回路を作ろう。"}4通りを実験して確かめてね。</p></div>
   <div class="builder-layout">
-   <div class="builder-panel"><p class="builder-help">端子を2つタップすると導線でつながる。つないだ2つをもう一度選ぶと外せるよ。</p>
+   <div class="builder-panel"><p class="builder-help">丸から丸へ線を引こう。2回タップでもつなげるよ。</p>
    <div class="builder-nav"><button type="button" data-net-view="left">◀ 電池・スイッチ</button><button type="button" data-net-view="right">豆電球 ▶</button></div>
    <div class="builder-viewport network-viewport" tabindex="0" aria-label="乾電池、スイッチAとB、豆電球の回路設計図">
     <div class="builder-board network-board"><svg viewBox="0 0 920 445" role="img" aria-label="8端子の配線と2つのスイッチ">

@@ -1,0 +1,116 @@
+/* Children's real wiring gestures and short-circuit safety feedback. */
+.builder-board .builder-terminal[data-builder-t],
+.network-board .builder-terminal[data-net-t]{touch-action:none}
+.builder-board .student-wire,.network-board .student-wire,
+.builder-board .other-wire-preview,.network-board .other-wire-preview{pointer-events:none}
+.builder-board .student-wire-ink,.network-board .student-wire-ink{
+ stroke-width:7;stroke-linecap:round;stroke-linejoin:round;
+ filter:drop-shadow(0 1px 2px #001d3b77)
+}
+.builder-board .student-wire-outline,.network-board .student-wire-outline{
+ stroke-width:13;stroke:#ffffff;opacity:.80;stroke-linecap:round;stroke-linejoin:round
+}
+.other-wire-preview .other-wire-preview-halo{
+ stroke:#fff;stroke-width:13;opacity:.9;stroke-linecap:round;stroke-linejoin:round
+}
+.other-wire-preview .other-wire-preview-line{
+ stroke:#2991ed;stroke-width:7;stroke-linecap:round;stroke-linejoin:round
+}
+.other-wire-preview.crosses-device .other-wire-preview-line{
+ stroke:#ffb128;stroke-dasharray:10 7
+}
+/* Spark and heat occur once, then dissipate. Avoid strobing/flashing loops. */
+.short-event{
+ position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:18;
+ isolation:isolate;animation:short-scene-out 1.9s ease-in forwards;
+ --fx-x:27%;--fx-y:48%;
+}
+.builder-board .short-event{--fx-x:9%;--fx-y:47%}
+.network-board .short-event{--fx-x:8%;--fx-y:47%}
+.short-glow{
+ position:absolute;inset:0;
+ background:radial-gradient(circle at var(--fx-x) var(--fx-y),
+ #ffd05cbd 0%,#fb773a88 17%,#a82a264d 37%,transparent 65%);
+ animation:short-heat-bloom 1.65s ease-out both
+}
+.short-arc,.short-flames,.short-smoke{position:absolute;left:var(--fx-x);top:var(--fx-y);white-space:nowrap}
+.short-arc{
+ transform:translate(-50%,-50%);display:flex;gap:8px;
+ font-size:clamp(25px,4.2vw,55px);color:#ffef87;
+ text-shadow:0 0 12px #ffda53,0 0 20px #fa642f;
+ animation:short-arc-burst .85s cubic-bezier(.17,.67,.18,1) both
+}
+.short-arc span:nth-child(2){transform:translateY(-25px)}
+.short-flames{
+ display:flex;align-items:end;gap:0;
+ font-size:clamp(24px,5vw,56px);
+ transform:translate(-50%,-10%);
+ animation:short-flame-rise 1.45s ease-out both;
+ filter:drop-shadow(0 0 13px #ff9b35)
+}
+.short-flames span:nth-child(1){font-size:.75em;transform:translate(12px,8px) rotate(-13deg)}
+.short-flames span:nth-child(3){font-size:.65em;transform:translate(-11px,14px) rotate(11deg)}
+.short-smoke{
+ display:flex;gap:2px;font-size:clamp(22px,4vw,40px);color:#65707b;
+ transform:translate(-50%,-50%);
+ text-shadow:0 4px 6px #323b4055;
+ animation:short-smoke-drift 1.6s .3s ease-out both
+}
+.short-smoke span:nth-child(2){font-size:1.4em}
+.short-alert{
+ position:absolute;left:50%;top:12%;transform:translateX(-50%);
+ display:grid;justify-items:center;gap:3px;
+ min-width:min(88%,185px);max-width:90%;padding:7px 14px;
+ border:3px solid #ffc475;background:#8f302beb;color:#fff;
+ border-radius:17px;box-shadow:0 4px 0 #5c2025b8,0 7px 18px #320e1577;
+ text-align:center;line-height:1.3;
+ animation:short-alert-in 1.05s ease-out both
+}
+.short-alert strong{font-size:clamp(17px,2.5vw,27px);font-weight:900;white-space:nowrap}
+.short-alert small{font-size:clamp(10px,1.2vw,15px);font-weight:900;white-space:normal}
+@keyframes short-heat-bloom{
+ 0%{opacity:0;filter:saturate(.7)}
+ 18%{opacity:1;filter:saturate(1.25)}
+ 65%{opacity:.66}
+ 100%{opacity:0}
+}
+@keyframes short-arc-burst{
+ 0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}
+ 24%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}
+ 70%{opacity:.85;transform:translate(-50%,-50%) scale(1)}
+ 100%{opacity:0;transform:translate(-50%,-65%) scale(.9)}
+}
+@keyframes short-flame-rise{
+ 0%,12%{opacity:0;transform:translate(-50%,10%) scale(.5)}
+ 30%{opacity:1;transform:translate(-50%,-8%) scale(1.12)}
+ 68%{opacity:1;transform:translate(-50%,-26%) scale(1)}
+ 100%{opacity:0;transform:translate(-50%,-55%) scale(.7)}
+}
+@keyframes short-smoke-drift{
+ 0%,18%{opacity:0;transform:translate(-50%,-15%) scale(.6)}
+ 44%{opacity:.9;transform:translate(-50%,-75%) scale(1)}
+ 80%{opacity:.58;transform:translate(-44%,-145%) scale(1.2)}
+ 100%{opacity:0;transform:translate(-38%,-185%) scale(1.5)}
+}
+@keyframes short-alert-in{
+ 0%{opacity:0;transform:translate(-50%,-10px) scale(.88)}
+ 19%{opacity:1;transform:translate(-50%,0) scale(1)}
+ 80%{opacity:1}
+ 100%{opacity:.8}
+}
+@keyframes short-scene-out{0%,80%{opacity:1}100%{opacity:0}}
+@media(max-width:740px){
+ .short-alert{top:9%;padding:6px 10px;border-width:2px}
+ .short-arc{font-size:30px;gap:0}
+ .short-flames{font-size:34px}
+ .short-smoke{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ .short-event,.short-glow,.short-arc,.short-flames,.short-smoke,.short-alert{
+  animation:none!important;transition:none!important
+ }
+ .short-smoke{display:none}
+ .short-alert{opacity:1}
+ .short-glow{opacity:.45}
+ .short-arc,.short-flames{opacity:1}
+}

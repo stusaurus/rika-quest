@@ -177,8 +177,8 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const status=measured?(simulation.short?"⚠ ショート！ 乾電池を直結している":simulation.lit?"💡 点灯した！":"◯ 消灯した"):"？ まだ実験していない";
  const lineSvg=segments.map(([a,b],i)=>{
   const u=terminals[a],v=terminals[b];
-  return '<g class="builder-line"><path d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="#eff5e6" stroke-width="11" opacity=".17" stroke-linecap="round"/>'+
-  '<path d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="'+(i%2?"#b9e4e4":"#f2d69f")+'" stroke-width="5" stroke-linecap="round"/></g>';
+  return '<g class="builder-line student-wire" data-student-wire="'+edge(a,b)+'"><path class="student-wire-outline" d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="#fff" stroke-width="12" opacity=".76" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path class="student-wire-ink" d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="'+(i%2?"#b9e4e4":"#f2d69f")+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>';
  }).join("");
  const available=direct?ids.filter(id=>id!=="S"&&id!=="T"):ids;
  const buttons=available.map(id=>{
@@ -201,7 +201,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<h3>'+(direct?'切れた回路を自分で直そう':'灯台のスイッチ回路を組み立てよう')+'</h3>'+
  '<p>'+(direct?'故障の原因を見つけたね。乾電池の＋と−を、豆電球の横と底の金属部分につないで<b>安全に点灯</b>させよう。':
  '灯台本体の修理が終わった！ 乾電池1個の非常用スイッチ盤を設計しよう。<b>ONで点灯・OFFで消灯</b>、どちらもショートなしが条件だよ。')+'</p></div>'+
- '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">端子を2つ順にタップすると導線がつながるよ。もう一度同じ2つを選ぶと外せるよ。スマホでは左右に移動しよう。</p>'+
+ '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">丸から丸へ指で線を引こう。丸を2回タップしてもつなげるよ。画面を左右に動かせるよ。</p>'+
  '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
  '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして端子を選べます"><div class="builder-board">'+
  '<svg viewBox="0 0 1000 460" role="img" aria-label="'+(direct?'乾電池と豆電球の4端子':'乾電池・スイッチ・豆電球の6端子')+'をつなぐ回路の模式図">'+

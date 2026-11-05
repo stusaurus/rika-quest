@@ -285,7 +285,7 @@ function startRestorationPulse(firstClear){
    scene.classList.remove("energizing");trail.hidden=true;
  },1300);
 }
-function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
+function fail(message,short=false){failures++;setFeedback(message,"warning");reactCharacter(short?"danger":"think");playTone(false);if(short){const s=$("storyScene"),spark=$("spark");s.classList.add("shorted");spark.classList.remove("active");void spark.offsetWidth;spark.classList.add("active");window.AkariEffects?.shortCircuit?.();setTimeout(()=>{s.classList.remove("shorted");spark.classList.remove("active")},850);}}
 function success(){
  if([7,8].includes(current().id)&&window.AkariSwitchLab&&!ui.switchLabPassed&&!state.completed[current().id]){
   if(!ui.switchLab){ui.switchLab={wires:[],selected:null,a:false,b:false,trials:{},reason:null,insight:null};saveSwitchDraft();}
@@ -551,7 +551,7 @@ function handleWorkspace(e){
    const code=Number(l.a)+""+Number(l.b),value=B.evaluate(l.wires,l.a,l.b);
    l.trials[code]={...value,signature:B.signature(l.wires)};saveSwitchDraft();renderWorkspace();
    const problem=B.discrepancy(current().id,l.wires,l.a,l.b);
-   if(value.short){setFeedback("⚠ ショート！ なぜ危険な道ができたか、実験結果をもとに推理しよう。実物では絶対にまねしないでね。","warning");reactCharacter("danger");return;}
+   if(value.short){window.AkariEffects?.shortCircuit?.();setFeedback("⚠ ショート！ なぜ危険な道ができたか、実験結果をもとに推理しよう。実物では絶対にまねしないでね。","warning");reactCharacter("danger");return;}
    if(problem){setFeedback("結果が目標の点灯・消灯と違った！ 原因の候補を選んで、回路の道を調べよう。","warning");reactCharacter("think");return;}
    setFeedback("A："+(l.a?"ON":"OFF")+" / B："+(l.b?"ON":"OFF")+" → "+(value.lit?"点灯":"消灯")+"。この条件は成功！ほかも確かめよう。","success");reactCharacter("discover");return;
   }
@@ -648,7 +648,7 @@ function handleWorkspace(e){
    b.tests[mode]={...result,signature:B.signature(b.wires)};
    saveBuilderDraft();renderWorkspace();
    const issue=B.diagnose(direct?"direct":"switch",b.wires,direct?false:b.switchOn);
-   if(result.short){setFeedback("⚠ ショート！ 電池の＋と−が豆電球を通らずつながっている。原因を予想してから危険な道を見つけよう。実物で試さないでね。","warning");reactCharacter("danger");return;}
+   if(result.short){window.AkariEffects?.shortCircuit?.();setFeedback("⚠ ショート！ 電池の＋と−が豆電球を通らずつながっている。原因を予想してから危険な道を見つけよう。実物で試さないでね。","warning");reactCharacter("danger");return;}
    const ok=!issue;
    setFeedback("実験記録："+(direct?"基本回路":mode==="on"?"ON":"OFF")+" → "+(result.lit?"点灯":"消灯")+(ok?"。目的どおり！":"。目標と違うよ。回路の原因を推理してみよう。"),ok?"success":"warning");
    reactCharacter(ok?"discover":"think");return;
@@ -830,7 +830,7 @@ function handleWorkspace(e){
    const actual=G.evaluate5(g.slots);
    g.measurement={prediction:g.prediction,signature:G.signature5(g.slots),actual:actual.kind};
    g.pathReason=null;g.guardReason=null;ui.garden=g;saveGardenDraft();renderWorkspace();renderScene();
-   if(actual.short){setFeedback("⚠ 仮想実験でショートの危険を発見。電池の＋と−を隔てる部品を見直そう。実物では試さないでね。","warning");reactCharacter("danger");}
+   if(actual.short){window.AkariEffects?.shortCircuit?.();setFeedback("⚠ 仮想実験でショートの危険を発見。電池の＋と−を隔てる部品を見直そう。実物では試さないでね。","warning");reactCharacter("danger");}
    else if(actual.lit){setFeedback("💡 安全な回路ができた！どこに導体・不導体を使ったか説明して完成させよう。","success");reactCharacter("discover");}
    else{setFeedback("回路が切れて消灯した。豆電球に電気を届ける部品を見直そう。","warning");reactCharacter("think");}
    recordObservation("garden:design:"+G.signature5(g.slots),"【設備の仮想実験】"+G.signature5(g.slots)+"：予想 "+(g.prediction==="lit"?"点灯":g.prediction==="short"?"ショート":"消灯")+"、実際 "+(actual.kind==="lit"?"点灯":actual.kind==="short"?"ショート":"消灯")+"。");
@@ -1124,7 +1124,7 @@ function handleWorkspace(e){
    const result=B.evaluate(q.index,q.removed);
    q.measured={signature:B.signature(q.index,q.removed),guess:q.guess,actual:result.kind};
    saveSafetyDraft();renderWorkspace();
-   if(result.short){setFeedback("⚠ 仮想実験：豆電球を通らず乾電池の両極がつながるショートの危険。現実には試さず、図を直そう。","warning");reactCharacter("danger");}
+   if(result.short){window.AkariEffects?.shortCircuit?.();setFeedback("⚠ 仮想実験：豆電球を通らず乾電池の両極がつながるショートの危険。現実には試さず、図を直そう。","warning");reactCharacter("danger");}
    else if(!result.lit){setFeedback("回路が切れて消灯した。ショートを避けるだけでなく、豆電球の輪を残そう。","warning");reactCharacter("think");}
    else if(!B.canAdvance(q)){setFeedback("安全な点灯を確認。予想や切断本数をもう一度考えてみよう。","warning");reactCharacter("think");}
    else{setFeedback("✨ 安全に点灯！予想と一致し、必要最小限の修理で危険をなくした。","success");reactCharacter("discover");}
