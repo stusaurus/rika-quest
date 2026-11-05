@@ -87,3 +87,15 @@
 .network-lab .network-trial.trial-dark.measured .network-trial-outcome::before{background:#8fa8b6;border-color:#58788a}
 .network-lab .network-trial.trial-short.measured .network-trial-outcome::before{content:"!";font-size:14px;line-height:17px;text-align:center;font-weight:900;color:#fff;border-color:#b33226;background:#c74435;box-shadow:0 0 0 2px #e8a49b66}
 @media(max-width:360px){.network-lab .network-trial-outcome{gap:4px}.network-lab .network-trial-outcome::before{width:16px;height:16px}}
+
+/* The answer is a choice between two visibly different circuit paths. */
+.network-lab .network-reason-choices>button{border:2px solid #8daab4;border-radius:16px;background:#f5fafb;transition:border-color .12s,background-color .12s}
+.network-lab .network-reason-choices>button.chosen{border-color:#d28d18;background:#fff3d7;box-shadow:0 0 0 2px #f1c97588}
+.network-lab .network-reason-choices>button:focus-visible{outline:3px solid #1477a1;outline-offset:3px}
+.network-lab .network-reason-diagram{width:100%;min-height:58px;border-radius:11px;background:#e6f1f1;color:#174e5f;overflow:hidden}
+.network-lab .network-reason-path{white-space:nowrap;font-size:clamp(12px,2.8vw,20px);letter-spacing:-.07em}
+.network-lab .network-reason-parallel{font-family:ui-monospace,monospace;line-height:1.25;letter-spacing:-.08em}
+.network-lab .network-reason-title{font-size:clamp(19px,3vw,24px)}
+.network-lab .network-reason-choices small{font-weight:800;color:#315e6a}
+@media(max-width:360px){.network-lab .network-reason-choices{gap:6px}.network-lab .network-reason-choices>button{padding:8px 3px}.network-lab .network-reason-path{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.network-lab .network-reason-choices>button{transition:none}}
