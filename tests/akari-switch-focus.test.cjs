@@ -124,3 +124,17 @@ test("visually choosing the wrong circuit explanation never enables completion",
  const right=lab.render(7,series,null,true,true,trialsFor(series),"both");
  assert.match(right,/data-net-submit="1" class="builder-submit" >/);
 });
+
+test("unobserved switch combinations are not presented as dark measurements",()=>{
+ const unobserved=lab.render(7,series,null,false,false,{});
+ assert.equal((unobserved.match(/trial-unknown/g)||[]).length,4);
+ assert.equal((unobserved.match(/trial-dark/g)||[]).length,0);
+ const partial=trialsFor(series);
+ delete partial["01"];
+ const html=lab.render(7,series,null,false,false,partial);
+ assert.equal((html.match(/trial-unknown/g)||[]).length,1);
+ assert.match(html,/data-net-case="01"[\\s\\S]*?network-trial-outcome">❔ まだ/);
+ const css=fs.readFileSync(path.join(root,"games/akari/switch-focus.css"),"utf8");
+ assert.match(css,/\\.network-trial\\.trial-unknown \\.network-trial-outcome::before/);
+ assert.match(css,/content:"\\?"/);
+});
