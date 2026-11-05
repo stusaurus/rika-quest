@@ -885,3 +885,21 @@ body[data-visual-theme="reference-rebuild"].gesture-first .action-row #nextBtn:d
   font-size:10px;line-height:1.25
  }
 }
+
+/* Keep explanations available without filling the child-facing victory screen. */
+body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more{
+ margin-top:7px
+}
+body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more>summary{
+ width:max-content;min-height:36px;display:flex;align-items:center;
+ gap:7px;padding:5px 11px;border:2px solid #d1b365;
+ border-radius:11px;background:#fff9dd;color:#79501d;
+ font-size:13px;font-weight:900;cursor:pointer;list-style:none
+}
+body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more>summary::-webkit-details-marker{display:none}
+body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more>summary:focus-visible{
+ outline:3px solid #2679d6;outline-offset:2px
+}
+body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more p{
+ margin:9px 0 3px;font-size:14px;line-height:1.7;overflow-wrap:anywhere
+}

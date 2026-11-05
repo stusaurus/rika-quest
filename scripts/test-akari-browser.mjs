@@ -265,6 +265,10 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
+   assert.equal(await page.locator("#discoveryText").isVisible(),false,"Scientific detail is collapsed until requested");
+   await page.locator(".discovery-more summary").click();
+   assert.equal(await page.locator("#discoveryText").isVisible(),true,"Complete scientific explanation remains accessible");
+   await page.locator(".discovery-more summary").click();
    assert.equal(await page.locator("#sceneCharacter").count(),0,"Celebration must use restored lights rather than a cropped character");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");

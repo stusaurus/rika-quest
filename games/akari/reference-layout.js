@@ -9,7 +9,7 @@
  let reasonFeedback="";
  const reasonsByMission={
   1:{title:"どうして ついた？",correct:"loop",success:"ぐるっと つながった！",
-    choices:[["loop","🔁","わに なった"],["cut","✂️","せんが きれた"],["extra","🔋","電池が ふえた"]]},
+    choices:[["loop","🔁","ぐるっと つながった"],["cut","✂️","せんが きれた"],["extra","🔋","電池が ふえた"]]},
   2:{title:"どこを なおした？",correct:"joined",success:"すきまが なくなった！",
     choices:[["joined","🔗","せんを つないだ"],["removed","✂️","せんを はずした"],["extra","🔋","電池を ふやした"]]}
  };
@@ -35,7 +35,7 @@
     '<div class="prediction-options" id="designPredictionChoices">',
     '<button type="button" class="prediction-option" data-prediction="lit" aria-label="あかりが つくと おもう" aria-pressed="false"><span aria-hidden="true">💡</span><small>つく</small></button>',
     '<button type="button" class="prediction-option" data-prediction="dark" aria-label="あかりが つかないと おもう" aria-pressed="false"><span aria-hidden="true">◯</span><small>つかない</small></button>',
-    '<button type="button" class="prediction-option" data-prediction="unsure" aria-label="まだ わからない" aria-pressed="false"><span aria-hidden="true">❔</span><small>まだ</small></button>',
+    '<button type="button" class="prediction-option" data-prediction="unsure" aria-label="まだ わからない" aria-pressed="false"><span aria-hidden="true">❔</span><small>わからない</small></button>',
     '</div></section>',
     '<section class="learning-step" id="connectStep">',
     '<h3><span class="step-index" aria-hidden="true">☝</span><span id="guideActionLabel">つなぐ</span></h3>',
