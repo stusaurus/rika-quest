@@ -25,3 +25,15 @@
  .network-lab .builder-panel{padding:9px}
  .network-lab .network-trial{min-height:76px}
 }
+
+/* Switch positions are recognizable without reading ON/OFF. */
+.network-lab .network-trial-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}
+.network-lab .network-switch-mini{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;font-weight:900;color:#244e62;font-size:13px}
+.network-lab .network-switch-mini>b{font-size:10px;letter-spacing:.03em}
+.network-lab .network-switch-track{display:block;position:relative;width:46px;height:25px;border-radius:20px;background:#aab8c1;border:2px solid #78909d;box-sizing:border-box;transition:background .15s}
+.network-lab .network-switch-track>i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0004;transition:transform .15s}
+.network-lab .network-switch-track.on{background:#2c9b75;border-color:#197758}
+.network-lab .network-switch-track.on>i{transform:translateX(20px)}
+.network-lab .network-trial.current .network-switch-track{outline:2px solid #d69d42;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.network-lab .network-switch-track,.network-lab .network-switch-track>i{transition:none}}
+@media(max-width:360px){.network-lab .network-switch-track{width:40px}.network-lab .network-switch-track.on>i{transform:translateX(14px)}}
