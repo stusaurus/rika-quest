@@ -82,7 +82,7 @@ try{
      // without tapping either contact or deleting unrelated wires.
      const cutAcross=await page.locator(".network-board svg").evaluate(svg=>{
        const m=svg.getScreenCTM();
-       return [[30,220],[120,220]].map(([x,y])=>{
+       return [[120,220],[220,220]].map(([x,y])=>{
          const p=new DOMPoint(x,y).matrixTransform(m);
          return {x:p.x,y:p.y};
        });
