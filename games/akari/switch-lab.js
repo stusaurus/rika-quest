@@ -154,9 +154,15 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    ${observedProgress}
    <p class="network-choice-note">カードを おすと スイッチが かわるよ</p>
    ${comparison}<div class="network-results" role="group" aria-label="4通りのスイッチの組み合わせ">${results}</div>${inspection}
-   ${count===4?`<div class="network-reason"><strong>🧠 4つの結果から、なぜ点灯する？</strong>
-    <button type="button" data-net-reason="both" class="${reason==="both"?"chosen":""}">直列：2つともONで一本道がつながる</button>
-    <button type="button" data-net-reason="either" class="${reason==="either"?"chosen":""}">並列：どちらかの道がつながればよい</button>
+   ${count===4?`<div class="network-reason"><strong>🧠 どんな つなぎ方？</strong>
+    <div class="network-reason-choices" role="group" aria-label="回路のつながり方を選ぶ">
+     <button type="button" data-net-reason="both" aria-pressed="${reason==="both"}" class="${reason==="both"?"chosen":""}" aria-label="AとBを両方入れると光る。一本道">
+      <span class="network-reason-diagram" aria-hidden="true"><span class="network-reason-path">● ━ A ━ B ━ 💡</span></span><span class="network-reason-title">Aも Bも</span><small>2つ とも いれる</small>
+     </button>
+     <button type="button" data-net-reason="either" aria-pressed="${reason==="either"}" class="${reason==="either"?"chosen":""}" aria-label="AかBのどちらかを入れると光る。二つの道">
+      <span class="network-reason-diagram network-reason-parallel" aria-hidden="true"><span>┏━ A ━┓</span><span>●　　　 💡</span><span>┗━ B ━┛</span></span><span class="network-reason-title">Aか B</span><small>どちらか いれる</small>
+     </button>
+    </div>
    </div>`:`<p class="builder-hint">${wiring.length?"あと "+(4-count)+"つ の けっかを みよう":"まず どう線を つなごう"}</p>`}
    ${expected(stage,wiring,trials,reason)?'<div class="network-power-ready" aria-live="polite"><span class="network-power-dot">✦</span><strong>街の電気設備の準備が整った！</strong><small>4通りの働きが設計条件と一致しているよ。</small></div>':""}
    <button type="button" data-net-submit="1" class="builder-submit" ${expected(stage,wiring,trials,reason)?"":"disabled"}>🏆 設計を完成する</button>
