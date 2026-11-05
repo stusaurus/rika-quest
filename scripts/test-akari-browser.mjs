@@ -117,6 +117,19 @@ try{
      assert.equal(await page.locator('[data-net-switch="b"]').getAttribute("aria-pressed"),"true","Preset card turns B ON");
      assert.match(await page.locator(".network-lab .builder-live").textContent(),/ついている/,"Both ON lights the correctly wired lamp");
      await page.locator('[data-net-case="01"]').click();
+     // Mobile visual QA: all four presets and both reasoning choices must fit their own cards.
+     const bounds=await page.locator(".network-lab").evaluate(root=>{
+       const selectors=[".network-trial",".network-reason-choices>button"];
+       return selectors.flatMap(selector=>[...root.querySelectorAll(selector)].map(el=>{
+         const outer=el.getBoundingClientRect();
+         const content=[...el.querySelectorAll(".network-trial-switches,.network-trial-outcome,.network-reason-diagram,.network-reason-title")].map(child=>child.getBoundingClientRect());
+         return {selector,width:outer.width,contentsFit:content.every(box=>box.left>=outer.left-2&&box.right<=outer.right+2),minHeight:outer.height};
+       }));
+     });
+     assert.equal(bounds.filter(x=>x.selector===".network-trial").length,4,"Four experiment cards are visible");
+     assert.equal(bounds.filter(x=>x.selector===".network-reason-choices>button").length,2,"Two visual reasoning choices are visible");
+     assert.ok(bounds.every(x=>x.contentsFit),"Switch cards and reasoning diagrams must not clip their contents at "+width+"px: "+JSON.stringify(bounds));
+     assert.ok(bounds.every(x=>x.minHeight>=44),"All four presets and reasoning choices must have touch-friendly height");
      assert.equal(await page.locator(".network-trial.measured").count(),4,"Changing presets must retain all four valid observations");
      assert.equal(await page.locator("[data-net-test]").count(),0,"All four results came from manipulating switches");
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Causal explanation required");
