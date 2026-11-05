@@ -133,8 +133,8 @@ test("unobserved switch combinations are not presented as dark measurements",()=
  delete partial["01"];
  const html=lab.render(7,series,null,false,false,partial);
  assert.equal((html.match(/trial-unknown/g)||[]).length,1);
- assert.match(html,/data-net-case="01"[\\s\\S]*?network-trial-outcome">❔ まだ/);
+ assert.match(html,/data-net-case="01"[\s\S]*?network-trial-outcome">❔ まだ/);
  const css=fs.readFileSync(path.join(root,"games/akari/switch-focus.css"),"utf8");
- assert.match(css,/\\.network-trial\\.trial-unknown \\.network-trial-outcome::before/);
- assert.match(css,/content:"\\?"/);
+ assert.ok(css.includes(".network-trial.trial-unknown .network-trial-outcome::before"));
+ assert.ok(css.includes('content:"?"'));
 });
