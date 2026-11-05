@@ -212,6 +212,20 @@ try{
      });
    });
    for(const p of contactGeometry)assert.ok(p.dx<3&&p.dy<3,"Touch target must sit on its electrical contact: "+JSON.stringify(p));
+
+   // A child may trace one wire directly with a finger instead of memorizing a two-tap rule.
+   await page.locator('[data-t="P"]').scrollIntoViewIfNeeded();
+   const dragStart=await page.locator('[data-t="P"]').boundingBox();
+   const dragEnd=await page.locator('[data-t="L"]').boundingBox();
+   assert.ok(dragStart&&dragEnd,"Physical endpoints must be visible for drag wiring");
+   await page.mouse.move(dragStart.x+dragStart.width/2,dragStart.y+dragStart.height/2);
+   await page.mouse.down();
+   await page.mouse.move(dragEnd.x+dragEnd.width/2,dragEnd.y+dragEnd.height/2,{steps:8});
+   await page.mouse.up();
+   assert.equal(await page.locator(".wire-chip").count(),1,"Dragging between contact circles must build exactly one wire");
+   assert.equal(await page.locator(".terminal.selected").count(),0,"A completed drag should not leave a dangling tap selection");
+   await page.locator('[data-unwire="0"]').click();
+
    assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
      "Current task must receive readable width without a character overlay");
 

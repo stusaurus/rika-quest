@@ -797,3 +797,25 @@ body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-sc
   position:static;flex:1 1 100%;display:flex;justify-content:space-around;gap:7px
  }
 }
+
+
+/* Trace a wire with a finger; tapping the two contacts remains supported. */
+body[data-visual-theme="reference-rebuild"].gesture-first .circuit-inner .terminal{
+ touch-action:none
+}
+.wire-drag-trail{
+ position:fixed;left:0;top:0;height:7px;width:1px;
+ border-radius:99px;transform-origin:left center;pointer-events:none;
+ z-index:9999;background:#2882ee;border:1px solid #d9efff;
+ box-shadow:0 0 0 3px #80b9ff40,0 1px 6px #1a659d99
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"].gesture-first .workspace:not(:has(.circuit-board.zoomed)) .circuit-toolbar .circuit-zoom-btn{
+  position:absolute;right:8px;left:auto;top:7px;
+  margin:0;padding:0;width:40px;max-width:40px;
+  height:37px;min-height:37px;font-size:0;z-index:15
+ }
+ body[data-visual-theme="reference-rebuild"].gesture-first .workspace:not(:has(.circuit-board.zoomed)) .circuit-toolbar .circuit-zoom-btn:after{
+  content:"🔍";font-size:19px
+ }
+}

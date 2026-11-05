@@ -86,13 +86,66 @@
   pred.querySelectorAll("[data-prediction]").forEach(btn=>btn.setAttribute("aria-pressed",String(predictions[n]===btn.dataset.prediction)));
   const name=get("guideActionLabel"),hint=get("guideActionText"),compare=get("designComparisonNote");
   if(name)name.textContent=stage==="test"?"ためす":"つなぐ";
-  if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="test"?"みどりの ボタンを おそう":"まるを 2つ おそう";
+  if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="test"?"みどりの ボタンを おそう":"まるから まるへ なぞろう";
   if(compare)compare.textContent=predictions[n]==="lit"?"よそうと おなじ？":"よそうと ちがった？";
   const command=board?.querySelector(".circuit-help");
-  if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="test"?"できたら『ためす』を タップ":"まるを 2つ タップ";
+  if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="test"?"できたら『ためす』を タップ":"なぞるか 2つの まるを タップ";
+ }
+ function bindWireDrawing(){
+  const root=get("workspace");if(!root)return;
+  let drag=null,trail=null,suppressTrustedClick=false;
+  const erase=()=>{if(trail){trail.remove();trail=null;}};
+  const center=button=>{
+   const r=button.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};
+  };
+  root.addEventListener("pointerdown",e=>{
+   if(e.button!==0||drag)return;
+   const button=e.target.closest(".circuit-inner .terminal[data-t]");
+   if(!button)return;
+   const start=center(button);
+   drag={pointerId:e.pointerId,from:button.dataset.t,x:start.x,y:start.y,moved:false};
+  });
+  document.addEventListener("pointermove",e=>{
+   if(!drag||e.pointerId!==drag.pointerId)return;
+   const dx=e.clientX-drag.x,dy=e.clientY-drag.y,length=Math.hypot(dx,dy);
+   if(length<11&&!drag.moved)return;
+   drag.moved=true;
+   if(!trail){
+    trail=document.createElement("div");trail.className="wire-drag-trail";
+    trail.setAttribute("aria-hidden","true");document.body.appendChild(trail);
+   }
+   trail.style.left=drag.x+"px";trail.style.top=drag.y+"px";
+   trail.style.width=length+"px";
+   trail.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";
+   if(e.cancelable)e.preventDefault();
+  },{passive:false});
+  root.addEventListener("click",e=>{
+   if(suppressTrustedClick&&e.isTrusted&&e.target.closest(".terminal[data-t]")){
+    e.preventDefault();e.stopImmediatePropagation();suppressTrustedClick=false;
+   }
+  },true);
+  document.addEventListener("pointerup",e=>{
+   if(!drag||e.pointerId!==drag.pointerId)return;
+   const previous=drag;drag=null;erase();
+   if(!previous.moved)return;
+   const hit=document.elementFromPoint(e.clientX,e.clientY)?.closest(".circuit-inner .terminal[data-t]");
+   if(!hit||!root.contains(hit)||hit.dataset.t===previous.from)return;
+   const end=hit.dataset.t;
+   if(e.cancelable)e.preventDefault();
+   // Use the game's existing click handler for both the experiment and short-circuit rules.
+   const clickTerminal=id=>root.querySelector('.circuit-inner .terminal[data-t="'+id+'"]')?.click();
+   const currentlySelected=root.querySelector(".circuit-inner .terminal.selected");
+   if(currentlySelected)currentlySelected.click();
+   clickTerminal(previous.from);
+   clickTerminal(end);
+   // Ignore a browser-generated click that may follow pointerup; programmatic clicks are untrusted.
+   suppressTrustedClick=true;
+   setTimeout(()=>{suppressTrustedClick=false},70);
+  },true);
+  document.addEventListener("pointercancel",()=>{drag=null;erase();},true);
  }
  function init(){
-  setup();decorate();refresh();
+  setup();decorate();refresh();bindWireDrawing();
   const root=get("workspace"),head=get("missionNumber"),discovery=get("discovery");
   if(root)new MutationObserver(()=>{decorate()}).observe(root,{childList:true});
   if(head)new MutationObserver(refresh).observe(head,{childList:true,characterData:true,subtree:true});
