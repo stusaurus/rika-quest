@@ -1218,6 +1218,35 @@ function modal(open){const box=$("helpModal");box.hidden=!open;if(open){helpRetu
 function bind(){
  $("missionList").addEventListener("click",e=>{const b=e.target.closest("[data-mission]");if(b)changeMission(+b.dataset.mission)});
  $("workspace").addEventListener("click",handleWorkspace);
+ $("workspace").addEventListener("akari-wire-cut",e=>{
+  if(stageComplete||!e.detail)return;
+  const {kind,key}=e.detail;
+  if(typeof key!=="string")return;
+  if(kind==="wire"&&!ui.builder&&!ui.switchLab&&current().mode==="wire"){
+   const index=ui.wires.findIndex(w=>w.slice().sort().join("")===key);
+   if(index<0)return;
+   ui.wires.splice(index,1);ui.selected=null;
+   renderWorkspace();setFeedback("✂️ 1本 きったよ。","success");
+   return;
+  }
+  if(kind==="builder"&&ui.builder&&window.AkariBuilder){
+   const B=window.AkariBuilder,b=ui.builder;
+   const index=b.wires.findIndex(w=>B.edge(...w)===key);
+   if(index<0)return;
+   b.wires.splice(index,1);b.selected=null;
+   b.tests={};b.trace=[];b.insight=null;
+   saveBuilderDraft();renderWorkspace();setFeedback("✂️ 1本 きったよ。");
+   return;
+  }
+  if(kind==="network"&&ui.switchLab&&window.AkariSwitchLab){
+   const B=window.AkariSwitchLab,l=ui.switchLab;
+   const index=l.wires.findIndex(w=>B.edge(...w)===key);
+   if(index<0)return;
+   l.wires.splice(index,1);l.selected=null;
+   l.trials={};l.reason=null;l.insight=null;
+   saveSwitchDraft();renderWorkspace();setFeedback("✂️ 1本 きったよ。");
+  }
+ });
  $("checkBtn").addEventListener("click",check);
  $("readTaskBtn").addEventListener("click",speakReadingTask);
  $("yomiEssentials").addEventListener("click",()=>{

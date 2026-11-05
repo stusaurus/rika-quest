@@ -21,6 +21,7 @@ const game=readFileSync("games/akari/game.js","utf8");
 const furigana=readFileSync("games/akari/furigana.js","utf8");
 const referenceJs=readFileSync("games/akari/reference-layout.js","utf8");
 const wireCanvas=readFileSync("games/akari/wire-canvas.js","utf8");
+const wireCut=readFileSync("games/akari/wire-cut.js","utf8");
 const shortEffects=readFileSync("games/akari/short-effects.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
@@ -48,6 +49,7 @@ output=replaceOne(output,'<script src="./reading.js" defer></script>',inlineScri
 output=replaceOne(output,'<script src="./furigana.js" defer></script>',inlineScript(furigana));
 output=replaceOne(output,'<script src="./reference-layout.js" defer></script>',inlineScript(referenceJs));
 output=replaceOne(output,'<script src="./wire-canvas.js" defer></script>',inlineScript(wireCanvas));
+output=replaceOne(output,'<script src="./wire-cut.js" defer></script>',inlineScript(wireCut));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){

@@ -114,3 +114,31 @@
  .short-glow{opacity:.45}
  .short-arc,.short-flames{opacity:1}
 }
+
+/* Crossing a wire with one deliberate swipe removes only that one connection. */
+.circuit-board .lead-on-top.wire-cut-target .wire,
+.builder-board .student-wire.wire-cut-target .student-wire-ink,
+.network-board .student-wire.wire-cut-target .student-wire-ink{
+ stroke:#f16a46!important;stroke-width:10!important;
+ filter:drop-shadow(0 0 7px #ffd177)!important;
+}
+.circuit-board.wire-cut-ready,
+.builder-board.wire-cut-ready,
+.network-board.wire-cut-ready{cursor:crosshair}
+.wire-cut-burst{
+ position:fixed;z-index:1000;transform:translate(-50%,-50%);
+ pointer-events:none;animation:wire-cut-pop .5s ease-out both;
+ font-size:28px;filter:drop-shadow(0 0 7px #ffe59b);
+}
+@keyframes wire-cut-pop{
+ 0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+ 20%{opacity:1;transform:translate(-50%,-58%) scale(1.25)}
+ 100%{opacity:0;transform:translate(-50%,-130%) scale(.8)}
+}
+/* Avoid browser page-scrolling taking over a wire-cut stroke. Zoomed boards
+   retain their provided navigation buttons and scrollable outer viewport. */
+.circuit-board .circuit-inner,
+.builder-board svg,.network-board svg{touch-action:none}
+@media(prefers-reduced-motion:reduce){
+ .wire-cut-burst{animation:none;opacity:1}
+}
