@@ -80,11 +80,17 @@ try{
       assert.equal(await page.locator('.network-line[data-handdrawn="true"] .student-wire-ink').getAttribute("d"),networkTrace,"Network shape persists after reload");
      // A sideways finger stroke across the student's lead must remove it,
      // without tapping either contact or deleting unrelated wires.
-     const cutAcross=await page.locator(".network-board svg").evaluate(svg=>{
-       const m=svg.getScreenCTM();
-       return [[120,220],[220,220]].map(([x,y])=>{
-         const p=new DOMPoint(x,y).matrixTransform(m);
-         return {x:p.x,y:p.y};
+     const cutAcross=await page.locator('.network-board .student-wire[data-student-wire="N-P"] .student-wire-ink').evaluate(path=>{
+       const length=path.getTotalLength(),at=length/2;
+       const p=path.getPointAtLength(at);
+       const before=path.getPointAtLength(Math.max(0,at-12));
+       const after=path.getPointAtLength(Math.min(length,at+12));
+       const dx=after.x-before.x,dy=after.y-before.y;
+       const mag=Math.hypot(dx,dy)||1,nx=-dy/mag,ny=dx/mag;
+       const m=path.getScreenCTM();
+       return [-55,55].map(d=>{
+         const q=new DOMPoint(p.x+nx*d,p.y+ny*d).matrixTransform(m);
+         return {x:q.x,y:q.y};
        });
      });
      await page.mouse.move(cutAcross[0].x,cutAcross[0].y);
