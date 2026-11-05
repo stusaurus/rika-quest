@@ -328,6 +328,7 @@ try{
    await page.locator('[data-view="battery"]').click();
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
+   if(engine==="chromium"&&width===1440)await page.emulateMedia({reducedMotion:"no-preference"});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
    assert.equal((await wireRoute()).every(p=>p.battery===0),true,"The short lead must also travel outside the battery body");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
@@ -335,6 +336,16 @@ try{
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
     assert.equal(await page.locator(".short-flames span").count(),3,"The short event shows fire");
     assert.equal(await page.locator(".short-smoke span").count(),3,"The short event then shows smoke");
+   if(engine==="chromium"&&width===1440){
+     const motion=await page.locator(".short-flames").evaluate(e=>({name:getComputedStyle(e).animationName,duration:getComputedStyle(e).animationDuration}));
+     assert.notEqual(motion.name,"none","The fire must animate at normal motion settings");
+     assert.match(motion.duration,/s/,"Fire animation should have a defined duration");
+     await page.waitForTimeout(380);
+     await page.screenshot({path:"artifacts/akari/chromium-1440-short-flames-motion.png",fullPage:true,animations:"allow"});
+     await page.emulateMedia({reducedMotion:"reduce"});
+     assert.equal(await page.locator(".short-flames").evaluate(e=>getComputedStyle(e).animationName),"none",
+       "Reduce-motion setting should keep the hazard notice without flicker");
+   }
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
    assert.match(await page.locator("#spark").evaluate(e=>getComputedStyle(e,"::before").content),/⚡/,"Short hazard remains clearly signaled without mascot effects");
    assert.equal(await page.locator("#restorationTrail").isVisible(),false,"Short must not light the town");
