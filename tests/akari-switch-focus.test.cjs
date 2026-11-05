@@ -138,3 +138,16 @@ test("unobserved switch combinations are not presented as dark measurements",()=
  assert.ok(css.includes(".network-trial.trial-unknown .network-trial-outcome::before"));
  assert.ok(css.includes('content:"?"'));
 });
+
+test("student wires stay in front of battery artwork and contact buttons stay usable",()=>{
+ const html=lab.render(7,[["P","N"]],null,false,false,{});
+ const battery=html.indexOf('<rect x="39" y="156"');
+ const wire=html.indexOf('class="network-line student-wire"');
+ const flow=html.indexOf('class="network-flow-layer"');
+ const contacts=html.indexOf('data-net-t="P"');
+ assert.ok(battery>=0&&wire>battery&&flow>wire&&contacts>flow,
+   "Battery art must not conceal a child's wire; contact buttons remain on top");
+ assert.equal((html.match(/class="builder-terminal /g)||[]).length,8);
+ assert.match(html,/data-net-t="P"[^>]*aria-label=/);
+ assert.match(html,/data-net-t="N"[^>]*aria-label=/);
+});
