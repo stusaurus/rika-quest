@@ -95,3 +95,13 @@ test("an open circuit never shows a lit current path",()=>{
  assert.doesNotMatch(html,/network-flow-segment/);
  assert.match(html,/builder-live live-dark/);
 });
+
+test("a diagnosed short shows the actual unsafe bypass, not a glowing bulb",()=>{
+ const wires=[["P","N"]],trials=trialsFor(wires);
+ const without=lab.render(7,wires,null,false,false,trials,null,null);
+ assert.doesNotMatch(without,/data-flow-edge="N-P"/);
+ const withDiagnosis=lab.render(7,wires,null,false,false,trials,null,{code:"00",signature:lab.signature(wires),kind:"short"});
+ assert.match(withDiagnosis,/data-flow-edge="N-P"/);
+ assert.match(withDiagnosis,/builder-live live-short/);
+ assert.doesNotMatch(withDiagnosis,/builder-live live-lit/);
+});
