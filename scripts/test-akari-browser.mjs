@@ -256,6 +256,7 @@ try{
    assert.equal(await page.locator(".free-battery").count(),2,"A second dry cell can be added");
    assert.equal(await page.locator(".free-bulb").count(),2,"A second mini lamp can be added");
    assert.equal(await page.locator("#freeAddbattery").isDisabled(),true,"Parts palette enforces safe small-workbench limits");
+   await page.locator(".free-lab-preset summary").click();
    await page.locator('[data-free-preset="switch"]').click();
    assert.equal(await page.locator(".free-switch").count(),1,"An exercise can add a real open switch");
    await labWire("b1:P","s3:A");await labWire("s3:B","l2:L");await labWire("l2:R","b1:N");

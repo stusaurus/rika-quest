@@ -265,7 +265,7 @@
   toggle.addEventListener("click",()=>setOpen(!open));
   get("freeLabClose").addEventListener("click",()=>setOpen(false));
   section.addEventListener("click",e=>{
-   if(Date.now()<suppressClick)return;
+   if(Date.now()<suppressClick&&e.target.closest("[data-free-port],[data-free-move]"))return;
    const add=e.target.closest("[data-free-add]");if(add){addPart(add.dataset.freeAdd);return;}
    const preset=e.target.closest("[data-free-preset]");if(preset){presets(preset.dataset.freePreset);return;}
    if(e.target.closest("#freeRemove")){removePart();return;}
