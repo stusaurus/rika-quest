@@ -139,15 +139,15 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    <div class="builder-bottom"><strong>導線 ${wiring.length} 本</strong><button type="button" class="builder-clear" data-net-clear="1">導線をすべて外す</button></div>
   </div>
   <div class="builder-panel"><h3>🔬 4通りの通電実験</h3>
-   <p class="builder-help">スイッチを1つずつ切り替えて結果を記録しよう。ショートは実物で試してはいけないよ。</p>
+   <p class="builder-help">スイッチを うごかして 4つの けっかを くらべよう。</p>
    <div class="network-switches"><button type="button" data-net-switch="a" aria-pressed="${a}" class="${a?"on":""}">A：${a?"ON":"OFF"}</button><button type="button" data-net-switch="b" aria-pressed="${b}" class="${b?"on":""}">B：${b?"ON":"OFF"}</button></div>
    <p class="builder-live">${result.short?"⚠ ショート！":result.lit?"💡 ついている":"◯ きえている"}</p>
-   <button type="button" data-net-test="1" class="builder-test">✎ けっかを きろく</button>
+   <span class="network-auto-note" aria-live="polite">✓ じどう きろく</span>
    ${comparison}<div class="network-results">${results}</div>${inspection}
    ${count===4?`<div class="network-reason"><strong>🧠 4つの結果から、なぜ点灯する？</strong>
     <button type="button" data-net-reason="both" class="${reason==="both"?"chosen":""}">直列：2つともONで一本道がつながる</button>
     <button type="button" data-net-reason="either" class="${reason==="either"?"chosen":""}">並列：どちらかの道がつながればよい</button>
-   </div>`:`<p class="builder-hint">実験 ${count} / 4。4通りの結果を比べよう。</p>`}
+   </div>`:`<p class="builder-hint">みた けっか ${count} / 4</p>`}
    ${expected(stage,wiring,trials,reason)?'<div class="network-power-ready" aria-live="polite"><span class="network-power-dot">✦</span><strong>街の電気設備の準備が整った！</strong><small>4通りの働きが設計条件と一致しているよ。</small></div>':""}
    <button type="button" data-net-submit="1" class="builder-submit" ${expected(stage,wiring,trials,reason)?"":"disabled"}>🏆 設計を完成する</button>
   </div></div></section>`;

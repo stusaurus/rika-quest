@@ -142,7 +142,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
        '<span>'+(direct?'電球の接点を通る輪をたどろう。':'スイッチONの状態で、電球も通る輪をたどろう。')+'</span>')+
      '<div class="builder-trace-edit"><button type="button" data-builder-trace-back="1"'+(route.length?'':' disabled')+'>↶ 1つ戻る</button><button type="button" data-builder-trace-reset="1"'+(route.length?'':' disabled')+'>↺ 最初から</button></div></div>'+
      (!direct&&!switchOn?'<p class="builder-trace-warning">通り道をたどるときは、先にスイッチをONにしよう。</p>':'')
-  :'<p class="builder-trace-pending">まず安全な回路を作り、'+(direct?'通電実験で点灯を確かめよう。':'OFF・ONの両方を実験して確かめよう。')+'</p>')+'</div>';
+  :'<p class="builder-trace-pending">まず安全な回路を作り、'+(direct?'まめ電球が つくか みよう。':'OFF・ONで ちがいを みよう。')+'</p>')+'</div>';
 
  const simulation=evaluate(segments,direct?false:switchOn);
  const mode=direct?"single":switchOn?"on":"off";
@@ -188,7 +188,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  const statusBlocks=(direct?[["single","点灯の実験"]]:[["off","OFFの実験"],["on","ONの実験"]]).map(([id,label])=>{
   const data=tests[id],valid=data&&data.signature===signature(segments);
   return '<div class="builder-measure'+(valid?' measured':'')+'"><strong>'+label+'</strong><span>'+
-   (valid?(data.short?"⚠ ショート（危険）":data.lit?"💡 点灯":"◯ 消灯"):"？ 未実験")+'</span></div>';
+   (valid?(data.short?"⚠ ショート（危険）":data.lit?"💡 点灯":"◯ 消灯"):"－ これから")+'</span></div>';
  }).join("");
  const switchArt=direct?
    '<text x="475" y="226" text-anchor="middle" font-size="18" fill="#92b9be">自分で電気の輪を作ろう</text>':
@@ -220,9 +220,9 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
  lineSvg+'<g class="builder-diagnostic-path" aria-hidden="true">'+routeDiagram+'</g><g class="builder-proof-path">'+routeSvg+'</g></svg>'+buttons+'</div></div>'+
  '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
- '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'つないだら すぐ つくよ。けっかを きろくしよう。':'スイッチOFFとONの けっかを きろくしよう。ショートは きけんだよ。')+'</p>'+
+ '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'つないだら すぐ つくよ。':'スイッチを うごかして くらべよう。')+'</p>'+
  switchControl+'<p class="builder-live">'+status+'</p>'+
- '<button type="button" data-builder-test="1" class="builder-test">✎ けっかを きろく</button>'+
+ '<span class="builder-auto-note" aria-live="polite">✓ じどう きろく</span>'+
  '<div class="builder-measures">'+statusBlocks+'</div>'+comparison+diagnosisPanel+
  '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
  tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+

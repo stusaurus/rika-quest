@@ -142,3 +142,12 @@
 @media(prefers-reduced-motion:reduce){
  .wire-cut-burst{animation:none;opacity:1}
 }
+
+
+/* A single quiet indicator replaces unnecessary experiment/record buttons. */
+.builder-auto-note,.network-auto-note{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:5px 11px;margin:5px 0 8px;
+ border-radius:999px;border:1px solid #9cc9a6;
+ background:#e9f7e9;color:#28603b;font-size:12px;font-weight:800;
+}

@@ -522,6 +522,20 @@ function check(){
   success();return;
  }
 }
+// Every actual connection or switch movement is an observable experiment.
+// Record only the visited state; never invent trials for untouched switch settings.
+function observeNetwork(l){
+ if(!window.AkariSwitchLab||!l.wires.length)return;
+ const B=window.AkariSwitchLab,code=Number(l.a)+""+Number(l.b);
+ l.trials[code]={...B.evaluate(l.wires,l.a,l.b),signature:B.signature(l.wires)};
+ saveSwitchDraft();
+}
+function observeBuilder(b,direct){
+ if(!window.AkariBuilder||!b.wires.length)return;
+ const B=window.AkariBuilder,code=direct?"single":b.switchOn?"on":"off";
+ b.tests[code]={...B.evaluate(b.wires,direct?false:b.switchOn),signature:B.signature(b.wires)};
+ saveBuilderDraft();
+}
 function warnNewShort(before,after){
  if(before||!after)return false;
  window.AkariEffects?.shortCircuit?.();
@@ -547,7 +561,7 @@ function handleWorkspace(e){
    const shortBefore=B.evaluate(l.wires,l.a,l.b).short;
    const code=B.edge(first,id),index=l.wires.findIndex(w=>B.edge(...w)===code);
    if(index<0)l.wires.push([first,id]);else l.wires.splice(index,1);
-   l.trials={};l.reason=null;l.insight=null;saveSwitchDraft();renderWorkspace();
+   l.trials={};l.reason=null;l.insight=null;saveSwitchDraft();observeNetwork(l);renderWorkspace();
    if(warnNewShort(shortBefore,B.evaluate(l.wires,l.a,l.b).short))return;
    setFeedback(index<0?"導線が つながったよ。":"✂️ 1本 はずしたよ。");
    reactCharacter("inspect");return;
@@ -558,7 +572,7 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-net-switch")){
    const id=target.dataset.netSwitch;if(!["a","b"].includes(id))return;
    const shortBefore=B.evaluate(l.wires,l.a,l.b).short;
-   l[id]=!l[id];l.selected=null;saveSwitchDraft();renderWorkspace();
+   l[id]=!l[id];l.selected=null;saveSwitchDraft();observeNetwork(l);renderWorkspace();
    if(warnNewShort(shortBefore,B.evaluate(l.wires,l.a,l.b).short))return;
    setFeedback("スイッチ"+id.toUpperCase()+"を"+(l[id]?"ON":"OFF")+"にしたよ。");return;
   }
@@ -645,7 +659,7 @@ function handleWorkspace(e){
    const index=b.wires.findIndex(pair=>B.edge(...pair)===key);
    if(index>=0)b.wires.splice(index,1);
    else b.wires.push([from,term]);
-   b.tests={};b.trace=[];b.insight=null;saveBuilderDraft();renderWorkspace();
+   b.tests={};b.trace=[];b.insight=null;saveBuilderDraft();observeBuilder(b,direct);renderWorkspace();
    if(warnNewShort(shortBefore,B.evaluate(b.wires,direct?false:b.switchOn).short))return;
    setFeedback(index>=0?"✂️ 1本 はずしたよ。":"導線が つながったよ。");
    reactCharacter("inspect");return;
@@ -657,7 +671,7 @@ function handleWorkspace(e){
    if(direct)return;
    const mode=target.dataset.builderSwitch;if(!["on","off"].includes(mode))return;
    const shortBefore=B.evaluate(b.wires,b.switchOn).short;
-   b.switchOn=mode==="on";b.selected=null;saveBuilderDraft();renderWorkspace();
+   b.switchOn=mode==="on";b.selected=null;saveBuilderDraft();observeBuilder(b,false);renderWorkspace();
    if(warnNewShort(shortBefore,B.evaluate(b.wires,b.switchOn).short))return;
    setFeedback("スイッチを"+(b.switchOn?"ON":"OFF")+"にしたよ。");return;
   }
@@ -1255,7 +1269,7 @@ function bind(){
    if(index<0)return;
    b.wires.splice(index,1);b.selected=null;
    b.tests={};b.trace=[];b.insight=null;
-   saveBuilderDraft();renderWorkspace();setFeedback("✂️ 1本 きったよ。");
+   saveBuilderDraft();observeBuilder(b,ui.builderTask==="direct");renderWorkspace();setFeedback("✂️ 1本 きったよ。");
    return;
   }
   if(kind==="network"&&ui.switchLab&&window.AkariSwitchLab){
@@ -1264,7 +1278,7 @@ function bind(){
    if(index<0)return;
    l.wires.splice(index,1);l.selected=null;
    l.trials={};l.reason=null;l.insight=null;
-   saveSwitchDraft();renderWorkspace();setFeedback("✂️ 1本 きったよ。");
+   saveSwitchDraft();observeNetwork(l);renderWorkspace();setFeedback("✂️ 1本 きったよ。");
   }
  });
  $("checkBtn").addEventListener("click",check);
@@ -1302,6 +1316,12 @@ window.AkariLiveWire={
   return true;
  }
 };
-function boot(){ui=restoreMissionUI(current());bind();persist();renderAll();initializeCharacter();window.scrollTo(0,0);}
+function boot(){
+ ui=restoreMissionUI(current());
+ // Upgrade incomplete saved drafts without fabricating observations for other settings.
+ if(ui.switchLab)observeNetwork(ui.switchLab);
+ if(ui.builder)observeBuilder(ui.builder,ui.builderTask==="direct");
+ bind();persist();renderAll();initializeCharacter();window.scrollTo(0,0);
+}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();

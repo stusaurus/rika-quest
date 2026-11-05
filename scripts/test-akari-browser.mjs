@@ -53,6 +53,7 @@ try{
        [["P","A1"],["P","B1"],["A2","L"],["B2","L"],["R","N"]];
      assert.equal(await page.locator(".network-lab").count(),1,"Free-wiring two-switch lab must open");
      assert.equal(await page.locator('[data-net-t]').count(),8,"Eight terminals should be usable");
+     assert.equal(await page.locator("[data-net-test]").count(),0,"Switch outcomes auto-record without a test button");
      await page.locator('[data-net-view="right"]').click();
      if(width<740)assert.ok(await page.locator(".network-viewport").evaluate(e=>e.scrollLeft)>20,"Bulb side must be reachable on mobile");
      await page.locator('[data-net-view="left"]').click();
@@ -62,7 +63,7 @@ try{
      assert.match(await page.locator(".network-lab .builder-live").textContent(),/ショート/,"A short shows at once, before recording the switch experiment");
      await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
      assert.equal(await page.locator(".short-alert").isVisible(),true,"Network short animation starts at connection time");
-      await page.locator('[data-net-test]').click();
+      
       await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
       assert.match(await page.locator(".short-alert").textContent(),/ショート/,"A short animates on the switch network");
      assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is unsafe");
@@ -82,7 +83,7 @@ try{
      if(id===8){
        // The lamp can glow while both switches are OFF if wires bypass them.
        for(const [a,b] of [["P","L"],["R","N"]])await tap(a,b);
-       await page.locator('[data-net-test]').click();
+       
        assert.equal(await page.locator(".network-diagnosis").count(),1,"Unexpected light must be investigated");
        await page.locator('[data-net-cause="bypass"]').click();
        assert.equal(await page.locator(".network-diagnosis.solved").count(),1,"Bypass diagnosis must match the actual circuit");
@@ -91,16 +92,18 @@ try{
      }
      for(const [a,b] of wires)await tap(a,b);
      assert.match(await page.locator(".network-lab .builder-live").textContent(),/きえている/,"Two switches OFF keeps the lamp dark without any test click");
-     await page.locator('[data-net-test]').click(); // 00
-     await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 10
+      // 00
+     await page.locator('[data-net-switch="a"]').click(); // 10
      await page.reload({waitUntil:"domcontentloaded"});
      assert.equal(await page.locator(".network-lab").count(),1,"Reload restores unfinished network");
      assert.equal(await page.locator(".network-trial.measured").count(),2,"Two trials survived reload");
-     await page.locator('[data-net-switch="b"]').click();await page.locator('[data-net-test]').click(); // 11
+     assert.equal(await page.locator("[data-net-test]").count(),0,"Do not show an unnecessary manual record button");
+     await page.locator('[data-net-switch="b"]').click(); // 11
      assert.match(await page.locator(".network-lab .builder-live").textContent(),/ついている/,"Both switches ON immediately light the series lamp");
      if(id===7)assert.ok(await page.locator(".network-flow-segment").count()>4,"Closed series circuit must show the measured complete path");
-     await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 01
+     await page.locator('[data-net-switch="a"]').click(); // 01
      assert.equal(await page.locator(".network-trial.measured").count(),4,"All four combinations tested");
+     assert.equal(await page.locator("[data-net-test]").count(),0,"All four results came from manipulating switches");
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Causal explanation required");
      await page.locator('[data-net-reason="'+(id===7?"either":"both")+'"]').click();
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Wrong conclusion rejected");
@@ -795,6 +798,7 @@ try{
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Diagnosing fault does not bypass scientific wiring");
    assert.equal(await page.locator(".builder-direct").count(),1,"Clock tower should unlock basic four-terminal construction");
+     assert.equal(await page.locator("[data-builder-test]").count(),0,"Clock results are recorded from actual wiring");
    assert.equal(await page.locator('[data-builder-switch]').count(),0,"Basic practice does not yet use switches");
    assert.equal(await page.locator('[data-builder-t]').count(),4,"Only battery and bulb terminals should be selectable");
    const tapPractice=async(a,b)=>{
@@ -805,7 +809,7 @@ try{
      assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ショート/,"The clock immediately signals its battery short");
      await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
      assert.equal(await page.locator(".short-alert").isVisible(),true,"Clock short animation starts when the wire touches");
-    await page.locator('[data-builder-test]').click();
+    
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
     assert.match(await page.locator(".short-alert").textContent(),/ショート/,"Clock circuit warns with animation");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Unsafe direct connection should never pass");
@@ -822,7 +826,7 @@ try{
    await tapPractice("P","N");
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),0,"Rewiring invalidates the old diagnosis");
    await tapPractice("P","L");
-   await page.locator('[data-builder-test]').click();
+   
    assert.equal(await page.locator('[data-builder-cause="open"]').count(),1,"Incomplete loop should be investigated");
    await page.locator('[data-builder-cause="open"]').click();
    assert.ok(await page.locator(".builder-reachable").count()>0,"Correct open-loop reason lights reachable battery contacts");
@@ -832,7 +836,8 @@ try{
    assert.equal(await page.locator(".builder-direct").count(),1,"Reload must resume the basic construction task");
    assert.equal(await page.locator(".builder-line").count(),2,"Both student-drawn wires must survive reload");
     assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ついている/,"The saved closed circuit remains lit on reload");
-   await page.locator('[data-builder-test]').click();
+     assert.equal(await page.locator(".builder-measure.measured").count(),1,"The clock records the closed-loop observation during wiring");
+   
    assert.match(await page.locator(".builder-measure").textContent(),/点灯/,"Closed circuit must light the bulb");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"A lit circuit is not enough until the student traces its path");
    assert.equal(await page.locator(".builder-proof").count(),1,"Proof panel appears after a safe experiment");
@@ -1079,7 +1084,7 @@ try{
    assert.equal(await page.locator(".builder-viewport").evaluate(e=>e.scrollLeft),0,"Battery navigation returns to first endpoints");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"Builder completion locked until both tests succeed");
    await drawShortByHand("builder");
-    await page.locator('[data-builder-test]').click();
+    
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"Direct battery connection is a hazard");
    assert.equal(await page.locator("#discovery").isVisible(),false,"Unsafe circuit must not clear");
@@ -1088,7 +1093,7 @@ try{
    await tapPair("P","N");
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),0,"Edited circuit cannot reuse earlier cause");
    for(const [a,b] of [["P","L"],["R","N"]])await tapPair(a,b);
-   await page.locator('[data-builder-test]').click();
+   
    assert.equal(await page.locator('[data-builder-cause="bypass"]').count(),1,"OFF-on bypass condition must open investigation");
    await page.locator('[data-builder-cause="open"]').click();
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),0,"Incorrect bypass cause does not reveal route");
@@ -1102,13 +1107,13 @@ try{
    assert.equal(await page.locator(".builder-diagnosis.solved").count(),0);
    for(const [a,b] of [["P","S"],["T","L"],["R","N"]])await tapPair(a,b);
    await page.locator('[data-builder-switch="off"]').click();
-   await page.locator('[data-builder-test]').click();
+   
    assert.match(await page.locator(".builder-measure").first().textContent(),/消灯/,"OFF must leave bulb unlit");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".builder-puzzle").count(),1,"Reload should reopen unfinished wiring design");
    assert.equal(await page.locator(".builder-line").count(),3,"Saved wires must reappear");
    await page.locator('[data-builder-switch="on"]').click();
-   await page.locator('[data-builder-test]').click();
+   
    assert.match(await page.locator(".builder-measure").last().textContent(),/点灯/,"ON must light bulb through switch");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"Both safe tests still require a circuit-path explanation");
    await page.locator('[data-builder-trace="P"]').click();
