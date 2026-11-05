@@ -103,6 +103,21 @@ try{
      if(id===7)assert.ok(await page.locator(".network-flow-segment").count()>4,"Closed series circuit must show the measured complete path");
      await page.locator('[data-net-switch="a"]').click(); // 01
      assert.equal(await page.locator(".network-trial.measured").count(),4,"All four combinations tested");
+     assert.equal(await page.locator('[data-net-case]').count(),4,"Four switch combinations are visible as compact experiment cards");
+     assert.match(await page.locator(".network-observed").textContent(),/4\s*\/\s*4/,"Visual progress reports all observations");
+     // A result card is itself an experiment: it changes both switches and
+     // observes immediately without an extra power/record button.
+     await page.locator('[data-net-case="00"]').click();
+     assert.equal(await page.locator('[data-net-switch="a"]').getAttribute("aria-pressed"),"false","Preset card turns A OFF");
+     assert.equal(await page.locator('[data-net-switch="b"]').getAttribute("aria-pressed"),"false","Preset card turns B OFF");
+     assert.equal(await page.locator('[data-net-case="00"]').getAttribute("aria-pressed"),"true","The selected card visibly follows the switches");
+     assert.match(await page.locator(".network-lab .builder-live").textContent(),/きえている/,"Both OFF means the lamp is dark");
+     await page.locator('[data-net-case="11"]').click();
+     assert.equal(await page.locator('[data-net-switch="a"]').getAttribute("aria-pressed"),"true","Preset card turns A ON");
+     assert.equal(await page.locator('[data-net-switch="b"]').getAttribute("aria-pressed"),"true","Preset card turns B ON");
+     assert.match(await page.locator(".network-lab .builder-live").textContent(),/ついている/,"Both ON lights the correctly wired lamp");
+     await page.locator('[data-net-case="01"]').click();
+     assert.equal(await page.locator(".network-trial.measured").count(),4,"Changing presets must retain all four valid observations");
      assert.equal(await page.locator("[data-net-test]").count(),0,"All four results came from manipulating switches");
      assert.equal(await page.locator('[data-net-submit]').isDisabled(),true,"Causal explanation required");
      await page.locator('[data-net-reason="'+(id===7?"either":"both")+'"]').click();
@@ -798,6 +813,7 @@ try{
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Diagnosing fault does not bypass scientific wiring");
    assert.equal(await page.locator(".builder-direct").count(),1,"Clock tower should unlock basic four-terminal construction");
+   assert.match(await page.locator(".builder-auto-note").textContent(),/0\s*\/\s*1/,"No evidence is falsely marked before connecting the clock wires");
      assert.equal(await page.locator("[data-builder-test]").count(),0,"Clock results are recorded from actual wiring");
    assert.equal(await page.locator('[data-builder-switch]').count(),0,"Basic practice does not yet use switches");
    assert.equal(await page.locator('[data-builder-t]').count(),4,"Only battery and bulb terminals should be selectable");
@@ -837,6 +853,7 @@ try{
    assert.equal(await page.locator(".builder-line").count(),2,"Both student-drawn wires must survive reload");
     assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ついている/,"The saved closed circuit remains lit on reload");
      assert.equal(await page.locator(".builder-measure.measured").count(),1,"The clock records the closed-loop observation during wiring");
+     assert.match(await page.locator(".builder-auto-note").textContent(),/1\s*\/\s*1/,"A complete clock automatically records one real observation");
    
    assert.match(await page.locator(".builder-measure").textContent(),/点灯/,"Closed circuit must light the bulb");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"A lit circuit is not enough until the student traces its path");

@@ -553,6 +553,17 @@ function handleWorkspace(e){
    board.scrollLeft=dir==="right"?board.scrollWidth-board.clientWidth:0;
    setFeedback(dir==="right"?"豆電球の横・底の接点を見よう。":"電池と2つのスイッチの端子を見よう。");return;
   }
+  if(target.hasAttribute("data-net-case")){
+   const code=target.dataset.netCase;
+   if(!B.codes.includes(code)||!l.wires.length)return;
+   const shortBefore=B.evaluate(l.wires,l.a,l.b).short;
+   l.a=code[0]==="1";l.b=code[1]==="1";l.selected=null;
+   observeNetwork(l);renderWorkspace();
+   if(warnNewShort(shortBefore,B.evaluate(l.wires,l.a,l.b).short))return;
+   const result=B.evaluate(l.wires,l.a,l.b);
+   setFeedback("A "+(l.a?"ON":"OFF")+"・B "+(l.b?"ON":"OFF")+" → "+(result.lit?"💡 ついた！":"◯ きえた")+"。");
+   return;
+  }
   if(target.hasAttribute("data-net-t")){
    const id=target.dataset.netT;if(!B.ids.includes(id))return;
    if(l.selected==null){l.selected=id;renderWorkspace();setFeedback(B.points[id].name+"を選択した。次につなぐ端子を選んでね。");return;}

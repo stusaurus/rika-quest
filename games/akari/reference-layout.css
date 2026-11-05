@@ -954,3 +954,40 @@ body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.resto
 body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.restored) .scene-glow{
  opacity:.56
 }
+
+
+/* Four switch combinations are experiments to touch, not four paragraphs to read. */
+.network-lab .network-observed{display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:8px 11px;margin:7px 0;border:2px solid #a8d1c3;background:#edfaf3;
+ border-radius:12px;color:#245a52;font-size:13px;font-weight:800}
+.network-lab .network-observed strong{font-size:16px;color:#205448;font-variant-numeric:tabular-nums}
+.network-lab .network-observed-dots{display:flex;gap:5px;flex:none}
+.network-lab .network-observed-dots i{display:block;width:13px;height:13px;border:2px solid #b6cccb;
+ border-radius:50%;background:#fff;box-sizing:border-box}
+.network-lab .network-observed-dots i.done{background:#50ab8a;border-color:#267d66}
+.network-lab .network-choice-note{font-size:12px;margin:3px 0;color:#446d72;font-weight:800}
+.network-lab .network-results{gap:8px;margin-top:8px}
+.network-lab .network-trial{appearance:none;display:flex;flex-direction:column;justify-content:center;
+ align-items:stretch;gap:7px;min-width:0;min-height:81px;border:3px solid #b3cdd0;
+ border-radius:15px;padding:9px 10px;cursor:pointer;text-align:center;
+ font-family:inherit;background:#f9fbf9;box-shadow:0 3px 0 #9bb6bd66}
+.network-lab .network-trial-switches{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.network-lab .network-trial-switches>span{font-size:11px;font-weight:900;color:#366473;white-space:nowrap}
+.network-lab .network-trial-switches b{display:inline-block;border-radius:6px;
+ border:1px solid #b4c3ca;background:#dce6ea;color:#2b4a56;padding:2px 4px;font-size:10px}
+.network-lab .network-trial-switches b.on{background:#287d6c;color:#fff;border-color:#1b6e5e}
+.network-lab .network-trial-outcome{font-size:16px;font-weight:900;color:#3b5e67}
+.network-lab .network-trial.measured{background:#eaf9f0;border-color:#90cab3}
+.network-lab .network-trial.measured .network-trial-outcome{color:#1c6653}
+.network-lab .network-trial.current{border-color:#dfa44c;box-shadow:0 3px 0 #b48a48a0;background:#fff5d7}
+.network-lab .network-trial[aria-pressed="true"] .network-trial-outcome{color:#684a22}
+.network-lab .network-trial:focus-visible{outline:3px solid #3980db;outline-offset:3px}
+.network-lab .network-trial:disabled{opacity:.7;cursor:not-allowed;box-shadow:none}
+@media(max-width:740px){
+ .network-lab .network-trial{min-height:76px;padding:7px 4px;gap:5px;border-width:2px}
+ .network-lab .network-trial-switches{gap:3px}
+ .network-lab .network-trial-switches>span{font-size:10px}
+ .network-lab .network-trial-switches b{font-size:9px;padding:2px 3px}
+ .network-lab .network-trial-outcome{font-size:14px}
+ .network-lab .network-observed{margin:6px 0;padding:7px 9px}
+}

@@ -190,6 +190,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
   return '<div class="builder-measure'+(valid?' measured':'')+'"><strong>'+label+'</strong><span>'+
    (valid?(data.short?"⚠ ショート（危険）":data.lit?"💡 点灯":"◯ 消灯"):"－ これから")+'</span></div>';
  }).join("");
+ const observedCount=(direct?["single"]:["off","on"]).filter(id=>tests[id]?.signature===signature(segments)).length;
  const switchArt=direct?
    '<text x="475" y="226" text-anchor="middle" font-size="18" fill="#92b9be">自分で電気の輪を作ろう</text>':
    '<g><path d="M382 118L555 '+(switchOn?'118':'91')+'" stroke="#f7d69e" stroke-width="7" fill="none" stroke-linecap="round"/>'+
@@ -222,7 +223,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
  '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'つないだら すぐ つくよ。':'スイッチを うごかして くらべよう。')+'</p>'+
  switchControl+'<p class="builder-live">'+status+'</p>'+
- '<span class="builder-auto-note" aria-live="polite">✓ じどう きろく</span>'+
+ '<span class="builder-auto-note" role="status">📒 '+observedCount+' / '+(direct?1:2)+' じどうきろく</span>'+
  '<div class="builder-measures">'+statusBlocks+'</div>'+comparison+diagnosisPanel+
  '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
  tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+

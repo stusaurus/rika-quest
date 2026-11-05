@@ -115,9 +115,18 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
  const controls=ids.map(id=>`<button type="button" data-net-t="${id}" class="builder-terminal ${selected===id?"selected":""} ${reachable.includes(id)?"network-reachable":""}" style="left:${points[id].x/9.2}%;top:${points[id].y/4.45}%" aria-pressed="${selected===id}" aria-label="${points[id].name}">${id}</button>`).join("");
  const results=codes.map(k=>{
   const t=trials[k],valid=t?.signature===sig;
-  return `<div class="network-trial ${valid?"measured":""}"><strong>A ${k[0]==="1"?"ON":"OFF"} ／ B ${k[1]==="1"?"ON":"OFF"}</strong><span>${valid?(t.short?"⚠ ショート":t.lit?"💡 点灯":"◯ 消灯"):"？ 未実験"}</span></div>`;
+  const stateA=k[0]==="1"?"ON":"OFF",stateB=k[1]==="1"?"ON":"OFF";
+  const outcome=valid?(t.short?"⚠ ショート":t.lit?"💡 つく":"◯ きえる"):"❔ まだ";
+  const spoken=valid?(t.short?"ショート":t.lit?"点灯":"消灯"):"まだ観察していない";
+  return `<button type="button" class="network-trial ${valid?"measured":""} ${code===k?"current":""}"
+   data-net-case="${k}" aria-pressed="${code===k}" ${wiring.length?"":"disabled"}
+   aria-label="スイッチA ${stateA}、B ${stateB}：${spoken}。この組み合わせにする">
+   <span class="network-trial-switches"><span>A <b class="${stateA==="ON"?"on":""}">${stateA}</b></span><span>B <b class="${stateB==="ON"?"on":""}">${stateB}</b></span></span>
+   <span class="network-trial-outcome">${outcome}</span></button>`;
  }).join("");
  const count=codes.filter(k=>trials[k]?.signature===sig).length;
+ const observedProgress='<div class="network-observed" role="status"><span>📒 みた けっか <strong>'+count+' / 4</strong></span>'+
+  '<span class="network-observed-dots" aria-hidden="true">'+codes.map(k=>'<i class="'+(trials[k]?.signature===sig?"done":"")+'"></i>').join("")+'</span></div>';
  const switchDrawing=(id,on,x,y)=>`<g><path d="M${x} ${y}L${x+168} ${on?y:y-28}" stroke="#ffdfa3" stroke-width="7" stroke-linecap="round" fill="none"/><text x="${x+84}" y="${y-47}" text-anchor="middle" font-size="22" fill="#e9f4e9">${id} ${on?"ON":"OFF"}</text></g>`;
  return `<section class="network-lab${expected(stage,wiring,trials,reason)?" network-ready":""}">
   <div class="builder-heading"><span>⚡ 街からの設計依頼</span><h3>${stage===7?"時計塔の二重ロック":"港の2か所スイッチ"}</h3>
@@ -142,12 +151,13 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    <p class="builder-help">スイッチを うごかして 4つの けっかを くらべよう。</p>
    <div class="network-switches"><button type="button" data-net-switch="a" aria-pressed="${a}" class="${a?"on":""}">A：${a?"ON":"OFF"}</button><button type="button" data-net-switch="b" aria-pressed="${b}" class="${b?"on":""}">B：${b?"ON":"OFF"}</button></div>
    <p class="builder-live">${result.short?"⚠ ショート！":result.lit?"💡 ついている":"◯ きえている"}</p>
-   <span class="network-auto-note" aria-live="polite">✓ じどう きろく</span>
-   ${comparison}<div class="network-results">${results}</div>${inspection}
+   ${observedProgress}
+   <p class="network-choice-note">カードを おすと スイッチが かわるよ</p>
+   ${comparison}<div class="network-results" role="group" aria-label="4通りのスイッチの組み合わせ">${results}</div>${inspection}
    ${count===4?`<div class="network-reason"><strong>🧠 4つの結果から、なぜ点灯する？</strong>
     <button type="button" data-net-reason="both" class="${reason==="both"?"chosen":""}">直列：2つともONで一本道がつながる</button>
     <button type="button" data-net-reason="either" class="${reason==="either"?"chosen":""}">並列：どちらかの道がつながればよい</button>
-   </div>`:`<p class="builder-hint">みた けっか ${count} / 4</p>`}
+   </div>`:`<p class="builder-hint">${wiring.length?"あと "+(4-count)+"つ の けっかを みよう":"まず どう線を つなごう"}</p>`}
    ${expected(stage,wiring,trials,reason)?'<div class="network-power-ready" aria-live="polite"><span class="network-power-dot">✦</span><strong>街の電気設備の準備が整った！</strong><small>4通りの働きが設計条件と一致しているよ。</small></div>':""}
    <button type="button" data-net-submit="1" class="builder-submit" ${expected(stage,wiring,trials,reason)?"":"disabled"}>🏆 設計を完成する</button>
   </div></div></section>`;
