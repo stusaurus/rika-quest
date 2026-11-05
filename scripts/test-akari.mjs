@@ -193,7 +193,7 @@ assert.match(boardSvg,/class="battery-model"/,"Cylindrical battery is drawn");
 assert.match(boardSvg,/class="bulb-model"/,"Glass filament bulb is drawn");
 assert.match(boardSvg,/左の金属側面と下の小さな金属/,"Bulb must distinguish shell and base electrodes");
 assert.match(boardSvg,/M80 43L245 144/,"Graph wiring must still connect the battery and real side-contact coordinates");
-assert.match(boardSvg,/M80 207L310 206/,"Graph wiring must still connect negative terminal to real bulb base");
+assert.match(boardSvg,/M178 151L313 210/,"Graph wiring must connect the horizontal battery negative terminal to the bulb base");
 assert.equal((models.battery("series").match(/battery-cell-v2/g)||[]).length,2,"Series diagrams must show exactly two recognisable cells");
 assert.equal((models.battery("small").match(/battery-cell-v2/g)||[]).length,1,"Single-cell diagram should be recognisable");
 assert.match(models.bulb(true),/bulb-art-v2/,"Lamp closeup uses the same realistic contact design");

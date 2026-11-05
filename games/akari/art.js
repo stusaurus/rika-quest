@@ -142,54 +142,53 @@ function testCircuit(id,lit){
 }
 
 function workbench(wires,lit){
- // Terminal positions are a public contract with game.js and CSS.
- // P 80,43; N 80,207; L 245,144; R 310,206.
- const points={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};
+ // Matching physical points and game/test CSS: P[42,151], N[178,151], L[268,152], R[313,210].
+ const points={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
  const leads=wires.map(([a,b])=>{
   const p=points[a],q=points[b];if(!p||!q)return "";
   const danger=(a==="P"&&b==="N")||(a==="N"&&b==="P");
-  return '<path d="M'+p[0]+' '+p[1]+'L'+q[0]+' '+q[1]+'" fill="none" class="wire'+(lit?' lit':'')+(danger?' danger':'')+'" stroke-linecap="round" stroke-width="7"/>';
+  return '<path d="M'+p[0]+' '+p[1]+'L'+q[0]+' '+q[1]+'" fill="none" class="wire'+(lit?" lit":"")+(danger?" danger":"")+'" stroke-width="8" stroke-linecap="round"/>';
  }).join("");
- const defs='<defs>'+
-  '<linearGradient id="workCell" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dd4d3c"/><stop offset=".25" stop-color="#e86146"/><stop offset=".35" stop-color="#ffdf58"/><stop offset=".70" stop-color="#f5ca45"/><stop offset=".83" stop-color="#3994d5"/><stop offset="1" stop-color="#1763ad"/></linearGradient>'+
-  '<linearGradient id="workMetal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7a8e99"/><stop offset=".24" stop-color="#f5faf9"/><stop offset=".56" stop-color="#cad7db"/><stop offset=".85" stop-color="#819aa5"/><stop offset="1" stop-color="#536b7b"/></linearGradient>'+
-  '<linearGradient id="workGlass" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="'+(lit?'#fff6ca':'#e6f7f8')+'" stop-opacity="'+(lit?".98":".86")+'"/><stop offset=".65" stop-color="'+(lit?'#ffe5a5':'#bad5dc')+'" stop-opacity="'+(lit?".95":".69")+'"/><stop offset="1" stop-color="'+(lit?'#fff1cb':'#96b6c0')+'" stop-opacity=".70"/></linearGradient>'+
-  '<filter id="workGlow"><feGaussianBlur stdDeviation="9"/></filter></defs>';
- const battery='<g class="battery-model" role="group" aria-label="たて型の単3形に似た乾電池。上がプラス、下がマイナス">'+
-  '<ellipse cx="80" cy="212" rx="41" ry="6" fill="#081e36" opacity=".30"/>'+
-  '<rect x="52" y="72" width="56" height="114" rx="10" fill="url(#workCell)" stroke="#e3f2f2" stroke-width="2.2"/>'+
-  '<path d="M60 83V174" stroke="#b8e3e5" stroke-width="4" stroke-linecap="round" opacity=".64"/>'+
-  '<rect x="52" y="72" width="56" height="13" rx="5" fill="url(#workMetal)" stroke="#a5bfc8" stroke-width="1.4"/>'+
-  '<ellipse cx="80" cy="72" rx="28" ry="7" fill="url(#workMetal)" stroke="#e3ebec" stroke-width="1.3"/>'+
-  '<path d="M80 72V49" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
-  '<rect x="70" y="38" width="20" height="12" rx="4" fill="url(#workMetal)" stroke="#f3f6eb" stroke-width="1.5"/>'+
-  '<path d="M61 181H99" stroke="#b4cdd0" stroke-width="10" stroke-linecap="round"/>'+
-  '<rect x="52" y="180" width="56" height="10" rx="4" fill="url(#workMetal)" stroke="#bdcacf" stroke-width="1.5"/>'+
-  '<path d="M80 188V206" stroke="url(#workMetal)" stroke-width="11" stroke-linecap="round"/>'+
-  '<rect x="67" y="199" width="26" height="9" rx="3" fill="url(#workMetal)" stroke="#e4eff0" stroke-width="1.2"/>'+
-  '<rect x="59" y="100" width="42" height="42" rx="5" fill="#fff6cc" opacity=".98"/>'+
-  '<text x="80" y="119" text-anchor="middle" fill="#154a65" font-size="15" font-weight="900">1.5 V</text>'+
-  '<text x="80" y="135" text-anchor="middle" fill="#23546b" font-size="9" font-weight="800">乾電池</text>'+
-  '<text x="123" y="56" text-anchor="middle" fill="#fff1bf" font-size="23" font-weight="900">＋</text>'+
-  '<text x="124" y="211" text-anchor="middle" fill="#e9f2ef" font-size="22" font-weight="900">−</text></g>';
- const filament='<path d="M298 126L298 103L304 98L310 107L317 98L323 103L323 126" fill="none" stroke="'+(lit?'#fff1ae':'#b27745')+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'+
-  '<path d="M298 104L298 137M323 104L323 137" stroke="#9ea9ad" stroke-width="2.5"/>';
- const bulb='<g class="bulb-model" role="group" aria-label="豆電球。左の金属側面と下の小さな金属が別々の接点">'+
-  (lit?'<ellipse cx="310" cy="87" rx="73" ry="64" fill="#ffdf80" opacity=".40" filter="url(#workGlow)"/>':'')+
-  '<path d="M285 139C279 124 273 111 275 90C276 58 289 42 311 42C334 42 347 60 348 88C351 110 342 124 336 139Z" fill="url(#workGlass)" stroke="'+(lit?'#ffefae':'#e4f2f4')+'" stroke-width="3.7"/>'+
-  '<path d="M285 86C289 61 298 54 304 52" fill="none" stroke="#fff" opacity=".8" stroke-width="4.5" stroke-linecap="round"/>'+
+ const scheme='<defs>'+
+  '<linearGradient id="workBatteryBody" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fcf1d0"/><stop offset=".12" stop-color="#fdf9db"/><stop offset=".5" stop-color="#f4da80"/><stop offset=".87" stop-color="#d6a94d"/><stop offset="1" stop-color="#885c23"/></linearGradient>'+
+  '<linearGradient id="workMetal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".26" stop-color="#b4c6d0"/><stop offset=".56" stop-color="#e9f4f6"/><stop offset=".85" stop-color="#879da8"/><stop offset="1" stop-color="#576e79"/></linearGradient>'+
+  '<radialGradient id="workGlass" cx=".35" cy=".24" r=".86"><stop stop-color="'+(lit?"#fff1bc":"#faffff")+'" stop-opacity=".98"/><stop offset=".57" stop-color="'+(lit?"#ffe9a3":"#d3eff9")+'" stop-opacity=".72"/><stop offset="1" stop-color="#a3c4d9" stop-opacity=".76"/></radialGradient>'+
+  '<filter id="workGlow"><feGaussianBlur stdDeviation="11"/></filter>'+
+  '</defs>';
+ const battery='<g class="battery-model" role="group" aria-label="よこ向きの乾電池。左はプラス極、右はマイナス極">'+
+  '<ellipse cx="112" cy="194" rx="75" ry="7" fill="#718695" opacity=".23"/>'+
+  '<rect x="49" y="115" width="123" height="67" rx="12" fill="url(#workBatteryBody)" stroke="#314d66" stroke-width="3"/>'+
+  '<path d="M59 117H97V180H59Q49 180 49 171V126Q49 117 59 117Z" fill="#e33f39"/>'+
+  '<path d="M97 117H144V180H97Z" fill="#ffe35f"/>'+
+  '<path d="M144 117H161Q171 117 171 127V171Q171 180 161 180H144Z" fill="#246fc6"/>'+
+  '<path d="M52 124H169" stroke="#fff" opacity=".8" stroke-width="5" stroke-linecap="round"/>'+
+  '<path d="M56 175H165" stroke="#4b608c" opacity=".24" stroke-width="4"/>'+
+  '<rect x="46" y="135" width="7" height="34" rx="3" fill="url(#workMetal)" stroke="#8ba0ae" stroke-width="1.4"/>'+
+  '<rect x="40" y="145" width="8" height="12" rx="3" fill="url(#workMetal)" stroke="#849baa" stroke-width="1.5"/>'+
+  '<rect x="170" y="137" width="8" height="29" rx="3" fill="url(#workMetal)" stroke="#7892a5" stroke-width="1.2"/>'+
+  '<text x="72" y="157" fill="#fff" stroke="#ba3429" stroke-width=".2" font-size="25" text-anchor="middle" font-weight="900">＋</text>'+
+  '<text x="153" y="157" fill="#fff" font-size="24" text-anchor="middle" font-weight="900">−</text>'+
+  '<text x="120" y="158" text-anchor="middle" fill="#2d333d" font-size="18" font-weight="900">1.5V</text>'+
+  '<path d="M49 118H172" fill="none" stroke="#2c4659" stroke-width="3"/>'+
+  '<path d="M49 180H172" fill="none" stroke="#2c4659" stroke-width="3"/>'+
+  '</g>';
+ const filament='<path d="M296 133V102L303 98L311 105L319 98L326 104V133" fill="none" stroke="'+(lit?"#fff5ae":"#c5894e")+'" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M298 107L298 145M325 107L325 145" stroke="#849eaa" stroke-width="2.2"/>';
+ const bulb='<g class="bulb-model" role="group" aria-label="豆電球。金属の横と底はそれぞれ別の接点">'+
+  (lit?'<ellipse cx="312" cy="91" rx="63" ry="64" fill="#ffe6a8" opacity=".48" filter="url(#workGlow)"/>':'')+
+  '<path d="M294 134C285 120 278 110 278 86C278 58 292 38 313 38C338 38 352 60 351 89C351 110 341 122 333 134Z" fill="url(#workGlass)" stroke="'+(lit?"#ffe1a1":"#b8d5e8")+'" stroke-width="3.4"/>'+
+  '<path d="M286 84Q286 53 300 47" fill="none" stroke="#fff" opacity=".85" stroke-width="5" stroke-linecap="round"/>'+
   filament+
-  '<rect x="286" y="138" width="49" height="40" rx="6" fill="url(#workMetal)" stroke="#e3eff2" stroke-width="2.2"/>'+
-  '<path d="M288 146H333M288 154H333M288 162H333M288 170H333" fill="none" stroke="#617788" stroke-width="3"/>'+
-  '<path d="M246 144H284" fill="none" stroke="#a6b9bc" stroke-width="8" stroke-linecap="round"/>'+
-  '<circle cx="247" cy="144" r="6.5" fill="#f7d799" stroke="#d2a75e" stroke-width="1.5"/>'+
-  '<rect x="295" y="177" width="30" height="10" rx="3" fill="#233a48" stroke="#6c8793" stroke-width="1.2"/>'+
-  '<path d="M310 189V205" fill="none" stroke="#b8c6cb" stroke-width="8" stroke-linecap="round"/>'+
-  '<circle cx="310" cy="206" r="6.5" fill="#f7d799" stroke="#d2a75e" stroke-width="1.5"/></g>';
- return '<svg class="circuit-svg circuit-svg-v2" viewBox="0 0 400 250" aria-label="実物に近い乾電池と豆電球。乾電池の上は＋極、下は−極。豆電球の左に金属の横、下に底の接点がある" role="img">'+
-  defs+
-  '<path d="M18 222H380" stroke="#5d8593" stroke-width="1" stroke-dasharray="3 7" opacity=".42"/>'+
-  leads+battery+bulb+'</svg>';
+  '<rect x="289" y="132" width="46" height="44" rx="6" fill="url(#workMetal)" stroke="#758d9c" stroke-width="2"/>'+
+  '<path d="M291 142H333M291 152H333M291 162H333M291 171H333" stroke="#7c8893" stroke-width="3.4"/>'+
+  '<path d="M271 152H289" stroke="#c3d2d7" stroke-width="7" stroke-linecap="round"/>'+
+  '<circle cx="268" cy="152" r="5" fill="#f9da9b" stroke="#c2a166" stroke-width="1.5"/>'+
+  '<rect x="297" y="176" width="31" height="10" rx="3" fill="#293c4a" stroke="#768b95"/>'+
+  '<path d="M313 187V209" stroke="#c5d1d6" stroke-width="7" stroke-linecap="round"/>'+
+  '<circle cx="313" cy="210" r="5.2" fill="#f9dba0" stroke="#c2a166" stroke-width="1.4"/>'+
+  '</g>';
+ return '<svg class="circuit-svg circuit-svg-v2" viewBox="0 0 400 250" aria-label="乾電池の左が＋極、右が−極。豆電球は横の金属と底の接点につなぐ" role="img">'+
+  scheme+leads+battery+bulb+'</svg>';
 }
 
 window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit,workbench};

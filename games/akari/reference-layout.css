@@ -1,0 +1,429 @@
+/* Akari Quest — reference-driven game UI, November 2026.
+   Functional layout, not a raster background with fake buttons. */
+body[data-visual-theme="reference-rebuild"]{
+ color:#122e60;
+ background:
+  radial-gradient(ellipse at 8% 80%,#7dbf80 0,transparent 29%),
+  radial-gradient(ellipse at 95% 85%,#4b9b74 0,transparent 31%),
+  linear-gradient(#4c9ce4 0%,#89c3f5 33%,#97d8c7 65%,#79b783 100%);
+}
+body[data-visual-theme="reference-rebuild"] .sky-particles{opacity:.15}
+body[data-visual-theme="reference-rebuild"] .topbar{
+ position:relative;top:auto;min-height:106px;height:auto;z-index:40;
+ padding:12px clamp(12px,2vw,28px);
+ background:linear-gradient(180deg,#398ade 0,#3179ca 100%);
+ border-bottom:0;box-shadow:none;gap:14px;
+}
+body[data-visual-theme="reference-rebuild"] .brand{
+ flex:0 0 clamp(192px,22vw,325px);
+ min-width:0;min-height:78px;padding:9px 12px;
+ background:linear-gradient(155deg,#c78d4b,#955226 69%,#764018);
+ border:5px solid #684021;border-radius:13px;
+ box-shadow:0 5px 0 #3f612d,0 10px 16px #1c446855;
+ color:#fff3c4;font-size:clamp(17px,2.1vw,30px);
+ text-shadow:0 3px 2px #542f15;
+ transform:rotate(-1deg);
+}
+body[data-visual-theme="reference-rebuild"] .brand small{
+ color:#fff3ce;font-size:clamp(9px,1vw,14px);letter-spacing:0;
+ background:#e3b06e;text-shadow:0 1px 1px #71421a;
+ border-radius:5px;margin-top:4px;padding:2px 4px;
+}
+body[data-visual-theme="reference-rebuild"] .brand-symbol{font-size:30px;color:#ffe678;margin-right:8px}
+body[data-visual-theme="reference-rebuild"] .game-title{display:none}
+body[data-visual-theme="reference-rebuild"] .top-actions{gap:8px}
+body[data-visual-theme="reference-rebuild"] .star-count{
+ background:#f4ecd2;color:#b97e18;border:2px solid #e1c694;
+ font-size:18px;padding:6px 11px
+}
+body[data-visual-theme="reference-rebuild"] .icon-btn{
+ background:linear-gradient(#fff,#e8f4ff);color:#1c5795;
+ min-width:46px;min-height:46px;border:2px solid #94bee7;border-radius:14px;
+ box-shadow:0 4px 0 #3574ba
+}
+body[data-visual-theme="reference-rebuild"] #sidebar{
+ position:relative;top:auto;right:auto;width:auto;max-height:none;overflow:visible;
+ padding:0;margin:0;border:0;box-shadow:none;background:transparent;
+ color:#154978;z-index:44
+}
+body[data-visual-theme="reference-rebuild"] #sidebar .side-heading{padding:0;gap:0}
+body[data-visual-theme="reference-rebuild"] #sidebar .side-heading>span{display:none}
+body[data-visual-theme="reference-rebuild"] #sidebar .map-toggle{
+ display:block;background:linear-gradient(#fff,#ecf6ff);
+ min-height:46px;color:#225f9a;border:2px solid #94bee7;
+ border-radius:14px;white-space:nowrap;box-shadow:0 4px 0 #3574ba
+}
+body[data-visual-theme="reference-rebuild"] #sidebar .mission-list{
+ display:none;position:absolute;right:0;top:54px;width:min(320px,90vw);
+ max-height:65vh;overflow:auto;
+ padding:10px;background:#fffdfa;border:3px solid #9abfdd;
+ border-radius:15px;box-shadow:0 10px 22px #1c3d6288;z-index:45
+}
+body[data-visual-theme="reference-rebuild"] #sidebar.open .mission-list{display:grid}
+body[data-visual-theme="reference-rebuild"] #sidebar .map-illustration,
+body[data-visual-theme="reference-rebuild"] #sidebar .side-note{display:none!important}
+body[data-visual-theme="reference-rebuild"] .layout{
+ display:block;max-width:1660px;margin:0 auto;padding:0 clamp(10px,2vw,30px) 30px
+}
+body[data-visual-theme="reference-rebuild"] .main{
+ position:relative;isolation:isolate;min-width:0;padding:12px clamp(5px,1.1vw,15px) 20px;
+ display:grid;grid-template-columns:clamp(215px,22vw,340px) minmax(0,1fr);
+ grid-template-areas:
+   "heading heading"
+   "task task"
+   "steps science"
+   "steps workplace"
+   "steps feedback"
+   "steps actions"
+   "journal journal"
+   "discovery discovery"
+   "report report"
+   "footer footer";
+ column-gap:14px;row-gap:12px;align-items:start
+}
+body[data-visual-theme="reference-rebuild"] .main>.story-scene{
+ position:absolute;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;
+ max-height:800px;border:0;border-radius:0;box-shadow:none;
+ background:linear-gradient(180deg,#7fb9ee 0%,#d0e9e3 36%,#a4cfb2 100%);
+ overflow:hidden
+}
+body[data-visual-theme="reference-rebuild"] .story-scene .far-hills{height:210px;bottom:12px;opacity:.47}
+body[data-visual-theme="reference-rebuild"] .story-scene .near-hills{height:190px;opacity:.45;bottom:-40px}
+body[data-visual-theme="reference-rebuild"] .story-scene .sun-disc{right:8%;top:-28px;width:86px;height:86px}
+body[data-visual-theme="reference-rebuild"] .story-scene .landmark{
+ width:150px;height:135px;right:0;bottom:28px;opacity:.83
+}
+body[data-visual-theme="reference-rebuild"] .story-scene .scene-caption{
+ left:8px;bottom:10px;width:190px;max-width:60%;opacity:.7;padding:5px;
+ background:#fcf4dab0;border:1px solid #e8d1a4
+}
+body[data-visual-theme="reference-rebuild"] .story-scene .scene-caption h1{font-size:13px}
+body[data-visual-theme="reference-rebuild"] .story-scene .scene-caption p{display:none}
+body[data-visual-theme="reference-rebuild"] .story-scene .scene-progress{
+ right:8px;top:10px;opacity:.75;font-size:12px
+}
+body[data-visual-theme="reference-rebuild"] .quest-panel{display:contents}
+body[data-visual-theme="reference-rebuild"] .main>.quest-panel>*,
+body[data-visual-theme="reference-rebuild"] .main>.learning-steps,
+body[data-visual-theme="reference-rebuild"] .main>.footer{
+ position:relative;z-index:2;min-width:0
+}
+body[data-visual-theme="reference-rebuild"] .quest-head{
+ grid-area:heading;display:flex;flex-wrap:wrap;
+ min-height:93px;gap:12px;padding:12px clamp(12px,2vw,26px);
+ background:linear-gradient(#fffaf0,#fff3dd);
+ border:4px solid #e2c99d;border-radius:20px;
+ box-shadow:0 6px 0 #a97c4977,0 9px 16px #395e7945
+}
+body[data-visual-theme="reference-rebuild"] .quest-head>div:first-child{flex:1 1 400px;min-width:0}
+body[data-visual-theme="reference-rebuild"] .quest-head .eyebrow{
+ display:inline-block;background:linear-gradient(#3a91e1,#1868bd);
+ padding:4px 15px;border-radius:999px;color:white;
+ font-size:13px;letter-spacing:.02em
+}
+body[data-visual-theme="reference-rebuild"] .quest-head h2{
+ font-size:clamp(23px,2.8vw,36px);
+ color:#112d5c;line-height:1.35;margin:4px 0 0;
+ overflow-wrap:anywhere
+}
+body[data-visual-theme="reference-rebuild"] .quest-stars{font-size:clamp(22px,2.1vw,30px)}
+body[data-visual-theme="reference-rebuild"] .reading-toggle{
+ background:linear-gradient(#fff,#e8f5ff);border:2px solid #7eb0db;
+ color:#1e5894;border-radius:16px;min-height:47px
+}
+body[data-visual-theme="reference-rebuild"] .reading-task-row{
+ grid-area:task;display:flex;align-items:center;min-height:78px;
+ gap:13px;margin:0;padding:11px clamp(12px,2vw,23px);
+ border:4px solid #e6cda5;border-radius:21px;
+ background:#fffdf5;box-shadow:0 4px 0 #ac835475
+}
+body[data-visual-theme="reference-rebuild"] .reading-task-row:before{
+ content:"今すること";background:#ffda55;font-size:17px;
+ min-height:49px;padding:7px 17px;color:#342701;flex:0 0 auto
+}
+body[data-visual-theme="reference-rebuild"] .reading-easy .reading-task-row .quest-desc{
+ font-size:clamp(16px,1.8vw,25px);font-weight:900;line-height:1.65;color:#123260;
+}
+body[data-visual-theme="reference-rebuild"] .read-task-btn{
+ min-height:45px;padding:7px 14px;white-space:nowrap
+}
+body[data-visual-theme="reference-rebuild"] #scienceCompass{
+ grid-area:science;margin:0;min-width:0
+}
+body[data-visual-theme="reference-rebuild"].reading-easy #scienceCompass{display:none}
+body[data-visual-theme="reference-rebuild"] .learning-steps{
+ grid-area:steps;align-self:start;display:grid;gap:10px
+}
+body[data-visual-theme="reference-rebuild"] .learning-step{
+ border:3px solid #b8cfe3;border-radius:19px;
+ padding:13px 15px;background:linear-gradient(#ffffff,#f0f9ff);
+ box-shadow:0 5px 0 #94b3c788;color:#123664
+}
+body[data-visual-theme="reference-rebuild"] .learning-step h3{
+ margin:0 0 5px;color:#1d5d9c;font-size:clamp(17px,1.8vw,25px);
+ line-height:1.3;display:flex;align-items:center;gap:7px
+}
+body[data-visual-theme="reference-rebuild"] .learning-step .step-index{
+ display:inline-grid;place-items:center;flex:0 0 37px;width:37px;height:37px;
+ border-radius:50%;background:linear-gradient(#47a3ee,#126bbd);
+ color:#fff;font-size:20px;box-shadow:0 3px 0 #0c528f
+}
+body[data-visual-theme="reference-rebuild"] .learning-step p{
+ font-size:clamp(13px,1.3vw,17px);font-weight:800;margin:5px 0 9px;line-height:1.5
+}
+body[data-visual-theme="reference-rebuild"] .prediction-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+body[data-visual-theme="reference-rebuild"] .prediction-option{
+ border:2px solid #98bddb;border-radius:13px;background:#fff;
+ min-height:48px;color:#24568d;font-weight:900;padding:7px 5px;
+ font-size:clamp(11px,1.1vw,16px);line-height:1.25
+}
+body[data-visual-theme="reference-rebuild"] .prediction-option[aria-pressed="true"]{
+ background:#ffedac;border-color:#e1ac25;color:#543b12;
+ box-shadow:inset 0 0 0 2px #fff1bf
+}
+body[data-visual-theme="reference-rebuild"] .step-note{
+ font-size:12px;line-height:1.55;color:#3d7190;margin-top:8px
+}
+body[data-visual-theme="reference-rebuild"] #workspace{grid-area:workplace;min-width:0;min-height:0}
+body[data-visual-theme="reference-rebuild"] .workspace:has(>.circuit-toolbar){display:block}
+body[data-visual-theme="reference-rebuild"] .circuit-toolbar{
+ margin:0 0 7px;border:2px solid #c69b64;
+ background:#fff7e7;padding:8px 15px;border-radius:15px
+}
+body[data-visual-theme="reference-rebuild"] .circuit-toolbar>strong{color:#274c79;font-size:15px}
+body[data-visual-theme="reference-rebuild"] .circuit-board{
+ border:12px ridge #bc8958;box-shadow:0 5px 0 #6d421f,0 9px 20px #34587855;
+ background:linear-gradient(#ffffff,#f4f8ff);min-height:445px;border-radius:21px
+}
+body[data-visual-theme="reference-rebuild"] .circuit-board:before{
+ background:linear-gradient(90deg,#93b8d529 1px,transparent 1px),
+ linear-gradient(#93b8d529 1px,transparent 1px);
+ background-size:26px 26px
+}
+body[data-visual-theme="reference-rebuild"] .circuit-board:not(.zoomed) .circuit-inner{
+ width:min(730px,calc(100% - 38px));top:51%;max-width:none;aspect-ratio:400/250
+}
+body[data-visual-theme="reference-rebuild"] .circuit-board.zoomed .circuit-inner{width:730px}
+body[data-visual-theme="reference-rebuild"] .circuit-board.zoomed{min-height:500px}
+body[data-visual-theme="reference-rebuild"] .component-tag{
+ position:absolute;z-index:3;top:1%;
+ transform:translateX(-50%);display:grid;
+ justify-items:center;min-width:95px;padding:3px 9px 5px;
+ background:#fffdfaee;border:2px solid #92aac1;border-radius:14px;
+ text-align:center;pointer-events:none;color:#223e67;
+ line-height:1.25;box-shadow:0 4px 0 #b4c9d260
+}
+body[data-visual-theme="reference-rebuild"] .component-tag strong{font-size:clamp(13px,1.4vw,19px)}
+body[data-visual-theme="reference-rebuild"] .component-tag small{font-size:10px}
+body[data-visual-theme="reference-rebuild"] .component-tag.battery-tag{left:27%}
+body[data-visual-theme="reference-rebuild"] .component-tag.bulb-tag{left:80%}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal{
+ min-width:44px;min-height:44px;width:44px;height:44px;
+ border:4px solid #1d77e9;background:#fff;color:#1f5aab;
+ box-shadow:0 0 0 4px #e9f4ff,0 3px 0 #8ab6de;
+ font-size:14px;z-index:7
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal[data-t="P"]{
+ left:10.5%;top:60.4%;background:#fff7f3;color:#bc3826;border-color:#2778eb
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal[data-t="N"]{
+ left:44.5%;top:60.4%;background:#f4faff;color:#2364ab;border-color:#2778eb
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal[data-t="L"]{
+ left:67%;top:60.8%;background:#fffef7;color:#71531d;border-color:#2778eb
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal[data-t="R"]{
+ left:78.25%;top:84%;background:#fffef7;color:#71531d;border-color:#2778eb
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal.selected{background:#ffe96c!important;color:#573d17}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal-label{
+ font-size:11px;line-height:1.2;background:#ffffffd9;
+ color:#174a82;border:1px solid #b7d3ed;padding:2px 5px
+}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .label-p{left:10.5%;top:77%}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .label-n{left:44.5%;top:77%}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .label-l{left:66%;top:74%}
+body[data-visual-theme="reference-rebuild"] .circuit-inner .label-r{left:78.25%;top:96%}
+body[data-visual-theme="reference-rebuild"] .circuit-board .wire:not(.lit):not(.danger){
+ stroke:var(--chosen-wire-color,#277fea)!important;
+ stroke-width:8;filter:drop-shadow(0 1px 2px #638bb955)
+}
+body[data-visual-theme="reference-rebuild"] .circuit-board .wire.danger{stroke:#e23b3b!important}
+body[data-visual-theme="reference-rebuild"] .circuit-board .wire.lit{stroke:#ffb725!important}
+body[data-visual-theme="reference-rebuild"] .circuit-board .circuit-help{
+ bottom:7px;font-size:13px;background:#fffdf5ef;
+ color:#234879;border:1px solid #c3d9e7;padding:6px 10px;z-index:8
+}
+body[data-visual-theme="reference-rebuild"] .circuit-board .wire-chip-list{
+ top:12px;right:10px;max-width:50%;z-index:9
+}
+body[data-visual-theme="reference-rebuild"] .wire-palette{
+ display:grid;grid-template-columns:minmax(120px,.8fr) repeat(3,minmax(0,1fr));
+ align-items:stretch;gap:9px;border:8px ridge #bc8958;
+ background:linear-gradient(#fffdf6,#fff4d6);
+ border-radius:18px;padding:8px;margin-top:9px;
+ box-shadow:0 4px 0 #805831;color:#203f6d
+}
+body[data-visual-theme="reference-rebuild"] .wire-palette-heading{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+ font-size:clamp(12px,1.6vw,19px);font-weight:900
+}
+body[data-visual-theme="reference-rebuild"] .wire-color-choice{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+ background:#ffffffa6;border:2px solid transparent;border-radius:14px;
+ color:#17436d;font-size:clamp(10px,1.2vw,15px);
+ font-weight:900;padding:5px;min-height:70px
+}
+body[data-visual-theme="reference-rebuild"] .wire-color-choice[aria-pressed="true"]{
+ background:#fff6c3;border-color:#f6c83b;box-shadow:inset 0 0 0 2px #fff
+}
+body[data-visual-theme="reference-rebuild"] .wire-sample{
+ display:block;width:min(100%,125px);height:16px;position:relative;
+ border-bottom:7px solid var(--sample-wire);border-radius:0 0 50% 50%;
+}
+body[data-visual-theme="reference-rebuild"] .wire-sample:before,
+body[data-visual-theme="reference-rebuild"] .wire-sample:after{
+ content:"";position:absolute;bottom:-10px;width:13px;height:13px;
+ background:#f4f8ff;border:3px solid #7c8993;border-radius:50%;
+}
+body[data-visual-theme="reference-rebuild"] .wire-sample:before{left:0}
+body[data-visual-theme="reference-rebuild"] .wire-sample:after{right:0}
+body[data-visual-theme="reference-rebuild"] .wire-palette-foot{
+ grid-column:1/-1;margin:0;color:#4c6574;text-align:center;font-size:11px
+}
+body[data-visual-theme="reference-rebuild"] .circuit-legend{display:none}
+body[data-visual-theme="reference-rebuild"] .feedback{grid-area:feedback;margin:0;background:#fffdf8;border:2px solid #c6dbea;color:#214c74}
+body[data-visual-theme="reference-rebuild"] .action-row{
+ grid-area:actions;margin:0;display:flex;justify-content:center;gap:14px
+}
+body[data-visual-theme="reference-rebuild"] .action-row .btn{
+ min-height:60px;padding:11px 20px;border-radius:18px;
+ font-size:clamp(14px,1.6vw,22px);font-weight:900
+}
+body[data-visual-theme="reference-rebuild"] .action-row #resetBtn{order:1}
+body[data-visual-theme="reference-rebuild"] .action-row #checkBtn,
+body[data-visual-theme="reference-rebuild"] .action-row #nextBtn{
+ order:2;flex:1 1 330px;max-width:560px
+}
+body[data-visual-theme="reference-rebuild"] .action-row #hintBtn{order:3}
+body[data-visual-theme="reference-rebuild"] .journal{grid-area:journal;margin:2px 0}
+body[data-visual-theme="reference-rebuild"] .discovery{grid-area:discovery}
+body[data-visual-theme="reference-rebuild"] .science-report{grid-area:report}
+body[data-visual-theme="reference-rebuild"] .footer{grid-area:footer;justify-self:stretch;color:#1f5371;background:#ffffffb2;border-radius:9px;padding:6px 9px}
+body[data-visual-theme="reference-rebuild"] .topbar .top-mission-progress{
+ flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:10px;
+ color:#fffefa;font-weight:900;font-size:17px;white-space:nowrap
+}
+body[data-visual-theme="reference-rebuild"] .top-progress-dots{display:flex;gap:5px}
+body[data-visual-theme="reference-rebuild"] .top-progress-dots i{
+ display:block;width:13px;height:13px;border:2px solid #bfd3e4;background:#b9cada;
+ border-radius:50%
+}
+body[data-visual-theme="reference-rebuild"] .top-progress-dots i.done{
+ background:#ffe052;border-color:#d8b52b
+}
+@media(max-width:940px){
+ body[data-visual-theme="reference-rebuild"] .main{grid-template-columns:218px minmax(0,1fr);column-gap:9px}
+ body[data-visual-theme="reference-rebuild"] .topbar{min-height:82px}
+ body[data-visual-theme="reference-rebuild"] .brand{flex-basis:210px;min-height:60px}
+ body[data-visual-theme="reference-rebuild"] .wire-palette{grid-template-columns:repeat(3,minmax(0,1fr))}
+ body[data-visual-theme="reference-rebuild"] .wire-palette-heading{grid-column:1/-1}
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .topbar{
+  padding:6px 7px;min-height:64px;gap:5px;flex-wrap:wrap
+ }
+ body[data-visual-theme="reference-rebuild"] .brand{
+  flex:1 1 160px;min-height:54px;padding:5px 7px;font-size:17px;
+  border-width:3px
+ }
+ body[data-visual-theme="reference-rebuild"] .brand small{font-size:9px}
+ body[data-visual-theme="reference-rebuild"] .brand-symbol{font-size:20px;margin-right:4px}
+ body[data-visual-theme="reference-rebuild"] .top-actions{margin-left:auto;gap:3px}
+ body[data-visual-theme="reference-rebuild"] .top-actions .star-count{font-size:12px;padding:4px}
+ body[data-visual-theme="reference-rebuild"] .top-actions .icon-btn{min-height:40px;min-width:33px;width:33px}
+ body[data-visual-theme="reference-rebuild"] .topbar .top-mission-progress{display:none}
+ body[data-visual-theme="reference-rebuild"] #sidebar .map-toggle{min-height:40px;padding:5px 7px;font-size:11px}
+ body[data-visual-theme="reference-rebuild"] .layout{padding:0 6px 15px}
+ body[data-visual-theme="reference-rebuild"] .main{
+  display:flex;flex-direction:column;gap:8px;padding:7px 3px 15px
+ }
+ body[data-visual-theme="reference-rebuild"] .main>.story-scene{
+  height:100%;max-height:none;opacity:.74
+ }
+ body[data-visual-theme="reference-rebuild"] .main>.quest-panel>*{width:100%}
+ body[data-visual-theme="reference-rebuild"] .quest-head{
+  min-height:0;padding:8px 10px;gap:5px;border-width:3px;
+  border-radius:13px
+ }
+ body[data-visual-theme="reference-rebuild"] .quest-head>div:first-child{flex:1 1 100%}
+ body[data-visual-theme="reference-rebuild"] .quest-head h2{font-size:clamp(17px,5.2vw,22px)}
+ body[data-visual-theme="reference-rebuild"] .quest-head .eyebrow{font-size:11px}
+ body[data-visual-theme="reference-rebuild"] .quest-stars{font-size:18px}
+ body[data-visual-theme="reference-rebuild"] .reading-toggle{min-height:41px;font-size:12px}
+ body[data-visual-theme="reference-rebuild"] .reading-task-row{
+  gap:7px;padding:8px 9px;border-width:3px;min-height:0;border-radius:12px
+ }
+ body[data-visual-theme="reference-rebuild"] .reading-task-row:before{
+  font-size:11px;min-height:31px;padding:5px 8px
+ }
+ body[data-visual-theme="reference-rebuild"] .reading-easy .reading-task-row .quest-desc{
+  font-size:14px;line-height:1.7
+ }
+ body[data-visual-theme="reference-rebuild"] .learning-steps{
+  display:flex;gap:7px;width:100%;overflow-x:auto;scroll-snap-type:x proximity;
+  padding:0 0 6px;align-self:stretch
+ }
+ body[data-visual-theme="reference-rebuild"] .learning-step{
+  flex:0 0 min(64vw,225px);padding:8px 10px;min-height:127px;
+  border-width:2px;border-radius:12px;scroll-snap-align:start
+ }
+ body[data-visual-theme="reference-rebuild"] .learning-step h3{font-size:15px}
+ body[data-visual-theme="reference-rebuild"] .learning-step .step-index{width:26px;height:26px;flex-basis:26px;font-size:14px}
+ body[data-visual-theme="reference-rebuild"] .learning-step p{font-size:12px;line-height:1.35}
+ body[data-visual-theme="reference-rebuild"] .prediction-option{min-height:38px;font-size:10px}
+ body[data-visual-theme="reference-rebuild"] .step-note{font-size:10px}
+ body[data-visual-theme="reference-rebuild"] .circuit-toolbar{padding:6px 10px}
+ body[data-visual-theme="reference-rebuild"] .circuit-board{
+  border-width:6px;min-height:330px;border-radius:14px
+ }
+ body[data-visual-theme="reference-rebuild"] .circuit-board:not(.zoomed) .circuit-inner{
+  width:calc(100% - 14px);top:51%
+ }
+ body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal{
+  min-width:38px;min-height:38px;width:38px;height:38px;border-width:3px;
+  box-shadow:0 0 0 2px #e5f3ff
+ }
+ body[data-visual-theme="reference-rebuild"] .component-tag{
+  top:-6%;min-width:63px;padding:2px 4px;border-width:1px
+ }
+ body[data-visual-theme="reference-rebuild"] .component-tag strong{font-size:11px}
+ body[data-visual-theme="reference-rebuild"] .component-tag small{font-size:9px}
+ body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal-label{display:none}
+ body[data-visual-theme="reference-rebuild"] .circuit-board .circuit-help{font-size:11px}
+ body[data-visual-theme="reference-rebuild"] .wire-palette{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:7px;border-width:5px;padding:5px;gap:5px
+ }
+ body[data-visual-theme="reference-rebuild"] .wire-palette-heading{
+  grid-column:1/-1;justify-content:center;font-size:12px
+ }
+ body[data-visual-theme="reference-rebuild"] .wire-color-choice{min-height:56px;font-size:10px}
+ body[data-visual-theme="reference-rebuild"] .wire-palette-foot{font-size:10px}
+ body[data-visual-theme="reference-rebuild"] .action-row{gap:7px;flex-wrap:wrap;width:100%}
+ body[data-visual-theme="reference-rebuild"] .action-row #checkBtn,
+ body[data-visual-theme="reference-rebuild"] .action-row #nextBtn{
+  flex:1 1 100%;max-width:none;order:0
+ }
+ body[data-visual-theme="reference-rebuild"] .action-row .btn{
+  flex:1 1 45%;min-height:48px;font-size:14px;padding:7px
+ }
+ body[data-visual-theme="reference-rebuild"] .action-row #resetBtn{order:1}
+ body[data-visual-theme="reference-rebuild"] .action-row #hintBtn{order:2}
+ body[data-visual-theme="reference-rebuild"] .footer{font-size:9px}
+}
+@media(max-width:360px){
+ body[data-visual-theme="reference-rebuild"] .brand{font-size:15px}
+ body[data-visual-theme="reference-rebuild"] .topbar .star-count{display:none}
+ body[data-visual-theme="reference-rebuild"] .circuit-inner .terminal{min-width:36px;min-height:36px}
+}

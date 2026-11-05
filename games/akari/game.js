@@ -347,7 +347,7 @@ function renderHeader(){
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
-const pts={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};const labels={P:"乾電池の＋極",N:"乾電池の−極",L:"豆電球の金属の横部分",R:"豆電球の底の接点"};
+const pts={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};const labels={P:"乾電池の＋極",N:"乾電池の−極",L:"豆電球の金属の横部分",R:"豆電球の底の接点"};
 function edgeKey(a,b){return[a,b].sort().join("-");}
 function circuitStatus(wires){
  const g={P:[],N:[],L:[],R:[]};wires.forEach(([a,b])=>{if(g[a]&&g[b]){g[a].push(b);g[b].push(a);}});
@@ -361,7 +361,7 @@ function renderWire(){
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
  +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
  +'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
- +'<div class="circuit-help">2つの端子を順にタップ。線を外すには「×」。拡大中は電池・電球ボタンで移動。</div></div><div class="circuit-legend"><span>🔋 <b>乾電池</b><small>＋極・−極</small></span><span>💡 <b>豆電球</b><small>金属の横・底の接点</small></span></div>';
+ +'<div class="circuit-help">丸を2つタップして どう線をつなごう。外すときは「×」。</div></div><div class="circuit-legend"><span>🔋 <b>乾電池</b><small>＋極・−極</small></span><span>💡 <b>豆電球</b><small>金属の横・底の接点</small></span></div>';
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
 function renderExplore(){return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>橋の調査画面を読み込めませんでした。再読み込みしてください。</p>';}

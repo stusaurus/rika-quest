@@ -195,7 +195,7 @@ try{
    assert.equal(await page.locator(".circuit-svg-v2 .bulb-model").count(),1);
    const contactGeometry=await page.evaluate(()=>{
      const box=document.querySelector(".circuit-inner").getBoundingClientRect();
-     const pts={P:[80,43],N:[80,207],L:[245,144],R:[310,206]};
+     const pts={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
      return Object.entries(pts).map(([id,[x,y]])=>{
        const button=document.querySelector('[data-t="'+id+'"]').getBoundingClientRect();
        const cx=button.left+button.width/2,cy=button.top+button.height/2;
@@ -203,8 +203,8 @@ try{
      });
    });
    for(const p of contactGeometry)assert.ok(p.dx<3&&p.dy<3,"Touch target must sit on its electrical contact: "+JSON.stringify(p));
-   assert.ok((await page.locator(".scene-caption").evaluate(e=>e.getBoundingClientRect().width))>160,
-     "The story caption should get usable width now that the character is absent");
+   assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
+     "Current task must receive readable width without a character overlay");
 
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
