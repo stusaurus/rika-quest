@@ -243,13 +243,29 @@ try{
    await labWire("b1:P","l1:L");await labWire("b1:N","l1:R");
    assert.equal(await page.locator("#freeLabLines .free-wire").count(),2,"Two student-made leads form the closed circuit");
    assert.match(await page.locator("#freeLabStatus").textContent(),/1こ ついた/,"A complete physical circuit lights immediately");
+   // A deliberate cross-stroke cuts one lead; the other remains and the lamp goes dark.
+   const labSlash=await page.locator("#freeLabLines .free-wire-ink").first().evaluate(path=>{
+     const len=path.getTotalLength(),at=len*.25,p=path.getPointAtLength(at);
+     const a=path.getPointAtLength(Math.max(0,at-6)),b=path.getPointAtLength(Math.min(len,at+6));
+     const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy),matrix=path.getScreenCTM();
+     return [-42,42].map(t=>{
+       const p2=new DOMPoint(p.x-dy/n*t,p.y+dx/n*t).matrixTransform(matrix);
+       return {x:p2.x,y:p2.y};
+     });
+   });
+   await page.mouse.move(labSlash[0].x,labSlash[0].y);await page.mouse.down();
+   await page.mouse.move(labSlash[1].x,labSlash[1].y,{steps:10});await page.mouse.up();
+   assert.equal(await page.locator("#freeLabLines .free-wire").count(),1,"Crossing one live wire cuts only that wire");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Breaking the live circuit turns off the lamp");
+   await labWire("b1:P","l1:L");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Rewiring restores light immediately");
    const oldX=await page.evaluate(()=>window.AkariFreeLab.getState().nodes.find(n=>n.id==="b1").x);
    const handle=await page.locator('[data-free-move="b1"]').boundingBox();
    await page.mouse.move(handle.x+handle.width/2,handle.y+handle.height/2);await page.mouse.down();
    await page.mouse.move(handle.x+handle.width/2+24,handle.y+handle.height/2+18,{steps:8});
    await page.mouse.up();
    const movedX=await page.evaluate(()=>window.AkariFreeLab.getState().nodes.find(n=>n.id==="b1").x);
-   assert.ok(movedX>oldX+3,"The pupil can drag a battery to a different place");
+   assert.ok(movedX>oldX+1.5,"The pupil can drag a battery to a different place at mobile and desktop scales");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Moving the cell does not sever anchored leads");
    await page.locator("#freeAddbulb").click();
    await page.locator("#freeAddbattery").click();
