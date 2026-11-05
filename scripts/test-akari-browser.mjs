@@ -363,6 +363,9 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    assert.equal((await wireRoute()).length,2,"Both the outward and return leads must remain visible");
    assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
+   // A slash must start on the visible board, never in the offscreen part of zoom mode.
+   if(await page.locator(".circuit-board.zoomed").count())
+     await page.locator('[data-zoom="1"]').click();
    // Intentionally cross one drawn lead: only that lead should be cut, not the entire circuit.
    const slash=await page.locator('.lead-on-top[data-visual-wire="LP"] .wire').evaluate(path=>{
      const len=path.getTotalLength(),mid=path.getPointAtLength(len*.46);
@@ -375,26 +378,12 @@ try{
      };
      return {from:screen(-34),to:screen(34)};
    });
-   await page.evaluate(()=>{
-     window.__wireCutProbe=[];
-     for(const type of ["pointerdown","pointermove","pointerup"]){
-      document.addEventListener(type,e=>{
-       if(window.__wireCutProbe.length<30)window.__wireCutProbe.push({
-        type,target:typeof e.target.className==="string"?e.target.className:e.target.className?.baseVal,
-        x:Math.round(e.clientX),y:Math.round(e.clientY),primary:e.isPrimary,button:e.button
-       });
-      },true);
-     }
-   });
    await page.mouse.move(slash.from.x,slash.from.y);
    await page.mouse.down();
    await page.mouse.move(slash.to.x,slash.to.y,{steps:9});
    await page.mouse.up();
-   const probe=await page.evaluate(()=>({events:window.__wireCutProbe,loaded:window.AkariWireCut?.enabled,
-    board:document.querySelector(".circuit-board")?.className,
-    wires:[...document.querySelectorAll(".lead-on-top[data-visual-wire]")].map(x=>x.dataset.visualWire)}));
    assert.equal(await page.locator('.lead-on-top[data-visual-wire="LP"]').count(),0,
-     "A slash should remove only the intersected lead. Probe: "+JSON.stringify(probe));
+     "A slash should remove only the intersected lead");
    assert.equal(await page.locator('.lead-on-top[data-visual-wire="NR"]').count(),1,
      "The other wire must stay connected after cutting");
    assert.equal(await page.locator(".wire-chip").count(),1,
