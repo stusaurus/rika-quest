@@ -4,6 +4,7 @@ on:
     paths:
       - 'games/akari/**'
       - 'scripts/test-akari.mjs'
+      - 'tests/akari-switch-focus.test.cjs'
       - 'scripts/test-akari-browser.mjs'
       - 'scripts/build-akari-preview.mjs'
       - '.github/workflows/akari-qa.yml'
@@ -27,8 +28,12 @@ jobs:
           node --check games/akari/transfer.js
           node --check games/akari/builder.js
           node --check games/akari/switch-lab.js
+          node --check games/akari/wire-cut.js
+          node --check tests/akari-switch-focus.test.cjs
           node --check scripts/test-akari-browser.mjs
           node --check scripts/build-akari-preview.mjs
+      - name: Check switch circuit regression cases
+        run: node --test tests/akari-switch-focus.test.cjs
       - name: Run full 14-mission simulation
         run: node scripts/test-akari.mjs
       - name: Install Playwright and browsers
