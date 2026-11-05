@@ -1,0 +1,27 @@
+/* STEP: Keep the circuit as the primary interaction and the four experiments nearby. */
+.network-lab .builder-heading{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin-bottom:8px}
+.network-lab .builder-heading>span{display:none}
+.network-lab .builder-heading h3{margin:0;font-size:clamp(17px,2vw,23px)}
+.network-lab .builder-heading p{flex-basis:100%;margin:0;font-size:13px;line-height:1.45}
+.network-lab .builder-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.network-lab .builder-layout>.builder-panel{min-width:0}
+.network-lab .builder-layout>.builder-panel:first-child{order:0}
+.network-lab .builder-layout>.builder-panel:last-child{order:1}
+.network-lab .builder-layout>.builder-panel:last-child>h3{font-size:17px;margin:0 0 4px}
+.network-lab .builder-layout>.builder-panel:last-child>.builder-help,
+.network-lab .network-choice-note{display:none}
+.network-lab .network-switches{display:flex;gap:8px;margin:6px 0}
+.network-lab .network-switches button{min-height:44px;flex:1}
+.network-lab .builder-live{font-size:clamp(18px,2.5vw,25px);margin:5px 0;font-weight:900}
+.network-lab .network-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.network-lab .network-trial{min-height:76px}
+.network-lab .network-comparison{margin:5px 0;font-size:13px}
+.network-lab .network-reason{margin-top:10px}
+.network-lab .network-reason strong{display:block;font-size:16px;margin-bottom:8px}
+.network-lab .network-reason button{min-height:46px}
+@media(max-width:650px){
+ .network-lab .network-results{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .network-lab .builder-heading p{font-size:12px}
+ .network-lab .builder-panel{padding:9px}
+ .network-lab .network-trial{min-height:76px}
+}
