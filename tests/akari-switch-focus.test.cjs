@@ -105,3 +105,22 @@ test("a diagnosed short shows the actual unsafe bypass, not a glowing bulb",()=>
  assert.match(withDiagnosis,/builder-live live-short/);
  assert.doesNotMatch(withDiagnosis,/builder-live live-lit/);
 });
+
+test("reasoning diagrams appear only after four observations, not before",()=>{
+ const partial=trialsFor(series);
+ delete partial["01"];
+ const before=lab.render(7,series,null,true,true,partial);
+ assert.doesNotMatch(before,/data-net-reason="both"/);
+ assert.doesNotMatch(before,/data-net-reason="either"/);
+ const after=lab.render(7,series,null,true,true,trialsFor(series));
+ assert.match(after,/data-net-reason="both"/);
+ assert.match(after,/data-net-reason="either"/);
+ assert.match(after,/🔋 ━ A ━ B ━ 💡/);
+ assert.match(after,/┏━ A ━┓/);
+});
+test("visually choosing the wrong circuit explanation never enables completion",()=>{
+ const wrong=lab.render(7,series,null,true,true,trialsFor(series),"either");
+ assert.match(wrong,/data-net-submit="1" class="builder-submit" disabled/);
+ const right=lab.render(7,series,null,true,true,trialsFor(series),"both");
+ assert.match(right,/data-net-submit="1" class="builder-submit" >/);
+});
