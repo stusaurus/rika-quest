@@ -226,6 +226,20 @@ try{
    await page.mouse.up();
    assert.equal(await page.locator(".wire-chip").count(),1,"Dragging between contact circles must build exactly one wire");
    assert.equal(await page.locator(".terminal.selected").count(),0,"A completed drag should not leave a dangling tap selection");
+   const wireRoute=async()=>page.locator(".circuit-svg-v2 .lead-on-top .wire").evaluateAll(paths=>paths.map(path=>{
+     const length=path.getTotalLength(),inside={battery:0,bulb:0};
+     for(let n=0;n<=160;n++){
+       const p=path.getPointAtLength(length*n/160);
+       if(p.x>52&&p.x<169&&p.y>118&&p.y<179)inside.battery++;
+       if(p.x>292&&p.x<333&&p.y>136&&p.y<182)inside.bulb++;
+     }
+     return {...inside,ordered:path.closest("svg").querySelector(".battery-model").compareDocumentPosition(path)&Node.DOCUMENT_POSITION_FOLLOWING?true:false};
+   }));
+   const dragRoute=await wireRoute();
+   assert.equal(dragRoute.length,1,"A connected lead must be present in the SVG");
+   assert.equal(dragRoute[0].battery,0,"The P to L wire must never disappear inside the battery body");
+   assert.equal(dragRoute[0].bulb,0,"The P to L wire must not overlap the lamp's metal shell");
+   assert.equal(dragRoute[0].ordered,true,"Lead must be stacked in front of the device illustrations");
    await page.locator('[data-unwire="0"]').click();
 
    assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
@@ -252,6 +266,7 @@ try{
    await page.evaluate(()=>window.scrollTo(0,0));
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-zoom.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="N"]').click();
+   assert.equal((await wireRoute()).every(p=>p.battery===0),true,"The short lead must also travel outside the battery body");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"The danger is explained without mascot reactions");
    assert.equal(await page.locator("#stageCelebration").isVisible(),false,"Short is never celebrated");
@@ -263,6 +278,8 @@ try{
    await page.locator('[data-unwire="0"]').click();
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
+   assert.equal((await wireRoute()).length,2,"Both the outward and return leads must remain visible");
+   assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
    assert.equal(await page.locator("#discoveryText").isVisible(),false,"Scientific detail is collapsed until requested");

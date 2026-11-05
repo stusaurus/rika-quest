@@ -144,10 +144,24 @@ function testCircuit(id,lit){
 function workbench(wires,lit){
  // Matching physical points and game/test CSS: P[42,151], N[178,151], L[268,152], R[313,210].
  const points={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
+ // Each legal pair gets an external lead: wires never run beneath the battery or bulb.
+ // Electrical truth tables are still derived from the endpoints, not these visual paths.
+ const routes={
+  LP:"M42 151 C22 151 25 129 25 113 L25 94 Q25 86 34 86 L224 86 Q244 86 244 109 L244 143 Q244 152 268 152",
+  LN:"M178 151 Q223 147 268 152",
+  NR:"M178 151 C211 151 224 187 250 198 S289 210 313 210",
+  PR:"M42 151 C22 151 20 176 20 194 L20 225 Q20 240 36 240 L298 240 Q313 240 313 224 L313 210",
+  NP:"M42 151 C20 151 20 184 20 199 L20 204 Q20 217 34 217 L194 217 Q206 217 206 205 L206 167 Q206 151 178 151",
+  LR:"M268 152 C253 152 250 155 250 173 L250 218 Q250 229 262 229 L301 229 Q313 229 313 217 L313 210"
+ };
  const leads=wires.map(([a,b])=>{
-  const p=points[a],q=points[b];if(!p||!q)return "";
+  if(!points[a]||!points[b])return "";
+  const d=routes[[a,b].sort().join("")];if(!d)return "";
   const danger=(a==="P"&&b==="N")||(a==="N"&&b==="P");
-  return '<path d="M'+p[0]+' '+p[1]+'L'+q[0]+' '+q[1]+'" fill="none" class="wire'+(lit?" lit":"")+(danger?" danger":"")+'" stroke-width="8" stroke-linecap="round"/>';
+  return '<g class="lead-on-top" data-visual-wire="'+[a,b].sort().join("")+'">'+
+   '<path d="'+d+'" class="wire-outline" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+
+   '<path d="'+d+'" fill="none" class="wire'+(lit?" lit":"")+(danger?" danger":"")+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+   '</g>';
  }).join("");
  const scheme='<defs>'+
   '<linearGradient id="workBatteryBody" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fcf1d0"/><stop offset=".12" stop-color="#fdf9db"/><stop offset=".5" stop-color="#f4da80"/><stop offset=".87" stop-color="#d6a94d"/><stop offset="1" stop-color="#885c23"/></linearGradient>'+
@@ -188,7 +202,7 @@ function workbench(wires,lit){
   '<circle cx="313" cy="210" r="5.2" fill="#f9dba0" stroke="#c2a166" stroke-width="1.4"/>'+
   '</g>';
  return '<svg class="circuit-svg circuit-svg-v2" viewBox="0 0 400 250" aria-label="乾電池の左が＋極、右が−極。豆電球は横の金属と底の接点につなぐ" role="img">'+
-  scheme+leads+battery+bulb+'</svg>';
+  scheme+battery+bulb+leads+'</svg>';
 }
 
 window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit,workbench};

@@ -192,8 +192,20 @@ assert.match(boardSvg,/circuit-svg-v2/,"New main workbench art must be rendered"
 assert.match(boardSvg,/class="battery-model"/,"Cylindrical battery is drawn");
 assert.match(boardSvg,/class="bulb-model"/,"Glass filament bulb is drawn");
 assert.match(boardSvg,/金属の横と底はそれぞれ別の接点/,"Bulb must distinguish shell and base electrodes");
-assert.match(boardSvg,/M42 151L268 152/,"Graph wiring must follow the updated horizontal battery and side-contact coordinates");
-assert.match(boardSvg,/M178 151L313 210/,"Graph wiring must connect the horizontal battery negative terminal to the bulb base");
+assert.match(boardSvg,/M42 151 C22 151 25 129 25 113 L25 94/,"The plus lead must travel above rather than through the battery");
+assert.match(boardSvg,/M178 151 C211 151 224 187 250 198/,"The negative lead must reach the bulb base outside the artwork");
+assert.ok(boardSvg.indexOf('class="bulb-model"')<boardSvg.indexOf('class="lead-on-top"'),"Draw the external leads in front of the battery and bulb");
+assert.equal((boardSvg.match(/class="wire-outline"/g)||[]).length,2,"All connected leads have a contrast outline");
+for(const [edge,expectedStart] of [
+ [["P","N"],"M42 151 C20 151 20 184"],[["P","R"],"M42 151 C22 151 20 176"],
+ [["L","R"],"M268 152 C253 152 250 155"],
+ [["N","L"],"M178 151 Q223 147"]
+]){
+ const drawing=models.workbench([edge],false);
+ assert.match(drawing,/class="lead-on-top"/,"Every legal connection is rendered above the models");
+ assert.ok(drawing.includes(expectedStart),"All legal wire choices use an outside route: "+edge.join("-"));
+}
+assert.match(models.workbench([["P","N"]],false),/class="wire danger"/,"Battery short must remain visibly dangerous");
 assert.equal((models.battery("series").match(/battery-cell-v2/g)||[]).length,2,"Series diagrams must show exactly two recognisable cells");
 assert.equal((models.battery("small").match(/battery-cell-v2/g)||[]).length,1,"Single-cell diagram should be recognisable");
 assert.match(models.bulb(true),/bulb-art-v2/,"Lamp closeup uses the same realistic contact design");

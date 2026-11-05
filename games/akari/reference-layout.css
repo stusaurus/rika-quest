@@ -903,3 +903,19 @@ body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more>summar
 body[data-visual-theme="reference-rebuild"].gesture-first .discovery-more p{
  margin:9px 0 3px;font-size:14px;line-height:1.7;overflow-wrap:anywhere
 }
+
+
+/* External wiring: visible leads remain outside the battery and bulb artwork. */
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top{
+ pointer-events:none;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-outline{
+ stroke:#ffffff;stroke-width:13;opacity:.96;
+ filter:drop-shadow(0 1px 1px #35587577);
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top .wire{
+ stroke-width:7.5;stroke-linejoin:round;stroke-linecap:round;
+}
+body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top .wire.danger{
+ stroke:#e34434!important;stroke-width:8.5;
+}
