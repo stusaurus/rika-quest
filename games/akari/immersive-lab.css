@@ -1,0 +1,51 @@
+/* Immersive science bench: visual polish only; electrical rules and hit targets unchanged. */
+.story-scene[data-stage="2"],.story-scene[data-stage="3"]{
+ background:radial-gradient(ellipse at 70% 22%,#6f91b5 0%,transparent 46%),linear-gradient(180deg,#132e58 0%,#27536b 55%,#183e48 100%);
+ box-shadow:inset 0 0 80px #091d35a6,0 12px 36px #071b3470;
+}
+.story-scene[data-stage="2"]::after,.story-scene[data-stage="3"]::after{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+ background:radial-gradient(circle at 75% 22%,#fff3caad 0 1px,transparent 2px),
+ radial-gradient(circle at 23% 14%,#fff9d5bb 0 1px,transparent 2px),
+ radial-gradient(circle at 44% 35%,#e3f5ff99 0 1px,transparent 2px),
+ linear-gradient(0deg,#071a2880,transparent 38%);
+}
+.story-scene[data-stage="2"] .landmark,.story-scene[data-stage="3"] .landmark{
+ filter:drop-shadow(0 12px 9px #061b31b8) drop-shadow(0 0 9px #8bc1d955);
+}
+.story-scene[data-stage="2"].restored .landmark,.story-scene[data-stage="3"].restored .landmark{
+ filter:drop-shadow(0 0 20px #ffce6db8) drop-shadow(0 12px 9px #061b31a8);
+}
+.story-scene[data-stage="2"] .scene-caption,.story-scene[data-stage="3"] .scene-caption{
+ background:linear-gradient(135deg,#102f4df0,#194c5be8);
+ border:1px solid #c9a66d9c;box-shadow:0 9px 24px #071a3380;
+}
+.story-scene[data-stage="2"] .scene-lights,.story-scene[data-stage="3"] .scene-lights{
+ background:radial-gradient(ellipse,#ffda7db8,transparent 72%);
+}
+.circuit-board{
+ background:radial-gradient(ellipse at 48% 17%,#486277 0%,#19364e 58%,#0b2239 100%);
+ border:3px solid #a0c4c8;box-shadow:inset 0 3px 22px #051827bb,0 8px 20px #061a2e55;
+}
+.circuit-board::before{
+ background-image:linear-gradient(90deg,#ffffff07 1px,transparent 1px),linear-gradient(#ffffff07 1px,transparent 1px);
+ background-size:18px 18px;opacity:.4;
+}
+.circuit-board .battery-model{filter:drop-shadow(0 8px 5px #061b2baa)}
+.circuit-board .bulb-model{filter:drop-shadow(0 7px 5px #061b2b99)}
+.circuit-board .wire-outline{stroke:#563c24;stroke-width:12;opacity:.95}
+.circuit-board .lead-on-top .wire:not(.danger){stroke:#ffca42;stroke-width:6;filter:drop-shadow(0 2px 2px #051e35aa)}
+.circuit-board .lead-on-top .wire.lit{stroke:#ffe69b;filter:drop-shadow(0 0 7px #ffe5a0)}
+.circuit-board .terminal{
+ border-color:#ffe0a0;background:radial-gradient(circle at 32% 25%,#fdf1c9,#bb8546 72%,#75512f);
+ color:#27374b;box-shadow:0 2px 0 #493522,0 0 0 5px #d3a35a50,0 3px 10px #071b2b9c;
+}
+.circuit-board .terminal.selected{
+ background:#ffde70;box-shadow:0 0 0 8px #ffe0a16b,0 0 16px #ffd06d;
+}
+.circuit-board .circuit-help{background:#102f46d9;border:1px solid #a6c9ce80;border-radius:12px;padding:6px}
+@media(max-width:740px){
+ .story-scene[data-stage="2"],.story-scene[data-stage="3"]{box-shadow:inset 0 0 38px #091d3580}
+ .circuit-board .terminal{box-shadow:0 2px 0 #493522,0 0 0 4px #d3a35a50}
+}
+@media(prefers-reduced-motion:reduce){.circuit-board .lead-on-top .wire.lit{animation:none}}
