@@ -132,7 +132,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
     <text x="75" y="222" fill="#fff5dc" font-size="23" text-anchor="middle">1.5V</text>
     ${switchDrawing("A",a,320,105)}${switchDrawing("B",b,320,318)}
     <path d="M820 105V157M820 273V330" stroke="#e4ede2" stroke-width="6"/>
-    <circle cx="820" cy="215" r="57" fill="${tested&&result.lit?"#ffe6ad":"#86a4a9"}" fill-opacity=".85" stroke="#fff2d1" stroke-width="5"/>
+    <circle cx="820" cy="215" r="57" fill="${result.lit?"#ffe6ad":"#86a4a9"}" fill-opacity=".85" stroke="#fff2d1" stroke-width="5"/>
     <path d="M791 187L849 243M849 187L791 243" stroke="#fef1d9" stroke-width="5"/>
     <text x="820" y="407" fill="#eaf3e6" font-size="20" text-anchor="middle">豆電球</text>${lineArt}<g class="network-flow-layer" aria-hidden="true">${routeArt}</g></svg>${controls}</div>
    </div>
@@ -141,8 +141,8 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
   <div class="builder-panel"><h3>🔬 4通りの通電実験</h3>
    <p class="builder-help">スイッチを1つずつ切り替えて結果を記録しよう。ショートは実物で試してはいけないよ。</p>
    <div class="network-switches"><button type="button" data-net-switch="a" aria-pressed="${a}" class="${a?"on":""}">A：${a?"ON":"OFF"}</button><button type="button" data-net-switch="b" aria-pressed="${b}" class="${b?"on":""}">B：${b?"ON":"OFF"}</button></div>
-   <p class="builder-live">${tested?(result.short?"⚠ ショート！":result.lit?"💡 点灯":"◯ 消灯"):"？ 通電前"}</p>
-   <button type="button" data-net-test="1" class="builder-test">⚡ この組み合わせを実験</button>
+   <p class="builder-live">${result.short?"⚠ ショート！":result.lit?"💡 ついている":"◯ きえている"}</p>
+   <button type="button" data-net-test="1" class="builder-test">✎ けっかを きろく</button>
    ${comparison}<div class="network-results">${results}</div>${inspection}
    ${count===4?`<div class="network-reason"><strong>🧠 4つの結果から、なぜ点灯する？</strong>
     <button type="button" data-net-reason="both" class="${reason==="both"?"chosen":""}">直列：2つともONで一本道がつながる</button>

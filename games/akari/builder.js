@@ -173,8 +173,8 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
   '<div class="builder-diagnosis solved"><strong>🔎 原因を発見した！</strong><p>'+diagnosisMessage(issue)+'</p>'+
    '<p>'+(issue==="open"?'＋極から導線でつながる端子を光らせているよ。':'実際に電気が通る道を図に光で表示しているよ。')+'</p></div>':"";
 
- const glow=!!measured&&simulation.lit;
- const status=measured?(simulation.short?"⚠ ショート！ 乾電池を直結している":simulation.lit?"💡 点灯した！":"◯ 消灯した"):"？ まだ実験していない";
+ const glow=simulation.lit;
+ const status=simulation.short?"⚠ ショート！ せんを はずそう":simulation.lit?"💡 ついている":"◯ きえている";
  const lineSvg=segments.map(([a,b],i)=>{
   const u=terminals[a],v=terminals[b];
   return '<g class="builder-line student-wire" data-student-wire="'+edge(a,b)+'"><path class="student-wire-outline" d="M'+u.x+' '+u.y+'L'+v.x+' '+v.y+'" fill="none" stroke="#fff" stroke-width="12" opacity=".76" stroke-linecap="round" stroke-linejoin="round"/>'+
@@ -220,9 +220,9 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<text x="790" y="123" fill="#eff4df" font-size="18">横</text><text x="790" y="346" fill="#eff4df" font-size="18">底</text></g>'+
  lineSvg+'<g class="builder-diagnostic-path" aria-hidden="true">'+routeDiagram+'</g><g class="builder-proof-path">'+routeSvg+'</g></svg>'+buttons+'</div></div>'+
  '<div class="builder-bottom"><span>導線 '+segments.length+' 本</span><button type="button" data-builder-clear="1" class="builder-clear">導線を全部外す</button></div></div>'+
- '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'このゲーム内で通電して、安全に豆電球がつくか確かめよう。':'スイッチOFFとONをそれぞれ試そう。実物でショートを試すのは危険だよ。')+'</p>'+
+ '<div class="builder-panel"><h3>🔬 回路を検証する</h3><p class="builder-help">'+(direct?'つないだら すぐ つくよ。けっかを きろくしよう。':'スイッチOFFとONの けっかを きろくしよう。ショートは きけんだよ。')+'</p>'+
  switchControl+'<p class="builder-live">'+status+'</p>'+
- '<button type="button" data-builder-test="1" class="builder-test">⚡ 今の状態を実験する</button>'+
+ '<button type="button" data-builder-test="1" class="builder-test">✎ けっかを きろく</button>'+
  '<div class="builder-measures">'+statusBlocks+'</div>'+comparison+diagnosisPanel+
  '<p class="builder-hint">'+(direct?'合格条件：電球の2つの金属部分を通る、切れ目のない輪を作る。ショートは不合格。':'合格条件：OFFで消灯、ONで点灯、どちらもショートなし。')+'</p>'+
  tracePanel+'<button type="button" class="builder-submit" data-builder-submit="1"'+(scientificComplete(task,tests,segments,route)?'':' disabled')+'>'+

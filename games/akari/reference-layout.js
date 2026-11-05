@@ -51,11 +51,15 @@
     const reasoning=e.target.closest("[data-first-reason]");
     if(reasoning){
      const n=mission(),question=reasonsByMission[n];
-     if(!question||reasons[n]===question.correct)return;
+     const liveLit=!!get("workspace")?.querySelector(".circuit-board.is-lit");
+     if(!question||(!liveLit&&get("discovery")?.hidden))return;
      if(reasoning.dataset.firstReason===question.correct){
       reasons[n]=question.correct;
       store("rika-akari-first-reasons-v1",JSON.stringify(reasons));
       reasonFeedback=question.success;
+      // Turning on the lamp requires no test button. Completing the explanation
+      // unlocks the next step or the existing transfer challenge.
+      window.AkariLiveWire?.complete?.();
      }else reasonFeedback="せんの つながりを もういちど みよう";
      refresh();return;
     }
@@ -93,21 +97,23 @@
   const idx=get("topMissionIndex");if(idx)idx.textContent=n+" / 14";
   const done=!!get("discovery")&&!get("discovery").hidden;
   const board=get("workspace")?.querySelector(".circuit-board");
+  const liveLit=!!board?.classList.contains("is-lit");
   const hasSelection=!!board?.querySelector(".terminal.selected");
   const wireCount=board?.querySelectorAll(".wire-chip").length||0;
   const predicted=!!predictions[n];
   const steps=get("learningSteps"),pred=get("predictStep"),connect=get("connectStep"),think=get("thinkStep");
   if(!steps||!pred||!connect||!think)return;
   steps.hidden=!firstSteps;
-  pred.hidden=!firstSteps||predicted||done;
-  connect.hidden=!firstSteps||(!predicted&&!hasSelection&&!wireCount)||done;
-  think.hidden=!firstSteps||!done;
-  const stage=done?"reflect":!predicted&&!hasSelection&&!wireCount?"predict":wireCount>=2?"test":hasSelection?"second":"connect";
+  pred.hidden=!firstSteps||predicted||done||liveLit;
+  connect.hidden=!firstSteps||(!predicted&&!hasSelection&&!wireCount)||done||liveLit;
+  think.hidden=!firstSteps||(!done&&!liveLit);
+  if(!done&&!liveLit&&reasonFeedback)reasonFeedback="";
+  const stage=done||liveLit?"reflect":!predicted&&!hasSelection&&!wireCount?"predict":wireCount>=2?"fix":hasSelection?"second":"connect";
   document.body.dataset.guidePhase=firstSteps?stage:"lesson";
   pred.querySelectorAll("[data-prediction]").forEach(btn=>btn.setAttribute("aria-pressed",String(predictions[n]===btn.dataset.prediction)));
   const name=get("guideActionLabel"),hint=get("guideActionText"),compare=get("designComparisonNote");
-  if(name)name.textContent=stage==="test"?"ためす":"つなぐ";
-  if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="test"?"みどりの ボタンを おそう":"まるから まるへ なぞろう";
+  if(name)name.textContent=stage==="fix"?"なおす":"つなぐ";
+  if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="fix"?"線を みなおそう":"まるから まるへ なぞろう";
   const question=reasonsByMission[n],reasonChoices=get("reasonChoices");
   if(question&&reasonChoices){
    if(reasonChoices.dataset.mission!==String(n)){
@@ -119,16 +125,16 @@
     ).join("");
    }
    reasonChoices.querySelectorAll("[data-first-reason]").forEach(b=>{
-    const chosen=reasons[n]===b.dataset.firstReason;
+    const chosen=done&&reasons[n]===b.dataset.firstReason;
     b.setAttribute("aria-pressed",String(chosen));
-    b.disabled=!!reasons[n];
+    b.disabled=done&&!!reasons[n];
    });
    if(compare)compare.textContent=reasons[n]===question.correct?question.success:reasonFeedback||question.title;
   }else if(compare)compare.textContent="どうして そうなった？";
   const next=get("nextBtn");
   if(next&&firstSteps&&!next.hidden)next.disabled=!reasons[n];
   const command=board?.querySelector(".circuit-help");
-  if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="test"?"できたら『ためす』を タップ":"なぞるか 2つの まるを タップ";
+  if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="fix"?"どこが つながっている？":"なぞって つなごう";
  }
  function bindWireDrawing(){
   const root=get("workspace");if(!root)return;

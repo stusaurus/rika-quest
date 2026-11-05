@@ -343,7 +343,7 @@ function renderScene(){
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
- $("checkBtn").hidden=stageComplete||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":m.id<=2?"⚡ ためす":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="つぎへ すすむ ➜";$("hintBtn").hidden=stageComplete;
+ $("checkBtn").hidden=stageComplete||m.mode==="wire"||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":m.id<=2?"💡 つなぐと つくよ":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="つぎへ すすむ ➜";$("hintBtn").hidden=stageComplete;
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
@@ -357,7 +357,7 @@ function circuitStatus(wires){
 function renderWire(){
  const stat=circuitStatus(ui.wires),lit=stageComplete||stat.lit;
  const svg=Art.workbench(ui.wires,lit);
- return'<div class="circuit-toolbar"><strong>⚡ 電気の通り道</strong><button type="button" class="circuit-zoom-btn" data-zoom="1" aria-pressed="'+!!ui.zoomed+'">'+(ui.zoomed?'🔍 全体を見る':'🔎 大きく見る')+'</button>'+(ui.zoomed?'<span class="circuit-quicknav"><button type="button" data-view="battery">◀ 乾電池</button><button type="button" data-view="bulb">豆電球 ▶</button></span>':'')+'</div><div class="circuit-board'+(stageComplete?' is-lit':'')+(ui.zoomed?' zoomed':'')+'"><div class="circuit-inner">'+svg
+ return'<div class="circuit-toolbar"><strong>⚡ 電気の通り道</strong><button type="button" class="circuit-zoom-btn" data-zoom="1" aria-pressed="'+!!ui.zoomed+'">'+(ui.zoomed?'🔍 全体を見る':'🔎 大きく見る')+'</button>'+(ui.zoomed?'<span class="circuit-quicknav"><button type="button" data-view="battery">◀ 乾電池</button><button type="button" data-view="bulb">豆電球 ▶</button></span>':'')+'</div><div class="circuit-board'+(lit?' is-lit':'')+(ui.zoomed?' zoomed':'')+'"><div class="circuit-inner">'+svg
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
  +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
  +'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
@@ -445,6 +445,10 @@ function renderWorkspace(){
  if(doubleView)doubleView.scrollLeft=doublePosition;
  const finaleView=typeof root.querySelector==="function"?root.querySelector(".finale-circuit"):null;
  if(finaleView)finaleView.scrollLeft=finalePosition;
+ // Physical state is immediate: the bulb and village scene react to wiring,
+ // while the first two lessons finish only after explaining *why* it lights.
+ const liveWire=mode==="wire"&&!ui.builder&&!ui.switchLab&&!ui.transfer&&circuitStatus(ui.wires).lit;
+ $("storyScene")?.classList.toggle("live-powered",liveWire);
  renderPacing();
 }
 function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace();renderJournal();if(!stageComplete){$("discovery").hidden=true;setFeedback("✦ いろいろ試してみよう！");}}
@@ -729,9 +733,9 @@ function handleWorkspace(e){
  if(target.hasAttribute("data-view")){const root=$("workspace"),board=typeof root.querySelector==="function"?root.querySelector(".circuit-board"):null;if(board){board.scrollLeft=target.dataset.view==="bulb"?board.scrollWidth-board.clientWidth:0;setFeedback(target.dataset.view==="bulb"?"豆電球の金属の横と底を見てみよう。":"乾電池の＋極と−極を見てみよう。");}return;}
   if(target.hasAttribute("data-t")){const t=target.dataset.t;if(ui.selected===null){ui.selected=t;setFeedback(labels[t]+"を選んだよ。次につなぐ端子を選ぼう。");}
  else if(ui.selected===t){ui.selected=null;setFeedback("端子の選択を解除したよ。");}
- else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ 直接つながるとショート！ 実物では危険です。導線を外してね。",true);}else{setFeedback(labels[a]+" と "+labels[b]+"をつないだよ。");reactCharacter("inspect","つながったノン！");}}else setFeedback("その2つはもうつながっているよ。");}
+ else{const a=ui.selected,b=t;ui.selected=null;if(!ui.wires.some(pair=>edgeKey(...pair)===edgeKey(a,b))){ui.wires.push([a,b]);const circuit=circuitStatus(ui.wires);if(circuit.short){fail("⚠ ショート！ あぶない！ せんを はずそう。",true);}else if(circuit.lit){setFeedback("💡 ついた！ どうして ついたのかな？","success");reactCharacter("discover");}else{setFeedback("どう線が つながったよ。");reactCharacter("inspect","つながったノン！");}}else setFeedback("その2つはもうつながっているよ。");}
  renderWorkspace();return;}
- if(target.hasAttribute("data-unwire")){ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback("導線を外したよ。");return;}
+ if(target.hasAttribute("data-unwire")){const wasLit=circuitStatus(ui.wires).lit;ui.wires.splice(+target.dataset.unwire,1);ui.selected=null;renderWorkspace();setFeedback(wasLit&&!circuitStatus(ui.wires).lit?"◯ きえた。もういちど つなごう。":"✂️ 1本 はずしたよ。");return;}
  if(current().mode==="material"&&window.AkariGarden){
   const G=window.AkariGarden,id=current().id,g=ui.garden||G.initial(id);
   if(target.hasAttribute("data-garden-view")){
@@ -1225,8 +1229,9 @@ function bind(){
   if(kind==="wire"&&!ui.builder&&!ui.switchLab&&current().mode==="wire"){
    const index=ui.wires.findIndex(w=>w.slice().sort().join("")===key);
    if(index<0)return;
+   const wasLit=circuitStatus(ui.wires).lit;
    ui.wires.splice(index,1);ui.selected=null;
-   renderWorkspace();setFeedback("✂️ 1本 きったよ。","success");
+   renderWorkspace();setFeedback(wasLit&&!circuitStatus(ui.wires).lit?"◯ きえた。もういちど つなごう。":"✂️ 1本 きったよ。");
    return;
   }
   if(kind==="builder"&&ui.builder&&window.AkariBuilder){
@@ -1272,6 +1277,16 @@ function bind(){
  $("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))modal(false)});
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)modal(false);if(e.key==="Tab"&&!$("helpModal").hidden){const focusable=[...$("helpModal").querySelectorAll("button")],first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 }
+// The actual circuit remains editable until a learner explains the result.
+window.AkariLiveWire={
+ getStatus:()=>current().mode==="wire"?circuitStatus(ui.wires):null,
+ complete:()=>{
+  if(stageComplete||current().mode!=="wire"||ui.transfer||ui.builder||ui.switchLab)return false;
+  if(!circuitStatus(ui.wires).lit)return false;
+  success();
+  return true;
+ }
+};
 function boot(){ui=restoreMissionUI(current());bind();persist();renderAll();initializeCharacter();window.scrollTo(0,0);}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();

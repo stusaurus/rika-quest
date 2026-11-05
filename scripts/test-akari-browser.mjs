@@ -59,6 +59,7 @@ try{
      const tap=async(a,b)=>{await page.locator('[data-net-t="'+a+'"]').click();await page.locator('[data-net-t="'+b+'"]').click()};
      // An incorrect prediction must not expose the dangerous route.
      const networkTrace=await drawShortByHand("network");
+     assert.match(await page.locator(".network-lab .builder-live").textContent(),/ショート/,"A short shows at once, before recording the switch experiment");
       await page.locator('[data-net-test]').click();
       await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
       assert.match(await page.locator(".short-alert").textContent(),/ショート/,"A short animates on the switch network");
@@ -87,12 +88,14 @@ try{
        await page.locator('[data-net-clear]').click();
      }
      for(const [a,b] of wires)await tap(a,b);
+     assert.match(await page.locator(".network-lab .builder-live").textContent(),/きえている/,"Two switches OFF keeps the lamp dark without any test click");
      await page.locator('[data-net-test]').click(); // 00
      await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 10
      await page.reload({waitUntil:"domcontentloaded"});
      assert.equal(await page.locator(".network-lab").count(),1,"Reload restores unfinished network");
      assert.equal(await page.locator(".network-trial.measured").count(),2,"Two trials survived reload");
      await page.locator('[data-net-switch="b"]').click();await page.locator('[data-net-test]').click(); // 11
+     assert.match(await page.locator(".network-lab .builder-live").textContent(),/ついている/,"Both switches ON immediately light the series lamp");
      if(id===7)assert.ok(await page.locator(".network-flow-segment").count()>4,"Closed series circuit must show the measured complete path");
      await page.locator('[data-net-switch="a"]').click();await page.locator('[data-net-test]').click(); // 01
      assert.equal(await page.locator(".network-trial.measured").count(),4,"All four combinations tested");
@@ -229,7 +232,7 @@ try{
    await page.locator('[data-prediction="lit"]').click();
    assert.equal(await page.locator("#predictStep").isVisible(),false,"Prediction panel should collapse after selection");
    assert.equal(await page.locator("#connectStep").isVisible(),true,"Only the next physical action should remain visible");
-   assert.equal(await page.locator("#checkBtn").textContent(),"⚡ ためす","Early stage should use a short action label");
+   assert.equal(await page.locator("#checkBtn").isVisible(),false,"The first lamp lights by wiring: no test button");
    assert.equal(await page.locator(".circuit-svg-v2").count(),1,"Updated detailed physical battery-and-bulb art must render");
    assert.equal(await page.locator(".circuit-svg-v2 .battery-model").count(),1);
    assert.equal(await page.locator(".circuit-svg-v2 .bulb-model").count(),1);
@@ -362,6 +365,10 @@ try{
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    assert.equal((await wireRoute()).length,2,"Both the outward and return leads must remain visible");
+   assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"The lamp lights as soon as a complete loop is connected");
+   assert.equal(await page.locator(".story-scene.live-powered").count(),1,"The village light responds immediately to electricity");
+   assert.equal(await page.locator("#thinkStep").isVisible(),true,"After observing a lit lamp, the pupil can explain the result");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"A light bulb alone must not bypass scientific reasoning");
    assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
    // A slash must start on the visible board, never in the offscreen part of zoom mode.
    if(await page.locator(".circuit-board.zoomed").count())
@@ -388,11 +395,25 @@ try{
      "The other wire must stay connected after cutting");
    assert.equal(await page.locator(".wire-chip").count(),1,
      "One deliberate crossing removes exactly one connection");
+   assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Cutting one necessary lead turns the lamp off immediately");
+   assert.equal(await page.locator(".story-scene.live-powered").count(),0,"The village light also turns off with the broken circuit");
+   assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning prompt waits for a completed live experiment");
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    assert.equal(await page.locator(".wire-chip").count(),2,
      "The player can draw the missing lead again after cutting it");
-   await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),true,"Stage 1 completion must show discovery");
+   assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"Reconnecting the lead immediately turns the lamp back on");
+   assert.equal(await page.locator("#checkBtn").isVisible(),false,"Rewiring never reveals a redundant power button");
+   assert.equal(await page.locator("#thinkStep").isVisible(),true,"The next action is explaining the observed light");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Stars are not earned by wiring alone");
+   assert.equal(await page.locator(".reason-option").count(),3,"One visual reason question has three plausible choices");
+   assert.equal(await page.locator("#nextBtn").isVisible(),false,"Next is unavailable before scientific reasoning");
+   await page.locator('[data-first-reason="cut"]').click();
+   assert.match(await page.locator("#designComparisonNote").textContent(),/もういちど/,"Incorrect explanation asks the child to re-examine the circuit");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"Wrong causal reasoning must not complete the mission");
+   await page.locator('[data-first-reason="loop"]').click();
+   assert.equal(await page.locator("#discovery").isVisible(),true,"Correct causal reasoning completes the already-lit stage automatically");
+   assert.equal(await page.locator("#nextBtn").isVisible(),true,"Next unlocks with no test button");
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1"))["1"]),"loop","First explanation persists");
    assert.equal(await page.locator("#discoveryText").isVisible(),false,"Scientific detail is collapsed until requested");
    await page.locator(".discovery-more summary").click();
    assert.equal(await page.locator("#discoveryText").isVisible(),true,"Complete scientific explanation remains accessible");
@@ -406,15 +427,7 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-clear.png",fullPage:true});
 
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-quest-v2")).notes.some(n=>n.mission===1)),"Completed discovery must be saved");
-   await page.locator("#thinkStep").waitFor({state:"visible"});
-   assert.equal(await page.locator(".reason-option").count(),3,"One visual reason question has three plausible choices");
-   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"Science reasoning, not just a lit bulb, is needed to advance");
-   await page.locator('[data-first-reason="cut"]').click();
-   assert.match(await page.locator("#designComparisonNote").textContent(),/もういちど/,"Wrong explanation redirects attention to the actual circuit");
-   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"Incorrect causal reasoning must not unlock next mission");
-   await page.locator('[data-first-reason="loop"]').click();
-   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Correct explanation unlocks the next mission");
-   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1"))["1"]),"loop","First explanation persists as a learning choice");
+   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Correct science answer keeps Next enabled");
    await page.locator("#nextBtn").click();
 
    assert.equal(await page.locator("#missionTitle").textContent(),"切れた通り道");
@@ -432,12 +445,15 @@ try{
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"Revisiting should retain the first map light");
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
-   await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();await page.locator("#checkBtn").click();
+   await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
+   assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"Repairing stage two lights the bulb immediately");
+   assert.equal(await page.locator("#thinkStep").isVisible(),true,"Repair reasoning follows live lighting");
+   assert.equal(await page.locator("#checkBtn").isVisible(),false,"Stage two needs no test button");
+   await page.locator('[data-first-reason="joined"]').click();
+   assert.equal(await page.locator(".transfer-probe").count(),1,"Correct reason opens the existing scientific transfer challenge");
    await completeTransfer(2,true);
    await page.locator("#thinkStep").waitFor({state:"visible"});
-   assert.equal(await page.locator("#nextBtn").isDisabled(),true,"The repaired streetlight still needs a short cause choice");
-   await page.locator('[data-first-reason="joined"]').click();
-   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Correct repair explanation makes next stage available");
+   assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Completed scientific transfer makes next stage available");
    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1"))["2"]),"joined","Reason for stage two should persist");
    assert.equal(await page.locator("#masteryCount").textContent(),"1","First successful transfer earns a reasoning token");
    await page.reload({waitUntil:"domcontentloaded"});
@@ -707,6 +723,7 @@ try{
      await page.locator('[data-builder-t="'+b+'"]').click();
    };
    const clockTrace=await drawShortByHand("builder");
+     assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ショート/,"The clock immediately signals its battery short");
     await page.locator('[data-builder-test]').click();
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
     assert.match(await page.locator(".short-alert").textContent(),/ショート/,"Clock circuit warns with animation");
@@ -729,9 +746,11 @@ try{
    await page.locator('[data-builder-cause="open"]').click();
    assert.ok(await page.locator(".builder-reachable").count()>0,"Correct open-loop reason lights reachable battery contacts");
    await tapPractice("N","R");
+    assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ついている/,"The rebuilt clock lights before the record button");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".builder-direct").count(),1,"Reload must resume the basic construction task");
    assert.equal(await page.locator(".builder-line").count(),2,"Both student-drawn wires must survive reload");
+    assert.match(await page.locator(".builder-direct .builder-live").textContent(),/ついている/,"The saved closed circuit remains lit on reload");
    await page.locator('[data-builder-test]').click();
    assert.match(await page.locator(".builder-measure").textContent(),/点灯/,"Closed circuit must light the bulb");
    assert.equal(await page.locator('[data-builder-submit]').isDisabled(),true,"A lit circuit is not enough until the student traces its path");

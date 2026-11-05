@@ -938,3 +938,19 @@ body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .wire-freehand-previ
 body[data-visual-theme="reference-rebuild"] .circuit-svg-v2 .lead-on-top[data-freehand="true"] .wire{
  stroke-linejoin:round;stroke-linecap:round;
 }
+
+
+/* Immediate circuit physics: a closed circuit lights the lamp without a test button. */
+body[data-visual-theme="reference-rebuild"] .action-row #checkBtn[hidden]{display:none!important}
+body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.restored) .landmark .window{
+ fill:#ffe09c;filter:drop-shadow(0 0 8px #ffd46c)
+}
+body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.restored) .scene-prop-svg .scene-bulb{
+ fill:#ffe5a0;filter:drop-shadow(0 0 8px #ffde7d)
+}
+body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.restored) .scene-lights{
+ opacity:.8
+}
+body[data-visual-theme="reference-rebuild"] .story-scene.live-powered:not(.restored) .scene-glow{
+ opacity:.56
+}
