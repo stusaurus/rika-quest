@@ -781,3 +781,19 @@ body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .story-sc
   padding:10px;font-size:13px
  }
 }
+
+
+/* Expanded circuit: keep the bulb navigation beside, never beneath, zoom button. */
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"].gesture-first .workspace:has(.circuit-board.zoomed) .circuit-toolbar{
+  position:relative;height:auto;margin:0 0 6px;padding:5px 7px;
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  border:1px solid #bcd4e5;background:#fffaf0;border-radius:11px
+ }
+ body[data-visual-theme="reference-rebuild"].gesture-first .workspace:has(.circuit-board.zoomed) .circuit-toolbar .circuit-zoom-btn{
+  position:static;min-height:34px;margin:0 0 0 auto;z-index:auto
+ }
+ body[data-visual-theme="reference-rebuild"].gesture-first .workspace:has(.circuit-board.zoomed) .circuit-toolbar .circuit-quicknav{
+  position:static;flex:1 1 100%;display:flex;justify-content:space-around;gap:7px
+ }
+}
