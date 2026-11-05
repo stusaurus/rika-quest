@@ -99,3 +99,7 @@
 .network-lab .network-reason-choices small{font-weight:800;color:#315e6a}
 @media(max-width:360px){.network-lab .network-reason-choices{gap:6px}.network-lab .network-reason-choices>button{padding:8px 3px}.network-lab .network-reason-path{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.network-lab .network-reason-choices>button{transition:none}}
+
+/* Unobserved is not the same as OFF: show a question mark until the child tries it. */
+.network-lab .network-trial.trial-unknown .network-trial-outcome::before{content:"?";font-size:13px;font-weight:900;line-height:17px;text-align:center;color:#526c7b;border:2px dashed #8c9ea8;background:#f2f5f6;box-shadow:none}
+@media(max-width:360px){.network-lab .network-trial.trial-unknown .network-trial-outcome::before{font-size:11px;line-height:14px}}
