@@ -85,7 +85,7 @@
    });
    root.addEventListener("keydown",event=>{
      if(event.key!=="Escape"||!opened||!root.querySelector(".akari-dock"))return;
-     const previous=opened;opened="";toggle(root,previous);
+     const previous=opened;toggle(root,previous);
      root.querySelector('[data-dock-tab="'+previous+'"]')?.focus();
    });
  }
