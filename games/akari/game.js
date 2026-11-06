@@ -1015,7 +1015,7 @@ function handleWorkspace(e){
    if(!B.sceneLit(b))return;
    const reason=target.dataset.bridgeReason;if(!B.reasonOptions.some(([id])=>id===reason))return;
    b.reason=reason;saveBridgeDraft();renderWorkspace();
-   setFeedback("理由を選んだ。最後に「橋の復旧を確認する」で回路の説明を確かめよう。");return;
+   setFeedback("理由を選んだ。最後に「街灯の復旧を確認する」で回路の説明を確かめよう。");return;
   }
  }
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
