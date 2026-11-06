@@ -290,11 +290,30 @@
   section.innerHTML=
    '<div class="free-lab-head"><strong>🧪 じゆうじっけんしつ</strong><button type="button" id="freeLabClose">× もどる</button></div>'+
    '<p class="free-lab-intro">ぶひんを うごかして、まるから まるへ せんを ひこう。</p>'+
+   '<div class="free-lab-one-screen" id="freeLabOneScreen" data-open="">'+
+   '<button type="button" class="free-drawer-tab" data-free-drawer="tools" aria-controls="freeLabToolDrawer" aria-expanded="false">🔋<strong>どうぐ</strong></button>'+
+   '<button type="button" class="free-drawer-tab" data-free-drawer="materials" aria-controls="freeLabMaterialDrawer" aria-expanded="false">🧱<strong>ざいりょう</strong></button>'+
+   '<div class="free-lab-stage">'+
+   '<div class="free-lab-board" id="freeLabBoard" aria-label="ぶひんをうごかして、せんをつなぐじっけんだい"></div>'+
+   '</div>'+
+   '<aside class="free-drawer-panel free-drawer-tools" id="freeLabToolDrawer" aria-label="使える道具" hidden>'+
+   '<p class="free-drawer-lead">つかう どうぐを えらぼう</p>'+
    '<div class="free-lab-tools"><button id="freeAddbattery" data-free-add="battery">＋ 🔋 でんち</button>'+
    '<button id="freeAddbulb" data-free-add="bulb">＋ 💡 でんきゅう</button>'+
    '<button id="freeAddswitch" data-free-add="switch">＋ 🎚️ スイッチ</button>'+
-   '<button id="freeRemove" disabled>− えらんだ ぶひん</button></div>'+
-   '<div class="free-lab-board" id="freeLabBoard" aria-label="ぶひんをうごかして、せんをつなぐじっけんだい"></div>'+
+   '<button type="button" data-free-wire-tip>🧵 どう線を ひく</button>'+
+   '<button id="freeRemove" disabled>✕ えらんだ ぶひんを はずす</button></div>'+
+   '<p class="free-drawer-lead">どう線は、まるから まるへ なぞる。せんを よこぎると きれるよ。</p>'+
+   '</aside>'+
+   '<aside class="free-drawer-panel free-drawer-materials" id="freeLabMaterialDrawer" aria-label="電気を通すか調べる材料" hidden>'+
+   '<p class="free-drawer-lead">どの ざいりょうが 電気を とおす？</p>'+
+   '<div class="free-lab-samples">'+
+   '<button type="button" data-free-material="iron"><span>⌁</span> 鉄のクリップ</button>'+
+   '<button type="button" data-free-material="foil"><span>▤</span> アルミはく</button>'+
+   '<button type="button" data-free-material="wood"><span>▥</span> 木の板</button>'+
+   '<button type="button" data-free-material="plastic"><span>▱</span> プラスチック</button>'+
+   '</div><p class="free-drawer-lead">材料の 2つのまるを、線で つなごう。つけるだけでは 光らないよ。</p></aside>'+
+   '</div>'+
    '<div class="free-lab-status" id="freeLabStatus" role="status" aria-live="polite"></div>'+
    '<p class="free-lab-note" id="freeLabNote"></p>'+
    '<div class="free-lab-bottom"><span id="freeLabCount"></span><button type="button" id="freeLabClear">✂ せんを ぜんぶ けす</button></div>'+
@@ -310,6 +329,7 @@
   workspace.after(section);
   const setOpen=value=>{
    open=value;section.hidden=!value;document.body.classList.toggle("akari-free-active",value);
+   setDrawer("");
    toggle.setAttribute("aria-expanded",String(value));toggle.textContent=value?"↩ ぼうけんに もどる":"🧪 じゆう実験";
    if(value){render();showRecords();}
   };
@@ -341,6 +361,11 @@
   document.addEventListener("pointerup",e=>{if(open&&gesture)handlerUp(e,false);},true);
   document.addEventListener("pointercancel",e=>{if(open&&gesture)handlerUp(e,true);},true);
   section.addEventListener("keydown",e=>{
+   if(e.key==="Escape"&&openedDrawer){
+    const previous=openedDrawer;setDrawer("");
+    section.querySelector('[data-free-drawer="'+previous+'"]')?.focus();
+    return;
+   }
    if(!e.target.matches("[data-free-move]"))return;
    if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))return;
    e.preventDefault();
