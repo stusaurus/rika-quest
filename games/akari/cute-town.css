@@ -1,0 +1,142 @@
+/* Akari stages 1–3: illustrated village, precise circuit. No false electrical cues. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive{
+ grid-template-areas:
+ "town town"
+ "heading heading"
+ "task task"
+ "steps science"
+ "steps workplace"
+ "steps feedback"
+ "steps actions"
+ "journal journal"
+ "discovery discovery"
+ "report report"
+ "footer footer";
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+ grid-area:town;
+ position:relative;inset:auto;z-index:2;
+ width:100%;height:265px;max-height:none;opacity:1;
+ pointer-events:none;overflow:hidden;
+ background:#bfe6ea;
+ border:3px solid #e9d4a8;border-radius:22px;
+ box-shadow:0 5px 0 #afbeac,0 12px 22px #34555b39;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene
+:is(.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor,.landmark){
+ display:none;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-props{
+ position:absolute;inset:0;z-index:2;
+ overflow:hidden;pointer-events:none;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .town-illustration{
+ width:100%;height:100%;display:block;filter:none;
+}
+/* Houses are drawn as a storybook, not as a diagram of electric connections.
+   Only the hands-on workbench encodes the correct conducting loop. */
+.story-scene .town-window{fill:#7fa7b0;transition:fill .45s,filter .45s}
+.story-scene .town-lantern-glass,
+.story-scene .bridge-lantern-glass{fill:#9db9bf;transition:fill .45s}
+.story-scene .town-stage-lights,
+.story-scene .bridge-stage-lights{
+ opacity:0;transition:opacity .65s ease-out;
+}
+.story-scene:is(.live-powered,.bridge-powered,.restored) .town-window{
+ fill:#ffe5a1;filter:drop-shadow(0 0 8px #ffc96b);
+}
+.story-scene:is(.live-powered,.bridge-powered,.restored)
+:is(.town-lantern-glass,.bridge-lantern-glass){
+ fill:#ffe6a1;filter:drop-shadow(0 0 5px #ffcd75);
+}
+.story-scene:is(.live-powered,.bridge-powered,.restored)
+:is(.town-stage-lights,.bridge-stage-lights){opacity:1}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption,
+body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .main.town-immersive .scene-caption{
+ position:absolute;left:13px;top:10px;bottom:auto;z-index:7;
+ width:max-content;max-width:58%;opacity:1;
+ padding:5px 8px;
+ background:#fff4dae9;color:#3d6174;
+ border:1.5px solid #cfae7f;border-radius:12px;
+ box-shadow:0 2px 8px #37606b40;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption h1,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption p{
+ display:none;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption .place-chip,
+body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .main.town-immersive .scene-caption .place-chip{
+ display:inline-block;padding:2px 6px;
+ background:transparent;color:#34566f;
+ font-size:11px;letter-spacing:0;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-progress{
+ right:10px;top:10px;bottom:auto;z-index:7;opacity:.94;
+ background:#fff5d5e6;color:#366073;border:1px solid #dbbc81;
+ border-radius:10px;padding:3px 9px;
+}
+/* Keep the circuit itself bright, readable and recognizably physical. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board{
+ background:radial-gradient(ellipse at 54% 18%,#526d7d,#253f51 65%,#142d40);
+ border:3px solid #7ba2aa;
+ box-shadow:inset 0 0 22px #001c2a8c,0 6px 14px #0a29353d;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .battery-model{
+ filter:drop-shadow(0 7px 4px #0c223399);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .bulb-model{
+ filter:drop-shadow(0 7px 6px #0b263788);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .terminal:focus-visible{
+ outline:3px solid #ffd77c;outline-offset:5px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .bridge-site{
+ border-color:#a5c8b9;
+}
+@media(min-width:741px){
+ body[data-visual-theme="reference-rebuild"].reading-easy .main.town-immersive,
+ body[data-visual-theme="reference-rebuild"].gesture-first .main.town-immersive{
+  grid-template-areas:
+  "town town"
+  "heading heading"
+  "task task"
+  "steps workplace"
+  "steps feedback"
+  "steps actions"
+  "journal journal"
+  "discovery discovery"
+  "report report"
+  "footer footer";
+ }
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive{
+  display:flex;flex-direction:column;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+  height:210px;min-height:210px;flex:0 0 auto;
+  opacity:1;position:relative;max-height:none;
+  border-radius:17px;border-width:2px;
+  margin-bottom:2px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption,
+ body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .main.town-immersive .scene-caption{
+  left:7px;top:7px;bottom:auto;max-width:56%;
+  padding:3px 5px;opacity:1;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption .place-chip{
+  font-size:10px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-progress{
+  right:7px;top:8px;font-size:10px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .story-scene .town-stage-lights,
+ .story-scene .bridge-stage-lights,
+ .story-scene .town-window,
+ .story-scene .town-lantern-glass,
+ .story-scene .bridge-lantern-glass{
+  transition:none;
+ }
+}
