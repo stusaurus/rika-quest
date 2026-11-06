@@ -52,7 +52,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=i
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=1">',"<style>\n"+wireFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=1">',"<style>\n"+sideDrawersCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css">',"<style>\n"+freeLabCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=drawer1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js?v=trays1" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
@@ -74,8 +74,8 @@ output=replaceOne(output,'<script src="./furigana.js" defer></script>',inlineScr
 output=replaceOne(output,'<script src="./reference-layout.js?v=wirefocus1" defer></script>',inlineScript(referenceJs));
 output=replaceOne(output,'<script src="./wire-canvas.js" defer></script>',inlineScript(wireCanvas));
 output=replaceOne(output,'<script src="./wire-cut.js" defer></script>',inlineScript(wireCut));
-output=replaceOne(output,'<script src="./free-lab-model.js" defer></script>',inlineScript(freeLabModel));
-output=replaceOne(output,'<script src="./free-lab.js" defer></script>',inlineScript(freeLab));
+output=replaceOne(output,'<script src="./free-lab-model.js?v=drawer1" defer></script>',inlineScript(freeLabModel));
+output=replaceOne(output,'<script src="./free-lab.js?v=drawer1" defer></script>',inlineScript(freeLab));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
