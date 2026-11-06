@@ -70,26 +70,13 @@
   '<path d="M0 326Q165 293 310 318T640 318T900 313" fill="none" stroke="#ab9f91" stroke-width="2.5" opacity=".44"/>'+
   littleFlower(116,301,"#f6bdc5")+littleFlower(280,302,"#f5d085")+
   littleFlower(622,304,"#f2c4d2")+littleFlower(808,309,"#f1d58d");
- const bridge=sky+
-  house(235,266,.69,"#c47e83","#f5dabc")+
-  house(662,263,.69,"#779cb6","#fae9d0")+
-  '<path d="M0 265Q260 238 540 260Q707 249 900 250V340H0Z" fill="url(#tcWater)"/>'+
-  '<path d="M0 281Q150 269 290 281T600 285T900 283M0 305Q200 298 387 309T900 308" stroke="#e3f2e7" stroke-width="3" opacity=".42" fill="none"/>'+
-  '<g class="bridge-monument">'+
-  '<path d="M258 264Q417 167 629 261L637 305Q448 217 259 308Z" fill="url(#tcStone)" stroke="#f5e2be" stroke-width="6" stroke-linejoin="round"/>'+
-  '<path d="M293 300Q377 225 446 300M447 299Q527 223 606 297" fill="none" stroke="#71939d" stroke-width="23" opacity=".76"/>'+
-  '<path d="M249 256Q444 143 643 257" fill="none" stroke="#e3c59b" stroke-width="16" stroke-linecap="round"/>'+
-  '<path d="M255 255Q450 148 635 258" fill="none" stroke="#fff1d5" stroke-width="4"/>'+
-  '<path d="M245 256Q443 153 644 257" stroke="#b38f79" stroke-width="3.5" stroke-dasharray="16 13" fill="none"/>'+
-  '</g>'+
-  lantern(329,264,.72,true)+lantern(579,264,.72,true)+
-  '<g class="bridge-stage-lights"><ellipse cx="450" cy="304" rx="175" ry="32" fill="url(#tcGlow)"/></g>'+
-  tree(51,308,.88)+tree(862,302,.84)+
-  littleFlower(268,301,"#eac1ca")+littleFlower(630,307,"#f2d187");
+ // The third mission is another streetlamp in the town, not a bridge rescue.
+ const streetlamp=town+lantern(490,302,1.07,false)+
+  '<g class="town-stage-lights"><ellipse cx="490" cy="313" rx="150" ry="25" fill="url(#tcGlow)"/></g>';
  const art={
   1:town+lantern(557,280,.89,false),
   2:town+lantern(325,286,.94,false)+lantern(605,286,.91,false),
-  3:bridge
+  3:streetlamp
  };
  window.AkariTownArt={render:stage=>art[Number(stage)]||art[2]};
 })();
