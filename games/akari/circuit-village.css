@@ -1,0 +1,117 @@
+/* Akari: the children's village belongs ON THE ACTUAL CIRCUIT BOARD.
+   Scenery is decoration only: real battery terminals, the glass bulb, user
+   wiring and the physics model remain visually and logically separate. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+ height:92px!important;max-height:92px!important;
+ background:linear-gradient(120deg,#d4eced,#f2e5c8)!important;
+ border-width:2px;border-color:#b0c5b1;
+ border-radius:15px;box-shadow:0 3px 0 #9db5af66;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-props{
+ display:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption{
+ top:10px;left:12px;bottom:auto;max-width:65%;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption h1{
+ display:block;font-size:16px;color:#35576a;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-progress{
+ top:12px;right:12px;
+}
+.circuit-board.circuit-town-board{
+ background:#7eb8bf;
+ border:3px solid #b1a78b;
+ box-shadow:0 6px 0 #819a91, inset 0 0 0 2px #e9d2a3,0 15px 24px #173b4b36;
+}
+.circuit-town-board .circuit-village-backdrop{
+ position:absolute;inset:0;z-index:1;
+ overflow:hidden;pointer-events:none;
+ border-radius:18px;
+ background:#b3d9d7;
+}
+.circuit-town-board .circuit-village-art{
+ display:block;width:100%;height:100%;
+ filter:saturate(.84) brightness(.93);
+}
+.circuit-town-board .circuit-village-backdrop::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(180deg,#163c4b0a 0%,#1c52603b 55%,#153b4e88 100%);
+}
+.circuit-town-board .circuit-inner{z-index:3}
+.circuit-town-board .circuit-inner .battery-model,
+.circuit-town-board .circuit-inner .bulb-model{
+ filter:drop-shadow(1px 5px 5px #132f44c7);
+}
+.circuit-town-board .circuit-inner .lead-on-top{
+ filter:drop-shadow(0 1px 3px #152b35a9);
+}
+.circuit-town-board .circuit-help{
+ color:#fff9e4;text-shadow:0 1px 4px #173949;
+ background:#163e51df;border:1px solid #c9ded1;
+ border-radius:10px;padding:4px 7px;
+}
+.circuit-town-board .wire-chip{background:#1c435adf;border-color:#e3cda2}
+.circuit-town-board .terminal{box-shadow:0 3px 1px #314956,0 0 0 5px #244f63a9}
+.circuit-town-board .terminal.selected{box-shadow:0 0 0 8px #ffdc85bd,0 0 17px #ffe2a0}
+.circuit-town-board .terminal-label{
+ color:#fffbea!important;
+ background:#123b51dc;padding:2px 4px;border-radius:5px;
+ text-shadow:0 1px 2px #143347;
+}
+/* Stage three: the repair puzzle depicts the SAME village, behind real wires. */
+.bridge-circuit.circuit-town-repair{
+ border:3px solid #b8a985;background:#8cbcc0;
+ box-shadow:0 5px 0 #819c92,0 8px 19px #1d405336;
+}
+.circuit-town-repair .circuit-village-repair-art{pointer-events:none;opacity:.87}
+.circuit-town-repair .bridge-circuit-svg>path,
+.circuit-town-repair .bridge-circuit-svg>rect:not(:first-child){
+ filter:drop-shadow(0 1px 2px #1a3a4a6b);
+}
+/* The light appears only when the live closed circuit is observed.
+   The short-circuit state never lights the town. */
+:is(.circuit-town-board,.circuit-town-repair) .town-window{
+ fill:#5d8797;transition:fill .28s,filter .28s;
+}
+:is(.circuit-town-board,.circuit-town-repair) .town-lantern-glass{
+ fill:#7b99a8;transition:fill .28s;
+}
+:is(.circuit-town-board,.circuit-town-repair) .town-stage-lights{
+ opacity:0;transition:opacity .28s ease-out;
+}
+:is(.circuit-town-board,.circuit-town-repair).is-lit .town-window{
+ fill:#ffe5a1;filter:drop-shadow(0 0 5px #ffe3a3);
+}
+:is(.circuit-town-board,.circuit-town-repair).is-lit .town-lantern-glass{
+ fill:#ffeeb1;filter:drop-shadow(0 0 6px #ffd87a);
+}
+:is(.circuit-town-board,.circuit-town-repair).is-lit .town-stage-lights{opacity:1}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+  height:77px!important;max-height:77px!important;min-height:77px!important;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .scene-caption h1{
+  font-size:13px;
+ }
+ .circuit-town-board .circuit-village-art{
+  object-fit:cover;filter:saturate(.9) brightness(.92);
+ }
+ .circuit-town-board .circuit-help{padding:3px 5px}
+}
+@media(prefers-reduced-motion:reduce){
+ :is(.circuit-town-board,.circuit-town-repair) .town-stage-lights,
+ :is(.circuit-town-board,.circuit-town-repair) .town-window,
+ :is(.circuit-town-board,.circuit-town-repair) .town-lantern-glass{
+  transition:none;
+ }
+}
+
+/* The three "which circuit would light?" probes are predictions, not
+   experiments. The same town is visible INSIDE the schematic but ALWAYS dark. */
+.transfer-diagram .circuit-village-prediction-art{
+ pointer-events:none;opacity:.92;
+}
+.transfer-diagram .town-window{fill:#608696!important;filter:none!important}
+.transfer-diagram .town-lantern-glass{fill:#608898!important;filter:none!important}
+.transfer-diagram .town-stage-lights{opacity:0!important;animation:none!important}

@@ -68,7 +68,7 @@ const puzzles={
  ],correct:"closed",discovery:"電源、導体、電球の2つの金属接点が、切れ目のない回路になることが最も大切。"}
 };
 const labels={lit:"💡 点灯",dark:"◯ 消灯",short:"⚠ ショート（危険）",safe:"💡 正しく点灯"};
-function diagram(kind){
+function diagram(kind,missionId){
  const isSeries=kind.startsWith("series"),isParallel=kind.startsWith("parallel");
  const status=kind.match(/[01]{3}$/)?.[0]||"000";
  const topLine='<path d="M53 48V28H294V72M294 107V143H53V99" fill="none" stroke="#f5d6a4" stroke-width="5" stroke-linecap="round"/>';
@@ -90,7 +90,7 @@ function diagram(kind){
  if(isSeries){paths='<path d="M53 48V47H95M137 47H159M201 47H223M265 47H294V72M294 107V143H53V99" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(116,47,status[0]==="1","A")+switchGlyph(180,47,status[1]==="1","B")+switchGlyph(244,47,status[2]==="1","C")}
  if(isParallel){paths='<path d="M53 48V28H103M263 28H294V72M103 28V115M263 28V115M103 30H134M178 30H263M103 73H134M178 73H263M103 115H134M178 115H263" stroke="#f5d6a4" stroke-width="5" fill="none"/>';details=switchGlyph(156,30,status[0]==="1","A")+switchGlyph(156,73,status[1]==="1","B")+switchGlyph(156,115,status[2]==="1","C")}
  if(kind==="short"||kind==="shunt"){details='<path d="M53 48H16V147H53" stroke="#f7a990" stroke-width="5" fill="none" stroke-dasharray="7 4"/><text x="80" y="119" font-size="11" fill="#ffc5aa">豆電球を通らない道</text>';if(kind==="short")paths='<path d="M294 107V143H53" stroke="#f5d6a4" stroke-width="5" fill="none"/>';else details='<path d="M53 48H16V147H53" stroke="#f7a990" stroke-width="5" fill="none" stroke-dasharray="7 4"/><text x="80" y="119" font-size="11" fill="#ffc5aa">別の導線で直結</text>'}
- return '<svg viewBox="0 0 340 173" class="transfer-diagram" role="img" aria-label="乾電池と豆電球の回路の模式図。豆電球は丸にバツの回路記号で示す。結果はまだ表示しない"><rect x="1" y="1" width="338" height="171" rx="13" fill="#173a53" stroke="#55808c" stroke-width="2"/>'+
+ return '<svg viewBox="0 0 340 173" class="transfer-diagram" role="img" aria-label="乾電池と豆電球の回路の模式図。豆電球は丸にバツの回路記号で示す。結果はまだ表示しない"><rect x="1" y="1" width="338" height="171" rx="13" fill="#173a53" stroke="#55808c" stroke-width="2"/>'+(missionId===2?(window.AkariCircuitVillage?.prediction()||'')+'<rect x="1" y="1" width="338" height="171" rx="13" fill="#15384c" opacity=".51" pointer-events="none"/>':'')+
  paths+battery+bulb+details+'</svg>';
 }
 function get(id){return puzzles[id]||null;}
@@ -108,7 +108,7 @@ function render(id,answers,reason,step=0){
  let body="";
  if(view<3){
   const t=p.probes[view];
-  body='<div class="transfer-probes"><div class="transfer-probe transfer-focus"><strong>調査 '+(view+1)+' / 3：'+t.name+'</strong>'+diagram(t.diagram)+
+  body='<div class="transfer-probes"><div class="transfer-probe transfer-focus"><strong>調査 '+(view+1)+' / 3：'+t.name+'</strong>'+diagram(t.diagram,id)+
    '<p class="transfer-prompt">回路図をよく見て、実験したらどうなるか予想しよう。</p><div class="transfer-answers">'+
    p.choices.map(value=>'<button type="button" data-transfer-answer="'+t.id+'" data-transfer-value="'+value+'" aria-pressed="'+(answers[t.id]===value)+'" class="'+(answers[t.id]===value?'selected':'')+'">'+labels[value]+'</button>').join("")+
    '</div><p class="transfer-next-hint">予想を決めると次の調査へ進むよ。</p></div></div>';
