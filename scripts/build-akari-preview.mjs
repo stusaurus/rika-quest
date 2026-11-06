@@ -38,7 +38,6 @@ function inlineScript(source){return "<script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./reference-layout.css">',"<style>\n"+referenceCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css">',"<style>\n"+wireCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css?v=4690ff5">',"<style>\n"+wireCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./immersive-lab.css?v=282606d">',"<style>\n"+immersiveCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./bridge-cinematic.css?v=1">',"<style>\n"+cinematicCss+"\n</style>");
