@@ -1,0 +1,176 @@
+/* Mission 3: visible scene-scale overhaul, not another subtle color adjustment. */
+.story-scene[data-stage="3"]{
+ height:385px;
+ background:#102945;
+ border:2px solid #7da1ad;
+ box-shadow:inset 0 0 0 1px #d2bd9880,0 18px 40px #06172d93;
+}
+.story-scene[data-stage="3"] .landmark{display:none}
+.story-scene[data-stage="3"] .scene-props{z-index:2}
+.story-scene[data-stage="3"] .bridge-panorama-svg{filter:none}
+.story-scene[data-stage="3"] .bridge-stage-lights{opacity:0;transition:opacity 1.2s ease}
+.story-scene[data-stage="3"] .bridge-lantern-glass{transition:fill .8s ease}
+.story-scene[data-stage="3"].bridge-powered .bridge-stage-lights,
+.story-scene[data-stage="3"].restored .bridge-stage-lights{opacity:1}
+.story-scene[data-stage="3"].bridge-powered .bridge-lantern-glass,
+.story-scene[data-stage="3"].restored .bridge-lantern-glass{fill:#ffe09c}
+.story-scene[data-stage="3"] .scene-caption{
+ left:22px;bottom:20px;max-width:min(44%,340px);
+ padding:15px 18px;
+ background:linear-gradient(135deg,#0a2038ef,#183c55d9);
+ border:1px solid #dcbd8b;
+ box-shadow:0 8px 26px #031525c7, inset 0 0 16px #c6b07b20;
+}
+.story-scene[data-stage="3"] .scene-caption h1{font-size:clamp(20px,2.8vw,30px)}
+.story-scene[data-stage="3"] .scene-caption p{font-size:13px;color:#ebf2ed}
+.story-scene[data-stage="3"] .scene-glow{background:radial-gradient(ellipse at 73% 54%,#ffdb7770,transparent 59%)}
+.story-scene[data-stage="3"] .scene-lights{display:none}
+/* Bridge adventure controls: image first, one clear action per object. */
+.bridge-lab .bridge-quest-strip{
+ padding:16px 18px;
+ background:linear-gradient(115deg,#173148,#29586c 65%,#316c72);
+ border:2px solid #c7ad7f;
+ box-shadow:0 5px 16px #0b213454;
+}
+.bridge-lab .bridge-quest-strip strong{font-size:clamp(15px,2.1vw,20px)}
+.bridge-lab .bridge-site{
+ background:linear-gradient(155deg,#f5ecdb,#dbe3db 59%,#b4c9c1);
+ border:2px solid #9fada8;
+ box-shadow:inset 0 2px 0 #fff9e3,0 5px 11px #16324126;
+ border-radius:16px;
+ padding:10px;
+ min-height:162px;
+ transition:transform .18s,box-shadow .18s,border-color .18s;
+}
+.bridge-lab .bridge-site .bridge-site-art{
+ display:block;width:100%;height:96px;
+ border-radius:11px;overflow:hidden;
+ background:#16354b;
+ box-shadow:inset 0 0 0 2px #82989b,0 2px 8px #19374737;
+}
+.bridge-lab .bridge-site .bridge-site-art svg{width:100%;height:100%;display:block}
+.bridge-lab .bridge-site>strong{font-size:13px}
+.bridge-lab .bridge-site>small{font-size:11px}
+.bridge-lab .bridge-site:focus-visible{outline:3px solid #efb84b;outline-offset:3px}
+.bridge-lab .bridge-site.found{
+ border-color:#5bb79c;
+ background:linear-gradient(150deg,#e3f5e3,#bce5d8);
+ box-shadow:0 0 0 2px #a1f2d2aa,0 6px 14px #286b5e29;
+}
+.bridge-lab .bridge-site.found .bridge-site-art{box-shadow:0 0 0 3px #66bba3}
+.bridge-lab .bridge-site:not(.found):active{transform:scale(.985)}
+.bridge-lab .bridge-section{
+ border:1px solid #a0b5b0;
+ box-shadow:0 6px 16px #10344f14;
+}
+.bridge-lab .bridge-section h3{font-size:clamp(17px,2.2vw,21px)}
+.bridge-lab .bridge-circuit{
+ border:3px solid #bba47e;
+ background:#183b49;
+ box-shadow:0 8px 20px #112b4140;
+}
+.bridge-lab .bridge-circuit-svg{min-width:480px}
+@media(max-width:740px){
+ .story-scene[data-stage="3"]{height:315px}
+ .story-scene[data-stage="3"] .scene-caption{
+  left:9px;bottom:11px;max-width:58%;
+  padding:10px 11px;line-height:1.45;
+ }
+ .story-scene[data-stage="3"] .scene-caption h1{font-size:19px}
+ .story-scene[data-stage="3"] .scene-caption p{font-size:11px}
+ .bridge-lab .bridge-site{
+  grid-template-columns:86px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  justify-items:start;
+  align-items:center;
+  gap:3px 10px;
+  text-align:left;min-height:98px;
+ }
+ .bridge-lab .bridge-site .bridge-site-art{
+  grid-row:span 2;width:86px;height:76px;
+ }
+ .bridge-lab .bridge-site>strong{font-size:13px}
+ .bridge-lab .bridge-site>small{font-size:11px;line-height:1.4}
+}
+@media(prefers-reduced-motion:reduce){
+ .story-scene[data-stage="3"] .bridge-stage-lights,
+ .story-scene[data-stage="3"] .bridge-lantern-glass{transition:none}
+ .bridge-lab .bridge-site{transition:none}
+}
+
+/* The original reference layout used the scene as a faint, absolute wallpaper.
+   Make this mission a real, dominant cinematic panel above the controls. */
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive{
+ grid-template-areas:
+   "hero hero"
+   "heading heading"
+   "task task"
+   "steps science"
+   "steps workplace"
+   "steps feedback"
+   "steps actions"
+   "journal journal"
+   "discovery discovery"
+   "report report"
+   "footer footer";
+}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive>.story-scene{
+ grid-area:hero;position:relative;inset:auto;
+ width:100%;height:385px;max-height:none;
+ z-index:2;opacity:1;pointer-events:none;
+ border:2px solid #a2b9bb;border-radius:22px;
+ background:#122e46;
+ box-shadow:0 16px 33px #0c244777;
+}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive>.story-scene
+:is(.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){display:none}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .story-scene .scene-caption{
+ width:auto;max-width:min(44%,345px);
+ left:22px;bottom:20px;padding:14px 18px;
+ opacity:1;background:linear-gradient(135deg,#09233df2,#194b61e6);
+ border:1px solid #f0d19a;border-radius:16px;
+ color:#fff4da;
+}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .scene-caption .place-chip{display:inline-block}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .scene-caption h1{
+ font-size:clamp(20px,2.8vw,28px);line-height:1.3;color:#fff8eb
+}
+body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .scene-caption p{
+ display:block;font-size:12px;color:#e7eee6
+}
+@media(min-width:741px){
+ body[data-visual-theme="reference-rebuild"].reading-easy .main.bridge-immersive,
+ body[data-visual-theme="reference-rebuild"].gesture-first .main.bridge-immersive{
+  grid-template-areas:
+   "hero hero"
+   "heading heading"
+   "task task"
+   "steps workplace"
+   "steps feedback"
+   "steps actions"
+   "journal journal"
+   "discovery discovery"
+   "report report"
+   "footer footer";
+ }
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.bridge-immersive{
+  display:flex;flex-direction:column;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.bridge-immersive>.story-scene{
+  flex:0 0 auto;height:315px;max-height:none;
+  opacity:1;border-radius:17px;
+  margin-bottom:2px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .story-scene .scene-caption,
+ body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .main.bridge-immersive .story-scene .scene-caption{
+  left:9px;bottom:11px;width:auto;
+  max-width:58%;opacity:1;padding:9px 11px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .scene-caption h1,
+ body[data-visual-theme="reference-rebuild"].gesture-first.reading-easy .main.bridge-immersive .scene-caption h1{
+  font-size:17px;line-height:1.25;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.bridge-immersive .scene-caption p{display:block;font-size:10px}
+}
