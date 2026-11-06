@@ -12,7 +12,7 @@ const beacon=(x,y)=>'<g transform="translate('+x+' '+y+')"><path d="M0-100V-3" s
 const designs=[
  ()=>lamp(117,306)+bench(310,310)+flower(32,322,"#f9cc8f"),
  ()=>lamp(110,305,120)+lamp(378,308,135)+sign(235,320,"街灯"),
- ()=>window.AkariTownArt?window.AkariTownArt.render(3):rope(177,300)+lamp(385,298,108),
+ ()=>window.AkariTownArt?window.AkariTownArt.render(3):lamp(345,300,128)+flower(190,320,"#f4c8ca"),
  ()=>flower(112,315,"#faafbb")+flower(172,325,"#e9cd83")+flower(327,320,"#ecd8e9"),
  ()=>box(146,317,"？")+flower(295,317,"#fbe6a0")+sign(360,330,"実験"),
  ()=>gear(170,252)+gear(226,305)+lamp(363,314),
