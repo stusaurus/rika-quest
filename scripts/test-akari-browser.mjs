@@ -711,6 +711,8 @@ try{
      localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
+   const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
+   assert.ok(hero.height>=300&&hero.position==="relative"&&hero.opacity==="1","Mission 3 bridge must be a visible hero, not an absolute faded wallpaper: "+JSON.stringify(hero));
    assert.equal(await page.locator(".bridge-panorama-svg .bridge-monument").count(),1,"Stage 3 must show full-scale stone bridge, not generic props");
    assert.equal(await page.locator(".bridge-panorama-svg .bridge-lamp").count(),2,"Distinct bridge lanterns belong to the scene");
    assert.equal(await page.locator(".bridge-panorama-svg .bridge-stage-lights").count(),3,"Landscape must include lights that respond to repairing the circuit");
