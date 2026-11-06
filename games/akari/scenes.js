@@ -125,7 +125,7 @@ const landmarks={
  '<path d="M117 63H182M119 129H187M119 194H191" stroke="#fff8e2" stroke-width="3" opacity=".65"/></g>'
 };
 
-window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const dramatic=index===2,box=dramatic?"0 0 900 340":phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(dramatic?" bridge-panorama-svg":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(dramatic?"xMidYMid slice":"none")+'" aria-hidden="true">'+designs[index]()+'</svg>'}};
+window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const dramatic=index===2,box=dramatic?(phone?"295 0 550 340":"0 0 900 340"):phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(dramatic?" bridge-panorama-svg":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(dramatic?"xMidYMid slice":"none")+'" aria-hidden="true">'+designs[index]()+'</svg>'}};
 window.AkariScenes.landmark=place=>landmarkDefs+(landmarks[place]||landmarks.village);
 
 })();
