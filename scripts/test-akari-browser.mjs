@@ -229,9 +229,13 @@ try{
    await page.goto(origin+"/games/akari/",{waitUntil:"domcontentloaded"});
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-house").count(),3,"Stage 1 displays a coherent illustrated hometown");
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-lamp").count(),1,"Stage 1 has one visible streetlamp");
-   assert.equal(await page.locator(".town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Streetlamp starts dark before connecting the circuit");
+   assert.equal(await page.locator(".circuit-town-board .town-house").count(),3,"Stage 1 displays the illustrated village INSIDE the wiring board");
+   assert.equal(await page.locator(".circuit-town-board .battery-model").count(),1,"Physical battery stays over the scenery");
+   assert.equal(await page.locator(".circuit-town-board .bulb-model").count(),1,"Physical bulb stays over the scenery");
+   assert.equal(await page.locator(".circuit-town-board .terminal").count(),4,"All four real wiring terminals remain usable");
+   assert.equal(await page.locator(".main.town-immersive .scene-props").evaluate(e=>getComputedStyle(e).display),"none","Exterior scenic panel is not the artwork focus");
+   assert.equal(await page.locator(".circuit-town-board .town-lamp").count(),1,"Stage 1 has its streetlamp INSIDE the wiring board");
+   assert.equal(await page.locator(".circuit-town-board .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","The streetlamp INSIDE the circuit starts dark");
    await page.locator("#missionGoal ruby.akari-yomi").first().waitFor();
    assert.equal(await page.locator("#missionGoal").textContent(),"小屋のあかりをつけよう","Readings must never corrupt the underlying answer or sentence");
    assert.equal(await page.locator("#missionGoal ruby.akari-yomi").first().getAttribute("aria-label"),"小屋（こや）","The difficult kanji must expose its reading in accessibility");
@@ -514,7 +518,7 @@ try{
    assert.equal((await wireRoute()).length,2,"Both the outward and return leads must remain visible");
    assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"The lamp lights as soon as a complete loop is connected");
    assert.equal(await page.locator(".story-scene.live-powered").count(),1,"The village light responds immediately to electricity");
-   assert.equal(await page.locator(".story-scene.live-powered .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"1","Drawing the correct wire lights the illustrated streetlamp immediately");
+   assert.equal(await page.locator(".circuit-town-board.is-lit .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"1","Drawing a correct wire lights the streetlamp in the interactive circuit");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"After observing a lit lamp, the pupil can explain the result");
    assert.equal(await page.locator("#discovery").isVisible(),false,"A light bulb alone must not bypass scientific reasoning");
    assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
@@ -545,7 +549,7 @@ try{
      "One deliberate crossing removes exactly one connection");
    assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Cutting one necessary lead turns the lamp off immediately");
    assert.equal(await page.locator(".story-scene.live-powered").count(),0,"The village light also turns off with the broken circuit");
-   assert.equal(await page.locator(".town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Cutting a necessary wire darkens the illustrated streetlamp");
+   assert.equal(await page.locator(".circuit-town-board .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Cutting a necessary wire darkens the streetlamp INSIDE the interactive circuit");
    assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning prompt waits for a completed live experiment");
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    assert.equal(await page.locator(".wire-chip").count(),2,
@@ -594,8 +598,8 @@ try{
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"Revisiting should retain the first map light");
    await page.evaluate(()=>{const k="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(k));s.active=2;localStorage.setItem(k,JSON.stringify(s))});
    await page.reload({waitUntil:"domcontentloaded"});
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-house").count(),3,"Mission 2 is a cute village, not a realistic city");
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-lamp").count(),2,"Mission 2 streetlights are recognizable in the illustrated town");
+   assert.equal(await page.locator(".circuit-town-board .town-house").count(),3,"Mission 2 has three homes within the wiring board");
+   assert.equal(await page.locator(".circuit-town-board .town-lamp").count(),2,"Mission 2 has streetlights within the wiring board");
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"Repairing stage two lights the bulb immediately");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"Repair reasoning follows live lighting");
@@ -719,11 +723,12 @@ try{
    });
    await page.reload({waitUntil:"domcontentloaded"});
    const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
-   assert.ok(hero.height>=(width<741?205:260)&&hero.position==="relative"&&hero.opacity==="1","The illustrated streetlamp town must be a visible compact scene, not a faded wallpaper: "+JSON.stringify(hero));
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-house").count(),3,"Mission 3 displays three colorful houses around the streetlamp");
-   assert.equal(await page.locator(".story-scene .bridge-monument").count(),0,"Stage 3 must not show a bridge");
-   assert.equal(await page.locator(".story-scene .town-lamp").count(),1,"Stage 3 must have one prominent town streetlamp");
-   assert.equal(await page.locator(".story-scene .town-stage-lights").count(),2,"Streetlamp light and ground glow respond to completed circuits");
+   assert.ok(hero.height>=70&&hero.height<=104&&hero.position==="relative"&&hero.opacity==="1","The outside scene must be a compact heading rather than the illustrated gameboard: "+JSON.stringify(hero));
+   assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
+   assert.equal(await page.locator(".bridge-circuit .bridge-monument").count(),0,"Stage 3 must not show a bridge in the active circuit diagram");
+   assert.equal(await page.locator(".bridge-circuit .town-lamp").count(),1,"Stage 3 must have a streetlamp INSIDE the circuit diagram");
+   assert.equal(await page.locator(".bridge-circuit .town-stage-lights").count(),2,"Two lamp-light elements exist INSIDE the repair diagram");
+   assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Unrepaired stage 3 diagram must stay dark");
    assert.equal(await page.locator(".bridge-sites .bridge-site-art svg").count(),3,"Every bridge inspection target has readable physical artwork");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
@@ -759,8 +764,8 @@ try{
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town streetlamp visually responds to observed working circuit");
-   assert.equal(await page.locator(".story-scene.bridge-powered .town-lantern-glass").count(),1,"Successful repair illuminates the streetlamp");
-   assert.equal(await page.locator(".story-scene.bridge-powered .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing both gaps reveals light on the streetlamp");
+   assert.equal(await page.locator(".bridge-circuit.is-lit .town-lantern-glass").count(),1,"Successful repair illuminates the lamp inside the circuit diagram");
+   assert.equal(await page.locator(".bridge-circuit.is-lit .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing both gaps reveals light INSIDE the circuit diagram");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-lit.png",fullPage:true});
    await page.locator('[data-bridge-reason="one"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"A wrong explanation cannot clear despite light");
