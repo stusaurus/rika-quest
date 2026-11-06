@@ -107,13 +107,6 @@
        root.querySelector('.bridge-slot-actions [data-bridge-place="'+slot+'"]')?.click();
        return;
      }
-     const sample=event.target.closest("[data-bridge-sample]");
-     if(sample&&root.querySelector(".bridge-slot-actions")&&
-        sample.querySelector("small")?.textContent?.includes("実験済")){
-       // A tested sample is now ready to insert: automatically return focus
-       // to the center instead of making the child dismiss the drawer.
-       opened="";
-     }
      const button=event.target.closest("[data-dock-tab]");
      if(!button||!root.contains(button))return;
      toggle(root,button.dataset.dockTab);
@@ -125,5 +118,5 @@
    });
  }
  function decorate(root,stage){attach(root);render(root,stage);}
- window.AkariDock={decorate};
+ window.AkariDock={decorate,collapse:()=>{opened="";}};
 })();
