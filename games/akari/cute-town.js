@@ -71,8 +71,8 @@
   littleFlower(116,301,"#f6bdc5")+littleFlower(280,302,"#f5d085")+
   littleFlower(622,304,"#f2c4d2")+littleFlower(808,309,"#f1d58d");
  const bridge=sky+
-  house(156,266,.82,"#c47e83","#f5dabc")+
-  house(751,263,.82,"#779cb6","#fae9d0")+
+  house(235,266,.69,"#c47e83","#f5dabc")+
+  house(662,263,.69,"#779cb6","#fae9d0")+
   '<path d="M0 265Q260 238 540 260Q707 249 900 250V340H0Z" fill="url(#tcWater)"/>'+
   '<path d="M0 281Q150 269 290 281T600 285T900 283M0 305Q200 298 387 309T900 308" stroke="#e3f2e7" stroke-width="3" opacity=".42" fill="none"/>'+
   '<g class="bridge-monument">'+
