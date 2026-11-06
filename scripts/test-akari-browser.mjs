@@ -736,6 +736,21 @@ try{
      localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
+   const drawer=side=>page.locator('[data-dock-tab="'+side+'"]');
+   const openDrawer=async side=>{
+     if(await drawer(side).getAttribute("aria-expanded")!=="true")await drawer(side).click();
+   };
+   const closeDrawer=async side=>{
+     if(await drawer(side).getAttribute("aria-expanded")==="true")await drawer(side).click();
+   };
+   assert.equal(await page.locator(".akari-dock-center>.bridge-circuit").count(),1,"Stage 3 keeps the real streetlamp circuit in the center");
+   assert.equal(await page.locator('[data-dock-tab="left"]').count(),1,"Tools drawer is permanently reachable");
+   assert.equal(await page.locator('[data-dock-tab="right"]').count(),1,"Materials drawer is permanently reachable");
+   assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),0,"The two palettes start collapsed to maximize the circuit");
+   await openDrawer("right");
+   assert.match(await page.locator(".akari-dock-waiting").textContent(),/3か所/,"Materials drawer explains the current scientific prerequisite");
+   await openDrawer("left");
+   assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),1,"Opening one palette closes the other");
    const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
    assert.ok(hero.height>=70&&hero.height<=104&&hero.position==="relative"&&hero.opacity==="1","The outside scene must be a compact heading rather than the illustrated gameboard: "+JSON.stringify(hero));
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
@@ -747,10 +762,18 @@ try{
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
    assert.ok(!(await page.locator(".bridge-quest-strip").textContent()).includes("橋"),"The streetlamp challenge must not still mention the bridge");
-   assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests should not appear before observing site");
+   assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests still require inspection evidence before use");
+   assert.equal(await drawer("left").getAttribute("aria-expanded"),"true","Inspection palette remains open");
+
+   await closeDrawer("left");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
+   await openDrawer("left");
    for(const site of ["battery","lamp","return"])await page.locator('[data-bridge-inspect="'+site+'"]').click();
+   await openDrawer("right");
+   assert.equal(await drawer("left").getAttribute("aria-expanded"),"false","Opening material palette keeps central circuit unobstructed on the other side");
+   assert.equal(await page.locator(".akari-dock-right .bridge-materials").count(),1,"Material choices are inside the right drawer and use real lab controls");
+
    assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Discover four visually distinct material samples");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
    await page.locator('[data-bridge-sample="iron"]').click();
@@ -763,17 +786,29 @@ try{
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
    await page.locator('[data-bridge-sample="foil"]').click();
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
-   assert.equal(await page.locator(".bridge-slot-actions").count(),1,"Contrasting scientific tests should reveal the real repair puzzle");
-   await page.locator('[data-bridge-sample="iron"]').click();await page.locator('[data-bridge-place="a"]').click();
-   await page.locator('[data-bridge-sample="wood"]').click();await page.locator('[data-bridge-place="b"]').click();
+   assert.equal(await page.locator(".akari-dock-center .bridge-slot-actions").count(),1,"Contrasting scientific tests unlock repair controls in the central circuit");
+   assert.equal(await page.locator(".akari-dock-center .akari-dock-gap").count(),2,"Two physical insertion targets are directly on the circuit's missing connections");
+   assert.equal(await page.locator(".akari-dock-center .bridge-slot-actions").isVisible(),false,"The old duplicate repair controls must not clutter the one-screen board");
+   await page.locator('[data-bridge-sample="iron"]').click();
+   assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Choosing an already tested material returns to the actual repair gaps");
+   assert.equal(await page.locator('[data-dock-place="a"]').isDisabled(),false,"A tested selected sample can be installed directly onto the circuit");
+   await closeDrawer("right");
+   await page.locator('[data-dock-place="a"]').click();
+   await openDrawer("right");
+   await page.locator('[data-bridge-sample="wood"]').click();
+   await closeDrawer("right");
+   await page.locator('[data-dock-place="b"]').click();
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"Insulator in series leaves the bridge unlit");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),0,"Failing circuit must not illuminate landscape");
+   await openDrawer("right");
    await page.locator('[data-bridge-sample="foil"]').click();
-   await page.locator('[data-bridge-place="b"]').click();
+   await closeDrawer("right");
+   await page.locator('[data-dock-place="b"]').click();
    assert.equal(await page.locator(".bridge-outcome").count(),0,"Changing sample invalidates previous measurement");
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".bridge-slot-actions").count(),1,"Interrupted iPhone experiment resumes repair phase");
+   assert.equal(await page.locator(".akari-dock-center .bridge-circuit").count(),1,"Reload preserves central circuit with both collapsed palette tabs");
    assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","Saved repair persists after reload");
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");

@@ -1,0 +1,208 @@
+/* Pilot: middle = real circuit, left = inspectable electrical parts,
+   right = selectable materials and measured evidence.
+   Drawers overlay instead of shrinking the touch targets. */
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock){
+ display:block;min-width:0;
+}
+/* Lift ONLY the expanded palette above feedback. With drawers closed,
+   normal action buttons must remain above the workbench. */
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="left"]),
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="right"]){
+ position:relative;z-index:25!important;
+}
+.akari-dock{
+ display:grid;grid-template-columns:65px minmax(0,1fr) 65px;
+ grid-template-rows:auto minmax(0,auto);
+ position:relative;isolation:isolate;min-width:0;gap:0;
+}
+.akari-dock-center{
+ grid-column:1 / -1;grid-row:2;min-width:0;display:grid;
+ align-content:start;gap:10px;
+}
+.akari-dock-tab{
+ position:relative;top:auto;align-self:start;z-index:10;
+ display:grid;justify-items:center;gap:3px;
+ background:#ffedc1;border:2px solid #9fbdaf;
+ color:#254958;border-radius:15px;
+ min-height:57px;padding:6px 4px;cursor:pointer;
+ box-shadow:0 4px 0 #9cb5a3,0 8px 15px #274a5938;
+ font-family:inherit;line-height:1.15;
+}
+.akari-dock-tab span:first-child{font-size:21px}
+.akari-dock-tab strong{font-size:12px;letter-spacing:.01em}
+.akari-dock-tab span:last-child{font-size:11px;opacity:.74}
+.akari-dock-tab[data-dock-tab="left"]{grid-column:1;grid-row:1;margin:7px 0 5px 5px}
+.akari-dock-tab[data-dock-tab="right"]{grid-column:3;grid-row:1;margin:7px 5px 5px 0}
+.akari-dock-tab[aria-expanded="true"]{
+ background:#ffe29a;border-color:#b59257;
+ box-shadow:0 3px 0 #af935e,0 0 0 2px #fff5d2;
+}
+.akari-dock-tab:focus-visible{
+ outline:3px solid #e88c44;outline-offset:2px;
+}
+.akari-dock-drawer{
+ position:absolute;top:70px;z-index:14;
+ width:min(330px,calc(100% - 12px));
+ max-height:min(73dvh,590px);
+ overflow-y:auto;overscroll-behavior:contain;
+ border:3px solid #a4c6ba;border-radius:17px;
+ background:#fbfbf0;color:#244859;
+ padding:11px;
+ box-shadow:0 12px 30px #0a354478,0 0 0 4px #ffffffb8;
+ scrollbar-width:thin;
+}
+.akari-dock-drawer[hidden]{display:none!important}
+.akari-dock-left{left:3px}
+.akari-dock-right{right:3px}
+.akari-dock-intro{
+ margin:0 0 9px;
+ font-size:13px;font-weight:850;
+ line-height:1.45;
+}
+.akari-dock-waiting{
+ border:1px solid #adc6b8;
+ background:#eaf1e7;padding:13px;border-radius:10px;
+ font-size:13px;line-height:1.6;
+}
+.akari-dock-drawer .bridge-section{
+ display:grid;gap:8px;padding:8px;border:0;
+ border-radius:11px;background:#f3f8f1;box-shadow:none;
+}
+.akari-dock-drawer .bridge-section h3{
+ font-size:13px;line-height:1.35;color:#295668;
+}
+.akari-dock-drawer .bridge-section>.lab-sub{display:none}
+.akari-dock-drawer .bridge-sites{grid-template-columns:1fr;gap:7px}
+.akari-dock-drawer .bridge-site{
+ display:flex;align-items:center;justify-content:flex-start;
+ min-height:64px;padding:5px 8px;gap:8px;text-align:left;
+}
+.akari-dock-drawer .bridge-site-art{
+ display:block;flex:0 0 67px;width:67px;height:54px;
+}
+.akari-dock-drawer .bridge-site-art svg{
+ display:block;width:100%;max-height:54px;
+}
+.akari-dock-drawer .bridge-site strong{
+ font-size:12px;line-height:1.35;flex:1;min-width:0;
+}
+.akari-dock-drawer .bridge-site small{
+ display:none;
+}
+.akari-dock-drawer .bridge-materials{
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:6px;
+}
+.akari-dock-drawer .bridge-material{
+ min-height:85px;border-radius:11px;padding:5px;
+}
+.akari-dock-drawer .bridge-material-art{
+ min-height:35px;
+}
+.akari-dock-drawer .bridge-material strong{font-size:12px}
+.akari-dock-drawer .bridge-material small{font-size:10px}
+.akari-dock-drawer .bridge-test-box{
+ gap:6px;padding:9px;border-radius:10px;
+}
+.akari-dock-drawer .bridge-test-box>strong{font-size:12px}
+.akari-dock-drawer .bridge-guesses{
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
+}
+.akari-dock-drawer .bridge-guesses button,
+.akari-dock-drawer .bridge-measure{
+ padding:7px 6px;min-height:44px;font-size:12px;
+}
+.akari-dock-drawer .bridge-mini-circuit{overflow-x:auto;min-width:0}
+.akari-dock-drawer .bridge-mini-circuit svg{max-width:100%;height:auto}
+.akari-dock-drawer .bridge-log{
+ padding:8px;border-radius:10px;
+}
+.akari-dock-drawer .bridge-log strong{font-size:12px}
+.akari-dock-drawer .bridge-record{font-size:11px}
+.akari-dock-center>.bridge-circuit{
+ border:4px solid #abc7b9;border-radius:17px;
+ background:#b8dcdc;
+ box-shadow:0 5px 0 #89a89f,0 11px 17px #315b6233;
+}
+.akari-dock-center>.bridge-circuit .bridge-circuit-svg{
+ min-width:0;width:100%;height:auto;
+}
+.akari-dock-center>.bridge-section{
+ padding:10px 12px;border-radius:14px;
+ background:#eff8f3;border:2px solid #adc8b9;
+ display:grid;gap:8px;
+}
+.akari-dock-center>.bridge-section>h3{font-size:15px}
+.akari-dock-center>.bridge-section>.lab-sub{
+ font-size:12px;line-height:1.5;
+}
+.akari-dock-center .bridge-slot-actions{gap:7px}
+.akari-dock-center .bridge-slot-actions button{
+ min-height:49px;padding:7px;
+}
+.akari-dock-center .bridge-predict{
+ padding:8px;gap:6px;background:#fffdfa;
+}
+.akari-dock-center .bridge-why{
+ padding:8px;border-radius:10px;
+}
+.akari-dock-status{
+ margin:0;padding:8px 12px;border-radius:12px;
+}
+.akari-dock-status strong{font-size:14px}
+.akari-dock-status span{font-size:11px}
+@media(max-width:740px){
+ .akari-dock{grid-template-columns:54px minmax(0,1fr) 54px}
+ .akari-dock-tab{
+  top:auto;min-height:54px;border-width:2px;
+  padding:6px 3px;border-radius:12px;
+ }
+ .akari-dock-tab strong{font-size:11px}
+ .akari-dock-tab span:first-child{font-size:19px}
+ .akari-dock-drawer{
+  top:64px;max-height:min(70dvh,500px);padding:8px;
+  width:min(308px,calc(100% - 10px));
+ }
+ .akari-dock-center>.bridge-circuit{border-width:2px}
+ .akari-dock-center>.bridge-section{padding:8px}
+ .akari-dock-center>.bridge-section>.lab-sub{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .akari-dock-tab,.akari-dock-drawer{scroll-behavior:auto}
+}
+/* Actual specimen placement happens on the circuit's two repair gaps. */
+.akari-dock-center>.bridge-circuit{position:relative;overflow:hidden}
+.akari-dock-gap-controls{
+ position:absolute;inset:0;z-index:5;
+ pointer-events:none;
+}
+.akari-dock-gap{
+ position:absolute;left:43.25%;
+ transform:translate(-50%,-50%);
+ min-height:40px;min-width:75px;
+ border-radius:9px;border:2px solid #d5ad62;
+ background:#fff0bfe8;color:#345265;
+ box-shadow:0 3px 0 #8c866e,0 0 0 2px #fff7dd99;
+ padding:5px;font-size:12px;font-weight:900;
+ font-family:inherit;pointer-events:auto;cursor:pointer;
+}
+.akari-dock-gap-a{top:16.2%}
+.akari-dock-gap-b{top:84.4%}
+.akari-dock-gap:disabled{
+ cursor:not-allowed;opacity:.72;
+ background:#e5eae7;color:#456a73;border-color:#a4bab5;
+ box-shadow:0 1px 0 #a6bdb2;
+}
+.akari-dock-gap:focus-visible{
+ outline:3px solid #ef8e4c;outline-offset:3px;
+}
+.akari-dock-center>.akari-dock-drop-note{
+ margin:0;padding:8px 10px;border:1px solid #b6cfbb;
+ border-radius:10px;background:#fbf4d9;
+ color:#315764;font-size:12px;font-weight:800;
+}
+.akari-dock-center>.bridge-section .bridge-slot-actions{display:none}
+@media(max-width:740px){
+ .akari-dock-gap{min-width:65px;min-height:36px;font-size:10px;padding:4px 3px}
+ .akari-dock-center>.akari-dock-drop-note{font-size:11px;padding:6px 8px}
+}
