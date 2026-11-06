@@ -3,6 +3,7 @@
 (function(){
  const get=id=>document.getElementById(id);
 
+ const read=(k,d)=>{try{return localStorage.getItem(k)||d}catch{return d}};
  const store=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
 
  let reasons={};try{reasons=JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1")||"{}")||{}}catch{reasons={}};
