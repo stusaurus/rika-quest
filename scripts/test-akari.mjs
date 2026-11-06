@@ -772,4 +772,36 @@ assert.equal(L.simulate({...openSwitch,nodes:openSwitch.nodes.map(n=>n.id==="s2"
 const invalid=L.sanitize({...initial,wires:[{from:"b1:P",to:"invalid:A"},{from:"b1:P",to:"l1:L"}]});
 assert.equal(invalid.wires.length,1,"Invalid terminal references are rejected when loading saved experiments");
 
+const sampleCircuit=kind=>{
+ const sample={id:"m3",type:"sample",material:kind,x:50,y:47};
+ return {nodes:[...initial.nodes,sample],next:4,
+  wires:[{from:"b1:P",to:"m3:A"},{from:"m3:B",to:"l1:L"},{from:"l1:R",to:"b1:N"}]};
+};
+for(const name of ["iron","foil"]){
+ const result=L.simulate(sampleCircuit(name));
+ assert.equal(result.short,false,name+" sample in series must not short a cell");
+ assert.equal(result.litCount,1,name+" conducts when BOTH ends close the real circuit");
+}
+for(const name of ["wood","plastic"]){
+ const result=L.simulate(sampleCircuit(name));
+ assert.equal(result.litCount,0,name+" must not conduct just because it looks like a part");
+ assert.equal(result.short,false,name+" is not a direct battery short");
+}
+const incomplete=sampleCircuit("iron");incomplete.wires.pop();
+assert.equal(L.simulate(incomplete).litCount,0,"Metal needs a complete return wire and cannot magically light a lamp");
+const misleading=L.sanitize({...sampleCircuit("iron"),nodes:[
+ ...initial.nodes,{id:"m3",type:"sample",material:"mystery",x:50,y:47}
+]});
+assert.equal(misleading.nodes.length,2,"Unrecognized substances cannot silently inherit conductive properties");
+assert.equal(misleading.wires.length,1,"Reject any saved wire connected to an invalid sample");
+const materialShort={...sampleCircuit("foil"),wires:[
+ {from:"b1:P",to:"m3:A"},{from:"m3:B",to:"b1:N"},
+ {from:"b1:P",to:"l1:L"},{from:"l1:R",to:"b1:N"}]};
+assert.equal(L.simulate(materialShort).short,true,"A conductor directly between the cell poles remains a dangerous short");
+assert.equal(L.simulate(materialShort).litCount,0,"A material-caused short must not be interpreted as scientific success");
+const restored=L.sanitize(sampleCircuit("wood"));
+assert.equal(restored.nodes.find(n=>n.type==="sample").material,"wood","Material identity persists in the experiment save");
+assert.equal(restored.wires.length,3,"Valid two-terminal material wiring resumes on reload");
+
+
 console.log("Akari Quest: 14/14 missions passed; dangerous battery short rejected; art templates rendered.");

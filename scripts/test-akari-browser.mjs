@@ -310,6 +310,32 @@ try{
    assert.equal(await page.locator("#freeLabToggle").count(),1,"Free experiment bench must be available without replacing a mission");
    await page.locator("#freeLabToggle").click();
    assert.equal(await page.locator("#freeLabPanel").isVisible(),true,"The freely movable bench opens");
+   assert.equal(await page.locator("#freeLabOneScreen .free-lab-stage #freeLabBoard").count(),1,"The actual workbench is the persistent central panel");
+   assert.equal(await page.locator('[data-free-drawer="tools"]').count(),1,"Battery/bulb/switch and wire tools are always accessible at the left");
+   assert.equal(await page.locator('[data-free-drawer="materials"]').count(),1,"Scientific samples are always accessible at the right");
+   const freeLayout=await page.evaluate(()=>{
+     const board=document.querySelector("#freeLabBoard").getBoundingClientRect();
+     const panel=document.querySelector("#freeLabPanel").getBoundingClientRect();
+     const left=document.querySelector('[data-free-drawer="tools"]').getBoundingClientRect();
+     const right=document.querySelector('[data-free-drawer="materials"]').getBoundingClientRect();
+     return {boardWidth:board.width,panelWidth:panel.width,
+       leftVisible:left.width>45,rightVisible:right.width>45,
+       tabsAbove:Math.max(left.bottom,right.bottom)<=board.top+2,
+       overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+       storyVisible:getComputedStyle(document.querySelector(".story-scene")).display!=="none"};
+   });
+   assert.equal(freeLayout.leftVisible&&freeLayout.rightVisible,true,"Both palette tabs remain usable without hiding the circuit");
+   assert.equal(freeLayout.tabsAbove,true,"Tabs must not cover battery or bulb contact points");
+   assert.ok(freeLayout.boardWidth>=freeLayout.panelWidth*.86,"Central playable board uses most of the available width: "+JSON.stringify(freeLayout));
+   assert.ok(freeLayout.overflow<=2,"One-screen workbench must avoid horizontal page overflow: "+JSON.stringify(freeLayout));
+   assert.equal(freeLayout.storyVisible,false,"Free experiment prioritizes circuit over redundant story scenery");
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Tools are closed until needed to maximize work space");
+   assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Materials are closed until needed");
+   await page.locator('[data-free-drawer="tools"]').click();
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),true,"Left tool drawer opens without replacing the circuit");
+   assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Opening left does not force right open");
+   await page.locator("[data-free-wire-tip]").click();
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Wire help returns focus to the same operable board");
    assert.equal(await page.locator("#workspace").isVisible(),false,"Keep the main mission out of the way while experimenting");
    const labWire=async(a,b)=>{
     await page.locator('[data-free-port="'+a+'"]').click();
@@ -342,7 +368,11 @@ try{
    const movedX=await page.evaluate(()=>window.AkariFreeLab.getState().nodes.find(n=>n.id==="b1").x);
    assert.ok(movedX>oldX+1.5,"The pupil can drag a battery to a different place at mobile and desktop scales");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Moving the cell does not sever anchored leads");
+   await page.locator('[data-free-drawer="tools"]').click();
+   assert.equal(await page.locator("#freeAddbulb").isVisible(),true,"The same real add-bulb control is inside the left drawer");
    await page.locator("#freeAddbulb").click();
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Adding a component returns immediately to the circuit");
+   await page.locator('[data-free-drawer="tools"]').click();
    await page.locator("#freeAddbattery").click();
    assert.equal(await page.locator(".free-battery").count(),2,"A second dry cell can be added");
    assert.equal(await page.locator(".free-bulb").count(),2,"A second mini lamp can be added");
@@ -379,6 +409,36 @@ try{
    await page.locator(".free-lab-record summary").click();
    assert.equal(await page.locator("#freeLabRecordRows p").count(),1,"Free experiment observations persist after reload");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-free-lab.png",fullPage:true});
+   // A material is a genuine two-terminal part of this SAME live circuit,
+   // not a disconnected guessing menu.
+   await page.locator(".free-lab-preset summary").click();
+   await page.locator('[data-free-preset="basic"]').click();
+   await page.locator('[data-free-drawer="materials"]').click();
+   assert.equal(await page.locator("#freeLabMaterialDrawer [data-free-material]").count(),4,"Right drawer offers four genuinely testable samples");
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Only one palette may cover the circuit");
+   await page.locator('[data-free-material="iron"]').click();
+   assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Selecting a sample adds it and restores a full-width circuit");
+   assert.equal(await page.locator(".free-sample").count(),1,"The selected material appears as a movable physical object");
+   const sampleId=await page.locator(".free-sample").getAttribute("data-free-node");
+   await labWire("b1:P",sampleId+":A");await labWire(sampleId+":B","l2:L");await labWire("l2:R","b1:N");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"An actual iron sample closes a correctly wired circuit");
+   await page.locator('[data-free-move="'+sampleId+'"]').click();
+   await page.locator('[data-free-drawer="tools"]').click();
+   assert.equal(await page.locator("#freeAddswitch").isVisible(),true,"The left drawer includes a working switch option");
+   assert.equal(await page.locator("#freeRemove").isDisabled(),false,"Tapping a material selects it for removal");
+   await page.locator("#freeRemove").click();
+   assert.equal(await page.locator(".free-sample").count(),0,"Removing selected material clears its connected wires too");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Removing the conductive sample opens the circuit");
+   await page.locator('[data-free-drawer="materials"]').click();
+   await page.locator('[data-free-material="plastic"]').click();
+   const plasticId=await page.locator(".free-sample").getAttribute("data-free-node");
+   await labWire("b1:P",plasticId+":A");await labWire(plasticId+":B","l2:L");
+   assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Plastic cannot light a lamp even when both contacts are wired");
+   assert.equal(await page.locator(".free-lab-board .free-wire").count(),3,"Replacing a material reuses the existing connection gestures");
+   await page.locator('[data-free-drawer="materials"]').click();
+   await page.keyboard.press("Escape");
+   assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Escape closes the drawer without altering the circuit");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-free-lab-materials.png",fullPage:true});
    await page.locator("#freeLabClose").click();
    assert.equal(await page.locator("#freeLabPanel").isVisible(),false,"Return to story mode hides the workshop");
    assert.equal(await page.locator("#workspace").isVisible(),true,"Original circuit still works");

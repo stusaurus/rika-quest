@@ -5,8 +5,8 @@
  const M=window.AkariFreeLabModel;
  if(!M)return;
  const key="rika-akari-free-lab-v1",noteKey="rika-akari-free-lab-notes-v1",
-  labels={battery:"かんでんち",bulb:"まめでんきゅう",switch:"スイッチ"};
- let state=M.defaultState(),chosen=null,open=false,gesture=null,suppressClick=0,rendered=null,records=[];
+  labels={battery:"かんでんち",bulb:"まめでんきゅう",switch:"スイッチ",sample:"ざいりょう"};
+ let state=M.defaultState(),chosen=null,open=false,openedDrawer="",gesture=null,suppressClick=0,rendered=null,records=[];
  try{const saved=localStorage.getItem(noteKey);if(saved){const parsed=JSON.parse(saved);
   if(Array.isArray(parsed))records=parsed.slice(-12).filter(x=>x&&typeof x==="object");
  }}catch{}
@@ -91,24 +91,28 @@
  const symbol=n=>{
   if(n.type==="battery")return '<span class="free-cell-art"><i class="free-cell-cap"></i><b>＋</b><em>1.5V</em><b>−</b></span>';
   if(n.type==="bulb")return '<span class="free-bulb-art"><span class="free-filament">〽</span><span class="free-metal"></span></span>';
+  if(n.type==="sample"){
+   const glyph={iron:"⌁",foil:"▤",wood:"▥",plastic:"▱"}[n.material]||"◇";
+   return '<span class="free-sample-art sample-'+n.material+'"><b>'+glyph+'</b><small>'+M.materials[n.material].name+'</small></span>';
+  }
   return '<span class="free-switch-art"><span class="free-switch-track">'+(n.on?"●──●":"● ╱ ●")+'</span><small>'+(n.on?"ON":"OFF")+'</small></span>';
  };
  const partsHtml=result=>state.nodes.map(n=>{
-  const pins=M.terminals[n.type],lit=result.bulbs.find(b=>b.id===n.id);
+  const pins=M.terminals[n.type],lit=result.bulbs.find(b=>b.id===n.id),name=n.type==="sample"?M.materials[n.material].name:labels[n.type];
   return '<div class="free-device free-'+n.type+(chosen===n.id?' selected':'')+
    (lit?.level!=="off"&&lit?' is-on':'')+'" style="left:'+n.x+'%;top:'+n.y+'%" data-free-node="'+n.id+'">'+
-   '<button class="free-move" data-free-move="'+n.id+'" aria-label="'+labels[n.type]+'を うごかす">'+symbol(n)+'</button>'+
+   '<button class="free-move" data-free-move="'+n.id+'" aria-label="'+name+'を うごかす">'+symbol(n)+'</button>'+
    pins.map(p=>'<button type="button" data-free-port="'+n.id+':'+p+'" class="free-terminal port-'+p+
-    '" aria-label="'+labels[n.type]+'の'+p+'のつなぎめ">'+
+    '" aria-label="'+name+'の'+p+'のつなぎめ">'+
     (p==="P"?"+":p==="N"?"−":"●")+'</button>').join("")+
    (n.type==="switch"?'<button type="button" class="free-switch-toggle" data-free-switch="'+n.id+'" aria-label="スイッチを きりかえる">'+(n.on?"ON":"OFF")+'</button>':"")+
-   '<span class="free-part-name">'+labels[n.type]+(lit?.level==="bright"?" ✨":lit?.level==="dim"?" ◌":"")+'</span></div>';
+   '<span class="free-part-name">'+name+(lit?.level==="bright"?" ✨":lit?.level==="dim"?" ◌":"")+'</span></div>';
  }).join("");
  const safetyText='⚠ これは ゲームの じっけん。ほんものの でんちを ショートさせないでね。';
  function render(){
   const experiment=get("freeLabPanel");if(!experiment)return;
   const wasShort=!!rendered?.short;
-  const result=M.simulate(state),counts={battery:0,bulb:0,switch:0};
+  const result=M.simulate(state),counts={battery:0,bulb:0,switch:0,sample:0};
   state.nodes.forEach(n=>counts[n.type]++);
   const header=get("freeLabStatus");header.className="free-lab-status"+(result.short?" danger":result.high?" caution":result.litCount?" lit":"");
   header.textContent=result.short?"⚠ ショート！ せんを はずそう":result.high?"💡 ついた！ あかるすぎるかも":result.litCount?"💡 "+result.litCount+"こ ついた！":"◯ まだ つかない";
@@ -118,13 +122,14 @@
   for(const type of Object.keys(M.limits)){
    const btn=get("freeAdd"+type);if(btn)btn.disabled=counts[type]>=M.limits[type];
   }
+  experiment.querySelectorAll("[data-free-material]").forEach(btn=>btn.disabled=counts.sample>=M.limits.sample);
   get("freeRemove").disabled=!state.nodes.some(n=>n.id===chosen);
   const target=board();target.innerHTML=
    '<svg class="free-lab-lines" id="freeLabLines" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>'+
    partsHtml(result);
   rendered=result;renderWires();
   if(!wasShort&&result.short)window.AkariEffects?.shortCircuit?.();
-  get("freeLabCount").textContent="でんち "+counts.battery+"・でんきゅう "+counts.bulb+"・スイッチ "+counts.switch;
+  get("freeLabCount").textContent="でんち "+counts.battery+"・でんきゅう "+counts.bulb+"・スイッチ "+counts.switch+"・ざいりょう "+counts.sample;
  }
  function addPart(type){
   if(!M.limits[type]||state.nodes.filter(n=>n.type===type).length>=M.limits[type])return;
@@ -133,6 +138,14 @@
   let id;do{id=({battery:"b",bulb:"l",switch:"s"})[type]+state.next++;}while(state.nodes.some(n=>n.id===id));
   state.nodes.push({id,type,x:placements[type][count][0],y:placements[type][count][1],...(type==="switch"?{on:false}:{})});
   chosen=id;persist();render();
+ }
+ function addSample(kind){
+  if(!Object.hasOwn(M.materials,kind)||state.nodes.filter(n=>n.type==="sample").length>=M.limits.sample)return;
+  const index=state.nodes.filter(n=>n.type==="sample").length;
+  let id;do{id="m"+state.next++;}while(state.nodes.some(n=>n.id===id));
+  state.nodes.push({id,type:"sample",material:kind,x:50,y:index?72:45});
+  chosen=id;persist();render();
+  setDrawer("");
  }
  function removePart(){
   if(!chosen)return;
@@ -255,6 +268,17 @@
   }),wires:[],next:types.length+1};
   chosen=null;persist();render();
  }
+ function setDrawer(side){
+  openedDrawer=["tools","materials"].includes(side)?side:"";
+  const shell=get("freeLabOneScreen");if(!shell)return;
+  shell.dataset.open=openedDrawer;
+  for(const name of ["tools","materials"]){
+   const tab=shell.querySelector('[data-free-drawer="'+name+'"]');
+   const panel=get(name==="tools"?"freeLabToolDrawer":"freeLabMaterialDrawer");
+   if(tab)tab.setAttribute("aria-expanded",String(openedDrawer===name));
+   if(panel)panel.hidden=openedDrawer!==name;
+  }
+ }
  function mount(){
   const workspace=get("workspace");if(!workspace||get("freeLabPanel"))return;
   const toggle=document.createElement("button");toggle.type="button";toggle.id="freeLabToggle";
@@ -266,11 +290,30 @@
   section.innerHTML=
    '<div class="free-lab-head"><strong>🧪 じゆうじっけんしつ</strong><button type="button" id="freeLabClose">× もどる</button></div>'+
    '<p class="free-lab-intro">ぶひんを うごかして、まるから まるへ せんを ひこう。</p>'+
+   '<div class="free-lab-one-screen" id="freeLabOneScreen" data-open="">'+
+   '<button type="button" class="free-drawer-tab" data-free-drawer="tools" aria-controls="freeLabToolDrawer" aria-expanded="false">🔋<strong>どうぐ</strong></button>'+
+   '<button type="button" class="free-drawer-tab" data-free-drawer="materials" aria-controls="freeLabMaterialDrawer" aria-expanded="false">🧱<strong>ざいりょう</strong></button>'+
+   '<div class="free-lab-stage">'+
+   '<div class="free-lab-board" id="freeLabBoard" aria-label="ぶひんをうごかして、せんをつなぐじっけんだい"></div>'+
+   '</div>'+
+   '<aside class="free-drawer-panel free-drawer-tools" id="freeLabToolDrawer" aria-label="使える道具" hidden>'+
+   '<p class="free-drawer-lead">つかう どうぐを えらぼう</p>'+
    '<div class="free-lab-tools"><button id="freeAddbattery" data-free-add="battery">＋ 🔋 でんち</button>'+
    '<button id="freeAddbulb" data-free-add="bulb">＋ 💡 でんきゅう</button>'+
    '<button id="freeAddswitch" data-free-add="switch">＋ 🎚️ スイッチ</button>'+
-   '<button id="freeRemove" disabled>− えらんだ ぶひん</button></div>'+
-   '<div class="free-lab-board" id="freeLabBoard" aria-label="ぶひんをうごかして、せんをつなぐじっけんだい"></div>'+
+   '<button type="button" data-free-wire-tip>🧵 どう線を ひく</button>'+
+   '<button id="freeRemove" disabled>✕ えらんだ ぶひんを はずす</button></div>'+
+   '<p class="free-drawer-lead">どう線は、まるから まるへ なぞる。せんを よこぎると きれるよ。</p>'+
+   '</aside>'+
+   '<aside class="free-drawer-panel free-drawer-materials" id="freeLabMaterialDrawer" aria-label="電気を通すか調べる材料" hidden>'+
+   '<p class="free-drawer-lead">どの ざいりょうが 電気を とおす？</p>'+
+   '<div class="free-lab-samples">'+
+   '<button type="button" data-free-material="iron"><span>⌁</span> 鉄のクリップ</button>'+
+   '<button type="button" data-free-material="foil"><span>▤</span> アルミはく</button>'+
+   '<button type="button" data-free-material="wood"><span>▥</span> 木の板</button>'+
+   '<button type="button" data-free-material="plastic"><span>▱</span> プラスチック</button>'+
+   '</div><p class="free-drawer-lead">材料の 2つのまるを、線で つなごう。つけるだけでは 光らないよ。</p></aside>'+
+   '</div>'+
    '<div class="free-lab-status" id="freeLabStatus" role="status" aria-live="polite"></div>'+
    '<p class="free-lab-note" id="freeLabNote"></p>'+
    '<div class="free-lab-bottom"><span id="freeLabCount"></span><button type="button" id="freeLabClear">✂ せんを ぜんぶ けす</button></div>'+
@@ -286,6 +329,7 @@
   workspace.after(section);
   const setOpen=value=>{
    open=value;section.hidden=!value;document.body.classList.toggle("akari-free-active",value);
+   setDrawer("");
    toggle.setAttribute("aria-expanded",String(value));toggle.textContent=value?"↩ ぼうけんに もどる":"🧪 じゆう実験";
    if(value){render();showRecords();}
   };
@@ -293,7 +337,14 @@
   get("freeLabClose").addEventListener("click",()=>setOpen(false));
   section.addEventListener("click",e=>{
    if(Date.now()<suppressClick&&e.target.closest("[data-free-move]"))return;
-   const add=e.target.closest("[data-free-add]");if(add){addPart(add.dataset.freeAdd);return;}
+   const add=e.target.closest("[data-free-add]");if(add){addPart(add.dataset.freeAdd);setDrawer("");return;}
+   const material=e.target.closest("[data-free-material]");if(material){addSample(material.dataset.freeMaterial);return;}
+   const tip=e.target.closest("[data-free-wire-tip]");if(tip){
+    setDrawer("");
+    board()?.querySelector("[data-free-port]")?.focus({preventScroll:true});
+    return;
+   }
+   const drawer=e.target.closest("[data-free-drawer]");if(drawer){setDrawer(openedDrawer===drawer.dataset.freeDrawer?"":drawer.dataset.freeDrawer);return;}
    const preset=e.target.closest("[data-free-preset]");if(preset){presets(preset.dataset.freePreset);return;}
    if(e.target.closest("#freeRemove")){removePart();return;}
    if(e.target.closest("#freeLabClear")){state.wires=[];persist();render();return;}
@@ -310,6 +361,11 @@
   document.addEventListener("pointerup",e=>{if(open&&gesture)handlerUp(e,false);},true);
   document.addEventListener("pointercancel",e=>{if(open&&gesture)handlerUp(e,true);},true);
   section.addEventListener("keydown",e=>{
+   if(e.key==="Escape"&&openedDrawer){
+    const previous=openedDrawer;setDrawer("");
+    section.querySelector('[data-free-drawer="'+previous+'"]')?.focus();
+    return;
+   }
    if(!e.target.matches("[data-free-move]"))return;
    if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))return;
    e.preventDefault();
