@@ -19,5 +19,9 @@
   return '<svg class="circuit-village-art circuit-village-repair-art" viewBox="0 0 900 340" preserveAspectRatio="xMidYMid slice" x="0" y="0" width="680" height="340" aria-hidden="true" focusable="false">'+
    art(3,"repair-3-")+'</svg>';
  }
- window.AkariCircuitVillage={board,repair};
+ function prediction(){
+  return '<svg class="circuit-village-prediction-art" x="1" y="1" width="338" height="171" viewBox="0 0 900 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">'+
+   art(2,"prediction-2-")+'</svg>';
+ }
+ window.AkariCircuitVillage={board,repair,prediction};
 })();
