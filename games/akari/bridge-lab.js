@@ -110,6 +110,8 @@ function render(raw){
  const tests=Object.entries(s.tests).map(([id,o])=>'<span class="bridge-record">'+material(id).name+"：予想 "+(o.guess==="lit"?"点灯":"消灯")+" → 実際 "+(o.actual==="lit"?"点灯":"消灯")+'</span>').join("");
  return '<div class="bridge-lab">'+
  '<div class="bridge-quest-strip"><strong>💡 街灯のあかりをもどそう</strong><span>回路の調査 '+s.inspected.length+'/3　｜　実験 '+Object.keys(s.tests).length+'/4　｜　回路 '+(lit?"点灯":"未復旧")+'</span></div>'+
+ '<div class="bridge-circuit circuit-town-repair'+(lit?' is-lit':'')+'">'+circuit(s.slots,lit)+'</div>'+
+
  '<section class="lab-panel bridge-section"><h3>① 回路の 3か所を 見よう</h3><p class="lab-sub">3つの場所をタップ。まず事実を集めよう。まだ材料の正解はわからない。</p><div class="bridge-sites">'+details+'</div></section>'+
  (step>=1?'<section class="lab-panel bridge-section"><h3>② 材料を ためしてみよう</h3><p class="lab-sub">好きな材料を選んで、豆電球の実験装置に一つずつ挟もう。予想が外れても減点はないよ。</p>'+
  '<div class="bridge-materials">'+source+'</div>'+
@@ -123,7 +125,6 @@ function render(raw){
  (step===1?'<p class="bridge-proceed">⚡ 回路修理へ進むには、電気を通す2種類・通さない1種類の実験結果を集めよう。</p>':"")+
  '</section>':"")+
  (step===2?'<section class="lab-panel bridge-section"><h3>③ 回路の 2か所を なおそう</h3><p class="lab-sub">回路にある2つのすき間を、実験済みの材料で埋めよう。どちらかが切れていても、豆電球はつかない。</p>'+
- '<div class="bridge-circuit circuit-town-repair'+(lit?' is-lit':'')+'">'+circuit(s.slots,lit)+'</div>'+
  '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>修理 '+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"未修理")+'</span><small>'+(!selected?"実験済み材料を選択":!s.tests[selected.id]?"選んだ材料を先に実験":"選択中の材料をはめる")+'</small></button>').join("")+'</div>'+
  '<div class="bridge-predict"><strong>🔮 修理した回路に電気を流すと？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
  '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 修理した回路を仮想通電</button></div>'+
