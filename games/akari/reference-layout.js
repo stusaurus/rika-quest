@@ -2,16 +2,16 @@
 /* Observe the existing science game; guide the child without replacing its rules. */
 (function(){
  const get=id=>document.getElementById(id);
- const read=(k,d)=>{try{return localStorage.getItem(k)||d}catch{return d}};
+
  const store=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
- let predictions={};try{predictions=JSON.parse(read("rika-akari-predictions-v1","{}"))||{}}catch{predictions={}};
- let reasons={};try{reasons=JSON.parse(read("rika-akari-first-reasons-v1","{}"))||{}}catch{reasons={}};
+
+ let reasons={};try{reasons=JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1")||"{}")||{}}catch{reasons={}};
  let reasonFeedback="";
  const reasonsByMission={
-  1:{title:"どうして ついた？",correct:"loop",success:"ぐるっと つながった！",
-    choices:[["loop","🔁","ぐるっと つながった"],["cut","✂️","せんが きれた"],["extra","🔋","電池が ふえた"]]},
-  2:{title:"どこを なおした？",correct:"joined",success:"すきまが なくなった！",
-    choices:[["joined","🔗","せんを つないだ"],["removed","✂️","せんを はずした"],["extra","🔋","電池を ふやした"]]}
+  1:{title:"どうして 豆電球が 光った？",correct:"loop",success:"電池から 豆電球を 通って、ぐるっと つながった！",
+    choices:[["loop","🔁","＋から 電球の 金ぞく2か所を 通って −に もどれた"],["cut","➕","＋だけ つながれば 光る"],["extra","💡","ガラスに 線を つけたから 光る"]]},
+  2:{title:"どうして 街灯が ついた？",correct:"joined",success:"切れた 1か所を つないだら、電気の 輪が できた！",
+    choices:[["joined","🔗","切れていた 道を つないで、輪が できた"],["removed","➕","電池の ＋だけで 光る"],["extra","💡","電球の ガラスに 線が ついたから"]]}
  };
  const mission=()=>Number((get("missionNumber")?.textContent||"MISSION 01 / 14").match(/(\d+)\s*\/\s*14/)?.[1]||1);
  function setup(){
@@ -30,17 +30,6 @@
    const steps=document.createElement("aside");steps.id="learningSteps";steps.className="learning-steps";
    steps.setAttribute("aria-label","いまの操作");
    steps.innerHTML=[
-    '<section class="learning-step" id="predictStep">',
-    '<h3><span class="step-index">?</span>よそう</h3>',
-    '<div class="prediction-options" id="designPredictionChoices">',
-    '<button type="button" class="prediction-option" data-prediction="lit" aria-label="あかりが つくと おもう" aria-pressed="false"><span aria-hidden="true">💡</span><small>つく</small></button>',
-    '<button type="button" class="prediction-option" data-prediction="dark" aria-label="あかりが つかないと おもう" aria-pressed="false"><span aria-hidden="true">◯</span><small>つかない</small></button>',
-    '<button type="button" class="prediction-option" data-prediction="unsure" aria-label="まだ わからない" aria-pressed="false"><span aria-hidden="true">❔</span><small>わからない</small></button>',
-    '</div></section>',
-    '<section class="learning-step" id="connectStep">',
-    '<h3><span class="step-index" aria-hidden="true">☝</span><span id="guideActionLabel">つなぐ</span></h3>',
-    '<div class="gesture-demo" aria-hidden="true"><span class="gesture-node"></span><span class="gesture-line"></span><span class="gesture-node"></span></div>',
-    '<p id="guideActionText">まるを 2つ おそう</p></section>',
     '<section class="learning-step" id="thinkStep">',
     '<h3><span class="step-index" aria-hidden="true">💡</span>かんがえる</h3>',
     '<p id="designComparisonNote" aria-live="polite">どうして ついた？</p>',
@@ -63,9 +52,7 @@
      }else reasonFeedback="せんの つながりを もういちど みよう";
      refresh();return;
     }
-    const b=e.target.closest("[data-prediction]");if(!b)return;
-    predictions[mission()]=b.dataset.prediction;
-    store("rika-akari-predictions-v1",JSON.stringify(predictions));refresh();
+
    });
   }
  }
@@ -100,17 +87,17 @@
   const liveLit=!!board?.classList.contains("is-lit");
   const hasSelection=!!board?.querySelector(".terminal.selected");
   const wireCount=board?.querySelectorAll(".wire-chip").length||0;
-  const predicted=!!predictions[n];
-  const steps=get("learningSteps"),pred=get("predictStep"),connect=get("connectStep"),think=get("thinkStep");
-  if(!steps||!pred||!connect||!think)return;
-  steps.hidden=!firstSteps;
-  pred.hidden=!firstSteps||predicted||done||liveLit;
-  connect.hidden=!firstSteps||(!predicted&&!hasSelection&&!wireCount)||done||liveLit;
+  const steps=get("learningSteps"),think=get("thinkStep");
+  if(!steps||!think)return;
+  // Stage 1–2: no compulsory prediction tap or duplicate operation card.
+  // One circuit remains interactive from the first frame; reasoning appears
+  // only after the child actually closes the circuit.
+  const stage=done||liveLit?"reflect":wireCount>=2?"fix":hasSelection?"second":"connect";
+  document.body.dataset.wireFocus=firstSteps?"true":"false";
+  document.body.dataset.guidePhase=firstSteps?stage:"lesson";
+  steps.hidden=!firstSteps||(!done&&!liveLit);
   think.hidden=!firstSteps||(!done&&!liveLit);
   if(!done&&!liveLit&&reasonFeedback)reasonFeedback="";
-  const stage=done||liveLit?"reflect":!predicted&&!hasSelection&&!wireCount?"predict":wireCount>=2?"fix":hasSelection?"second":"connect";
-  document.body.dataset.guidePhase=firstSteps?stage:"lesson";
-  pred.querySelectorAll("[data-prediction]").forEach(btn=>btn.setAttribute("aria-pressed",String(predictions[n]===btn.dataset.prediction)));
   const name=get("guideActionLabel"),hint=get("guideActionText"),compare=get("designComparisonNote");
   if(name)name.textContent=stage==="fix"?"なおす":"つなぐ";
   if(hint)hint.textContent=stage==="second"?"もう1つの まる":stage==="fix"?"線を みなおそう":"まるから まるへ なぞろう";
@@ -134,7 +121,7 @@
   const next=get("nextBtn");
   if(next&&firstSteps&&!next.hidden)next.disabled=!reasons[n];
   const command=board?.querySelector(".circuit-help");
-  if(command)command.textContent=stage==="second"?"もう1つの まるを タップ":stage==="fix"?"どこが つながっている？":"なぞって つなごう";
+  if(command)command.textContent=liveLit?"光った！ つながりを 見て、わけを 考えよう":stage==="second"?"つぎの 金ぞくを えらぼう":stage==="fix"?"つながった 線を たどってみよう":"金ぞくの まるから まるへ なぞろう";
  }
  function bindWireDrawing(){
   const root=get("workspace");if(!root)return;
