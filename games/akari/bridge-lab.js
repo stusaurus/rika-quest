@@ -78,7 +78,7 @@ function circuit(slots={},isLit=false){
  const gap=(x,y,id,name)=>'<rect x="'+(x-58)+'" y="'+(y-23)+'" width="116" height="45" rx="9" fill="'+(id?"#dbeddf":"#254761")+'" stroke="'+(id?"#84be96":"#d49f83")+'" stroke-width="3"/>'+
  '<text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+(id?"#1b4c38":"#fff0dd")+'">'+(id?(material(id)?.name||""):"未修理")+'</text>'+label(x,y-34,name);
  return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。">'+
- '<rect width="680" height="340" rx="19" fill="#112e44"/>'+
+ '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+
  '<rect x="31" y="85" width="112" height="172" rx="14" fill="#b9644d" stroke="#ffe5ad" stroke-width="5"/>'+
  '<text x="87" y="130" font-size="19" text-anchor="middle" fill="#fff">乾電池</text><text x="87" y="172" font-size="24" font-weight="800" text-anchor="middle" fill="#fff">1.5V</text>'+
  '<circle cx="87" cy="74" r="15" fill="#fff6da"/><circle cx="87" cy="265" r="15" fill="#fff6da"/>'+
@@ -123,7 +123,7 @@ function render(raw){
  (step===1?'<p class="bridge-proceed">⚡ 回路修理へ進むには、電気を通す2種類・通さない1種類の実験結果を集めよう。</p>':"")+
  '</section>':"")+
  (step===2?'<section class="lab-panel bridge-section"><h3>③ 回路の 2か所を なおそう</h3><p class="lab-sub">回路にある2つのすき間を、実験済みの材料で埋めよう。どちらかが切れていても、豆電球はつかない。</p>'+
- '<div class="bridge-circuit">'+circuit(s.slots,lit)+'</div>'+
+ '<div class="bridge-circuit circuit-town-repair'+(lit?' is-lit':'')+'">'+circuit(s.slots,lit)+'</div>'+
  '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>修理 '+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"未修理")+'</span><small>'+(!selected?"実験済み材料を選択":!s.tests[selected.id]?"選んだ材料を先に実験":"選択中の材料をはめる")+'</small></button>').join("")+'</div>'+
  '<div class="bridge-predict"><strong>🔮 修理した回路に電気を流すと？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
  '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 修理した回路を仮想通電</button></div>'+
