@@ -462,8 +462,14 @@ try{
      return !!store?.["1"]?.LP;
    }),false,"Removing the wire must remove its saved freehand trace");
 
+   assert.equal(await page.locator(".reading-task-row").isVisible(),false,
+     "Short reading mode hides a redundant instruction strip while the board asks the question");
+   await page.locator("#readingToggle").click();
    assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
-     "Current task must receive readable width without a character overlay");
+     "Detailed reading mode restores a readable instruction without any overlay");
+   await page.locator("#readingToggle").click();
+   assert.equal(await page.locator(".reading-task-row").isVisible(),false,
+     "Returning to the simple mode restores the uncluttered experiment");
 
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
