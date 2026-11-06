@@ -2,7 +2,13 @@
    right = selectable materials and measured evidence.
    Drawers overlay instead of shrinking the touch targets. */
 body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock){
- display:block;min-width:0;position:relative;z-index:25!important;
+ display:block;min-width:0;
+}
+/* Lift ONLY the expanded palette above feedback. With drawers closed,
+   normal action buttons must remain above the workbench. */
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="left"]),
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="right"]){
+ position:relative;z-index:25!important;
 }
 .akari-dock{
  display:grid;grid-template-columns:65px minmax(0,1fr) 65px;
