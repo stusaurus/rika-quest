@@ -10,6 +10,9 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
 body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-props{
  display:none!important;
 }
+/* Avoid a theme-switch race: scenery is drawn inside the actual board. */
+.main.town-immersive>.story-scene .scene-props{display:none!important}
+
 body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption{
  top:10px;left:12px;bottom:auto;max-width:65%;
 }
