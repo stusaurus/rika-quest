@@ -606,6 +606,9 @@ try{
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"Stage two needs no test button");
    await page.locator('[data-first-reason="joined"]').click();
    assert.equal(await page.locator(".transfer-probe").count(),1,"Correct reason opens the existing scientific transfer challenge");
+   assert.equal(await page.locator(".transfer-diagram .town-house").count(),3,"The streetlamp prediction includes real village art INSIDE the circuit diagram");
+   assert.equal(await page.locator(".transfer-diagram .town-lamp").count(),2,"The streetlamp probe is not a bare navy schematic");
+   assert.equal(await page.locator(".transfer-diagram .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","A prediction diagram must never reveal the correct illuminated result");
    await completeTransfer(2,true);
    await page.locator("#thinkStep").waitFor({state:"visible"});
    assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Completed scientific transfer makes next stage available");
