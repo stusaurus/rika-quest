@@ -48,7 +48,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css?v=4690
 output=replaceOne(output,'<link rel="stylesheet" href="./immersive-lab.css?v=282606d">',"<style>\n"+immersiveCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./bridge-cinematic.css?v=1">',"<style>\n"+cinematicCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./cute-town.css?v=1">',"<style>\n"+cuteTownCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside1">',"<style>\n"+circuitVillageCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside2">',"<style>\n"+circuitVillageCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=1">',"<style>\n"+wireFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=1">',"<style>\n"+sideDrawersCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
