@@ -981,7 +981,9 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-bridge-sample")){
    const id=target.dataset.bridgeSample;
    if(!B.material(id)||b.inspected.length<3)return;
-   b.selected=id;b.sampleGuess=null;ui.bridge=b;saveBridgeDraft();renderWorkspace();
+   b.selected=id;b.sampleGuess=null;ui.bridge=b;saveBridgeDraft();
+   if(B.evidenceReady(b)&&b.tests[id])window.AkariDock?.collapse?.();
+   renderWorkspace();
    setFeedback(B.material(id).name+"を選んだ。予想してから実験しよう。");reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-bridge-guess")){
