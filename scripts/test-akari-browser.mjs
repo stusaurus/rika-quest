@@ -313,6 +313,22 @@ try{
    assert.equal(await page.locator("#freeLabOneScreen .free-lab-stage #freeLabBoard").count(),1,"The actual workbench is the persistent central panel");
    assert.equal(await page.locator('[data-free-drawer="tools"]').count(),1,"Battery/bulb/switch and wire tools are always accessible at the left");
    assert.equal(await page.locator('[data-free-drawer="materials"]').count(),1,"Scientific samples are always accessible at the right");
+   const freeLayout=await page.evaluate(()=>{
+     const board=document.querySelector("#freeLabBoard").getBoundingClientRect();
+     const panel=document.querySelector("#freeLabPanel").getBoundingClientRect();
+     const left=document.querySelector('[data-free-drawer="tools"]').getBoundingClientRect();
+     const right=document.querySelector('[data-free-drawer="materials"]').getBoundingClientRect();
+     return {boardWidth:board.width,panelWidth:panel.width,
+       leftVisible:left.width>45,rightVisible:right.width>45,
+       tabsAbove:Math.max(left.bottom,right.bottom)<=board.top+2,
+       overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+       storyVisible:getComputedStyle(document.querySelector(".story-scene")).display!=="none"};
+   });
+   assert.equal(freeLayout.leftVisible&&freeLayout.rightVisible,true,"Both palette tabs remain usable without hiding the circuit");
+   assert.equal(freeLayout.tabsAbove,true,"Tabs must not cover battery or bulb contact points");
+   assert.ok(freeLayout.boardWidth>=freeLayout.panelWidth*.86,"Central playable board uses most of the available width: "+JSON.stringify(freeLayout));
+   assert.ok(freeLayout.overflow<=2,"One-screen workbench must avoid horizontal page overflow: "+JSON.stringify(freeLayout));
+   assert.equal(freeLayout.storyVisible,false,"Free experiment prioritizes circuit over redundant story scenery");
    assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Tools are closed until needed to maximize work space");
    assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Materials are closed until needed");
    await page.locator('[data-free-drawer="tools"]').click();
