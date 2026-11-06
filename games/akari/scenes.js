@@ -12,7 +12,7 @@ const beacon=(x,y)=>'<g transform="translate('+x+' '+y+')"><path d="M0-100V-3" s
 const designs=[
  ()=>lamp(117,306)+bench(310,310)+flower(32,322,"#f9cc8f"),
  ()=>lamp(110,305,120)+lamp(378,308,135)+sign(235,320,"街灯"),
- ()=>window.AkariBridgePanorama?window.AkariBridgePanorama.scene():rope(177,300)+lamp(385,298,108),
+ ()=>window.AkariTownArt?window.AkariTownArt.render(3):rope(177,300)+lamp(385,298,108),
  ()=>flower(112,315,"#faafbb")+flower(172,325,"#e9cd83")+flower(327,320,"#ecd8e9"),
  ()=>box(146,317,"？")+flower(295,317,"#fbe6a0")+sign(360,330,"実験"),
  ()=>gear(170,252)+gear(226,305)+lamp(363,314),
@@ -125,7 +125,7 @@ const landmarks={
  '<path d="M117 63H182M119 129H187M119 194H191" stroke="#fff8e2" stroke-width="3" opacity=".65"/></g>'
 };
 
-window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const dramatic=index===2,box=dramatic?(phone?"295 0 550 340":"0 0 900 340"):phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(dramatic?" bridge-panorama-svg":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(dramatic?"xMidYMid slice":"none")+'" aria-hidden="true">'+designs[index]()+'</svg>'}};
+window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const town=index<=2&&!!window.AkariTownArt,dramatic=index===2;const box=town?(phone?"208 0 484 340":"0 0 900 340"):phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(town?" town-illustration":"")+(dramatic?" bridge-panorama-svg":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(town?"xMidYMid slice":"none")+'" aria-hidden="true">'+(town?window.AkariTownArt.render(index+1):designs[index]())+'</svg>'}};
 window.AkariScenes.landmark=place=>landmarkDefs+(landmarks[place]||landmarks.village);
 
 })();
