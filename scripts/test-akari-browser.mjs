@@ -765,8 +765,10 @@ try{
    assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests still require inspection evidence before use");
    assert.equal(await drawer("left").getAttribute("aria-expanded"),"true","Inspection palette remains open");
 
+   await closeDrawer("left");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
+   await openDrawer("left");
    for(const site of ["battery","lamp","return"])await page.locator('[data-bridge-inspect="'+site+'"]').click();
    await openDrawer("right");
    assert.equal(await drawer("left").getAttribute("aria-expanded"),"false","Opening material palette keeps central circuit unobstructed on the other side");
