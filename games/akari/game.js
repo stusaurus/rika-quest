@@ -357,7 +357,7 @@ function circuitStatus(wires){
 function renderWire(){
  const stat=circuitStatus(ui.wires),lit=stageComplete||stat.lit;
  const svg=Art.workbench(ui.wires,lit);
- return'<div class="circuit-toolbar"><strong>⚡ 電気の通り道</strong><button type="button" class="circuit-zoom-btn" data-zoom="1" aria-pressed="'+!!ui.zoomed+'">'+(ui.zoomed?'🔍 全体を見る':'🔎 大きく見る')+'</button>'+(ui.zoomed?'<span class="circuit-quicknav"><button type="button" data-view="battery">◀ 乾電池</button><button type="button" data-view="bulb">豆電球 ▶</button></span>':'')+'</div><div class="circuit-board'+(lit?' is-lit':'')+(ui.zoomed?' zoomed':'')+'"><div class="circuit-inner">'+svg
+ return'<div class="circuit-toolbar"><strong>⚡ 電気の通り道</strong><button type="button" class="circuit-zoom-btn" data-zoom="1" aria-pressed="'+!!ui.zoomed+'">'+(ui.zoomed?'🔍 全体を見る':'🔎 大きく見る')+'</button>'+(ui.zoomed?'<span class="circuit-quicknav"><button type="button" data-view="battery">◀ 乾電池</button><button type="button" data-view="bulb">豆電球 ▶</button></span>':'')+'</div><div class="circuit-board circuit-town-board'+(lit?' is-lit':'')+(ui.zoomed?' zoomed':'')+'">'+(window.AkariCircuitVillage?.board(current().id)||"")+'<div class="circuit-inner">'+svg
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
  +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
  +'<div class="wire-chip-list">'+ui.wires.map((p,i)=>'<button class="wire-chip" data-unwire="'+i+'" title="この導線を外す">'+(i+1)+'本目 ×</button>').join("")+'</div>'
