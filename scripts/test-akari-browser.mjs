@@ -298,11 +298,14 @@ try{
    assert.equal(await page.locator("#sceneProps svg").count(),1,"Stage-specific buildings remain visible after removing the dinosaur");
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
-   assert.equal(await page.locator("#predictStep").isVisible(),true,"Show one clear prediction choice at the start");
-   assert.equal(await page.locator("#designPredictionChoices .prediction-option").count(),3,"Offer lit, unlit, and unsure without filling the screen with text");
-   assert.equal(await page.locator('[data-prediction="unsure"]').count(),1,"Unsure is a valid scientific prediction before trying");
-   assert.equal(await page.locator("#connectStep").isVisible(),false,"Avoid three simultaneous instruction cards");
-   assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning step appears after the experiment");
+   assert.equal(await page.locator("body[data-wire-focus='true']").count(),1,"Stage 1 uses the one-screen wiring focus layout");
+   assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
+   assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
+   assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
+   assert.match(await page.locator(".circuit-question").textContent(),/どこを つなぐと 光る/, "The actual circuit asks the first open-ended question");
+   const focusWidth=await page.evaluate(()=>({board:document.querySelector(".circuit-board").getBoundingClientRect().width,main:document.querySelector(".main").getBoundingClientRect().width}));
+   assert.ok(focusWidth.board>focusWidth.main*.75,"The real touch-operated circuit should dominate the main layout: "+JSON.stringify(focusWidth));
+   assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning appears after observing the experiment");
    // Child's open workbench: build/move/add devices independently of the 14 story quests.
    assert.equal(await page.locator("#freeLabToggle").count(),1,"Free experiment bench must be available without replacing a mission");
    await page.locator("#freeLabToggle").click();
@@ -379,10 +382,9 @@ try{
    await page.locator("#freeLabClose").click();
    assert.equal(await page.locator("#freeLabPanel").isVisible(),false,"Return to story mode hides the workshop");
    assert.equal(await page.locator("#workspace").isVisible(),true,"Original circuit still works");
-   assert.equal(await page.locator("#predictStep").isVisible(),true,"Free practice never bypasses the main scientific lesson");
-   await page.locator('[data-prediction="lit"]').click();
-   assert.equal(await page.locator("#predictStep").isVisible(),false,"Prediction panel should collapse after selection");
-   assert.equal(await page.locator("#connectStep").isVisible(),true,"Only the next physical action should remain visible");
+   assert.equal(await page.locator("#predictStep").count(),0,"Returning from free lab does not reintroduce a prediction gate");
+   assert.equal(await page.locator("#learningSteps").isVisible(),false,"Children can experiment before answering the scientific reasoning question");
+   assert.match(await page.locator(".circuit-question").textContent(),/どこを つなぐと 光る/,"The same open circuit is ready for direct interaction");
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"The first lamp lights by wiring: no test button");
    assert.equal(await page.locator(".circuit-svg-v2").count(),1,"Updated detailed physical battery-and-bulb art must render");
    assert.equal(await page.locator(".circuit-svg-v2 .battery-model").count(),1);
@@ -408,6 +410,7 @@ try{
    await page.mouse.move(dragEnd.x+dragEnd.width/2,dragEnd.y+dragEnd.height/2,{steps:8});
    await page.mouse.up();
    assert.equal(await page.locator(".wire-chip").count(),1,"Dragging between contact circles must build exactly one wire");
+   assert.match(await page.locator(".circuit-question").textContent(),/もう1本は どこへ/,"After the first wire, the single question updates without another dialog");
    assert.equal(await page.locator(".terminal.selected").count(),0,"A completed drag should not leave a dangling tap selection");
    const wireRoute=async()=>page.locator(".circuit-svg-v2 .lead-on-top .wire").evaluateAll(paths=>paths.map(path=>{
      const length=path.getTotalLength(),inside={battery:0,bulb:0};
@@ -459,8 +462,14 @@ try{
      return !!store?.["1"]?.LP;
    }),false,"Removing the wire must remove its saved freehand trace");
 
+   assert.equal(await page.locator(".reading-task-row").isVisible(),false,
+     "Short reading mode hides a redundant instruction strip while the board asks the question");
+   await page.locator("#readingToggle").click();
    assert.ok((await page.locator(".reading-task-row").evaluate(e=>e.getBoundingClientRect().width))>160,
-     "Current task must receive readable width without a character overlay");
+     "Detailed reading mode restores a readable instruction without any overlay");
+   await page.locator("#readingToggle").click();
+   assert.equal(await page.locator(".reading-task-row").isVisible(),false,
+     "Returning to the simple mode restores the uncluttered experiment");
 
    const overflow=async()=>page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth}));
    let dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" initial overflow: "+JSON.stringify(dimensions));
@@ -520,6 +529,8 @@ try{
    assert.equal(await page.locator(".story-scene.live-powered").count(),1,"The village light responds immediately to electricity");
    assert.equal(await page.locator(".circuit-town-board.is-lit .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"1","Drawing a correct wire lights the streetlamp in the interactive circuit");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"After observing a lit lamp, the pupil can explain the result");
+   assert.match(await page.locator(".circuit-question").textContent(),/どうして 光った/,"The board itself now asks for causal reasoning");
+   assert.equal(await page.locator("#learningSteps").isVisible(),true,"Only the scientific reasoning choices appear after a real closed circuit");
    assert.equal(await page.locator("#discovery").isVisible(),false,"A light bulb alone must not bypass scientific reasoning");
    assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
    // A slash must start on the visible board, never in the offscreen part of zoom mode.
