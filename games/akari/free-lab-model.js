@@ -3,23 +3,30 @@
    finite battery internal resistance. This is an educational approximation, not
    a substitute for laboratory instruments or an instruction to test short circuits. */
 (function(){
- const limits={battery:2,bulb:3,switch:1};
+ const limits={battery:2,bulb:3,switch:1,sample:2};
+ const materials={
+  iron:{name:"鉄のクリップ",conductive:true},
+  foil:{name:"アルミはく",conductive:true},
+  wood:{name:"木の板",conductive:false},
+  plastic:{name:"プラスチック",conductive:false}
+ };
  const defaults=[
   {id:"b1",type:"battery",x:23,y:28},
   {id:"l1",type:"bulb",x:75,y:28}
  ];
- const terminals={battery:["P","N"],bulb:["L","R"],switch:["A","B"]};
+ const terminals={battery:["P","N"],bulb:["L","R"],switch:["A","B"],sample:["A","B"]};
  const defaultState=()=>({nodes:defaults.map(n=>({...n})),wires:[],next:2});
- const port=id=>typeof id==="string"&&/^[bls]\d+:[A-Z]$/.test(id);
+ const port=id=>typeof id==="string"&&/^[blsm]\d+:[A-Z]$/.test(id);
  function sanitize(raw){
   if(!raw||typeof raw!=="object")return defaultState();
   const nodes=[],counts={battery:0,bulb:0,switch:0},seen=new Set();
   for(const n of Array.isArray(raw.nodes)?raw.nodes:[]){
    if(!n||!Object.hasOwn(limits,n.type)||counts[n.type]>=limits[n.type])continue;
-   if(typeof n.id!=="string"||!(/^[bls]\d{1,4}$/).test(n.id)||seen.has(n.id))continue;
+   if(typeof n.id!=="string"||!(/^[blsm]\d{1,4}$/).test(n.id)||seen.has(n.id))continue;
+   if(n.type==="sample"&&!Object.hasOwn(materials,n.material))continue;
    seen.add(n.id);counts[n.type]++;
    nodes.push({id:n.id,type:n.type,x:Math.min(88,Math.max(12,Number(n.x)||50)),
-    y:Math.min(86,Math.max(15,Number(n.y)||50)),...(n.type==="switch"?{on:!!n.on}:{})});
+    y:Math.min(86,Math.max(15,Number(n.y)||50)),...(n.type==="switch"?{on:!!n.on}:n.type==="sample"?{material:n.material}:{})});
   }
   if(!nodes.length)return defaultState();
   const available=new Set(nodes.flatMap(n=>terminals[n.type].map(t=>n.id+":"+t)));
@@ -43,6 +50,7 @@
   const union=(a,b)=>{a=find(a);b=find(b);if(a!==b)parent[b]=a;};
   for(const w of s.wires)union(w.from,w.to);
   for(const n of s.nodes)if(n.type==="switch"&&n.on)union(n.id+":A",n.id+":B");
+  for(const n of s.nodes)if(n.type==="sample"&&materials[n.material]?.conductive)union(n.id+":A",n.id+":B");
   const groups=[...new Set(ports.map(find))],idx=Object.fromEntries(groups.map((g,i)=>[g,i]));
   const group=p=>idx[find(p)];
   const resistors=[],sources=[];
@@ -93,5 +101,5 @@
   return {short,bulbs,litCount:bulbs.filter(x=>x.level!=="off").length,
    high:high&&!short,hasSwitch:s.nodes.some(x=>x.type==="switch")};
  }
- window.AkariFreeLabModel={limits,terminals,defaultState,sanitize,simulate};
+ window.AkariFreeLabModel={limits,materials,terminals,defaultState,sanitize,simulate};
 })();
