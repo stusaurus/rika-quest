@@ -125,7 +125,7 @@ const landmarks={
  '<path d="M117 63H182M119 129H187M119 194H191" stroke="#fff8e2" stroke-width="3" opacity=".65"/></g>'
 };
 
-window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const town=index<=2&&!!window.AkariTownArt,dramatic=index===2;const box=town?(phone?"208 0 484 340":"0 0 900 340"):phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(town?" town-illustration":"")+(dramatic?" bridge-panorama-svg":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(town?"xMidYMid slice":"none")+'" aria-hidden="true">'+(town?window.AkariTownArt.render(index+1):designs[index]())+'</svg>'}};
+window.AkariScenes={render(id){const index=Math.max(0,Math.min(13,(Number(id)||1)-1));const phone=typeof window.matchMedia==="function"&&window.matchMedia("(max-width: 740px)").matches;const town=index<=2&&!!window.AkariTownArt;const box=town?(phone?"208 0 484 340":"0 0 900 340"):phone?"0 0 500 340":"0 0 900 340";return '<svg class="scene-prop-svg'+(town?" town-illustration":"")+'" viewBox="'+box+'" preserveAspectRatio="'+(town?"xMidYMid slice":"none")+'" aria-hidden="true">'+(town?window.AkariTownArt.render(index+1):designs[index]())+'</svg>'}};
 window.AkariScenes.landmark=place=>landmarkDefs+(landmarks[place]||landmarks.village);
 
 })();
