@@ -22,6 +22,7 @@ jobs:
       - name: Check JS syntax
         run: |
           node --check games/akari/game.js
+          node --check games/akari/reference-layout.js
           node --check games/akari/art.js
           node --check games/akari/scenes.js
           node --check games/akari/bridge-panorama.js
