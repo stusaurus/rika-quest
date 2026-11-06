@@ -132,3 +132,132 @@
 .free-lab-record #freeSaveRecord{min-height:36px;border-radius:10px;border:2px solid #7ba7ae;
  padding:6px 12px;background:#fff;font-size:12px;font-weight:900;color:#245567}
 .free-lab-record #freeLabRecordRows p{padding:6px 7px;margin:4px 0;background:#fffdf5;border-radius:8px}
+
+
+/* Common drawer language: tools left, science materials right,
+   one reusable board and one type of wiring gesture in the middle. */
+.free-lab-one-screen{
+ position:relative;isolation:isolate;min-width:0;
+ display:grid;grid-template-columns:82px minmax(0,1fr) 82px;
+ grid-template-rows:auto minmax(0,auto);gap:4px;
+}
+.free-lab-one-screen[data-open="tools"],
+.free-lab-one-screen[data-open="materials"]{z-index:8}
+.free-drawer-tab{
+ display:flex;justify-content:center;align-items:center;gap:5px;
+ min-height:48px;max-height:52px;min-width:0;
+ border-radius:13px;border:2px solid #8fb8ad;
+ box-shadow:0 3px 0 #9ebca8;
+ background:#fff1c9;color:#23465a;cursor:pointer;
+ font-family:inherit;font-size:14px;
+}
+.free-drawer-tab strong{font-size:13px}
+.free-drawer-tab[data-free-drawer="tools"]{grid-column:1;grid-row:1}
+.free-drawer-tab[data-free-drawer="materials"]{grid-column:3;grid-row:1}
+.free-drawer-tab[aria-expanded="true"]{
+ border-color:#c2964c;background:#ffe4a4;
+ box-shadow:0 3px 0 #d4a766;
+}
+.free-drawer-tab:focus-visible{outline:3px solid #ef8f48;outline-offset:2px}
+.free-lab-stage{grid-row:2;grid-column:1/-1;min-width:0}
+.free-lab-stage>.free-lab-board{max-width:none;margin:0}
+.free-drawer-panel{
+ position:absolute;top:57px;z-index:15;
+ width:min(290px,calc(100% - 8px));
+ max-height:min(69dvh,530px);
+ overflow-y:auto;overscroll-behavior:contain;
+ padding:11px;border:3px solid #94bbac;border-radius:14px;
+ background:#fffdf0;
+ color:#244e61;
+ box-shadow:0 10px 24px #1c3d5285;
+ scrollbar-width:thin;
+}
+.free-drawer-panel[hidden]{display:none!important}
+.free-drawer-tools{left:4px}
+.free-drawer-materials{right:4px}
+.free-drawer-lead{
+ margin:2px 0 9px;
+ font-size:12px;line-height:1.5;font-weight:800;
+}
+.free-drawer-panel .free-lab-tools{
+ display:grid;grid-template-columns:1fr;gap:8px;
+ margin-bottom:8px;
+}
+.free-drawer-panel .free-lab-tools button{
+ text-align:left;
+ font-size:14px;min-height:46px;padding:8px 11px;
+ background:#f6faee;border-color:#a8beac;
+}
+.free-drawer-panel .free-lab-tools [data-free-wire-tip]{
+ background:#e1f2f6;border-color:#95bcc8;
+}
+.free-drawer-panel .free-lab-samples{
+ display:grid;grid-template-columns:1fr 1fr;gap:7px;
+}
+.free-drawer-panel .free-lab-samples button{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:4px;min-height:90px;min-width:0;
+ border-radius:11px;border:2px solid #9ab8ae;
+ background:#f7faf2;color:#244957;font-family:inherit;
+ font-size:12px;font-weight:800;cursor:pointer;padding:7px 4px;
+}
+.free-drawer-panel .free-lab-samples button span{
+ display:grid;place-items:center;
+ font-size:23px;border-radius:8px;
+ width:38px;height:32px;background:#e7e9e2;color:#59717b;
+}
+.free-drawer-panel .free-lab-samples button:hover:not(:disabled),
+.free-drawer-panel .free-lab-samples button:focus-visible{
+ outline:3px solid #fac96c;outline-offset:1px;
+ background:#fff1c6;
+}
+.free-drawer-panel button:disabled{opacity:.4;cursor:not-allowed}
+.free-device.free-sample{
+ width:96px;height:78px;
+}
+.free-sample .free-move{
+ border-color:#b3c2b2;background:#f0f2ed;
+ box-shadow:0 4px 8px #273c4b45;
+}
+.free-sample-art{
+ display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:1px;
+ max-width:100%;color:#294b59;pointer-events:none;
+}
+.free-sample-art>b{font-size:27px;line-height:1.1}
+.free-sample-art>small{
+ font-size:10px;font-weight:900;white-space:normal;
+ text-align:center;line-height:1.2;
+}
+.free-sample-art.sample-iron,
+.free-sample-art.sample-foil,
+.free-sample-art.sample-plastic{color:#4f6777}
+.free-sample-art.sample-wood{color:#766652}
+.free-sample .free-terminal.port-A{left:0;top:50%}
+.free-sample .free-terminal.port-B{left:100%;top:50%}
+.free-lab-intro{margin:4px 0 8px}
+.free-lab-bottom{margin-top:7px}
+@media(max-width:740px){
+ .free-lab-one-screen{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
+ }
+ .free-drawer-tab[data-free-drawer="tools"]{grid-column:1}
+ .free-drawer-tab[data-free-drawer="materials"]{grid-column:2}
+ .free-drawer-tab{
+  min-height:46px;max-height:48px;font-size:13px;border-radius:10px;
+ }
+ .free-drawer-tab strong{font-size:12px}
+ .free-lab-stage{grid-column:1/-1}
+ .free-lab-board{height:clamp(315px,56dvh,410px)}
+ .free-drawer-panel{
+  top:53px;max-height:min(62dvh,435px);
+  padding:8px;width:min(282px,calc(100% - 6px));
+ }
+ .free-device.free-sample{width:85px;height:74px}
+ .free-sample-art>small{font-size:9px}
+ .free-drawer-panel .free-lab-tools{grid-template-columns:1fr}
+ .free-drawer-panel .free-lab-tools button{font-size:13px}
+ .free-drawer-panel .free-lab-samples button{
+  font-size:11px;min-height:83px;
+ }
+}
