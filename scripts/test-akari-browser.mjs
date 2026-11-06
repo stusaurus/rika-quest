@@ -406,8 +406,10 @@ try{
    const sampleId=await page.locator(".free-sample").getAttribute("data-free-node");
    await labWire("b1:P",sampleId+":A");await labWire(sampleId+":B","l2:L");await labWire("l2:R","b1:N");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"An actual iron sample closes a correctly wired circuit");
+   await page.locator('[data-free-move="'+sampleId+'"]').click();
    await page.locator('[data-free-drawer="tools"]').click();
    assert.equal(await page.locator("#freeAddswitch").isVisible(),true,"The left drawer includes a working switch option");
+   assert.equal(await page.locator("#freeRemove").isDisabled(),false,"Tapping a material selects it for removal");
    await page.locator("#freeRemove").click();
    assert.equal(await page.locator(".free-sample").count(),0,"Removing selected material clears its connected wires too");
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Removing the conductive sample opens the circuit");
