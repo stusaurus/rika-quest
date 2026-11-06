@@ -711,6 +711,10 @@ try{
      localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".bridge-panorama-svg .bridge-monument").count(),1,"Stage 3 must show full-scale stone bridge, not generic props");
+   assert.equal(await page.locator(".bridge-panorama-svg .bridge-lamp").count(),2,"Distinct bridge lanterns belong to the scene");
+   assert.equal(await page.locator(".bridge-panorama-svg .bridge-stage-lights").count(),3,"Landscape must include lights that respond to repairing the circuit");
+   assert.equal(await page.locator(".bridge-sites .bridge-site-art svg").count(),3,"Every bridge inspection target has readable physical artwork");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests should not appear before observing site");
    await page.locator("#checkBtn").click();
@@ -743,6 +747,8 @@ try{
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The bridge visually responds to observed working circuit");
+   assert.equal(await page.locator(".story-scene.bridge-powered .bridge-lantern-glass").count(),2,"Powered bridge lights both physical lanterns");
+   assert.equal(await page.locator(".story-scene.bridge-powered .bridge-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing the two gaps reveals light on the bridge");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-bridge-lit.png",fullPage:true});
    await page.locator('[data-bridge-reason="one"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"A wrong explanation cannot clear despite light");
