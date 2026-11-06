@@ -711,7 +711,7 @@ try{
    dimensions=await overflow();assert.ok(dimensions.scroll<=dimensions.width+2,engine+" "+width+" battery expedition overflow");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-battery11-restored.png",fullPage:true});
 
-   // Mission 3: bridge exploration -> material experiment -> repair two series gaps.
+   // Mission 3: streetlamp investigation -> material experiments -> restore two series gaps.
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",s=JSON.parse(localStorage.getItem(key));
      s.completed={1:3,2:3};s.active=3;s.bridgeDraft=null;
@@ -719,19 +719,21 @@ try{
    });
    await page.reload({waitUntil:"domcontentloaded"});
    const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
-   assert.ok(hero.height>=(width<741?205:260)&&hero.position==="relative"&&hero.opacity==="1","The illustrated bridge must be a visible compact scene, not a faded wallpaper: "+JSON.stringify(hero));
-   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-house").count(),2,"Mission 3 keeps friendly village homes near the bridge");
-   assert.equal(await page.locator(".bridge-panorama-svg .bridge-monument").count(),1,"Stage 3 must show full-scale stone bridge, not generic props");
-   assert.equal(await page.locator(".bridge-panorama-svg .bridge-lamp").count(),2,"Distinct bridge lanterns belong to the scene");
-   assert.equal(await page.locator(".bridge-panorama-svg .bridge-stage-lights").count(),3,"Landscape must include lights that respond to repairing the circuit");
+   assert.ok(hero.height>=(width<741?205:260)&&hero.position==="relative"&&hero.opacity==="1","The illustrated streetlamp town must be a visible compact scene, not a faded wallpaper: "+JSON.stringify(hero));
+   assert.equal(await page.locator(".main.town-immersive .town-illustration .town-house").count(),3,"Mission 3 displays three colorful houses around the streetlamp");
+   assert.equal(await page.locator(".story-scene .bridge-monument").count(),0,"Stage 3 must not show a bridge");
+   assert.equal(await page.locator(".story-scene .town-lamp").count(),1,"Stage 3 must have one prominent town streetlamp");
+   assert.equal(await page.locator(".story-scene .town-stage-lights").count(),2,"Streetlamp light and ground glow respond to completed circuits");
    assert.equal(await page.locator(".bridge-sites .bridge-site-art svg").count(),3,"Every bridge inspection target has readable physical artwork");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
+   assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
+   assert.ok(!(await page.locator(".bridge-quest-strip").textContent()).includes("橋"),"The streetlamp challenge must not still mention the bridge");
    assert.equal(await page.locator(".bridge-materials").count(),0,"Equipment tests should not appear before observing site");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
    for(const site of ["battery","lamp","return"])await page.locator('[data-bridge-inspect="'+site+'"]').click();
    assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Discover four visually distinct material samples");
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-bridge-explore.png",fullPage:true});
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
    await page.locator('[data-bridge-sample="iron"]').click();
    assert.equal(await page.locator('[data-bridge-test]').isDisabled(),true,"Scientifically explicit hypothesis is required");
    await page.locator('[data-bridge-guess="dark"]').click();
@@ -756,10 +758,10 @@ try{
    assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","Saved repair persists after reload");
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");
-   assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The bridge visually responds to observed working circuit");
-   assert.equal(await page.locator(".story-scene.bridge-powered .bridge-lantern-glass").count(),2,"Powered bridge lights both physical lanterns");
-   assert.equal(await page.locator(".story-scene.bridge-powered .bridge-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing the two gaps reveals light on the bridge");
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-bridge-lit.png",fullPage:true});
+   assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town streetlamp visually responds to observed working circuit");
+   assert.equal(await page.locator(".story-scene.bridge-powered .town-lantern-glass").count(),1,"Successful repair illuminates the streetlamp");
+   assert.equal(await page.locator(".story-scene.bridge-powered .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing both gaps reveals light on the streetlamp");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-lit.png",fullPage:true});
    await page.locator('[data-bridge-reason="one"]').click();await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"A wrong explanation cannot clear despite light");
    await page.locator('[data-bridge-reason="both"]').click();await page.locator("#checkBtn").click();

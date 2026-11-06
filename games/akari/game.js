@@ -4,7 +4,7 @@ const Art=window.AkariArt||{};
 const M=[
 {id:1,name:"はじめてのひかり",place:"village",placeName:"ひかりの村",mode:"wire",goal:"小屋のあかりをつけよう",story:"村の小屋がまっくらだ。乾電池と豆電球をつないで、はじめてのひかりをともそう。",instructions:"乾電池の＋と−を、豆電球の金属の横部分・底の接点につなごう。端子を2つ順番にタップすると導線を引けるよ。",discovery:"豆電球は、乾電池の＋極と−極が豆電球を通る1つの輪でつながると光る。電気の通り道を「回路」というよ。",hints:["豆電球には電気が出入りする2つの接点があるよ。","＋から豆電球の金属の横部分へ、−から底の接点へ。2本つなごう。"]},
 {id:2,name:"切れた通り道",place:"village",placeName:"ひかりの村",mode:"wire",prefill:[["P","L"]],goal:"消えた街灯を直そう",story:"さっきまで明るかった街灯が消えちゃった。1本の導線がはずれているみたい。",instructions:"すでにつながっている導線を観察して、足りない1本をつなごう。",discovery:"回路にすき間があると電気が流れず、豆電球はつかない。1か所でも切れていると点灯しないんだ。",hints:["すでに＋極と豆電球はつながっているよ。","−極と、まだつながっていない底の接点をつなごう。"]},
-{id:3,name:"橋の材料さがし",place:"bridge",placeName:"こもれび橋",mode:"explore",goal:"橋を調べて修理しよう",story:"橋のあかりが消えた！代わりの材料を探して通り道をつなごう。",instructions:"橋の3か所を調査。材料を予想して仮想実験し、電気の通り道にある2つのすき間を自分で修理して、なぜ光ったか説明しよう。",discovery:"電球の横と底の接点を通り、乾電池の＋と−が閉じた輪になると点灯する。途中に木やプラスチックのような不導体が入ると通り道が途切れる。",hints:["電気が通るかは材料によって違うよ。実験の記録を比べてみよう。","2か所のすき間のどちらも、電気を通すものをはさみ、＋から−へ戻る輪を作ろう。"]},
+{id:3,name:"街灯の材料さがし",place:"village",placeName:"ひかりの村",mode:"explore",goal:"まちの街灯を直そう",story:"まちの街灯が消えた！ 乾電池、豆電球、もどる線を調べて、2か所のすき間を直そう。",instructions:"街灯の回路を3か所調べよう。材料を予想して実験したら、2か所のすき間を直して、光ったわけを考えよう。",discovery:"電球の横と底の接点を通り、乾電池の＋と−が閉じた輪になると点灯する。途中に木やプラスチックのような不導体が入ると通り道が途切れる。",hints:["電気が通るかは材料によって違うよ。実験の記録を比べてみよう。","2か所のすき間のどちらも、電気を通すものをはさみ、＋から−へ戻る輪を作ろう。"]},
 {id:4,name:"庭の実験工房",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"conductor",goal:"電気を通すものを2つ見つけよう",story:"庭師さんが材料を集めてきた。豆電球を使って、どれが電気を通すのか実験しよう。",instructions:"同じクリップで接点の条件を変えたらどうなる？基準実験から始め、条件をそろえて材料を比べ、電気を通す性質を説明しよう。",discovery:"同じ金属でも接点が離れると消灯する。接点条件をそろえて比べると、鉄やアルミニウムは電気を通し、乾いた木やプラスチックは通しにくいとわかる。",hints:["最初は材料を変えず、同じクリップの接点だけを変えてみよう。","材料を比べるときは接点を両方しっかり合わせて、条件をそろえよう。"]},
 {id:5,name:"にせものの金属",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"insulator",goal:"電気を通さないものを見つけよう",story:"ぴかぴかの材料は全部電気を通す？ 見た目にだまされないで調べてみよう。",instructions:"見た目が似た4材料を仮想実験で見分け、電気を通す修理部品1つ・電気を通しにくい仕切り2つを選び、ショートせず点灯する設備を完成させよう。",discovery:"主回路では導体を使うと豆電球に電気が流れる。一方、乾電池の＋と−を隔てる仕切りは不導体が適している。金属が両極をつなぐとショートし危険。",hints:["豆電球に電気を通す部分と、電池の＋と−が直接触れるのを防ぐ部分では必要な材料が違うよ。","主回路には金属、むき出しの2極の間には木やプラスチックなど電気を通しにくい材料を考えよう。"]},
 {id:6,name:"時計塔の故障調査",place:"tower",placeName:"古時計の塔",mode:"repair",goal:"故障した回路を修理しよう",story:"時計塔の時計が暗くて読めない。点灯しない理由を、部品を調べて探そう。",instructions:"3つの部品を調査して原因を推理。修理後は自分で回路を作り、点灯を実験して＋極から−極までの道をたどろう。",discovery:"電球がつかないとき、すぐに乾電池のせいと決めつけず、接点や導線を1か所ずつ調べると原因がわかる。",hints:["故障は乾電池とは限らないよ。","3つの部品の観察結果を比較し、異常のあるものを考えよう。"]},
@@ -260,7 +260,7 @@ function showCelebration(stars){
  const banner=$("stageCelebration");if(!banner)return;
  const token=++celebrationToken;
  const titles=[
-  "小屋にあかりがともった！","街灯がふたたび光った！","橋のあかりが戻った！",
+  "小屋にあかりがともった！","街灯がふたたび光った！","まちの街灯がともった！",
   "庭の工房が明るくなった！","材料のひみつを発見！","時計塔が動き出した！",
   "2つの合図に成功！","港のあかりをつけた！","乾電池のなぞを解いた！",
   "博物館の展示が光った！","乾電池の向きを解決！","危険な近道を取り除いた！",
@@ -343,7 +343,7 @@ function renderScene(){
 function renderHeader(){
  const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
- $("checkBtn").hidden=stageComplete||m.mode==="wire"||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"🌉 橋の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":m.id<=2?"💡 つなぐと つくよ":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="つぎへ すすむ ➜";$("hintBtn").hidden=stageComplete;
+ $("checkBtn").hidden=stageComplete||m.mode==="wire"||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"💡 街灯の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":m.id<=2?"💡 つなぐと つくよ":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="つぎへ すすむ ➜";$("hintBtn").hidden=stageComplete;
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
  $("soundBtn").setAttribute("aria-pressed",String(state.sound));$("soundBtn").textContent=state.sound?"♫":"♪̸";
 }
@@ -364,7 +364,7 @@ function renderWire(){
  +'<div class="circuit-help">丸を2つタップして どう線をつなごう。外すときは「×」。</div></div><div class="circuit-legend"><span>🔋 <b>乾電池</b><small>＋極・−極</small></span><span>💡 <b>豆電球</b><small>金属の横・底の接点</small></span></div>';
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
-function renderExplore(){return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>橋の調査画面を読み込めませんでした。再読み込みしてください。</p>';}
+function renderExplore(){return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>街灯の実験画面を読み込めませんでした。再読み込みしてください。</p>';}
 function renderMaterial(){return window.AkariGarden?window.AkariGarden.render(current().id,ui.garden):'<div class="lab-panel">実験工房を読み込めませんでした。再読み込みしてください。</div>';}
 function repairParts(){return current().id===6?[{id:"battery",name:"乾電池",broken:false,detail:"1.5V・残量あり。問題なし。"},{id:"wire",name:"導線のつなぎ目",broken:true,detail:"接触がはずれている！"},{id:"bulb",name:"豆電球",broken:false,detail:"フィラメントは切れていない。"}]:[{id:"wire",name:"導線",broken:true,detail:"途中で切れていた！"},{id:"bulb",name:"豆電球の接点",broken:true,detail:"底が端子に触れていない！"},{id:"battery",name:"乾電池",broken:false,detail:"十分な電気がある。"}];}
 function renderRepair(){
@@ -457,7 +457,7 @@ function check(){
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){
   if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("3か所の観察・材料の比較・2か所の修理・仮想通電・理由の説明をそろえよう。","warning");return;}
-  recordObservation("bridge:proof","【橋の回路】"+ui.bridge.slots.a+"と"+ui.bridge.slots.b+"を使い、乾電池＋→修理A→豆電球→修理B→乾電池−の通り道を復旧した。");
+  recordObservation("bridge:proof","【街灯の回路】"+ui.bridge.slots.a+"と"+ui.bridge.slots.b+"を使い、乾電池＋→修理A→豆電球→修理B→乾電池−の通り道を復旧した。");
   clearBridgeDraft();success();return;
  }
  if(m.mode==="material"){
@@ -1008,14 +1008,14 @@ function handleWorkspace(e){
    const actual=B.evaluate(b.slots);
    b.repairResult={signature:B.signature(b.slots),guess:b.repairGuess,actual:actual.lit?"lit":"dark"};
    b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("仮想通電："+(actual.lit?"橋のあかりがともった！科学的な理由も説明しよう。":"消灯。材料が電気を通すか、両方のすき間を見直してみよう。"),actual.lit?"success":"warning");
+   setFeedback("仮想通電："+(actual.lit?"街灯のあかりがともった！ 光ったわけも考えよう。":"消灯。材料が電気を通すか、両方のすき間を見直してみよう。"),actual.lit?"success":"warning");
    reactCharacter(actual.lit?"discover":"think");return;
   }
   if(target.hasAttribute("data-bridge-reason")){
    if(!B.sceneLit(b))return;
    const reason=target.dataset.bridgeReason;if(!B.reasonOptions.some(([id])=>id===reason))return;
    b.reason=reason;saveBridgeDraft();renderWorkspace();
-   setFeedback("理由を選んだ。最後に「橋の復旧を確認する」で回路の説明を確かめよう。");return;
+   setFeedback("理由を選んだ。最後に「街灯の復旧を確認する」で回路の説明を確かめよう。");return;
   }
  }
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
