@@ -106,3 +106,12 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .s
   transition:none;
  }
 }
+
+/* The three "which circuit would light?" probes are predictions, not
+   experiments. The same town is visible INSIDE the schematic but ALWAYS dark. */
+.transfer-diagram .circuit-village-prediction-art{
+ pointer-events:none;opacity:.92;
+}
+.transfer-diagram .town-window{fill:#608696!important;filter:none!important}
+.transfer-diagram .town-lantern-glass{fill:#608898!important;filter:none!important}
+.transfer-diagram .town-stage-lights{opacity:0!important;animation:none!important}
