@@ -261,3 +261,22 @@
   font-size:11px;min-height:83px;
  }
 }
+
+
+/* While experimenting, the laboratory itself owns the screen.
+   The story heading and redundant launcher must not push the circuit away. */
+body.akari-free-active .main>.story-scene,
+body.akari-free-active .quest-panel>.quest-head,
+body.akari-free-active #freeLabToggle{display:none!important}
+body.akari-free-active .free-lab-intro{display:none!important}
+body.akari-free-active .free-lab-head{margin-bottom:8px}
+body.akari-free-active .free-lab-panel{
+ margin-top:0;box-shadow:none;
+}
+@media(max-width:740px){
+ body.akari-free-active .free-lab-board{height:clamp(310px,54dvh,395px)}
+ body.akari-free-active .free-lab-status{
+  margin-top:5px;min-height:39px;padding:6px 8px;
+ }
+ body.akari-free-active .free-lab-note{margin:2px 2px 5px}
+}
