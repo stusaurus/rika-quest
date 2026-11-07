@@ -280,3 +280,108 @@ body.akari-free-active .free-lab-panel{
  }
  body.akari-free-active .free-lab-note{margin:2px 2px 5px}
 }
+
+
+/* Drawer visibility fix: tools MUST NOT overlay the playable board.
+   Narrow screens use a short, scrollable in-flow parts shelf, with the circuit
+   always visible beneath it. Wider layouts dock genuinely to the two sides. */
+.free-lab-one-screen{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ grid-template-rows:auto auto auto;
+ gap:6px;
+ align-items:start;
+}
+.free-drawer-tab[data-free-drawer="tools"]{grid-column:1;grid-row:1}
+.free-drawer-tab[data-free-drawer="materials"]{grid-column:2;grid-row:1}
+.free-lab-one-screen .free-lab-stage{
+ grid-column:1/-1;grid-row:3;
+ min-width:0;
+}
+.free-lab-one-screen .free-drawer-panel{
+ position:relative;left:auto;right:auto;top:auto;
+ grid-column:1/-1;grid-row:2;
+ z-index:1;
+ width:100%;max-width:none;
+ max-height:150px;
+ overflow-x:hidden;overflow-y:auto;
+ box-shadow:none;
+ padding:8px 10px;
+ border-width:2px;border-radius:12px;
+}
+.free-lab-one-screen .free-drawer-panel[hidden]{display:none!important}
+.free-drawer-panel .free-drawer-lead{
+ margin:0 0 6px;font-size:11px;line-height:1.25;
+}
+.free-drawer-panel .free-drawer-lead:last-child{display:none}
+.free-drawer-panel .free-lab-tools,
+.free-drawer-panel .free-lab-samples{
+ display:grid;grid-auto-flow:column;
+ grid-template-columns:none;
+ grid-auto-columns:minmax(115px,1fr);
+ gap:6px;
+ overflow-x:auto;overflow-y:hidden;
+ overscroll-behavior-x:contain;
+ scroll-snap-type:x proximity;
+ padding:2px 2px 5px;
+}
+.free-drawer-panel .free-lab-tools button,
+.free-drawer-panel .free-lab-samples button{
+ scroll-snap-align:start;
+ min-width:0;min-height:50px;
+ padding:6px 8px;
+}
+.free-drawer-panel .free-lab-tools button{font-size:12px;white-space:normal}
+.free-drawer-panel .free-lab-samples button{
+ flex-direction:row;gap:5px;
+ min-height:62px;font-size:11px;text-align:left;
+}
+.free-drawer-panel .free-lab-samples button span{
+ flex:0 0 28px;width:28px;height:30px;font-size:17px;
+}
+@media(max-width:740px){
+ .free-lab-one-screen .free-lab-stage{grid-column:1/-1;grid-row:3}
+ .free-lab-one-screen .free-drawer-panel{
+  position:relative;top:auto;left:auto;right:auto;
+  grid-column:1/-1;grid-row:2;
+  max-height:132px;width:100%;
+  padding:6px 8px;
+ }
+ .free-drawer-panel .free-lab-tools{
+  grid-template-columns:none;
+  grid-auto-flow:column;
+  grid-auto-columns:115px;
+ }
+ .free-drawer-panel .free-lab-samples{
+  grid-template-columns:none;
+  grid-auto-flow:column;
+  grid-auto-columns:125px;
+ }
+ .free-drawer-panel .free-lab-tools button{font-size:11px;min-height:45px}
+ .free-drawer-panel .free-lab-samples button{font-size:10px;min-height:58px}
+ body.akari-free-active .free-lab-board{height:clamp(290px,47dvh,390px)}
+}
+@media(min-width:1150px){
+ .free-lab-one-screen{
+  grid-template-columns:minmax(165px,210px) minmax(0,1fr) minmax(165px,210px);
+  grid-template-rows:auto 1fr;
+  align-items:start;gap:9px;
+ }
+ .free-drawer-tab[data-free-drawer="tools"]{grid-column:1;grid-row:1}
+ .free-drawer-tab[data-free-drawer="materials"]{grid-column:3;grid-row:1}
+ .free-lab-one-screen .free-lab-stage{grid-column:2;grid-row:1/3}
+ .free-lab-one-screen .free-drawer-tools{
+  grid-column:1;grid-row:2;max-height:430px;
+ }
+ .free-lab-one-screen .free-drawer-materials{
+  grid-column:3;grid-row:2;max-height:430px;
+ }
+ .free-drawer-panel .free-lab-tools,
+ .free-drawer-panel .free-lab-samples{
+  grid-auto-flow:row;grid-template-columns:1fr;
+  overflow-x:hidden;overflow-y:auto;
+ }
+ .free-drawer-panel .free-lab-samples button{
+  justify-content:flex-start;min-height:55px;
+ }
+}
