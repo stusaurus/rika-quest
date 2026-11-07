@@ -166,7 +166,10 @@
   if(m<2||Math.abs(det)/m<.46)return false;
   const dx=c.x-a.x,dy=c.y-a.y;
   const t=(dx*wy-dy*wx)/det,u=(dx*vy-dy*vx)/det;
-  return t>.04&&t<.96&&u>=0&&u<=1;
+  // Do not drop a valid cross-stroke that lands on a pointermove endpoint.
+  // SVG geometry on small phones is especially sensitive to this boundary.
+  const eps=1e-6;
+  return t>=-eps&&t<=1+eps&&u>=-eps&&u<=1+eps;
  }
  function targetCut(){
   if(!gesture||gesture.mode!=="cut"||gesture.distance<27)return -1;
@@ -252,7 +255,6 @@
   }else if(g.mode==="cut"){
    const index=(()=>{gesture=g;const n=targetCut();gesture=null;return n})();
    board().querySelectorAll(".free-wire").forEach(el=>el.classList.remove("cut-target"));
-   if(location.hash.includes("akari-qa-cut"))window.__akariCutTrace={mode:g.mode,distance:g.distance,index,points:g.screen};
    if(index>=0){
     state.wires.splice(index,1);suppressClick=Date.now()+240;persist();render();
    }
