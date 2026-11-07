@@ -50,9 +50,9 @@ output=replaceOne(output,'<link rel="stylesheet" href="./bridge-cinematic.css?v=
 output=replaceOne(output,'<link rel="stylesheet" href="./cute-town.css?v=1">',"<style>\n"+cuteTownCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside2">',"<style>\n"+circuitVillageCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=1">',"<style>\n"+wireFocusCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=1">',"<style>\n"+sideDrawersCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=uncovered1">',"<style>\n"+sideDrawersCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=drawer1">',"<style>\n"+freeLabCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js?v=trays1" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
