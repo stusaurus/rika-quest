@@ -166,7 +166,10 @@
   if(m<2||Math.abs(det)/m<.46)return false;
   const dx=c.x-a.x,dy=c.y-a.y;
   const t=(dx*wy-dy*wx)/det,u=(dx*vy-dy*vx)/det;
-  return t>.04&&t<.96&&u>=0&&u<=1;
+  // Do not drop a valid cross-stroke that lands on a pointermove endpoint.
+  // SVG geometry on small phones is especially sensitive to this boundary.
+  const eps=1e-6;
+  return t>=-eps&&t<=1+eps&&u>=-eps&&u<=1+eps;
  }
  function targetCut(){
   if(!gesture||gesture.mode!=="cut"||gesture.distance<27)return -1;
