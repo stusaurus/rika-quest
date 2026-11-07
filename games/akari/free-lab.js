@@ -252,6 +252,7 @@
   }else if(g.mode==="cut"){
    const index=(()=>{gesture=g;const n=targetCut();gesture=null;return n})();
    board().querySelectorAll(".free-wire").forEach(el=>el.classList.remove("cut-target"));
+   if(location.hash.includes("akari-qa-cut"))window.__akariCutTrace={mode:g.mode,distance:g.distance,index,points:g.screen};
    if(index>=0){
     state.wires.splice(index,1);suppressClick=Date.now()+240;persist();render();
    }
