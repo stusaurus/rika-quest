@@ -595,6 +595,9 @@ try{
      // The warning is intentionally transient (1.9 seconds). The full-page screenshot
      // can consume that lifetime, so trigger a fresh event before testing the a11y mode.
      await page.emulateMedia({reducedMotion:"reduce"});
+     // Ensure the previous transient event is gone; otherwise the locator can
+     // select an expiring, detached flame and report an empty computed style.
+     await page.locator(".short-event").waitFor({state:"hidden",timeout:4500});
      await page.evaluate(()=>window.AkariEffects.shortCircuit());
      await page.locator(".short-event").waitFor({state:"visible"});
      assert.equal(await page.locator(".short-flames").evaluate(e=>getComputedStyle(e).animationName),"none",
