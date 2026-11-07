@@ -370,7 +370,20 @@ try{
    });
    await page.mouse.move(labSlash[0].x,labSlash[0].y);await page.mouse.down();
    await page.mouse.move(labSlash[1].x,labSlash[1].y,{steps:10});await page.mouse.up();
-   assert.equal(await page.locator("#freeLabLines .free-wire").count(),1,"Crossing one live wire cuts only that wire");
+   const cutCount=await page.locator("#freeLabLines .free-wire").count();
+   if(cutCount!==1){
+     const debug=await page.evaluate(([a,b])=>{
+       const board=document.querySelector("#freeLabBoard"),r=board.getBoundingClientRect();
+       const info=p=>{
+         const el=document.elementFromPoint(p.x,p.y);
+         return {x:p.x,y:p.y,hit:el?.tagName,class:el?.getAttribute("class"),parent:el?.parentElement?.id||el?.parentElement?.className};
+       };
+       return {board:{x:r.x,y:r.y,width:r.width,height:r.height},
+         top:info(a),bottom:info(b),viewport:{width:innerWidth,height:innerHeight},count:document.querySelectorAll("#freeLabLines .free-wire").length};
+     },labSlash);
+     console.log("AKARI CUT DIAGNOSTIC "+engine+" "+width+" "+JSON.stringify(debug));
+   }
+   assert.equal(cutCount,1,"Crossing one live wire cuts only that wire");
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Breaking the live circuit turns off the lamp");
    await labWire("b1:P","l1:L");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Rewiring restores light immediately");
