@@ -385,3 +385,17 @@ body.akari-free-active .free-lab-panel{
   justify-content:flex-start;min-height:55px;
  }
 }
+
+
+@media(min-width:1150px){
+ /* Closed drawers keep the full-size circuit; they may take gutter width
+    only when the child actually opens a tray. */
+ .free-lab-one-screen:not([data-open="tools"]):not([data-open="materials"]){
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:auto auto auto;
+ }
+ .free-lab-one-screen:not([data-open="tools"]):not([data-open="materials"])
+ .free-drawer-tab[data-free-drawer="materials"]{grid-column:2}
+ .free-lab-one-screen:not([data-open="tools"]):not([data-open="materials"])
+ .free-lab-stage{grid-column:1/-1;grid-row:3}
+}
