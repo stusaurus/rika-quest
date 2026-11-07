@@ -362,27 +362,22 @@ try{
    const labSlash=await page.locator("#freeLabLines .free-wire-ink").first().evaluate(path=>{
      const len=path.getTotalLength(),at=len*.5,p=path.getPointAtLength(at);
      const a=path.getPointAtLength(Math.max(0,at-6)),b=path.getPointAtLength(Math.min(len,at+6));
-     const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy),matrix=path.getScreenCTM();
-     return [-24,24].map(t=>{
-       const p2=new DOMPoint(p.x-dy/n*t,p.y+dx/n*t).matrixTransform(matrix);
-       return {x:p2.x,y:p2.y};
-     });
+     const matrix=path.getScreenCTM();
+     const center=new DOMPoint(p.x,p.y).matrixTransform(matrix);
+     const ap=new DOMPoint(a.x,a.y).matrixTransform(matrix);
+     const bp=new DOMPoint(b.x,b.y).matrixTransform(matrix);
+     const dx=bp.x-ap.x,dy=bp.y-ap.y,n=Math.hypot(dx,dy);
+     const r=document.querySelector("#freeLabBoard").getBoundingClientRect();
+     // A 48-unit SVG stroke can shrink to 15 physical pixels on mobile.
+     // Cut using real screen pixels and keep both endpoints on the board.
+     return [-40,40].map(t=>({
+       x:Math.max(r.left+9,Math.min(r.right-9,center.x-dy/n*t)),
+       y:Math.max(r.top+9,Math.min(r.bottom-9,center.y+dx/n*t))
+     }));
    });
    await page.mouse.move(labSlash[0].x,labSlash[0].y);await page.mouse.down();
    await page.mouse.move(labSlash[1].x,labSlash[1].y,{steps:10});await page.mouse.up();
    const cutCount=await page.locator("#freeLabLines .free-wire").count();
-   if(cutCount!==1){
-     const debug=await page.evaluate(([a,b])=>{
-       const board=document.querySelector("#freeLabBoard"),r=board.getBoundingClientRect();
-       const info=p=>{
-         const el=document.elementFromPoint(p.x,p.y);
-         return {x:p.x,y:p.y,hit:el?.tagName,class:el?.getAttribute("class"),parent:el?.parentElement?.id||el?.parentElement?.className};
-       };
-       return {board:{x:r.x,y:r.y,width:r.width,height:r.height},
-         top:info(a),bottom:info(b),viewport:{width:innerWidth,height:innerHeight},count:document.querySelectorAll("#freeLabLines .free-wire").length};
-     },labSlash);
-     console.log("AKARI CUT DIAGNOSTIC "+engine+" "+width+" "+JSON.stringify(debug));
-   }
    assert.equal(cutCount,1,"Crossing one live wire cuts only that wire");
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Breaking the live circuit turns off the lamp");
    await labWire("b1:P","l1:L");
