@@ -358,10 +358,10 @@ try{
    assert.match(await page.locator("#freeLabStatus").textContent(),/1こ ついた/,"A complete physical circuit lights immediately");
    // A deliberate cross-stroke cuts one lead; the other remains and the lamp goes dark.
    const labSlash=await page.locator("#freeLabLines .free-wire-ink").first().evaluate(path=>{
-     const len=path.getTotalLength(),at=len*.25,p=path.getPointAtLength(at);
+     const len=path.getTotalLength(),at=len*.5,p=path.getPointAtLength(at);
      const a=path.getPointAtLength(Math.max(0,at-6)),b=path.getPointAtLength(Math.min(len,at+6));
      const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy),matrix=path.getScreenCTM();
-     return [-42,42].map(t=>{
+     return [-24,24].map(t=>{
        const p2=new DOMPoint(p.x-dy/n*t,p.y+dx/n*t).matrixTransform(matrix);
        return {x:p2.x,y:p2.y};
      });
