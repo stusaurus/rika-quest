@@ -375,9 +375,33 @@ try{
        y:Math.max(r.top+9,Math.min(r.bottom-9,center.y+dx/n*t))
      }));
    });
+   await page.evaluate(()=>{
+     window.__akariCutEvents=[];
+     for(const k of ["pointerdown","pointermove","pointerup"]){
+       document.addEventListener(k,e=>{
+         if(window.__akariCutEvents.length<40)
+           window.__akariCutEvents.push({type:k,x:e.clientX,y:e.clientY,
+             target:e.target?.tagName,cls:e.target?.getAttribute("class"),
+             inside:document.querySelector("#freeLabBoard")?.contains(e.target)});
+       },true);
+     }
+   });
    await page.mouse.move(labSlash[0].x,labSlash[0].y);await page.mouse.down();
    await page.mouse.move(labSlash[1].x,labSlash[1].y,{steps:10});await page.mouse.up();
    const cutCount=await page.locator("#freeLabLines .free-wire").count();
+   if(cutCount!==1){
+     const details=await page.evaluate(([start,end])=>{
+       const path=document.querySelector("#freeLabLines .free-wire-ink");
+       const rect=document.querySelector("#freeLabBoard").getBoundingClientRect();
+       const p=path.getPointAtLength(path.getTotalLength()*.5);
+       const sc=new DOMPoint(p.x,p.y).matrixTransform(path.getScreenCTM());
+       const boardSample={x:rect.left+p.x*rect.width/1000,y:rect.top+p.y*rect.height/1000};
+       return {start,end,pathMidpoint:sc,modelMidpoint:boardSample,
+         board:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},
+         pointerEvents:window.__akariCutEvents,scrollY:scrollY};
+     },labSlash);
+     console.log("AKARI CUT DIAG "+engine+" "+width+" "+JSON.stringify(details));
+   }
    assert.equal(cutCount,1,"Crossing one live wire cuts only that wire");
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Breaking the live circuit turns off the lamp");
    await labWire("b1:P","l1:L");
