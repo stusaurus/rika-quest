@@ -376,6 +376,7 @@ try{
      }));
    });
    await page.evaluate(()=>{
+     location.hash="akari-qa-cut";
      window.__akariCutEvents=[];
      for(const k of ["pointerdown","pointermove","pointerup"]){
        document.addEventListener(k,e=>{
@@ -398,7 +399,7 @@ try{
        const boardSample={x:rect.left+p.x*rect.width/1000,y:rect.top+p.y*rect.height/1000};
        return {start,end,pathMidpoint:sc,modelMidpoint:boardSample,
          board:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},
-         pointerEvents:window.__akariCutEvents,scrollY:scrollY};
+         pointerEvents:window.__akariCutEvents,internal:window.__akariCutTrace,scrollY:scrollY};
      },labSlash);
      console.log("AKARI CUT DIAG "+engine+" "+width+" "+JSON.stringify(details));
    }
