@@ -357,6 +357,8 @@ try{
    assert.equal(await page.locator("#freeLabLines .free-wire").count(),2,"Two student-made leads form the closed circuit");
    assert.match(await page.locator("#freeLabStatus").textContent(),/1こ ついた/,"A complete physical circuit lights immediately");
    // A deliberate cross-stroke cuts one lead; the other remains and the lamp goes dark.
+   // Keep the upper wire onscreen after previous taps moved the phone viewport.
+   await page.locator("#freeLabBoard").scrollIntoViewIfNeeded();
    const labSlash=await page.locator("#freeLabLines .free-wire-ink").first().evaluate(path=>{
      const len=path.getTotalLength(),at=len*.5,p=path.getPointAtLength(at);
      const a=path.getPointAtLength(Math.max(0,at-6)),b=path.getPointAtLength(Math.min(len,at+6));
