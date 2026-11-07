@@ -75,7 +75,7 @@ output=replaceOne(output,'<script src="./reference-layout.js?v=wirefocus1" defer
 output=replaceOne(output,'<script src="./wire-canvas.js" defer></script>',inlineScript(wireCanvas));
 output=replaceOne(output,'<script src="./wire-cut.js" defer></script>',inlineScript(wireCut));
 output=replaceOne(output,'<script src="./free-lab-model.js?v=drawer1" defer></script>',inlineScript(freeLabModel));
-output=replaceOne(output,'<script src="./free-lab.js?v=drawer1" defer></script>',inlineScript(freeLab));
+output=replaceOne(output,'<script src="./free-lab.js?v=uncovered1" defer></script>',inlineScript(freeLab));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
