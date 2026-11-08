@@ -50,7 +50,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./bridge-cinematic.css?v=
 output=replaceOne(output,'<link rel="stylesheet" href="./cute-town.css?v=1">',"<style>\n"+cuteTownCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside2">',"<style>\n"+circuitVillageCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=1">',"<style>\n"+wireFocusCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=uncovered1">',"<style>\n"+sideDrawersCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=discovery1">',"<style>\n"+sideDrawersCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
@@ -63,19 +63,19 @@ output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScri
 output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
 output=replaceOne(output,'<script src="./safety-lab.js" defer></script>',inlineScript(safetyLab));
 output=replaceOne(output,'<script src="./bridge-lab.js?v=streetlamp3" defer></script>',inlineScript(bridgeLab));
-output=replaceOne(output,'<script src="./side-drawers.js?v=1" defer></script>',inlineScript(sideDrawers));
+output=replaceOne(output,'<script src="./side-drawers.js?v=discovery1" defer></script>',inlineScript(sideDrawers));
 output=replaceOne(output,'<script src="./garden-lab.js" defer></script>',inlineScript(gardenLab));
 output=replaceOne(output,'<script src="./battery-lab.js" defer></script>',inlineScript(batteryLab));
 output=replaceOne(output,'<script src="./double-fault-lab.js" defer></script>',inlineScript(doubleFaultLab));
 output=replaceOne(output,'<script src="./finale-lab.js" defer></script>',inlineScript(finaleLab));
 output=replaceOne(output,'<script src="./pacing.js" defer></script>',inlineScript(pacing));
-output=replaceOne(output,'<script src="./reading.js" defer></script>',inlineScript(reading));
+output=replaceOne(output,'<script src="./reading.js?v=discovery1" defer></script>',inlineScript(reading));
 output=replaceOne(output,'<script src="./furigana.js" defer></script>',inlineScript(furigana));
 output=replaceOne(output,'<script src="./reference-layout.js?v=wirefocus1" defer></script>',inlineScript(referenceJs));
 output=replaceOne(output,'<script src="./wire-canvas.js" defer></script>',inlineScript(wireCanvas));
 output=replaceOne(output,'<script src="./wire-cut.js" defer></script>',inlineScript(wireCut));
 output=replaceOne(output,'<script src="./free-lab-model.js?v=drawer1" defer></script>',inlineScript(freeLabModel));
-output=replaceOne(output,'<script src="./free-lab.js?v=uncovered1" defer></script>',inlineScript(freeLab));
+output=replaceOne(output,'<script src="./free-lab.js?v=discovery1" defer></script>',inlineScript(freeLab));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
