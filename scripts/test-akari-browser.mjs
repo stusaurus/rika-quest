@@ -346,6 +346,18 @@ try{
    assert.ok(freeShelf.overflow<=2,"Parts shelf must not cause page horizontal overflow");
    if(width<741)assert.ok(freeShelf.panelHeight<=138,"Phone toolbox remains a short scrollable shelf");
    assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Opening left does not force right open");
+   const toolsStrip=page.locator("#freeLabToolDrawer .free-lab-tools");
+   const toolsCue=page.locator("#freeLabToolDrawer .shelf-scroll-hint");
+   if(width<741){
+     await toolsCue.waitFor({state:"visible"});
+     assert.match(await toolsCue.textContent(),/よこに/,"The child can discover offscreen tools");
+     assert.equal(await toolsStrip.getAttribute("role"),"region","Tool cards support keyboard scrolling");
+     await toolsStrip.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
+     await page.waitForFunction(()=>document.querySelector("#freeLabToolDrawer .shelf-scroll-hint")?.hidden===true);
+     await toolsStrip.evaluate(el=>{el.scrollLeft=0;});
+     await toolsCue.waitFor({state:"visible"});
+   }else assert.equal(await toolsCue.isVisible(),false,"Desktop tool dock has no sideways cue");
+
    await page.locator("[data-free-wire-tip]").click();
    assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Wire help returns focus to the same operable board");
    assert.equal(await page.locator("#workspace").isVisible(),false,"Keep the main mission out of the way while experimenting");
@@ -438,6 +450,12 @@ try{
    await page.locator('[data-free-drawer="materials"]').click();
    assert.equal(await page.locator("#freeLabMaterialDrawer [data-free-material]").count(),4,"Right drawer offers four genuinely testable samples");
    assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Only one materials palette is open");
+   if(width<741){
+     const cue=page.locator("#freeLabMaterialDrawer .shelf-scroll-hint");
+     await cue.waitFor({state:"visible"});
+     assert.equal(await page.locator("#freeLabMaterialDrawer .free-lab-samples").getAttribute("role"),"region");
+   }
+
    assert.equal(await page.evaluate(()=>{
      const a=document.querySelector("#freeLabMaterialDrawer").getBoundingClientRect(),
        b=document.querySelector("#freeLabBoard").getBoundingClientRect();
@@ -858,6 +876,17 @@ try{
        b=document.querySelector(".akari-dock-center>.bridge-circuit").getBoundingClientRect();
      return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;
    }),false,"The left tool shelf must never hide the active circuit");
+
+   if(width<741){
+     const cue=page.locator(".akari-dock-left .shelf-scroll-hint");
+     await cue.waitFor({state:"visible"});
+     assert.match(await cue.textContent(),/よこに/,"Stage 3 inspection cards announce offscreen choices");
+     const strip=page.locator(".akari-dock-left .bridge-sites");
+     await strip.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
+     await page.waitForFunction(()=>document.querySelector(".akari-dock-left .shelf-scroll-hint")?.hidden===true);
+     await strip.evaluate(el=>{el.scrollLeft=0;});
+     await cue.waitFor({state:"visible"});
+   }
    const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
    assert.ok(hero.height>=70&&hero.height<=104&&hero.position==="relative"&&hero.opacity==="1","The outside scene must be a compact heading rather than the illustrated gameboard: "+JSON.stringify(hero));
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
