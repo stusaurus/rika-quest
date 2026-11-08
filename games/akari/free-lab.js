@@ -281,6 +281,9 @@
    if(tab)tab.setAttribute("aria-expanded",String(openedDrawer===name));
    if(panel)panel.hidden=openedDrawer!==name;
   }
+  if(openedDrawer){
+   window.AkariShelfGuide?.attach(get(openedDrawer==="tools"?"freeLabToolDrawer":"freeLabMaterialDrawer"));
+  }
  }
  function mount(){
   const workspace=get("workspace");if(!workspace||get("freeLabPanel"))return;

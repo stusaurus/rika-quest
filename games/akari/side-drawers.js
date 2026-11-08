@@ -6,6 +6,43 @@
  let opened="";
  const get=id=>document.getElementById(id);
  const sides=["left","right"];
+ // Show a concise cue only while horizontal options remain out of sight.
+ // Keep it outside the circuit and do not alter any science state.
+ function attachShelfGuide(panel){
+  if(!panel||panel.hidden)return;
+  const strip=panel.querySelector(".free-lab-tools, .free-lab-samples, .bridge-sites, .bridge-materials");
+  if(!strip)return;
+  let cue=strip.nextElementSibling;
+  if(!cue||!cue.classList.contains("shelf-scroll-hint")){
+   cue=document.createElement("p");
+   cue.className="shelf-scroll-hint";
+   cue.hidden=true;
+   cue.setAttribute("aria-hidden","true");
+   strip.insertAdjacentElement("afterend",cue);
+  }
+  const refresh=()=>{
+   if(panel.hidden||!strip.isConnected){cue.hidden=true;return;}
+   const max=strip.scrollWidth-strip.clientWidth;
+   const canScroll=max>12&&getComputedStyle(strip).overflowX!=="hidden";
+   if(canScroll){
+    strip.tabIndex=0;
+    strip.setAttribute("role","region");
+    strip.setAttribute("aria-label","よこに動かしてえらべる道具と材料");
+   }else{
+    strip.removeAttribute("tabindex");
+    strip.removeAttribute("role");
+    strip.removeAttribute("aria-label");
+   }
+   cue.hidden=!canScroll||strip.scrollLeft>=max-8;
+   if(!cue.hidden)cue.textContent=strip.scrollLeft>12?"→ 右にも あるよ":"→ よこに うごかせるよ";
+  };
+  if(strip.dataset.akariShelfGuideBound!=="yes"){
+   strip.dataset.akariShelfGuideBound="yes";
+   strip.addEventListener("scroll",refresh,{passive:true});
+  }
+  requestAnimationFrame(refresh);
+ }
+ window.AkariShelfGuide={attach:attachShelfGuide};
  const toggle=(root,side)=>{
    opened=opened===side?"":side;
    const shell=root.querySelector(".akari-dock");
@@ -18,7 +55,10 @@
      tab.setAttribute("aria-expanded",String(name===opened));
      panel.hidden=name!==opened;
    });
-   if(opened)shell.querySelector('[data-dock-panel="'+opened+'"] button:not([disabled])')?.focus({preventScroll:true});
+   if(opened){
+    attachShelfGuide(shell.querySelector('[data-dock-panel="'+opened+'"]'));
+    shell.querySelector('[data-dock-panel="'+opened+'"] button:not([disabled])')?.focus({preventScroll:true});
+   }
  };
  function render(root,stage){
    if(stage!==3){opened="";return;}
@@ -96,6 +136,7 @@
    }
    const info=lab.querySelector(".bridge-quest-strip");
    info?.classList.add("akari-dock-status");
+   if(opened)attachShelfGuide(shell.querySelector('[data-dock-panel="'+opened+'"]'));
  }
  function attach(root){
    if(!root||root.dataset.akariDockReady)return;
