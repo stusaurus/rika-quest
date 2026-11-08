@@ -303,3 +303,13 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
  }
  .akari-dock .bridge-site-art{flex:0 0 42px;width:42px;height:42px}
 }
+
+/* Affordance for scrollable tool / material cards. Hidden on wide side docks. */
+.shelf-scroll-hint{
+ display:flex;justify-content:flex-end;align-items:center;
+ margin:2px 0 0;min-height:18px;padding:2px 8px;
+ background:#deefe7;color:#20505b;border-radius:6px;
+ font-size:11px;line-height:1.3;font-weight:900;letter-spacing:.01em;
+}
+.shelf-scroll-hint[hidden]{display:none!important}
+@media(min-width:1150px){.shelf-scroll-hint{display:none!important}}
