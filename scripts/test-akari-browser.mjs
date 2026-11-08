@@ -333,6 +333,18 @@ try{
    assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Materials are closed until needed");
    await page.locator('[data-free-drawer="tools"]').click();
    assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),true,"Left tool drawer opens without replacing the circuit");
+   const freeShelf=await page.evaluate(()=>{
+     const b=document.querySelector("#freeLabBoard").getBoundingClientRect(),
+       p=document.querySelector("#freeLabToolDrawer").getBoundingClientRect(),
+       shell=document.querySelector("#freeLabOneScreen").getBoundingClientRect();
+     return {overlap:p.left<b.right-1&&p.right>b.left+1&&p.top<b.bottom-1&&p.bottom>b.top+1,
+       boardWidth:b.width,shellWidth:shell.width,panelHeight:p.height,
+       overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+   });
+   assert.equal(freeShelf.overlap,false,"Opening tools must never cover the circuit: "+JSON.stringify(freeShelf));
+   assert.ok(freeShelf.boardWidth>=freeShelf.shellWidth*.44,"Usable central circuit remains visible with toolbox open");
+   assert.ok(freeShelf.overflow<=2,"Parts shelf must not cause page horizontal overflow");
+   if(width<741)assert.ok(freeShelf.panelHeight<=138,"Phone toolbox remains a short scrollable shelf");
    assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Opening left does not force right open");
    await page.locator("[data-free-wire-tip]").click();
    assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Wire help returns focus to the same operable board");
@@ -345,18 +357,28 @@ try{
    assert.equal(await page.locator("#freeLabLines .free-wire").count(),2,"Two student-made leads form the closed circuit");
    assert.match(await page.locator("#freeLabStatus").textContent(),/1こ ついた/,"A complete physical circuit lights immediately");
    // A deliberate cross-stroke cuts one lead; the other remains and the lamp goes dark.
+   // Keep the upper wire onscreen after previous taps moved the phone viewport.
+   await page.locator("#freeLabBoard").scrollIntoViewIfNeeded();
    const labSlash=await page.locator("#freeLabLines .free-wire-ink").first().evaluate(path=>{
-     const len=path.getTotalLength(),at=len*.25,p=path.getPointAtLength(at);
+     const len=path.getTotalLength(),at=len*.5,p=path.getPointAtLength(at);
      const a=path.getPointAtLength(Math.max(0,at-6)),b=path.getPointAtLength(Math.min(len,at+6));
-     const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy),matrix=path.getScreenCTM();
-     return [-42,42].map(t=>{
-       const p2=new DOMPoint(p.x-dy/n*t,p.y+dx/n*t).matrixTransform(matrix);
-       return {x:p2.x,y:p2.y};
-     });
+     const matrix=path.getScreenCTM();
+     const center=new DOMPoint(p.x,p.y).matrixTransform(matrix);
+     const ap=new DOMPoint(a.x,a.y).matrixTransform(matrix);
+     const bp=new DOMPoint(b.x,b.y).matrixTransform(matrix);
+     const dx=bp.x-ap.x,dy=bp.y-ap.y,n=Math.hypot(dx,dy);
+     const r=document.querySelector("#freeLabBoard").getBoundingClientRect();
+     // A 48-unit SVG stroke can shrink to 15 physical pixels on mobile.
+     // Cut using real screen pixels and keep both endpoints on the board.
+     return [-40,40].map(t=>({
+       x:Math.max(r.left+9,Math.min(r.right-9,center.x-dy/n*t)),
+       y:Math.max(r.top+9,Math.min(r.bottom-9,center.y+dx/n*t))
+     }));
    });
    await page.mouse.move(labSlash[0].x,labSlash[0].y);await page.mouse.down();
    await page.mouse.move(labSlash[1].x,labSlash[1].y,{steps:10});await page.mouse.up();
-   assert.equal(await page.locator("#freeLabLines .free-wire").count(),1,"Crossing one live wire cuts only that wire");
+   const cutCount=await page.locator("#freeLabLines .free-wire").count();
+   assert.equal(cutCount,1,"Crossing one live wire cuts only that wire");
    assert.match(await page.locator("#freeLabStatus").textContent(),/つかない/,"Breaking the live circuit turns off the lamp");
    await labWire("b1:P","l1:L");
    assert.match(await page.locator("#freeLabStatus").textContent(),/ついた/,"Rewiring restores light immediately");
@@ -415,7 +437,12 @@ try{
    await page.locator('[data-free-preset="basic"]').click();
    await page.locator('[data-free-drawer="materials"]').click();
    assert.equal(await page.locator("#freeLabMaterialDrawer [data-free-material]").count(),4,"Right drawer offers four genuinely testable samples");
-   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Only one palette may cover the circuit");
+   assert.equal(await page.locator("#freeLabToolDrawer").isVisible(),false,"Only one materials palette is open");
+   assert.equal(await page.evaluate(()=>{
+     const a=document.querySelector("#freeLabMaterialDrawer").getBoundingClientRect(),
+       b=document.querySelector("#freeLabBoard").getBoundingClientRect();
+     return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;
+   }),false,"Right material shelf must never obscure the circuit");
    await page.locator('[data-free-material="iron"]').click();
    assert.equal(await page.locator("#freeLabMaterialDrawer").isVisible(),false,"Selecting a sample adds it and restores a full-width circuit");
    assert.equal(await page.locator(".free-sample").count(),1,"The selected material appears as a movable physical object");
@@ -568,6 +595,9 @@ try{
      // The warning is intentionally transient (1.9 seconds). The full-page screenshot
      // can consume that lifetime, so trigger a fresh event before testing the a11y mode.
      await page.emulateMedia({reducedMotion:"reduce"});
+     // Ensure the previous transient event is gone; otherwise the locator can
+     // select an expiring, detached flame and report an empty computed style.
+     await page.locator(".short-event").waitFor({state:"hidden",timeout:4500});
      await page.evaluate(()=>window.AkariEffects.shortCircuit());
      await page.locator(".short-event").waitFor({state:"visible"});
      assert.equal(await page.locator(".short-flames").evaluate(e=>getComputedStyle(e).animationName),"none",
@@ -808,9 +838,26 @@ try{
    assert.equal(await page.locator('[data-dock-tab="right"]').count(),1,"Materials drawer is permanently reachable");
    assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),0,"The two palettes start collapsed to maximize the circuit");
    await openDrawer("right");
+   const stageShelf=await page.evaluate(()=>{
+     const dock=document.querySelector(".akari-dock"),panel=dock.querySelector('.akari-dock-drawer:not([hidden])');
+     const board=dock.querySelector(".akari-dock-center>.bridge-circuit");
+     const a=panel.getBoundingClientRect(),b=board.getBoundingClientRect();
+     return {overlap:a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1,
+       panelHeight:a.height,boardWidth:b.width,dockWidth:dock.getBoundingClientRect().width,
+       overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+   });
+   assert.equal(stageShelf.overlap,false,"Opening materials must NEVER cover the stage 3 circuit: "+JSON.stringify(stageShelf));
+   assert.ok(stageShelf.boardWidth>=stageShelf.dockWidth*.44,"Enough circuit must remain visible with materials open: "+JSON.stringify(stageShelf));
+   assert.ok(stageShelf.overflow<=2,"The palette must not introduce horizontal page overflow: "+JSON.stringify(stageShelf));
+   if(width<741)assert.ok(stageShelf.panelHeight<=148,"Phone palette remains a short in-flow shelf: "+JSON.stringify(stageShelf));
    assert.match(await page.locator(".akari-dock-waiting").textContent(),/3か所/,"Materials drawer explains the current scientific prerequisite");
    await openDrawer("left");
    assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),1,"Opening one palette closes the other");
+   assert.equal(await page.evaluate(()=>{
+     const a=document.querySelector(".akari-dock-drawer:not([hidden])").getBoundingClientRect(),
+       b=document.querySelector(".akari-dock-center>.bridge-circuit").getBoundingClientRect();
+     return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;
+   }),false,"The left tool shelf must never hide the active circuit");
    const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
    assert.ok(hero.height>=70&&hero.height<=104&&hero.position==="relative"&&hero.opacity==="1","The outside scene must be a compact heading rather than the illustrated gameboard: "+JSON.stringify(hero));
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");

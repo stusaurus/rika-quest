@@ -206,3 +206,100 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
  .akari-dock-gap{min-width:65px;min-height:36px;font-size:10px;padding:4px 3px}
  .akari-dock-center>.akari-dock-drop-note{font-size:11px;padding:6px 8px}
 }
+
+/* Never mask the science diagram: inline shelves on phones/tablets,
+   genuine side docks only when enough horizontal room exists. */
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="left"]),
+body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open="right"]){
+ z-index:auto!important;
+}
+.akari-dock{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ grid-template-rows:auto auto auto;
+ gap:6px;
+ align-items:start;
+}
+.akari-dock .akari-dock-tab[data-dock-tab="left"]{
+ grid-column:1;grid-row:1;
+ margin:0;
+ display:flex;align-items:center;justify-content:center;
+ min-height:49px;gap:6px;
+}
+.akari-dock .akari-dock-tab[data-dock-tab="right"]{
+ grid-column:2;grid-row:1;margin:0;
+ display:flex;align-items:center;justify-content:center;
+ min-height:49px;gap:6px;
+}
+.akari-dock .akari-dock-tab span:first-child{font-size:20px}
+.akari-dock .akari-dock-tab span:last-child{display:none}
+.akari-dock .akari-dock-center{
+ grid-column:1/-1;grid-row:3;
+ min-width:0;
+}
+.akari-dock .akari-dock-drawer{
+ position:relative;left:auto;right:auto;top:auto;
+ grid-column:1/-1;grid-row:2;
+ z-index:1;width:100%;max-width:none;
+ max-height:164px;
+ overflow-x:hidden;overflow-y:auto;
+ border-width:2px;border-radius:12px;
+ padding:8px 10px;
+ box-shadow:none;
+}
+.akari-dock .akari-dock-drawer[hidden]{display:none!important}
+.akari-dock .akari-dock-intro{
+ margin:0 0 5px;font-size:12px;line-height:1.25;
+}
+.akari-dock .bridge-sites,
+.akari-dock .bridge-materials{
+ display:grid;
+ grid-auto-flow:column;
+ grid-template-columns:none;
+ grid-auto-columns:minmax(140px,1fr);
+ gap:6px;
+ overflow-x:auto;
+ overscroll-behavior-x:contain;
+ padding:2px 2px 5px;
+}
+.akari-dock .bridge-site{
+ min-width:0;min-height:58px;
+}
+.akari-dock .bridge-material{
+ min-width:0;min-height:72px;
+}
+.akari-dock .bridge-test-box{padding:7px}
+@media(max-width:740px){
+ .akari-dock{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .akari-dock .akari-dock-tab[data-dock-tab="left"],
+ .akari-dock .akari-dock-tab[data-dock-tab="right"]{
+  min-height:45px;padding:5px 6px;
+ }
+ .akari-dock .akari-dock-drawer{
+  position:relative;top:auto;left:auto;right:auto;
+  grid-column:1/-1;grid-row:2;
+  width:100%;max-height:142px;padding:6px 8px;
+ }
+ .akari-dock .bridge-sites{grid-auto-columns:150px}
+ .akari-dock .bridge-materials{grid-auto-columns:122px}
+ .akari-dock .bridge-site-art{flex-basis:43px;width:43px;height:43px}
+ .akari-dock .bridge-site-art svg{max-height:43px}
+ .akari-dock .bridge-site strong{font-size:11px}
+}
+@media(min-width:1150px){
+ .akari-dock{
+  grid-template-columns:minmax(180px,230px) minmax(0,1fr) minmax(180px,230px);
+  grid-template-rows:auto 1fr;gap:8px;
+ }
+ .akari-dock .akari-dock-tab[data-dock-tab="left"]{grid-column:1;grid-row:1}
+ .akari-dock .akari-dock-tab[data-dock-tab="right"]{grid-column:3;grid-row:1}
+ .akari-dock .akari-dock-center{grid-column:2;grid-row:1/3}
+ .akari-dock .akari-dock-left{grid-column:1;grid-row:2;max-height:430px}
+ .akari-dock .akari-dock-right{grid-column:3;grid-row:2;max-height:430px}
+ .akari-dock .bridge-sites,
+ .akari-dock .bridge-materials{
+  grid-auto-flow:row;grid-template-columns:1fr;
+  overflow-x:hidden;overflow-y:auto;
+ }
+ .akari-dock .bridge-site-art{flex:0 0 42px;width:42px;height:42px}
+}
