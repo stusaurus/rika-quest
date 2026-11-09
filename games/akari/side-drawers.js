@@ -195,6 +195,12 @@
  function attach(root){
    if(!root||root.dataset.akariDockReady)return;
    root.dataset.akariDockReady="yes";
+   // Capture original shelf taps before the game controller replaces its DOM.
+   // Bubble listeners can observe a detached target after renderWorkspace().
+   root.addEventListener("click",event=>{
+    const site=event.target.closest("[data-bridge-inspect]");
+    if(site&&root.contains(site))lastInspection=site.dataset.bridgeInspect;
+   },true);
    root.addEventListener("click",event=>{
      const inspection=event.target.closest("[data-dock-inspect]");
      if(inspection&&root.contains(inspection)){
@@ -217,12 +223,6 @@
      const jump=event.target.closest("[data-dock-jump]");
      if(jump&&root.contains(jump)){
       if(opened!=="right")toggle(root,"right");
-      return;
-     }
-     // The original inspection shelf still works and shows the same finding.
-     const shelfInspection=event.target.closest("[data-bridge-inspect]");
-     if(shelfInspection&&root.contains(shelfInspection)){
-      lastInspection=shelfInspection.dataset.bridgeInspect;
       return;
      }
      const insertion=event.target.closest("[data-dock-place]");
