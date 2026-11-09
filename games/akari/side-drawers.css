@@ -544,3 +544,13 @@ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .bridge-quest
 body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock):not(:has(.bridge-why button.chosen)) #checkBtn{
  display:none!important;
 }
+
+/* Ruby annotations make some Japanese touch labels wider/taller than their
+   CSS minimums. Clamp actual badge centres inside the circuit frame instead
+   of trusting viewBox percentages alone on 320px/390px devices. */
+.akari-dock .akari-inspection-pin{
+ left:clamp(56px,var(--akari-pin-x),calc(100% - 56px));
+ top:clamp(40px,var(--akari-pin-y),calc(100% - 40px));
+ max-width:calc(100% - 112px);
+ margin:0;
+}
