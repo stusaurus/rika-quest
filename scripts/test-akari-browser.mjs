@@ -894,7 +894,20 @@ try{
    assert.equal(await page.locator(".bridge-circuit .town-lamp").count(),1,"Stage 3 must have a streetlamp INSIDE the circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-stage-lights").count(),2,"Two lamp-light elements exist INSIDE the repair diagram");
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Unrepaired stage 3 diagram must stay dark");
-   assert.equal(await page.locator(".bridge-sites .bridge-site-art svg").count(),3,"Every bridge inspection target has readable physical artwork");
+   assert.equal(await page.locator(".bridge-sites .bridge-site-art svg").count(),3,"Every investigation displays an illustration");
+   assert.equal(await page.locator(".bridge-site-crop use[href='#akari-bridge-drawing']").count(),3,"All three illustrations use the SAME streetlamp circuit as the memo");
+   const consistentDrawings=await page.evaluate(()=>{
+     const source=document.querySelector(".bridge-circuit-svg #akari-bridge-drawing");
+     const crops=[...document.querySelectorAll(".bridge-site-crop")].map(el=>({
+       viewBox:el.getAttribute("viewBox"),
+       paintedWidth:el.querySelector("use").getBBox().width
+     }));
+     const leads=[...document.querySelectorAll(".bridge-circuit-svg path[d='M87 74V55H236'], .bridge-circuit-svg path[d='M236 287H87V265']")].map(el=>el.getAttribute("stroke-dasharray"));
+     return {source:!!source,crops,leads};
+   });
+   assert.ok(consistentDrawings.source&&consistentDrawings.crops.every(x=>x.paintedWidth>0),"Cropped diagrams must actually render: "+JSON.stringify(consistentDrawings));
+   assert.deepEqual(consistentDrawings.crops.map(x=>x.viewBox),["192 0 204 113","446 84 174 173","192 227 204 113"],"Illustrations show A, actual lamp and B of the same circuit");
+   assert.deepEqual(consistentDrawings.leads,[null,null],"Wires should be drawn as solid to the actual A and B breaks, not dashed elsewhere");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
    assert.ok(!(await page.locator(".bridge-quest-strip").textContent()).includes("橋"),"The streetlamp challenge must not still mention the bridge");
@@ -919,11 +932,18 @@ try{
      return els.every(el=>{const p=el.getBoundingClientRect();return p.left>=rect.left&&p.right<=rect.right&&p.top>=rect.top&&p.bottom<=rect.bottom;});
    });
    assert.equal(pinsInsideCircuit,true,"All touchable inquiry pins belong inside the illustration, not outside it");
+   const investigationLocations=await page.locator(".akari-inspection-pin").evaluateAll(els=>
+     els.map(el=>({id:el.dataset.dockInspect,left:parseFloat(el.style.left),top:parseFloat(el.style.top),label:el.textContent})));
+   for(const {id,left,top,label} of investigationLocations){
+     const [x,y,part]={battery:[294,55,"A"],lamp:[533,170,"まめ電球"],return:[294,287,"B"]}[id];
+     assert.ok(Math.abs(left-x/680*100)<.2&&Math.abs(top-y/340*100)<.2,"The clickable "+id+" point must align with its real SVG location");
+     assert.ok(label.includes(part),"The clickable marker must have the same A/B/bulb label as the observation");
+   }
    await page.locator('[data-dock-inspect="battery"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
    assert.match(await page.locator(".akari-board-focus").textContent(),/1 \/ 3/,"The board reflects the actual investigation progress");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),1,"One real inspection adds exactly one memo card");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/A（＋がわ）.*Aで とぎれている/s,"Battery memo identifies a specific break on the actual diagram");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/A（＋がわ）.*Aで 線が とぎれている/s,"Battery memo identifies a specific break on the actual diagram");
    assert.equal(await page.locator('[data-observed-site="battery"].is-latest').count(),1,"The newest observation is highlighted in the memo");
    assert.match(await page.locator(".akari-memo-count").textContent(),/1 \/ 3/,"The memo shows observed fact count"); 
    assert.equal(await page.locator(".akari-board-focus .akari-observation").count(),0,"The instruction banner does not duplicate findings");
@@ -945,8 +965,8 @@ try{
    await page.keyboard.press("Enter");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Keyboard Enter can investigate a real circuit location");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"The first observation must remain when the second is added");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/Aで とぎれている/,"Battery evidence remains readable after testing the bulb");
-   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球.*上と 下には.*光っていない/s,"Bulb memo reports an observed condition instead of instructing the child to connect wires");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/Aで 線が とぎれている/,"Battery evidence remains readable after testing the bulb");
+   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球.*上と 下に 線が ある.*光っていない/s,"Bulb memo reports an observed condition instead of instructing the child to connect wires");
    assert.equal(await page.locator('[data-observed-site="lamp"].is-latest').count(),1,"The last inspected fact is highlighted");
    if(width<1150){
      const memoStrip=await page.locator(".akari-memo-notes").evaluate(el=>({horizontal:getComputedStyle(el).overflowX,flow:getComputedStyle(el).gridAutoFlow,height:el.getBoundingClientRect().height}));
@@ -958,13 +978,13 @@ try{
    await openDrawer("left");
    await page.locator('[data-bridge-inspect="battery"]').click();
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"Reviewing a finding never erases earlier memos or duplicates them");
-   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/A（＋がわ）.*Aで とぎれている/s,"Re-inspecting the battery highlights its existing memo");
+   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/A（＋がわ）.*Aで 線が とぎれている/s,"Re-inspecting the battery highlights its existing memo");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Reviewing a finding does not fake another inspection");
    await closeDrawer("left");
    await page.locator('[data-dock-inspect="return"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),3,"All three inspections remain required");
    assert.equal(await page.locator(".akari-inspection-pin").count(),0,"The temporary attention markers leave the circuit once observation is complete");
-   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bで とぎれている/s,"Return wire memo points to the second break after the pins disappear");
+   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bで 線が とぎれている/s,"Return wire memo points to the second break after the pins disappear");
    assert.equal(await page.locator(".akari-observation").count(),3,"All three findings remain available, not just the latest one");
    assert.equal(await page.locator(".akari-memo-notes").textContent().then(s=>/つなごう。/.test(s)),false,"Discovery memos must state observable facts, not pretend commands were findings");
    assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/ざいりょうを えらぶ/,"Scientific observations naturally lead to a material choice without revealing which works");

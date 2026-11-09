@@ -117,16 +117,17 @@
     focus.innerHTML='<strong>🔎 '+(inspected?"つぎは どこを しらべる？":"どこから しらべる？")+'</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
     const markers=document.createElement("div");
     markers.className="akari-inspection-hotspots";
-    for(const spot of [
-     {id:"battery",label:"でんち",description:"乾電池をしらべる"},
-     {id:"lamp",label:"まめ電球",description:"豆電球をしらべる"},
-     {id:"return",label:"もどる線",description:"もどる線をしらべる"}
-    ]){
+    for(const site of window.AkariBridge.sites){
+     const spot={id:site.id,label:site.id==="battery"?"A":site.id==="return"?"B":"まめ電球",
+      description:site.name+"を しらべる"};
      const found=!!sections[0].querySelector('[data-bridge-inspect="'+spot.id+'"].found');
      const button=document.createElement("button");
      button.type="button";
      button.className="akari-inspection-pin"+(found?" found":"")+(found&&spot.id===lastInspection?" is-latest":"");
      button.dataset.dockInspect=spot.id;
+     // These screen positions are tied to the actual SVG geometry.
+     button.style.left=(site.diagram.x/680*100).toFixed(3)+"%";
+     button.style.top=(site.diagram.y/340*100).toFixed(3)+"%";
      button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
      button.setAttribute("aria-pressed",String(found));
      button.innerHTML='<span aria-hidden="true">'+(found?"✓":"🔎")+'</span><strong>'+spot.label+'</strong>';
@@ -156,13 +157,12 @@
     notes.tabIndex=0;
     notes.setAttribute("role","region");
     notes.setAttribute("aria-label","しらべて わかったことの メモ");
-    const names={battery:"A（＋がわ）",lamp:"まめ電球",return:"B（−がわ）"};
     for(const site of inspectedSites){
      const result=document.createElement("div");
      result.className="akari-observation"+(site.id===lastInspection?" is-latest":"");
      result.dataset.observedSite=site.id;
      const heading=document.createElement("strong");
-     heading.textContent="✓ "+names[site.id];
+     heading.textContent="✓ "+site.name;
      const finding=document.createElement("span");
      finding.className="akari-observation-finding";
      finding.textContent=site.finding;
