@@ -62,8 +62,8 @@ output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScr
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
 output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
 output=replaceOne(output,'<script src="./safety-lab.js" defer></script>',inlineScript(safetyLab));
-output=replaceOne(output,'<script src="./bridge-lab.js?v=streetlamp3" defer></script>',inlineScript(bridgeLab));
-output=replaceOne(output,'<script src="./side-drawers.js?v=memos5" defer></script>',inlineScript(sideDrawers));
+output=replaceOne(output,'<script src="./bridge-lab.js?v=streetlamp4" defer></script>',inlineScript(bridgeLab));
+output=replaceOne(output,'<script src="./side-drawers.js?v=memo-copy6" defer></script>',inlineScript(sideDrawers));
 output=replaceOne(output,'<script src="./garden-lab.js" defer></script>',inlineScript(gardenLab));
 output=replaceOne(output,'<script src="./battery-lab.js" defer></script>',inlineScript(batteryLab));
 output=replaceOne(output,'<script src="./double-fault-lab.js" defer></script>',inlineScript(doubleFaultLab));
