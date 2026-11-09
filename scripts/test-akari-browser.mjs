@@ -1039,7 +1039,7 @@ try{
    assert.match(await page.locator(".akari-sample-desk .bridge-test-box").textContent(),/予想：消灯.*実際：点灯/s,"A mismatched hypothesis is compared with evidence on the same screen");
    assert.equal(await page.locator(".bridge-mini-circuit svg").count(),1,"The existing test-circuit diagram remains visible");
    assert.match(await page.locator(".akari-sample-goal").textContent(),/💡 1 \/ 2.*◯ 0 \/ 1/s,"Only measured materials contribute to evidence progress");
-   assert.match(await page.locator('.akari-sample-desk [data-bridge-sample="iron"] small').textContent(),/実験済：点灯/,"The tested sample records its actual result");
+   assert.match(await page.locator('.akari-sample-desk [data-bridge-sample="iron"] small').textContent(),/実験済：\s*点灯/,"The tested sample records its actual result");
    await page.locator('.akari-sample-desk [data-bridge-sample="wood"]').click();
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
    assert.match(await page.locator(".akari-sample-goal").textContent(),/💡 1 \/ 2.*◯ 1 \/ 1/s,"Both lit and dark evidence matter");
