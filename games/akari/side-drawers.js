@@ -4,6 +4,7 @@
    data-bridge-* clicks keep using the same authoritative game engine. */
 (function(){
  let opened="";
+ let lastInspection="";
  const get=id=>document.getElementById(id);
  const sides=["left","right"];
  // Show a concise cue only while horizontal options remain out of sight.
@@ -61,7 +62,7 @@
    }
  };
  function render(root,stage){
-   if(stage!==3){opened="";return;}
+   if(stage!==3){opened="";lastInspection="";return;}
    const lab=root?.querySelector(".bridge-lab");
    if(!lab||lab.querySelector(".akari-dock"))return;
    const circuit=lab.querySelector(":scope > .bridge-circuit");
@@ -101,8 +102,12 @@
    focus.setAttribute("aria-label","回路の いまの しらべどころ");
    const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
    const explained=lab.querySelector(".bridge-why");
+   // Use the authoritative findings, and reveal them only after inspection.
+   const inspectedSite=window.AkariBridge?.sites?.find(site=>site.id===lastInspection);
+   const justFound=inspectedSite&&!!sections[0].querySelector('[data-bridge-inspect="'+lastInspection+'"].found');
+   focus.setAttribute("aria-live","polite");
    if(inspected<3){
-    focus.innerHTML='<strong>🔎 どこから しらべる？</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
+    focus.innerHTML='<strong>🔎 '+(inspected?"つぎは どこを しらべる？":"どこから しらべる？")+'</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
     const markers=document.createElement("div");
     markers.className="akari-inspection-hotspots";
     for(const spot of [
@@ -113,7 +118,7 @@
      const found=!!sections[0].querySelector('[data-bridge-inspect="'+spot.id+'"].found');
      const button=document.createElement("button");
      button.type="button";
-     button.className="akari-inspection-pin"+(found?" found":"");
+     button.className="akari-inspection-pin"+(found?" found":"")+(found&&spot.id===lastInspection?" is-latest":"");
      button.dataset.dockInspect=spot.id;
      button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
      button.setAttribute("aria-pressed",String(found));
@@ -127,6 +132,19 @@
     focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
    }else{
     focus.innerHTML='<strong>🧩 すき間 A・B を なおそう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
+   }
+   if(justFound){
+    const names={battery:"でんち",lamp:"まめ電球",return:"もどる線"};
+    const result=document.createElement("div");
+    result.className="akari-observation";
+    const heading=document.createElement("strong");
+    heading.textContent="👀 "+names[lastInspection]+"を しらべた！";
+    const finding=document.createElement("span");
+    finding.className="akari-observation-finding";
+    finding.textContent=inspectedSite.finding;
+    result.append(heading,finding);
+    focus.classList.add("has-observation");
+    focus.prepend(result);
    }
    center.insertBefore(focus,circuit);
    const leftIntro=document.createElement("p");
@@ -181,6 +199,7 @@
      const inspection=event.target.closest("[data-dock-inspect]");
      if(inspection&&root.contains(inspection)){
       const id=inspection.dataset.dockInspect;
+      lastInspection=id;
       root.querySelector('.akari-dock-left [data-bridge-inspect="'+id+'"]')?.click();
       requestAnimationFrame(()=>{
        const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
