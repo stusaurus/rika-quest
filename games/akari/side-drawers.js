@@ -91,7 +91,13 @@
      button.innerHTML='<span aria-hidden="true">'+icon+'</span><strong>'+title+'</strong><span aria-hidden="true">'+(opened===side?"×":"‹ ›")+'</span>';
      return button;
    };
-   shell.append(makeTab("left","どうぐ","🔋","akariToolsDrawer"),center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
+   const readout=document.createElement("aside");
+   readout.className="akari-dock-readout";
+   readout.setAttribute("role","status");
+   readout.setAttribute("aria-live","polite");
+   readout.setAttribute("aria-label","回路で みつけたこと");
+   readout.hidden=true;
+   shell.append(makeTab("left","どうぐ","🔋","akariToolsDrawer"),readout,center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
    lab.insertBefore(shell,circuit);
    center.append(circuit);
    // The circuit is the entrypoint. No observation or answer is revealed
@@ -143,8 +149,11 @@
     finding.className="akari-observation-finding";
     finding.textContent=inspectedSite.finding;
     result.append(heading,finding);
-    focus.classList.add("has-observation");
-    focus.prepend(result);
+    readout.hidden=false;
+    const caption=document.createElement("strong");
+    caption.className="akari-readout-title";
+    caption.textContent="👀 みつけたこと";
+    readout.append(caption,result);
    }
    center.insertBefore(focus,circuit);
    const leftIntro=document.createElement("p");
