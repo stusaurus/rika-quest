@@ -68,6 +68,9 @@
    const circuit=lab.querySelector(":scope > .bridge-circuit");
    const sections=[...lab.querySelectorAll(":scope > .bridge-section")];
    if(!circuit||!sections[0])return;
+   const inspected=sections[0].querySelectorAll(".bridge-site.found").length;
+   const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
+   const directTesting=inspected===3&&!repairReady;
    const shell=document.createElement("div");
    shell.className="akari-dock";
    shell.dataset.open=opened;
@@ -97,16 +100,14 @@
    readout.setAttribute("aria-live","polite");
    readout.setAttribute("aria-label","回路で みつけたこと");
    readout.hidden=true;
-   shell.append(makeTab("left","しらべる","🔎","akariToolsDrawer"),readout,center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
+   shell.append(makeTab("left","しらべる","🔎","akariToolsDrawer"),readout,center,makeTab("right",directTesting?"きろく":"ざいりょう",directTesting?"📝":"🧱","akariMaterialsDrawer"),left,right);
    lab.insertBefore(shell,circuit);
    center.append(circuit);
    // The circuit is the entrypoint. No observation or answer is revealed
    // before the learner actively inspects one of the three sites.
-   const inspected=sections[0].querySelectorAll(".bridge-site.found").length;
    const focus=document.createElement("div");
    focus.className="akari-board-focus";
    focus.setAttribute("aria-label","回路の いまの しらべどころ");
-   const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
    const explained=lab.querySelector(".bridge-why");
    // Restore the memo cards from actual inspection state after each rerender.
    // Nothing undiscovered or merely guessed can appear in this list.
@@ -198,7 +199,7 @@
    left.append(leftIntro,sections[0]);
    const rightIntro=document.createElement("p");
    rightIntro.className="akari-dock-intro";
-   rightIntro.textContent="材料を えらんで、光るか ためそう。";
+   rightIntro.textContent=directTesting?"ためした きろくを みられるよ。":"材料を えらんで、光るか ためそう。";
    right.append(rightIntro);
    const materialsSection=sections.find(section=>section.querySelector(".bridge-materials"));
    if(materialsSection)right.append(materialsSection);
@@ -208,40 +209,22 @@
      waiting.textContent="まず 回路の 🔎 を 3つ さわろう。";
      right.append(waiting);
    }
-   // The first experiment is playable from the circuit: no extra drawer tap.
-   // Proxy choices forward to existing authoritative controls; the prediction
-   // apparatus is MOVED, never cloned, to preserve science and save semantics.
-   if(inspected===3&&!repairReady&&materialsSection){
+   // Move the ACTUAL material controls and original prediction experiment
+   // directly below the live circuit. No duplicate choices, hidden answers,
+   // extra drawer opening, or changes to the authoritative game state.
+   if(directTesting&&materialsSection){
      const desk=document.createElement("section");
      desk.className="akari-sample-desk";
      desk.setAttribute("aria-label","どの ざいりょうを ためす？");
      const heading=document.createElement("strong");
      heading.className="akari-sample-heading";
      heading.textContent="🧪 どれを ためす？";
-     const cards=document.createElement("div");
-     cards.className="akari-sample-choices";
-     for(const source of materialsSection.querySelectorAll("[data-bridge-sample]")){
-       const id=source.dataset.bridgeSample;
-       const name=source.querySelector("strong")?.textContent||id;
-       const tested=source.querySelector("small")?.textContent||"";
-       const selected=source.getAttribute("aria-pressed")==="true";
-       const card=document.createElement("button");
-       card.type="button";
-       card.className="akari-sample-choice"+(selected?" selected":"")+(tested.startsWith("実験済")?" tested":"");
-       card.dataset.dockMaterial=id;
-       card.setAttribute("aria-pressed",String(selected));
-       card.setAttribute("aria-label",name+(tested.startsWith("実験済")?"・"+tested:"・まだ ためしていない"));
-       const picture=source.querySelector(".bridge-material-art")?.cloneNode(true);
-       if(picture){picture.setAttribute("aria-hidden","true");card.append(picture);}
-       const title=document.createElement("strong");
-       title.textContent=name;
-       const status=document.createElement("small");
-       status.className="akari-sample-status";
-       status.textContent=tested.startsWith("実験済")?tested.replace("実験済：","けっか："):"？ まだ";
-       card.append(title,status);
-       cards.append(card);
+     desk.append(heading);
+     const choices=materialsSection.querySelector(".bridge-materials");
+     if(choices){
+       choices.classList.add("akari-sample-choices");
+       desk.append(choices);
      }
-     desk.append(heading,cards);
      const testBox=materialsSection.querySelector(".bridge-test-box");
      if(testBox){
        testBox.classList.add("akari-sample-test");
@@ -311,17 +294,6 @@
        const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
        (marker||root.querySelector("[data-dock-jump]"))?.focus({preventScroll:true});
       });
-      return;
-     }
-     const directMaterial=event.target.closest("[data-dock-material]");
-     if(directMaterial&&root.contains(directMaterial)){
-      const id=directMaterial.dataset.dockMaterial;
-      const source=root.querySelector('.akari-dock-right [data-bridge-sample="'+id+'"]');
-      if(source){
-       opened="";
-       source.click();
-       requestAnimationFrame(()=>root.querySelector('[data-dock-material="'+id+'"]')?.focus({preventScroll:true}));
-      }
       return;
      }
      const jump=event.target.closest("[data-dock-jump]");
