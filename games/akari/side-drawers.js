@@ -93,6 +93,42 @@
    shell.append(makeTab("left","どうぐ","🔋","akariToolsDrawer"),center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
    lab.insertBefore(shell,circuit);
    center.append(circuit);
+   // The circuit is the entrypoint. No observation or answer is revealed
+   // before the learner actively inspects one of the three sites.
+   const inspected=sections[0].querySelectorAll(".bridge-site.found").length;
+   const focus=document.createElement("div");
+   focus.className="akari-board-focus";
+   focus.setAttribute("aria-label","回路の いまの しらべどころ");
+   const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
+   const explained=lab.querySelector(".bridge-why");
+   if(inspected<3){
+    focus.innerHTML='<strong>🔎 どこから しらべる？</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
+    const markers=document.createElement("div");
+    markers.className="akari-inspection-hotspots";
+    for(const spot of [
+     {id:"battery",label:"でんち",description:"乾電池をしらべる"},
+     {id:"lamp",label:"まめ電球",description:"豆電球をしらべる"},
+     {id:"return",label:"もどる線",description:"もどる線をしらべる"}
+    ]){
+     const found=!!sections[0].querySelector('[data-bridge-inspect="'+spot.id+'"].found');
+     const button=document.createElement("button");
+     button.type="button";
+     button.className="akari-inspection-pin"+(found?" found":"");
+     button.dataset.dockInspect=spot.id;
+     button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
+     button.setAttribute("aria-pressed",String(found));
+     button.innerHTML='<span aria-hidden="true">'+(found?"✓":"🔎")+'</span><strong>'+spot.label+'</strong>';
+     markers.append(button);
+    }
+    circuit.append(markers);
+   }else if(!repairReady){
+    focus.innerHTML='<strong>🔍 3かしょ しらべた！</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを えらぶ →</button>';
+   }else if(explained){
+    focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
+   }else{
+    focus.innerHTML='<strong>🧩 すき間 A・B を なおそう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
+   }
+   center.insertBefore(focus,circuit);
    const leftIntro=document.createElement("p");
    leftIntro.className="akari-dock-intro";
    leftIntro.textContent="でんち・まめ電球・もどる線を さわって しらべよう。";
@@ -142,6 +178,21 @@
    if(!root||root.dataset.akariDockReady)return;
    root.dataset.akariDockReady="yes";
    root.addEventListener("click",event=>{
+     const inspection=event.target.closest("[data-dock-inspect]");
+     if(inspection&&root.contains(inspection)){
+      const id=inspection.dataset.dockInspect;
+      root.querySelector('.akari-dock-left [data-bridge-inspect="'+id+'"]')?.click();
+      requestAnimationFrame(()=>{
+       const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
+       (marker||root.querySelector("[data-dock-jump]"))?.focus({preventScroll:true});
+      });
+      return;
+     }
+     const jump=event.target.closest("[data-dock-jump]");
+     if(jump&&root.contains(jump)){
+      if(opened!=="right")toggle(root,"right");
+      return;
+     }
      const insertion=event.target.closest("[data-dock-place]");
      if(insertion&&root.contains(insertion)){
        const slot=insertion.dataset.dockPlace;
