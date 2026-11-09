@@ -138,7 +138,7 @@
    }else if(explained){
     focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
    }else{
-    focus.innerHTML='<strong>🧩 すき間 A・B を なおそう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
+    focus.innerHTML='<strong>🧩 A と B を つなごう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
    }
    if(inspectedSites.length){
     readout.hidden=false;
@@ -156,13 +156,13 @@
     notes.tabIndex=0;
     notes.setAttribute("role","region");
     notes.setAttribute("aria-label","しらべて わかったことの メモ");
-    const names={battery:"でんち",lamp:"まめ電球",return:"もどる線"};
+    const names={battery:"A（＋がわ）",lamp:"まめ電球",return:"B（−がわ）"};
     for(const site of inspectedSites){
      const result=document.createElement("div");
      result.className="akari-observation"+(site.id===lastInspection?" is-latest":"");
      result.dataset.observedSite=site.id;
      const heading=document.createElement("strong");
-     heading.textContent="✓ "+names[site.id]+"を しらべた！";
+     heading.textContent="✓ "+names[site.id];
      const finding=document.createElement("span");
      finding.className="akari-observation-finding";
      finding.textContent=site.finding;
@@ -174,7 +174,7 @@
    center.insertBefore(focus,circuit);
    const leftIntro=document.createElement("p");
    leftIntro.className="akari-dock-intro";
-   leftIntro.textContent="でんち・まめ電球・もどる線を さわって しらべよう。";
+   leftIntro.textContent="回路の 🔎 を さわって、わかったことを メモに のこそう。";
    left.append(leftIntro,sections[0]);
    const rightIntro=document.createElement("p");
    rightIntro.className="akari-dock-intro";
@@ -184,7 +184,7 @@
    else{
      const waiting=document.createElement("p");
      waiting.className="akari-dock-waiting";
-     waiting.textContent="まず 左の「どうぐ」で 3か所を しらべよう。";
+     waiting.textContent="まず 回路の 🔎 を 3つ さわろう。";
      right.append(waiting);
    }
    // The central diagram remains visible during material selection and repair.
@@ -210,7 +210,7 @@
      circuit.append(overlay);
      const note=document.createElement("p");
      note.className="akari-dock-drop-note";
-     note.textContent="右から 材料を えらんで、回路の A・B に いれよう。";
+     note.textContent="ためした 材料を、回路の A と B に いれよう。";
      center.insertBefore(note,repair);
    }
    const info=lab.querySelector(".bridge-quest-strip");
