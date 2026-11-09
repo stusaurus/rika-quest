@@ -155,7 +155,7 @@
     }
     circuit.append(markers);
    }else if(!repairReady){
-    focus.innerHTML='<strong>🔍 3かしょ しらべた！</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを えらぶ →</button>';
+    focus.innerHTML='<strong>🧱 3かしょ しらべた！ どれを ためす？</strong>';
    }else if(explained){
     focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
    }else{
@@ -200,12 +200,54 @@
    rightIntro.className="akari-dock-intro";
    rightIntro.textContent="材料を えらんで、光るか ためそう。";
    right.append(rightIntro);
-   if(sections[1]?.querySelector(".bridge-materials"))right.append(sections[1]);
+   const materialsSection=sections.find(section=>section.querySelector(".bridge-materials"));
+   if(materialsSection)right.append(materialsSection);
    else{
      const waiting=document.createElement("p");
      waiting.className="akari-dock-waiting";
      waiting.textContent="まず 回路の 🔎 を 3つ さわろう。";
      right.append(waiting);
+   }
+   // The first experiment is playable from the circuit: no extra drawer tap.
+   // Proxy choices forward to existing authoritative controls; the prediction
+   // apparatus is MOVED, never cloned, to preserve science and save semantics.
+   if(inspected===3&&!repairReady&&materialsSection){
+     const desk=document.createElement("section");
+     desk.className="akari-sample-desk";
+     desk.setAttribute("aria-label","どの ざいりょうを ためす？");
+     const heading=document.createElement("strong");
+     heading.className="akari-sample-heading";
+     heading.textContent="🧪 どれを ためす？";
+     const cards=document.createElement("div");
+     cards.className="akari-sample-choices";
+     for(const source of materialsSection.querySelectorAll("[data-bridge-sample]")){
+       const id=source.dataset.bridgeSample;
+       const name=source.querySelector("strong")?.textContent||id;
+       const tested=source.querySelector("small")?.textContent||"";
+       const selected=source.getAttribute("aria-pressed")==="true";
+       const card=document.createElement("button");
+       card.type="button";
+       card.className="akari-sample-choice"+(selected?" selected":"")+(tested.startsWith("実験済")?" tested":"");
+       card.dataset.dockMaterial=id;
+       card.setAttribute("aria-pressed",String(selected));
+       card.setAttribute("aria-label",name+(tested.startsWith("実験済")?"・"+tested:"・まだ ためしていない"));
+       const picture=source.querySelector(".bridge-material-art")?.cloneNode(true);
+       if(picture){picture.setAttribute("aria-hidden","true");card.append(picture);}
+       const title=document.createElement("strong");
+       title.textContent=name;
+       const status=document.createElement("small");
+       status.className="akari-sample-status";
+       status.textContent=tested.startsWith("実験済")?tested.replace("実験済：","けっか："):"？ まだ";
+       card.append(title,status);
+       cards.append(card);
+     }
+     desk.append(heading,cards);
+     const testBox=materialsSection.querySelector(".bridge-test-box");
+     if(testBox){
+       testBox.classList.add("akari-sample-test");
+       desk.append(testBox);
+     }
+     center.append(desk);
    }
    // The central diagram remains visible during material selection and repair.
    // After enough contrasting evidence, repair controls appear immediately below.
@@ -269,6 +311,17 @@
        const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
        (marker||root.querySelector("[data-dock-jump]"))?.focus({preventScroll:true});
       });
+      return;
+     }
+     const directMaterial=event.target.closest("[data-dock-material]");
+     if(directMaterial&&root.contains(directMaterial)){
+      const id=directMaterial.dataset.dockMaterial;
+      const source=root.querySelector('.akari-dock-right [data-bridge-sample="'+id+'"]');
+      if(source){
+       opened="";
+       source.click();
+       requestAnimationFrame(()=>root.querySelector('[data-dock-material="'+id+'"]')?.focus({preventScroll:true}));
+      }
       return;
      }
      const jump=event.target.closest("[data-dock-jump]");
