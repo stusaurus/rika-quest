@@ -225,8 +225,8 @@
        // Count actual experiment results only. Never infer a sample result
        // from a material's properties before the child has measured it.
        const cards=[...choices.querySelectorAll("[data-bridge-sample]")];
-       const litCount=cards.filter(card=>card.querySelector("small")?.textContent.includes("実験済：点灯")).length;
-       const darkCount=cards.filter(card=>card.querySelector("small")?.textContent.includes("実験済：消灯")).length;
+       const litCount=cards.filter(card=>card.querySelector("small")?.textContent.match(/実験済：\s*点灯/)).length;
+       const darkCount=cards.filter(card=>card.querySelector("small")?.textContent.match(/実験済：\s*消灯/)).length;
        const progress=document.createElement("span");
        progress.className="akari-sample-goal";
        progress.textContent="💡 "+litCount+" / 2　◯ "+darkCount+" / 1";
