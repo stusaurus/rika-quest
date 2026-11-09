@@ -890,6 +890,7 @@ try{
    assert.equal(await page.locator(".main>.story-scene").isVisible(),false,"The duplicated scenic banner should not push the active circuit below the phone viewport");
    assert.equal(await page.locator(".bridge-quest-strip.akari-dock-status").isVisible(),false,"The duplicate stage-3 status row must not hide or compete with the circuit");
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
+   assert.equal(await page.locator(".bridge-circuit-svg .bridge-filament").count(),1,"The lamp contains a single real zigzag filament rather than a misleading X-shaped failure mark");
    assert.equal(await page.locator(".bridge-circuit .bridge-monument").count(),0,"Stage 3 must not show a bridge in the active circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-lamp").count(),1,"Stage 3 must have a streetlamp INSIDE the circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-stage-lights").count(),2,"Two lamp-light elements exist INSIDE the repair diagram");
@@ -1033,6 +1034,13 @@ try{
    await page.locator('[data-bridge-sample="foil"]').click();
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
    assert.equal(await page.locator(".akari-dock-center .bridge-slot-actions").count(),1,"Contrasting scientific tests unlock repair controls in the central circuit");
+   const repairContrast=await page.locator(".akari-dock-center>.bridge-section").evaluate(panel=>({
+     section:getComputedStyle(panel).color,
+     heading:getComputedStyle(panel.querySelector("h3")).color,
+     guidance:getComputedStyle(panel.querySelector(".lab-sub")).color
+   }));
+   assert.equal(repairContrast.heading,"rgb(33, 75, 94)","The repair heading must remain DARK on its pale background: "+JSON.stringify(repairContrast));
+   assert.equal(repairContrast.guidance,"rgb(49, 88, 105)","The children's repair instruction must be legible: "+JSON.stringify(repairContrast));
    assert.equal(await page.locator(".akari-dock-center .akari-dock-gap").count(),2,"Two physical insertion targets are directly on the circuit's missing connections");
    assert.equal(await page.locator(".akari-dock-center .bridge-slot-actions").isVisible(),false,"The old duplicate repair controls must not clutter the one-screen board");
    await page.locator('[data-bridge-sample="iron"]').click();
@@ -1063,6 +1071,7 @@ try{
    assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"Both open gaps become visibly connected after proven conducting repairs");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town streetlamp visually responds to observed working circuit");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-lantern-glass").count(),1,"Successful repair illuminates the lamp inside the circuit diagram");
+   assert.equal(await page.locator(".bridge-circuit.is-lit .bridge-filament").getAttribute("stroke"),"#fff3ab","The bulb's filament must visibly glow when the circuit actually conducts");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing both gaps reveals light INSIDE the circuit diagram");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-lit.png",fullPage:true});
    await page.locator('[data-bridge-reason="one"]').click();await page.locator("#checkBtn").click();
