@@ -554,3 +554,24 @@ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock):not(:has(.bri
  max-width:calc(100% - 112px);
  margin:0;
 }
+
+/* Repair and explanation cards have LIGHT surfaces. The original lab-panel
+   inherited very pale text meant for a dark navy lab panel; it becomes
+   unreadable as soon as the child reaches the explanation stage. */
+body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.bridge-section{
+ color:#244b59;
+}
+body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.bridge-section .lab-sub,
+body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.bridge-section .lab-reading{
+ color:#315869;
+}
+body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.bridge-section h3,
+body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.bridge-section .bridge-predict strong{
+ color:#214b5e;
+}
+.akari-dock .bridge-circuit-svg .bridge-filament{
+ filter:drop-shadow(0 0 1px #294d58);
+}
+.akari-dock .bridge-circuit.is-lit .bridge-filament{
+ filter:drop-shadow(0 0 7px #ffec9f);
+}
