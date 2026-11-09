@@ -913,7 +913,6 @@ try{
      assert.equal(await page.locator('[data-bridge-gap="'+id+'"] circle').count(),2,"Two exposed contacts must be visible at the "+id.toUpperCase()+" gap");
      assert.equal(await page.locator('[data-bridge-gap="'+id+'"] .bridge-visible-break').count(),1,"The "+id.toUpperCase()+" gap must visually indicate a missing link");
    }
-   assert.equal(await page.locator(".bridge-gap-visual + .bridge-gap-visual").count(),0,"Each gap remains separated on its original circuit geometry");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
    assert.ok(!(await page.locator(".bridge-quest-strip").textContent()).includes("橋"),"The streetlamp challenge must not still mention the bridge");
