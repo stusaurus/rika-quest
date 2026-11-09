@@ -939,7 +939,7 @@ try{
    assert.equal(pinsInsideCircuit,true,"All touchable inquiry pins belong inside the illustration, not outside it");
    const investigationLocations=await page.locator(".akari-inspection-pin").evaluateAll(els=>
      els.map(el=>({id:el.dataset.dockInspect,left:parseFloat(el.style.left),top:parseFloat(el.style.top),label:el.textContent})));
-   const expectedPins={battery:{point:[294,55],badge:[399,124],label:"A"},lamp:{point:[533,170],badge:[623,170],label:"まめ電球"},return:{point:[294,287],badge:[191,216],label:"B"}};
+   const expectedPins={battery:{point:[294,55],badge:[399,124],label:"A"},lamp:{point:[533,170],badge:[612,280],label:"まめ電球"},return:{point:[294,287],badge:[191,216],label:"B"}};
    assert.equal(await page.locator(".akari-inspection-leaders path").count(),3,"Three leaders point directly from reachable chips to real circuit parts");
    assert.equal(await page.locator(".akari-inspection-leaders circle").count(),3,"Every tap chip has a visible target dot on the actual circuit");
    for(const {id,left,top,label} of investigationLocations){
