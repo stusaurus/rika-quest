@@ -100,7 +100,7 @@ function circuit(slots={},isLit=false){
  gap(294,55,slots.a,"修理 A")+gap(294,287,slots.b,"修理 B")+
  '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#204961")+'" stroke="#e8f4ee" stroke-width="6"/>'+
  '<circle cx="533" cy="170" r="27" fill="none" stroke="'+(isLit?"#b67932":"#9abac8")+'" stroke-width="5"/>'+
- '<path d="M518 154L548 186M548 154L518 186" stroke="'+(isLit?"#9d6b39":"#bbd9df")+'" stroke-width="6"/>'+
+ '<path class="bridge-filament" d="M513 170L520 161L528 179L536 161L544 179L551 170" fill="none" stroke="'+(isLit?"#fff3ab":"#a9c4c7")+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
  '<circle cx="533" cy="112" r="8" fill="#fff2cc"/><circle cx="533" cy="228" r="8" fill="#fff2cc"/>'+
  label(616,174,"豆電球")+
  (isLit?'<g class="bridge-sparkles"><circle cx="591" cy="101" r="7" fill="#ffe699"/><circle cx="483" cy="111" r="5" fill="#ffe699"/></g>':"")+
