@@ -868,7 +868,7 @@ try{
    assert.ok(stageShelf.boardWidth>=stageShelf.dockWidth*.44,"Enough circuit must remain visible with materials open: "+JSON.stringify(stageShelf));
    assert.ok(stageShelf.overflow<=2,"The palette must not introduce horizontal page overflow: "+JSON.stringify(stageShelf));
    if(width<741)assert.ok(stageShelf.panelHeight<=148,"Phone palette remains a short in-flow shelf: "+JSON.stringify(stageShelf));
-   assert.match(await page.locator(".akari-dock-waiting").textContent(),/3か所/,"Materials drawer explains the current scientific prerequisite");
+   assert.match(await page.locator(".akari-dock-waiting").textContent(),/3つ/,"Materials drawer points back to the three visible investigation pins");
    await openDrawer("left");
    assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),1,"Opening one palette closes the other");
    assert.equal(await page.evaluate(()=>{
@@ -923,7 +923,7 @@ try{
    assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
    assert.match(await page.locator(".akari-board-focus").textContent(),/1 \/ 3/,"The board reflects the actual investigation progress");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),1,"One real inspection adds exactly one memo card");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/でんちを しらべた.*すき間/s,"Battery observation is saved as the first memo card");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/A（＋がわ）.*Aで とぎれている/s,"Battery memo identifies a specific break on the actual diagram");
    assert.equal(await page.locator('[data-observed-site="battery"].is-latest').count(),1,"The newest observation is highlighted in the memo");
    assert.match(await page.locator(".akari-memo-count").textContent(),/1 \/ 3/,"The memo shows observed fact count"); 
    assert.equal(await page.locator(".akari-board-focus .akari-observation").count(),0,"The instruction banner does not duplicate findings");
@@ -945,8 +945,8 @@ try{
    await page.keyboard.press("Enter");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Keyboard Enter can investigate a real circuit location");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"The first observation must remain when the second is added");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/すき間/,"Battery evidence remains readable after testing the bulb");
-   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球を しらべた.*横と 下/s,"The bulb finding gets its own memo");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/Aで とぎれている/,"Battery evidence remains readable after testing the bulb");
+   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球.*上と 下には.*光っていない/s,"Bulb memo reports an observed condition instead of instructing the child to connect wires");
    assert.equal(await page.locator('[data-observed-site="lamp"].is-latest').count(),1,"The last inspected fact is highlighted");
    if(width<1150){
      const memoStrip=await page.locator(".akari-memo-notes").evaluate(el=>({horizontal:getComputedStyle(el).overflowX,flow:getComputedStyle(el).gridAutoFlow,height:el.getBoundingClientRect().height}));
@@ -958,14 +958,16 @@ try{
    await openDrawer("left");
    await page.locator('[data-bridge-inspect="battery"]').click();
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"Reviewing a finding never erases earlier memos or duplicates them");
-   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/でんちを しらべた.*すき間/s,"Re-inspecting the battery highlights its existing memo");
+   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/A（＋がわ）.*Aで とぎれている/s,"Re-inspecting the battery highlights its existing memo");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Reviewing a finding does not fake another inspection");
    await closeDrawer("left");
    await page.locator('[data-dock-inspect="return"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),3,"All three inspections remain required");
    assert.equal(await page.locator(".akari-inspection-pin").count(),0,"The temporary attention markers leave the circuit once observation is complete");
-   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/もどる線を しらべた.*すき間/s,"The third finding adds a permanent memo after the markers disappear");
+   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bで とぎれている/s,"Return wire memo points to the second break after the pins disappear");
    assert.equal(await page.locator(".akari-observation").count(),3,"All three findings remain available, not just the latest one");
+   assert.equal(await page.locator(".akari-memo-notes").textContent().then(s=>/つなごう。/.test(s)),false,"Discovery memos must state observable facts, not pretend commands were findings");
+   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/ざいりょうを えらぶ/,"Scientific observations naturally lead to a material choice without revealing which works");
    assert.equal(await page.locator(".akari-observation.is-latest").count(),1,"Only the latest memo is highlighted");
    assert.match(await page.locator(".akari-memo-count").textContent(),/3 \/ 3/,"Complete observations show three of three memo cards");
    for(const id of ["battery","lamp","return"])assert.equal(await page.locator('[data-observed-site="'+id+'"]').count(),1,"One saved memo per location: "+id);

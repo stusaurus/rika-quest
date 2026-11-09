@@ -4,9 +4,9 @@
  * The sample test is simulated; a metal is only proven conductive after prediction and measurement.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
- {id:"battery",name:"街灯の回路・乾電池",icon:"🔋",finding:"電池から 線が のびている。 でも、すき間が ある！"},
- {id:"lamp",name:"街灯の回路・豆電球",icon:"💡",finding:"まめ電球の 横と 下に 線を つなごう。"},
- {id:"return",name:"街灯の回路・もどる線",icon:"🔌",finding:"電池の −へ もどる線にも、すき間が ある！"}
+ {id:"battery",name:"でんちの ＋がわ",icon:"🔋",finding:"でんちの ＋から 出た 線は、Aで とぎれている。"},
+ {id:"lamp",name:"まめ電球",icon:"💡",finding:"まめ電球の 上と 下には、線が つながっている。でも、光っていない。"},
+ {id:"return",name:"でんちの −がわ",icon:"🔌",finding:"でんちの −に もどる 線は、Bで とぎれている。"}
 ];
 const materials=[
  {id:"iron",name:"鉄のくぎ",conductive:true,detail:"鉄は金属。"},
@@ -112,22 +112,22 @@ function render(raw){
  '<div class="bridge-quest-strip"><strong>💡 街灯のあかりをもどそう</strong><span>回路の調査 '+s.inspected.length+'/3　｜　実験 '+Object.keys(s.tests).length+'/4　｜　回路 '+(lit?"点灯":"未復旧")+'</span></div>'+
  '<div class="bridge-circuit circuit-town-repair'+(lit?' is-lit':'')+'">'+circuit(s.slots,lit)+'</div>'+
 
- '<section class="lab-panel bridge-section"><h3>① 回路の 3か所を 見よう</h3><p class="lab-sub">3つの場所をタップ。まず事実を集めよう。まだ材料の正解はわからない。</p><div class="bridge-sites">'+details+'</div></section>'+
- (step>=1?'<section class="lab-panel bridge-section"><h3>② 材料を ためしてみよう</h3><p class="lab-sub">好きな材料を選んで、豆電球の実験装置に一つずつ挟もう。予想が外れても減点はないよ。</p>'+
+ '<section class="lab-panel bridge-section"><h3>① 3かしょを しらべよう</h3><p class="lab-sub">🔎 を さわろう。わかったことが メモに のこるよ。</p><div class="bridge-sites">'+details+'</div></section>'+
+ (step>=1?'<section class="lab-panel bridge-section"><h3>② どれなら 電気が 通る？</h3><p class="lab-sub">材料を えらんで、光るか よそうして ためそう。</p>'+
  '<div class="bridge-materials">'+source+'</div>'+
  '<div class="bridge-test-box">'+
- (selected?'<strong>🔮 '+selected.name+'を実験装置に挟むと？</strong>'+
+ (selected?'<strong>🔮 '+selected.name+'で まめ電球は 光る？</strong>'+
  (test?'<p class="lab-reading">予想：'+(test.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(test.actual==="lit"?"点灯":"消灯")+'。'+(test.guess===test.actual?"予想が合ったね。":"予想と違った！ 発見だね。")+'</p>':
- '<div class="bridge-guesses">'+[["lit","💡 点灯する"],["dark","◯ 点灯しない"]].map(([k,label])=>'<button type="button" data-bridge-guess="'+k+'" class="'+(s.sampleGuess===k?" chosen":"")+'" aria-pressed="'+(s.sampleGuess===k)+'">'+label+'</button>').join("")+'</div><button type="button" class="bridge-measure" data-bridge-test '+(!s.sampleGuess?"disabled":"")+'>🔬 仮想実験して記録する</button>')+
+ '<div class="bridge-guesses">'+[["lit","💡 点灯する"],["dark","◯ 点灯しない"]].map(([k,label])=>'<button type="button" data-bridge-guess="'+k+'" class="'+(s.sampleGuess===k?" chosen":"")+'" aria-pressed="'+(s.sampleGuess===k)+'">'+label+'</button>').join("")+'</div><button type="button" class="bridge-measure" data-bridge-test '+(!s.sampleGuess?"disabled":"")+'>🔬 光るか ためす</button>')+
  '<div class="bridge-mini-circuit">'+(art.testCircuit?art.testCircuit(selected.id,!!test&&test.actual==="lit"):"")+'</div>':
- '<p>材料をタップすると実験装置にセットされるよ。</p>')+
+ '<p>どれを ためす？</p>')+
  '</div><div class="bridge-log"><strong>📖 実験の記録</strong><div>'+ (tests||'<span class="bridge-record">まだ測定結果はないよ。</span>')+'</div></div>'+
- (step===1?'<p class="bridge-proceed">⚡ 回路修理へ進むには、電気を通す2種類・通さない1種類の実験結果を集めよう。</p>':"")+
+ (step===1?'<p class="bridge-proceed">電気が 通るものを 2つ、通らないものを 1つ みつけよう。</p>':"")+
  '</section>':"")+
- (step===2?'<section class="lab-panel bridge-section"><h3>③ 回路の 2か所を なおそう</h3><p class="lab-sub">回路にある2つのすき間を、実験済みの材料で埋めよう。どちらかが切れていても、豆電球はつかない。</p>'+
+ (step===2?'<section class="lab-panel bridge-section"><h3>③ A と B を つなごう</h3><p class="lab-sub">メモを みよう。ためした 材料を A と B に いれよう。</p>'+
  '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>修理 '+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"未修理")+'</span><small>'+(!selected?"実験済み材料を選択":!s.tests[selected.id]?"選んだ材料を先に実験":"選択中の材料をはめる")+'</small></button>').join("")+'</div>'+
- '<div class="bridge-predict"><strong>🔮 修理した回路に電気を流すと？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
- '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 修理した回路を仮想通電</button></div>'+
+ '<div class="bridge-predict"><strong>🔮 A と B を つないだら 光る？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
+ '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 光るか たしかめる</button></div>'+
  (s.repairResult?'<div class="bridge-outcome '+(lit?"lit":"dark")+'" role="status">予想：'+(s.repairResult.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(lit?"点灯":"消灯")+(lit?"。街灯のあかりがともった！":"。実験結果を比べて、2つのすき間の材料を見直そう。")+'</div>':"")+
  (lit?'<div class="bridge-why"><h3>④ どうして 光った？</h3><p class="lab-sub">実際に組み立てた回路を見て、理由を選ぼう。</p>'+
  reasonOptions.map(([id,text])=>'<button type="button" data-bridge-reason="'+id+'" class="'+(s.reason===id?" chosen":"")+'" aria-pressed="'+(s.reason===id)+'">'+text+'</button>').join("")+
