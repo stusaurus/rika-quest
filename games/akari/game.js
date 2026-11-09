@@ -360,9 +360,9 @@ function renderWire(){
  // One dynamic question; every experiment is performed on this same circuit.
  const wirePrompt=stat.short?"⚠ あぶない 近道！ どの線を はずす？":
   lit?"💡 ついた！ どうして 光った？":
-  ui.selected?"その 金ぞくから、どこへ つなぐ？":
-  ui.wires.length===0?"どこを つなぐと 光る？":
-  ui.wires.length===1?"もう1本は どこへ つなぐ？":"電気が もどる 道は ある？";
+  ui.selected?"🔗 どの まるへ つなぐ？":
+  ui.wires.length===0?"👆 4つの まるから えらぼう":
+  ui.wires.length===1?"🔍 まだ つかない。つぎは どの まる？":"電気が もどる 道は ある？";
  return'<div class="circuit-toolbar"><strong class="circuit-question" aria-live="polite">'+wirePrompt+'</strong><button type="button" class="circuit-zoom-btn" data-zoom="1" aria-pressed="'+!!ui.zoomed+'">'+(ui.zoomed?'🔍 全体を見る':'🔎 大きく見る')+'</button>'+(ui.zoomed?'<span class="circuit-quicknav"><button type="button" data-view="battery">◀ 乾電池</button><button type="button" data-view="bulb">豆電球 ▶</button></span>':'')+'</div><div class="circuit-board circuit-town-board'+(lit?' is-lit':'')+(stat.short?' is-short':'')+(ui.zoomed?' zoomed':'')+'">'+(window.AkariCircuitVillage?.board(current().id)||"")+'<div class="circuit-inner">'+svg
  +Object.entries(pts).map(([t])=>'<button class="terminal'+(ui.selected===t?' selected':'')+'" data-t="'+t+'" aria-label="'+labels[t]+'" title="'+labels[t]+'">'+(t==="P"?"+":t==="N"?"−":t==="L"?"横":"底")+'</button>').join("")
  +'<div class="terminal-label label-p">＋極</div><div class="terminal-label label-n">−極</div><div class="terminal-label label-l">金属の横</div><div class="terminal-label label-r">底の接点</div></div>'
