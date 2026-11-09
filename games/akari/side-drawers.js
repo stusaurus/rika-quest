@@ -97,7 +97,7 @@
    readout.setAttribute("aria-live","polite");
    readout.setAttribute("aria-label","回路で みつけたこと");
    readout.hidden=true;
-   shell.append(makeTab("left","どうぐ","🔋","akariToolsDrawer"),readout,center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
+   shell.append(makeTab("left","しらべる","🔎","akariToolsDrawer"),readout,center,makeTab("right","ざいりょう","🧱","akariMaterialsDrawer"),left,right);
    lab.insertBefore(shell,circuit);
    center.append(circuit);
    // The circuit is the entrypoint. No observation or answer is revealed
@@ -117,6 +117,25 @@
     focus.innerHTML='<strong>🔎 '+(inspected?"つぎは どこを しらべる？":"どこから しらべる？")+'</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
     const markers=document.createElement("div");
     markers.className="akari-inspection-hotspots";
+    // Leader lines visibly connect each reachable touch target with the
+    // real circuit element, without covering its open contacts.
+    const leaders=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    leaders.classList.add("akari-inspection-leaders");
+    leaders.setAttribute("viewBox","0 0 680 340");
+    leaders.setAttribute("aria-hidden","true");
+    for(const site of window.AkariBridge.sites){
+     const line=document.createElementNS("http://www.w3.org/2000/svg","path");
+     line.setAttribute("d","M"+site.diagram.pin.x+" "+site.diagram.pin.y+"L"+site.diagram.x+" "+site.diagram.y);
+     line.setAttribute("data-inspection-leader",site.id);
+     leaders.append(line);
+     const endpoint=document.createElementNS("http://www.w3.org/2000/svg","circle");
+     endpoint.setAttribute("cx",String(site.diagram.x));
+     endpoint.setAttribute("cy",String(site.diagram.y));
+     endpoint.setAttribute("r","8");
+     endpoint.setAttribute("data-inspection-endpoint",site.id);
+     leaders.append(endpoint);
+    }
+    markers.append(leaders);
     for(const site of window.AkariBridge.sites){
      const spot={id:site.id,label:site.id==="battery"?"A":site.id==="return"?"B":"まめ電球",
       description:site.name+"を しらべる"};
@@ -125,9 +144,10 @@
      button.type="button";
      button.className="akari-inspection-pin"+(found?" found":"")+(found&&spot.id===lastInspection?" is-latest":"");
      button.dataset.dockInspect=spot.id;
-     // These screen positions are tied to the actual SVG geometry.
-     button.style.left=(site.diagram.x/680*100).toFixed(3)+"%";
-     button.style.top=(site.diagram.y/340*100).toFixed(3)+"%";
+     // The dotted leader points to site.diagram.x/y; the actual button
+     // sits aside so the learner can inspect the two separated wire ends.
+     button.style.left=(site.diagram.pin.x/680*100).toFixed(3)+"%";
+     button.style.top=(site.diagram.pin.y/340*100).toFixed(3)+"%";
      button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
      button.setAttribute("aria-pressed",String(found));
      button.innerHTML='<span aria-hidden="true">'+(found?"✓":"🔎")+'</span><strong>'+spot.label+'</strong>';
