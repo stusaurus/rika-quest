@@ -156,7 +156,7 @@
     }
     circuit.append(markers);
    }else if(!repairReady){
-    focus.innerHTML='<strong>🧱 3かしょ しらべた！ どれを ためす？</strong>';
+    focus.innerHTML='<strong>🧩 A と B、なにで つなぐ？</strong>';
    }else if(explained){
     focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
    }else{
@@ -222,12 +222,23 @@
      desk.append(heading);
      const choices=materialsSection.querySelector(".bridge-materials");
      if(choices){
+       // Count actual experiment results only. Never infer a sample result
+       // from a material's properties before the child has measured it.
+       const cards=[...choices.querySelectorAll("[data-bridge-sample]")];
+       const litCount=cards.filter(card=>card.querySelector("small")?.textContent.includes("実験済：点灯")).length;
+       const darkCount=cards.filter(card=>card.querySelector("small")?.textContent.includes("実験済：消灯")).length;
+       const progress=document.createElement("span");
+       progress.className="akari-sample-goal";
+       progress.textContent="💡 "+litCount+" / 2　◯ "+darkCount+" / 1";
+       progress.setAttribute("aria-label","実験で 光った もの "+litCount+"こ、光らなかった もの "+darkCount+"こ。目標は 光るもの 2こ、光らないもの 1こ。");
+       desk.append(progress);
        choices.classList.add("akari-sample-choices");
        desk.append(choices);
      }
      const testBox=materialsSection.querySelector(".bridge-test-box");
      if(testBox){
        testBox.classList.add("akari-sample-test");
+       if(!testBox.querySelector("strong"))testBox.hidden=true;
        desk.append(testBox);
      }
      center.append(desk);
@@ -269,7 +280,13 @@
    // Bubble listeners can observe a detached target after renderWorkspace().
    root.addEventListener("click",event=>{
     const site=event.target.closest("[data-bridge-inspect]");
-    if(site&&root.contains(site))lastInspection=site.dataset.bridgeInspect;
+    if(site&&root.contains(site)){
+     lastInspection=site.dataset.bridgeInspect;
+     // Third fresh finding closes any leftover lookup panel, without
+     // changing the recording or its restored save state.
+     const seen=root.querySelectorAll(".akari-dock-left .bridge-site.found").length;
+     if(seen===2&&!site.classList.contains("found"))opened="";
+    }
    },true);
    root.addEventListener("click",event=>{
      const inspection=event.target.closest("[data-dock-inspect]");
