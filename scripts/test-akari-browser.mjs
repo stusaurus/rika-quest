@@ -1007,33 +1007,49 @@ try{
    assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bで 線が とぎれている/s,"Return wire memo points to the second break after the pins disappear");
    assert.equal(await page.locator(".akari-observation").count(),3,"All three findings remain available, not just the latest one");
    assert.equal(await page.locator(".akari-memo-notes").textContent().then(s=>/つなごう。/.test(s)),false,"Discovery memos must state observable facts, not pretend commands were findings");
-   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/ざいりょうを えらぶ/,"Scientific observations naturally lead to a material choice without revealing which works");
+   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/A と B、なにで つなぐ/,"The actual two gaps motivate the direct materials experiment");
    assert.equal(await page.locator(".akari-observation.is-latest").count(),1,"Only the latest memo is highlighted");
    assert.match(await page.locator(".akari-memo-count").textContent(),/3 \/ 3/,"Complete observations show three of three memo cards");
    for(const id of ["battery","lamp","return"])assert.equal(await page.locator('[data-observed-site="'+id+'"]').count(),1,"One saved memo per location: "+id);
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-three-saved-memos.png",fullPage:true});
-   assert.equal(await page.locator("[data-dock-jump='right']").count(),1,"Materials become the next visible choice after the three investigations");
-   assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Four materials remain available, without revealing the correct one");
-   await page.locator("[data-dock-jump='right']").click();
-   assert.equal(await drawer("right").getAttribute("aria-expanded"),"true","The next visible action opens the original material controls beside the circuit");
-   await openDrawer("right");
-   assert.equal(await drawer("left").getAttribute("aria-expanded"),"false","Opening material palette keeps central circuit unobstructed on the other side");
-   assert.equal(await page.locator(".akari-dock-right .bridge-materials").count(),1,"Material choices are inside the right drawer and use real lab controls");
-   assert.equal(await page.locator(".akari-observation").count(),3,"Moving to materials never erases the three discovered facts");
-
-   assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Discover four visually distinct material samples");
+   assert.equal(await page.locator("[data-dock-jump='right']").count(),0,"After the three observations, no extra open-drawer button is needed");
+   assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","The science experiment does not automatically obstruct the circuit");
+   assert.match(await drawer("right").textContent(),/きろく/,"The optional right shelf is a record book during material testing");
+   assert.equal(await page.locator(".akari-sample-desk").count(),1,"The materials experiment is directly under the live circuit");
+   assert.equal(await page.locator(".akari-sample-desk .bridge-materials [data-bridge-sample]").count(),4,"All four authoritative sample buttons are visible without opening a drawer");
+   assert.equal(await page.locator(".bridge-materials").count(),1,"The material controls are MOVED, never duplicated");
+   assert.equal(await page.locator(".akari-sample-desk .bridge-test-box").isVisible(),false,"No empty experiment prompt appears until a sample is selected");
+   assert.match(await page.locator(".akari-sample-goal").textContent(),/💡 0 \/ 2.*◯ 0 \/ 1/s,"Experiment evidence starts at zero without showing correct material results");
+   assert.equal(await page.locator(".akari-observation").count(),3,"All three original observations remain intact");
+   if(width<741){
+     const sampleGrid=await page.locator(".akari-sample-choices").evaluate(el=>({
+       columns:getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length,
+       scroll:el.scrollWidth,client:el.clientWidth
+     }));
+     assert.equal(sampleGrid.columns,2,"All four material choices appear in a compact 2-column phone layout");
+     assert.ok(sampleGrid.scroll<=sampleGrid.client+2,"Every choice is reachable without hidden horizontal swiping: "+JSON.stringify(sampleGrid));
+   }
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
-   await page.locator('[data-bridge-sample="iron"]').click();
-   assert.equal(await page.locator('[data-bridge-test]').isDisabled(),true,"Scientifically explicit hypothesis is required");
+   await page.locator('.akari-sample-desk [data-bridge-sample="iron"]').click();
+   assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Choosing a material does not open a new screen");
+   assert.equal(await page.locator(".akari-sample-desk .bridge-test-box").isVisible(),true,"The ORIGINAL prediction apparatus opens directly below the selected sample");
+   assert.equal(await page.locator("[data-bridge-test]").isDisabled(),true,"A real prediction remains required before conducting the experiment");
    await page.locator('[data-bridge-guess="dark"]').click();
    await page.locator('[data-bridge-test]').click();
-   assert.match(await page.locator(".bridge-test-box").textContent(),/予想：消灯.*実際：点灯/s,"Wrong hypothesis must be compared with evidence");
-   assert.equal(await page.locator(".bridge-mini-circuit svg").count(),1,"Actual battery-bulb sample test schematic is present");
-   await page.locator('[data-bridge-sample="wood"]').click();
+   assert.match(await page.locator(".akari-sample-desk .bridge-test-box").textContent(),/予想：消灯.*実際：点灯/s,"A mismatched hypothesis is compared with evidence on the same screen");
+   assert.equal(await page.locator(".bridge-mini-circuit svg").count(),1,"The existing test-circuit diagram remains visible");
+   assert.match(await page.locator(".akari-sample-goal").textContent(),/💡 1 \/ 2.*◯ 0 \/ 1/s,"Only measured materials contribute to evidence progress");
+   assert.match(await page.locator('.akari-sample-desk [data-bridge-sample="iron"] small').textContent(),/実験済：点灯/,"The tested sample records its actual result");
+   await page.locator('.akari-sample-desk [data-bridge-sample="wood"]').click();
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
-   await page.locator('[data-bridge-sample="foil"]').click();
+   assert.match(await page.locator(".akari-sample-goal").textContent(),/💡 1 \/ 2.*◯ 1 \/ 1/s,"Both lit and dark evidence matter");
+   await page.locator('.akari-sample-desk [data-bridge-sample="foil"]').click();
    await page.locator('[data-bridge-guess="lit"]').click();await page.locator('[data-bridge-test]').click();
+   assert.equal(await page.locator(".akari-sample-desk").count(),0,"When enough experiments are done, the materials desk clears the stage for real circuit repair");
+   assert.equal(await page.locator(".akari-dock-right .bridge-materials [data-bridge-sample]").count(),4,"The same tested materials return to the right shelf for repair");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/A と B を つなごう/,"The next challenge is the actual A/B circuit rather than another menu");
    assert.equal(await page.locator(".akari-dock-center .bridge-slot-actions").count(),1,"Contrasting scientific tests unlock repair controls in the central circuit");
+   await openDrawer("right");
    const repairContrast=await page.locator(".akari-dock-center>.bridge-section").evaluate(panel=>({
      section:getComputedStyle(panel).color,
      heading:getComputedStyle(panel.querySelector("h3")).color,
