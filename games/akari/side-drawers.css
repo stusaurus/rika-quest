@@ -436,3 +436,51 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
  .akari-dock .akari-dock-right{grid-row:2/4}
  .akari-dock .akari-dock-center{grid-row:1/4}
 }
+
+/* Persistent inspection memos: each discovered fact stays visible in the
+   unused left rail. On narrow screens, memo cards scroll horizontally rather
+   than growing vertically and pushing the real circuit offscreen. */
+.akari-dock .akari-memo-heading{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:5px;
+}
+.akari-dock .akari-memo-count{
+ display:inline-block;background:#fff3c9;color:#645025;
+ padding:3px 8px;border-radius:20px;font-size:12px;font-weight:900;
+}
+.akari-dock .akari-memo-notes{
+ display:grid;grid-template-columns:minmax(0,1fr);
+ gap:7px;min-width:0;scrollbar-width:thin;
+}
+.akari-dock .akari-memo-notes:focus-visible{
+ outline:3px solid #de8c42;outline-offset:2px;
+}
+.akari-dock .akari-dock-readout .akari-observation{
+ border-radius:10px;border-color:#a9cab7;
+}
+.akari-dock .akari-dock-readout .akari-observation.is-latest{
+ background:#fff6d9;border:2px solid #dea44a;
+ box-shadow:0 0 0 2px #ffe8a366;
+}
+@media(max-width:1149px){
+ .akari-dock .akari-memo-notes{
+  grid-auto-flow:column;
+  grid-template-columns:none;
+  grid-auto-columns:minmax(175px,76%);
+  align-items:stretch;overflow-x:auto;overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  padding:2px 3px 8px;
+ }
+ .akari-dock .akari-observation{
+  scroll-snap-align:start;
+ }
+ .akari-dock .akari-dock-readout{
+  max-width:100%;overflow:hidden;
+ }
+}
+@media(min-width:1150px){
+ .akari-dock .akari-memo-notes{
+  overflow:visible;
+ }
+}
