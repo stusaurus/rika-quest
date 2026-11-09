@@ -396,3 +396,43 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
  .akari-observation{grid-template-columns:minmax(0,1fr);gap:2px;padding:5px 8px}
  .akari-board-focus.has-observation{gap:4px}
 }
+
+/* Keep inspection findings in the free LEFT rail, next to the actual circuit.
+   On narrow screens the same readout sits immediately before the circuit,
+   without an overlay or making any electrical contact smaller. */
+.akari-dock{
+ grid-template-rows:auto auto auto auto;
+}
+.akari-dock .akari-dock-readout{
+ grid-column:1/-1;grid-row:3;
+ display:grid;align-content:start;gap:6px;min-width:0;
+ border:2px solid #8cbfab;border-radius:13px;
+ background:#eaf6e9;color:#245467;
+ padding:8px 10px;
+}
+.akari-dock .akari-dock-readout[hidden]{display:none!important}
+.akari-dock .akari-readout-title{
+ display:block;font-size:13px;font-weight:900;line-height:1.35;
+}
+.akari-dock .akari-dock-readout .akari-observation{
+ grid-column:auto;grid-template-columns:minmax(0,1fr);
+ padding:5px 7px;gap:4px;
+ border-width:1px;background:#f8fdf7;
+}
+.akari-dock .akari-dock-readout .akari-observation strong,
+.akari-dock .akari-dock-readout .akari-observation-finding{
+ font-size:13px;line-height:1.45;
+}
+.akari-dock .akari-dock-center{grid-row:4}
+@media(min-width:1150px){
+ .akari-dock{
+  grid-template-rows:auto minmax(0,auto) minmax(0,1fr);
+ }
+ .akari-dock .akari-dock-readout{
+  grid-column:1;grid-row:2;
+  padding:8px;align-self:start;
+ }
+ .akari-dock .akari-dock-left{grid-row:3}
+ .akari-dock .akari-dock-right{grid-row:2/4}
+ .akari-dock .akari-dock-center{grid-row:1/4}
+}
