@@ -887,8 +887,8 @@ try{
      await strip.evaluate(el=>{el.scrollLeft=0;});
      await cue.waitFor({state:"visible"});
    }
-   const hero=await page.locator(".story-scene").evaluate(el=>({height:el.getBoundingClientRect().height,position:getComputedStyle(el).position,opacity:getComputedStyle(el).opacity}));
-   assert.ok(hero.height>=70&&hero.height<=104&&hero.position==="relative"&&hero.opacity==="1","The outside scene must be a compact heading rather than the illustrated gameboard: "+JSON.stringify(hero));
+   assert.equal(await page.locator(".main>.story-scene").isVisible(),false,"The duplicated scenic banner should not push the active circuit below the phone viewport");
+   assert.equal(await page.locator(".bridge-quest-strip.akari-dock-status").isVisible(),false,"The duplicate stage-3 status row must not hide or compete with the circuit");
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
    assert.equal(await page.locator(".bridge-circuit .bridge-monument").count(),0,"Stage 3 must not show a bridge in the active circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-lamp").count(),1,"Stage 3 must have a streetlamp INSIDE the circuit diagram");
@@ -908,6 +908,12 @@ try{
    assert.ok(consistentDrawings.source&&consistentDrawings.crops.every(x=>x.paintedWidth>0),"Cropped diagrams must actually render: "+JSON.stringify(consistentDrawings));
    assert.deepEqual(consistentDrawings.crops.map(x=>x.viewBox),["192 0 204 113","446 84 174 173","192 227 204 113"],"Illustrations show A, actual lamp and B of the same circuit");
    assert.deepEqual(consistentDrawings.leads,[null,null],"Wires should be drawn as solid to the actual A and B breaks, not dashed elsewhere");
+   for(const id of ["a","b"]){
+     assert.equal(await page.locator('[data-bridge-gap="'+id+'"][data-bridge-gap-state="open"]').count(),1,"The "+id.toUpperCase()+" repair must appear as an OPEN electrical connection, not a black status box");
+     assert.equal(await page.locator('[data-bridge-gap="'+id+'"] circle').count(),2,"Two exposed contacts must be visible at the "+id.toUpperCase()+" gap");
+     assert.equal(await page.locator('[data-bridge-gap="'+id+'"] .bridge-visible-break').count(),1,"The "+id.toUpperCase()+" gap must visually indicate a missing link");
+   }
+   assert.equal(await page.locator(".bridge-gap-visual + .bridge-gap-visual").count(),0,"Each gap remains separated on its original circuit geometry");
    assert.equal(await page.locator(".bridge-sites [data-bridge-inspect]").count(),3,"Bridge should offer three real inspection locations");
    assert.equal(await page.locator("#missionTitle").textContent(),"街灯の材料さがし","Mission 3 story and artwork must both be about the town streetlamp");
    assert.ok(!(await page.locator(".bridge-quest-strip").textContent()).includes("橋"),"The streetlamp challenge must not still mention the bridge");
@@ -915,8 +921,8 @@ try{
    assert.equal(await drawer("left").getAttribute("aria-expanded"),"true","Inspection palette remains open");
 
    await closeDrawer("left");
-   await page.locator("#checkBtn").click();
-   assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
+   assert.equal(await page.locator("#checkBtn").isVisible(),false,"The final confirm button must not distract children before they finish the experiment");
+   assert.equal(await page.locator("#discovery").isVisible(),false,"A child cannot finish this experiment before collecting evidence");
    // Observe the actual circuit: no reading, no opened palette, no answer given.
    assert.equal(await page.locator(".akari-inspection-pin").count(),3,"Three independent science investigation sites are present ON the live circuit");
    assert.match(await page.locator(".akari-board-focus").textContent(),/どこから しらべる/, "The circuit names the next interaction in a few words");
@@ -934,10 +940,16 @@ try{
    assert.equal(pinsInsideCircuit,true,"All touchable inquiry pins belong inside the illustration, not outside it");
    const investigationLocations=await page.locator(".akari-inspection-pin").evaluateAll(els=>
      els.map(el=>({id:el.dataset.dockInspect,left:parseFloat(el.style.left),top:parseFloat(el.style.top),label:el.textContent})));
+   const expectedPins={battery:{point:[294,55],badge:[399,124],label:"A"},lamp:{point:[533,170],badge:[623,170],label:"まめ電球"},return:{point:[294,287],badge:[191,216],label:"B"}};
+   assert.equal(await page.locator(".akari-inspection-leaders path").count(),3,"Three leaders point directly from reachable chips to real circuit parts");
+   assert.equal(await page.locator(".akari-inspection-leaders circle").count(),3,"Every tap chip has a visible target dot on the actual circuit");
    for(const {id,left,top,label} of investigationLocations){
-     const [x,y,part]={battery:[294,55,"A"],lamp:[533,170,"まめ電球"],return:[294,287,"B"]}[id];
-     assert.ok(Math.abs(left-x/680*100)<.2&&Math.abs(top-y/340*100)<.2,"The clickable "+id+" point must align with its real SVG location");
-     assert.ok(label.includes(part),"The clickable marker must have the same A/B/bulb label as the observation");
+     const site=expectedPins[id];
+     assert.ok(site,"The inspection chip must represent an actual circuit part");
+     assert.ok(Math.abs(left-site.badge[0]/680*100)<.2&&Math.abs(top-site.badge[1]/340*100)<.2,"The "+id+" button is offset, leaving the actual component visible");
+     assert.ok(label.includes(site.label),"The chip is named for its A, bulb or B observation");
+     const line=await page.locator('[data-inspection-leader="'+id+'"]').getAttribute("d");
+     assert.equal(line,"M"+site.badge.join(" ")+"L"+site.point.join(" "),"The leader physically connects the chip to the exact SVG location");
    }
    await page.locator('[data-dock-inspect="battery"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
@@ -1027,6 +1039,8 @@ try{
    await page.locator('[data-dock-place="b"]').click();
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"Insulator in series leaves the bridge unlit");
+   assert.equal(await page.locator('[data-bridge-gap="a"][data-bridge-gap-state="conductive"]').count(),1,"A tested conductor visibly joins the top contacts");
+   assert.equal(await page.locator('[data-bridge-gap="b"][data-bridge-gap-state="insulator"]').count(),1,"Wood visibly occupies but does not electrically bridge the bottom contacts");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),0,"Failing circuit must not illuminate landscape");
    await openDrawer("right");
    await page.locator('[data-bridge-sample="foil"]').click();
@@ -1039,6 +1053,7 @@ try{
    assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","Saved repair persists after reload");
    await page.locator('[data-bridge-repair-guess="lit"]').click();await page.locator('[data-bridge-repair-test]').click();
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"Two tested conductors complete an actual loop");
+   assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"Both open gaps become visibly connected after proven conducting repairs");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town streetlamp visually responds to observed working circuit");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-lantern-glass").count(),1,"Successful repair illuminates the lamp inside the circuit diagram");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Repairing both gaps reveals light INSIDE the circuit diagram");
