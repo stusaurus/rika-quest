@@ -575,3 +575,91 @@ body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.brid
 .akari-dock .bridge-circuit.is-lit .bridge-filament{
  filter:drop-shadow(0 0 7px #ffec9f);
 }
+
+/* Mission 3: material selection is a real experiment directly UNDER the
+   working circuit, not a hidden second mode behind the materials drawer. */
+.akari-dock .akari-sample-desk{
+ display:grid;gap:9px;min-width:0;
+ padding:10px 12px;
+ border:2px solid #a5c9b5;border-radius:14px;
+ background:#edf7ec;color:#264d5c;
+}
+.akari-dock .akari-sample-heading{
+ font-size:15px;font-weight:900;line-height:1.35;
+}
+.akari-dock .akari-sample-choices{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:8px;min-width:0;
+ overflow:visible;
+}
+.akari-dock .akari-sample-choices .bridge-material{
+ min-width:0;min-height:97px;
+ padding:5px 4px;border-radius:12px;
+ align-content:center;gap:3px;
+}
+.akari-dock .akari-sample-choices .bridge-material-art{
+ width:100%;height:48px;max-width:98px;min-height:0;
+}
+.akari-dock .akari-sample-choices .bridge-material-art svg{
+ display:block;width:100%;height:100%;
+}
+.akari-dock .akari-sample-choices .bridge-material strong{
+ font-size:12px;line-height:1.25;overflow-wrap:anywhere;
+}
+.akari-dock .akari-sample-choices .bridge-material small{
+ font-size:11px;line-height:1.3;
+ background:#d9e8e4;color:#214d61;
+ border-radius:9px;padding:3px 5px;max-width:100%;
+}
+.akari-dock .akari-sample-choices .bridge-material.selected{
+ background:#fff1b9;border-color:#c7943d;
+ box-shadow:0 0 0 2px #e9c677;
+}
+.akari-dock .akari-sample-choices .bridge-material:focus-visible{
+ outline:3px solid #d98236;outline-offset:2px;
+}
+.akari-dock .akari-sample-test{
+ border:2px solid #366b80;background:#173c50;color:#fff7e7;
+ padding:10px;gap:8px;
+}
+.akari-dock .akari-sample-test[hidden]{display:none!important}
+.akari-dock .akari-sample-test>strong{
+ font-size:14px;color:#fff4db;line-height:1.45;
+}
+.akari-dock .akari-sample-test .lab-reading{
+ color:#fff6d9;font-weight:850;
+ border:1px solid #c2a968;background:#425b61;
+}
+.akari-dock .akari-sample-test .bridge-mini-circuit{
+ width:min(100%,360px);max-height:165px;
+}
+.akari-dock .akari-sample-test .bridge-mini-circuit svg{
+ max-height:163px;
+}
+@media(max-width:740px){
+ .akari-dock .akari-sample-desk{
+  padding:8px;gap:7px;border-radius:12px;
+ }
+ .akari-dock .akari-sample-choices{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;
+ }
+ .akari-dock .akari-sample-choices .bridge-material{
+  min-height:68px;padding:4px 5px;
+  grid-template-columns:50px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  align-content:center;align-items:center;
+  text-align:left;justify-items:stretch;column-gap:6px;
+ }
+ .akari-dock .akari-sample-choices .bridge-material-art{
+  grid-row:1/3;grid-column:1;width:50px;height:48px;
+ }
+ .akari-dock .akari-sample-choices .bridge-material strong{
+  grid-column:2;grid-row:1;font-size:11px;
+ }
+ .akari-dock .akari-sample-choices .bridge-material small{
+  grid-column:2;grid-row:2;font-size:10px;padding:2px 4px;
+ }
+ .akari-dock .akari-sample-test{padding:8px;gap:6px}
+ .akari-dock .akari-sample-test .bridge-mini-circuit{max-height:124px}
+ .akari-dock .akari-sample-test .bridge-mini-circuit svg{max-height:122px}
+}
