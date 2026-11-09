@@ -367,3 +367,32 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
 @media(prefers-reduced-motion:reduce){
  .akari-inspection-pin:not(.found){animation:none}
 }
+
+/* A finding stays next to the live diagram after each inspection, rather than
+   appearing in the collapsed left shelf or at the bottom of a long page. */
+.akari-board-focus.has-observation{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;
+ gap:5px 8px;align-items:center;
+}
+.akari-observation{
+ grid-column:1/-1;min-width:0;
+ display:grid;grid-template-columns:auto minmax(0,1fr);
+ align-items:center;gap:5px 10px;
+ padding:7px 9px;border:2px solid #91c6af;border-radius:10px;
+ background:#e3f5ed;color:#245467;
+}
+.akari-observation strong{
+ font-size:clamp(12px,1.7vw,14px);font-weight:900;line-height:1.4;
+}
+.akari-observation-finding{
+ font-size:clamp(12px,1.7vw,14px);font-weight:750;line-height:1.45;
+ overflow-wrap:anywhere;
+}
+.akari-inspection-pin.found.is-latest{
+ border-color:#fff4bd;outline:3px solid #e39b34;
+ outline-offset:3px;box-shadow:0 0 0 6px #fff5bc66,0 4px 8px #163f4c44;
+}
+@media(max-width:740px){
+ .akari-observation{grid-template-columns:minmax(0,1fr);gap:2px;padding:5px 8px}
+ .akari-board-focus.has-observation{gap:4px}
+}
