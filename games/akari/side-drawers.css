@@ -495,3 +495,52 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
   max-height:43px;
  }
 }
+
+/* Visible 2-gap circuitry. Warm wires stand out from the town illustration;
+   A/B now show real exposed ends, not opaque "not repaired" rectangles. */
+.akari-dock .bridge-main-wire,
+.akari-dock .bridge-gap-stubs,
+.akari-dock .bridge-conducting-insert{
+ filter:drop-shadow(0 1px 2px #173748e0);
+}
+.akari-dock .bridge-gap-visual[data-bridge-gap-state="open"] .bridge-visible-break{
+ filter:drop-shadow(0 0 3px #eeb354);
+}
+.akari-dock .akari-inspection-leaders{
+ position:absolute;inset:0;width:100%;height:100%;
+ pointer-events:none;overflow:visible;
+}
+.akari-dock .akari-inspection-leaders path{
+ stroke:#fffcdf;stroke-width:3.5;stroke-dasharray:5 6;
+ fill:none;filter:drop-shadow(0 1px 2px #153b53);
+}
+.akari-dock .akari-inspection-leaders circle{
+ fill:#fff3bd;stroke:#26566c;stroke-width:3.5;
+ filter:drop-shadow(0 1px 2px #14364a);
+}
+.akari-dock .akari-inspection-pin{
+ min-width:51px;min-height:45px;padding:3px 4px;
+ border-width:2px;border-radius:12px;
+ box-shadow:0 0 0 2px #24546f,0 2px 5px #173a4c80;
+}
+.akari-dock .akari-inspection-pin>span{font-size:16px}
+.akari-dock .akari-inspection-pin>strong{font-size:12px}
+@media(max-width:740px){
+ .akari-dock .akari-inspection-pin{
+  min-width:51px;min-height:44px;padding:2px 3px;border-radius:10px;
+ }
+ .akari-dock .akari-inspection-pin>span{font-size:14px}
+ .akari-dock .akari-inspection-pin>strong{font-size:10px}
+}
+/* The stage already has a goal and active circuit inside this workspace.
+   The scenic header and a second progress banner push that circuit below
+   the first phone screen without adding any decision or feedback. */
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock)>.story-scene,
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .bridge-quest-strip.akari-dock-status{
+ display:none!important;
+}
+/* Don't invite premature "confirm restored" presses while observation and
+   materials are still in progress. Show it when the child has chosen WHY. */
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock):not(:has(.bridge-why button.chosen)) #checkBtn{
+ display:none!important;
+}
