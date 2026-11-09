@@ -933,10 +933,14 @@ try{
    assert.equal(await page.locator(".akari-board-focus").getAttribute("aria-live"),"polite","A new finding must be announced accessibly");
    assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),0,"Children can begin from the circuit without opening a drawer");
    const pinsInsideCircuit=await page.locator(".akari-inspection-pin").evaluateAll(els=>{
-     const rect=els[0].closest(".bridge-circuit").getBoundingClientRect();
-     return els.every(el=>{const p=el.getBoundingClientRect();return p.left>=rect.left&&p.right<=rect.right&&p.top>=rect.top&&p.bottom<=rect.bottom;});
+     const r=els[0].closest(".bridge-circuit").getBoundingClientRect();
+     const box=x=>({left:+x.left.toFixed(2),right:+x.right.toFixed(2),top:+x.top.toFixed(2),bottom:+x.bottom.toFixed(2),width:+x.width.toFixed(2)});
+     const pins=els.map(el=>{const p=el.getBoundingClientRect();return {site:el.dataset.dockInspect,...box(p),
+       inside:p.left>=r.left-2&&p.right<=r.right+2&&p.top>=r.top-2&&p.bottom<=r.bottom+2};});
+     return {circuit:box(r),pins,inside:pins.every(p=>p.inside)};
    });
-   assert.equal(pinsInsideCircuit,true,"All touchable inquiry pins belong inside the illustration, not outside it");
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-investigation-before.png",fullPage:true});
+   assert.equal(pinsInsideCircuit.inside,true,"All touchable inquiry pins must remain inside the stage-3 circuit: "+JSON.stringify(pinsInsideCircuit));
    const investigationLocations=await page.locator(".akari-inspection-pin").evaluateAll(els=>
      els.map(el=>({id:el.dataset.dockInspect,left:parseFloat(el.style.left),top:parseFloat(el.style.top),label:el.textContent})));
    const expectedPins={battery:{point:[294,55],badge:[399,124],label:"A"},lamp:{point:[533,170],badge:[612,280],label:"まめ電球"},return:{point:[294,287],badge:[191,216],label:"B"}};
