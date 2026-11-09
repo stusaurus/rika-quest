@@ -313,3 +313,57 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
 }
 .shelf-scroll-hint[hidden]{display:none!important}
 @media(min-width:1150px){.shelf-scroll-hint{display:none!important}}
+
+/* Visual inquiry: children start by tapping meaningful places IN the circuit.
+   This is presentation and event forwarding only; no correct answer is exposed. */
+.akari-board-focus{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-height:47px;padding:5px 10px;margin:0;
+ border:2px solid #b8d3bc;border-radius:12px;
+ background:#f1f9e9;color:#254f5b;
+}
+.akari-board-focus>strong{font-size:clamp(13px,2.6vw,17px);font-weight:900;line-height:1.35}
+.akari-focus-count{font-size:12px;font-weight:900;border-radius:30px;background:#fff3bf;padding:5px 9px;white-space:nowrap}
+.akari-board-focus>button{
+ min-height:42px;border:2px solid #bb8c3b;border-radius:11px;
+ padding:6px 10px;background:#ffebaa;color:#624218;
+ font-family:inherit;font-size:clamp(11px,2.4vw,14px);font-weight:900;
+ cursor:pointer;white-space:normal;text-align:center;
+}
+.akari-board-focus>button:focus-visible{outline:3px solid #e6a246;outline-offset:2px}
+.akari-inspection-hotspots{position:absolute;inset:0;z-index:7;pointer-events:none}
+.akari-inspection-pin{
+ position:absolute;transform:translate(-50%,-50%);
+ display:grid;place-items:center;align-content:center;gap:0;
+ min-width:68px;min-height:52px;padding:4px 5px;
+ border:3px solid #fff5d6;border-radius:15px;
+ background:#ffdb79f2;color:#284a5c;
+ box-shadow:0 0 0 3px #21516c,0 5px 9px #173a4c80;
+ font-family:inherit;cursor:pointer;pointer-events:auto;
+}
+.akari-inspection-pin>span{font-size:18px;line-height:1.2}
+.akari-inspection-pin>strong{font-size:11px;line-height:1.2;white-space:nowrap}
+.akari-inspection-pin[data-dock-inspect="battery"]{left:14%;top:53%}
+.akari-inspection-pin[data-dock-inspect="lamp"]{left:79%;top:50%}
+.akari-inspection-pin[data-dock-inspect="return"]{left:20%;top:85%}
+.akari-inspection-pin.found{
+ background:#ddf5e3;color:#1e6852;border-color:#f6ffef;
+ box-shadow:0 0 0 2px #528a70,0 2px 6px #173a4c42;
+}
+.akari-inspection-pin:not(.found){
+ animation:akariInspectBreath 2.8s ease-in-out infinite;
+}
+.akari-inspection-pin:focus-visible{outline:4px solid #d47d35;outline-offset:5px}
+@keyframes akariInspectBreath{
+ 0%,100%{filter:brightness(1)}
+ 50%{filter:brightness(1.13)}
+}
+@media(max-width:740px){
+ .akari-board-focus{min-height:43px;padding:4px 7px}
+ .akari-inspection-pin{min-width:58px;min-height:47px;border-width:2px;border-radius:11px;padding:3px 2px}
+ .akari-inspection-pin>span{font-size:16px}
+ .akari-inspection-pin>strong{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .akari-inspection-pin:not(.found){animation:none}
+}
