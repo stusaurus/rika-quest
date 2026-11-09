@@ -909,6 +909,8 @@ try{
    assert.match(await page.locator(".akari-board-focus").textContent(),/どこから しらべる/, "The circuit names the next interaction in a few words");
    assert.equal(await page.locator(".akari-inspection-pin.found").count(),0,"No site may be pre-inspected");
    assert.equal(await page.locator(".akari-observation").count(),0,"Findings must not appear before a real inspection");
+   assert.equal(await page.locator(".akari-dock-readout").count(),1,"The observation rail is a dedicated place beside the circuit");
+   assert.equal(await page.locator(".akari-dock-readout").isVisible(),false,"Before investigation the empty observation rail stays out of the way");
    assert.equal(await page.locator(".akari-board-focus").getAttribute("aria-live"),"polite","A new finding must be announced accessibly");
    assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),0,"Children can begin from the circuit without opening a drawer");
    const pinsInsideCircuit=await page.locator(".akari-inspection-pin").evaluateAll(els=>{
@@ -919,30 +921,36 @@ try{
    await page.locator('[data-dock-inspect="battery"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
    assert.match(await page.locator(".akari-board-focus").textContent(),/1 \/ 3/,"The board reflects the actual investigation progress");
-   assert.match(await page.locator(".akari-observation").textContent(),/でんちを しらべた.*すき間/s,"The discovered battery observation is shown next to the circuit");
+   assert.match(await page.locator(".akari-dock-readout .akari-observation").textContent(),/でんちを しらべた.*すき間/s,"The battery finding appears in the LEFT observation rail"); 
+   assert.equal(await page.locator(".akari-board-focus .akari-observation").count(),0,"The instruction banner does not duplicate findings");
+   assert.equal(await page.locator(".akari-dock-readout").getAttribute("role"),"status","The observation rail announces new findings");
    assert.equal(await page.locator('[data-dock-inspect="battery"].is-latest').count(),1,"The observed battery is highlighted IN the diagram");
    const findingLayout=await page.evaluate(()=>{
-     const a=document.querySelector(".akari-observation").getBoundingClientRect();
+     const a=document.querySelector(".akari-dock-readout").getBoundingClientRect();
      const b=document.querySelector(".akari-dock-center>.bridge-circuit").getBoundingClientRect();
-     return {beforeCircuit:a.bottom<=b.top+2,notOutsideViewport:a.top>=0&&a.bottom<=innerHeight,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+     return {leftOfCircuit:a.right<=b.left+2, beforeCircuit:a.bottom<=b.top+2,
+       visible:a.top>=-1&&a.bottom<=innerHeight+2,
+       overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
-   assert.equal(findingLayout.beforeCircuit&&findingLayout.notOutsideViewport,true,"The finding appears right above the circuit and remains onscreen: "+JSON.stringify(findingLayout));
+   assert.equal(width>=1150?findingLayout.leftOfCircuit:findingLayout.beforeCircuit,true,
+     "The finding must use the unused LEFT rail on desktop or stay immediately before the circuit on phones: "+JSON.stringify(findingLayout));
+   assert.equal(findingLayout.visible,true,"The result should be visible without searching elsewhere: "+JSON.stringify(findingLayout));
    assert.ok(findingLayout.overflow<=2,"The finding must not cause horizontal page overflow");
-   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-observation.png",fullPage:true});
+   await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-left-observation.png",fullPage:true});
    await page.locator('[data-dock-inspect="lamp"]').focus();
    await page.keyboard.press("Enter");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Keyboard Enter can investigate a real circuit location");
-   assert.match(await page.locator(".akari-observation").textContent(),/まめ電球を しらべた.*横と 下/s,"The newest finding replaces the older result, without stacking extra text");
+   assert.match(await page.locator(".akari-dock-readout .akari-observation").textContent(),/まめ電球を しらべた.*横と 下/s,"The left observation rail updates without accumulating text");
    assert.equal(await page.locator('[data-dock-inspect="lamp"].is-latest').count(),1,"The most recently inspected bulb is distinguished");
    await openDrawer("left");
    await page.locator('[data-bridge-inspect="battery"]').click();
-   assert.match(await page.locator(".akari-observation").textContent(),/でんちを しらべた.*すき間/s,"The original tool shelf can recall a previously inspected result");
+   assert.match(await page.locator(".akari-dock-readout .akari-observation").textContent(),/でんちを しらべた.*すき間/s,"The original tool shelf can recall a finding in the left observation rail");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Reviewing a finding does not fake another inspection");
    await closeDrawer("left");
    await page.locator('[data-dock-inspect="return"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),3,"All three inspections remain required");
    assert.equal(await page.locator(".akari-inspection-pin").count(),0,"The temporary attention markers leave the circuit once observation is complete");
-   assert.match(await page.locator(".akari-observation").textContent(),/もどる線を しらべた.*すき間/s,"The third finding stays visible even after inspection markers disappear");
+   assert.match(await page.locator(".akari-dock-readout .akari-observation").textContent(),/もどる線を しらべた.*すき間/s,"The third finding remains in the left observation rail after inspection markers disappear");
    assert.equal(await page.locator(".akari-observation").count(),1,"Only one concise latest finding remains visible");
    assert.equal(await page.locator("[data-dock-jump='right']").count(),1,"Materials become the next visible choice after the three investigations");
    assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Four materials remain available, without revealing the correct one");
