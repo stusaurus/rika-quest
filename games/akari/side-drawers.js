@@ -146,8 +146,8 @@
      button.dataset.dockInspect=spot.id;
      // The dotted leader points to site.diagram.x/y; the actual button
      // sits aside so the learner can inspect the two separated wire ends.
-     button.style.left=(site.diagram.pin.x/680*100).toFixed(3)+"%";
-     button.style.top=(site.diagram.pin.y/340*100).toFixed(3)+"%";
+     button.style.setProperty("--akari-pin-x",(site.diagram.pin.x/680*100).toFixed(3)+"%");
+     button.style.setProperty("--akari-pin-y",(site.diagram.pin.y/340*100).toFixed(3)+"%");
      button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
      button.setAttribute("aria-pressed",String(found));
      button.innerHTML='<span aria-hidden="true">'+(found?"✓":"🔎")+'</span><strong>'+spot.label+'</strong>';
