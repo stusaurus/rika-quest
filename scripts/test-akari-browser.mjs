@@ -942,14 +942,18 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-investigation-before.png",fullPage:true});
    assert.equal(pinsInsideCircuit.inside,true,"All touchable inquiry pins must remain inside the stage-3 circuit: "+JSON.stringify(pinsInsideCircuit));
    const investigationLocations=await page.locator(".akari-inspection-pin").evaluateAll(els=>
-     els.map(el=>({id:el.dataset.dockInspect,left:parseFloat(el.style.left),top:parseFloat(el.style.top),label:el.textContent})));
+     els.map(el=>({id:el.dataset.dockInspect,
+       requestedLeft:parseFloat(el.style.getPropertyValue("--akari-pin-x")),
+       requestedTop:parseFloat(el.style.getPropertyValue("--akari-pin-y")),
+       label:el.textContent})));
    const expectedPins={battery:{point:[294,55],badge:[399,124],label:"A"},lamp:{point:[533,170],badge:[612,280],label:"まめ電球"},return:{point:[294,287],badge:[191,216],label:"B"}};
    assert.equal(await page.locator(".akari-inspection-leaders path").count(),3,"Three leaders point directly from reachable chips to real circuit parts");
    assert.equal(await page.locator(".akari-inspection-leaders circle").count(),3,"Every tap chip has a visible target dot on the actual circuit");
-   for(const {id,left,top,label} of investigationLocations){
+   for(const {id,requestedLeft,requestedTop,label} of investigationLocations){
      const site=expectedPins[id];
      assert.ok(site,"The inspection chip must represent an actual circuit part");
-     assert.ok(Math.abs(left-site.badge[0]/680*100)<.2&&Math.abs(top-site.badge[1]/340*100)<.2,"The "+id+" button is offset, leaving the actual component visible");
+     assert.ok(Math.abs(requestedLeft-site.badge[0]/680*100)<.2&&Math.abs(requestedTop-site.badge[1]/340*100)<.2,
+       "The "+id+" badge requests the position attached to its real A/bulb/B part; CSS clamps only its safe screen placement");
      assert.ok(label.includes(site.label),"The chip is named for its A, bulb or B observation");
      const line=await page.locator('[data-inspection-leader="'+id+'"]').getAttribute("d");
      assert.equal(line,"M"+site.badge.join(" ")+"L"+site.point.join(" "),"The leader physically connects the chip to the exact SVG location");
