@@ -4,9 +4,9 @@
  * The sample test is simulated; a metal is only proven conductive after prediction and measurement.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
- {id:"battery",name:"でんちの ＋がわ",icon:"🔋",finding:"でんちの ＋から 出た 線は、Aで とぎれている。"},
- {id:"lamp",name:"まめ電球",icon:"💡",finding:"まめ電球の 上と 下には、線が つながっている。でも、光っていない。"},
- {id:"return",name:"でんちの −がわ",icon:"🔌",finding:"でんちの −に もどる 線は、Bで とぎれている。"}
+ {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113"},finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
+ {id:"lamp",name:"まめ電球",icon:"💡",diagram:{x:533,y:170,viewBox:"446 84 174 173"},finding:"まめ電球の 上と 下に 線が ある。 でも、まだ 光っていない。"},
+ {id:"return",name:"B（−がわ）",icon:"🔌",diagram:{x:294,y:287,viewBox:"192 227 204 113"},finding:"Bで 線が とぎれている。 でんちの −へ もどる 線だよ。"}
 ];
 const materials=[
  {id:"iron",name:"鉄のくぎ",conductive:true,detail:"鉄は金属。"},
@@ -70,21 +70,19 @@ function canFinish(s){
 }
 function sceneLit(s){const d=normalize(s);return d.repairResult?.signature===signature(d.slots)&&d.repairResult.actual==="lit"&&evaluate(d.slots).lit}
 function circuit(slots={},isLit=false){
- const wires=evaluate(slots).wires;
  const c=isLit?"#ffe5a0":"#a9ced7";
- const edge=(a,b)=>wires.some(([x,y])=>x===a&&y===b||x===b&&y===a);
  const wire=(d,on)=>'<path d="'+d+'" stroke="'+(on?c:"#5c7683")+'" stroke-width="7" stroke-linecap="round" fill="none" '+(on?'':'stroke-dasharray="7 8"')+'/>';
  const label=(x,y,s)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="15" font-weight="800" fill="#e7f8f8">'+s+'</text>';
  const gap=(x,y,id,name)=>'<rect x="'+(x-58)+'" y="'+(y-23)+'" width="116" height="45" rx="9" fill="'+(id?"#dbeddf":"#254761")+'" stroke="'+(id?"#84be96":"#d49f83")+'" stroke-width="3"/>'+
  '<text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+(id?"#1b4c38":"#fff0dd")+'">'+(id?(material(id)?.name||""):"未修理")+'</text>'+label(x,y-34,name);
- return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。">'+
+ return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。"><g id="akari-bridge-drawing">'+
  '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+
  '<rect x="31" y="85" width="112" height="172" rx="14" fill="#b9644d" stroke="#ffe5ad" stroke-width="5"/>'+
  '<text x="87" y="130" font-size="19" text-anchor="middle" fill="#fff">乾電池</text><text x="87" y="172" font-size="24" font-weight="800" text-anchor="middle" fill="#fff">1.5V</text>'+
  '<circle cx="87" cy="74" r="15" fill="#fff6da"/><circle cx="87" cy="265" r="15" fill="#fff6da"/>'+
  label(114,70,"＋")+label(114,292,"−")+
- wire("M87 74V55H236",edge("P","A"))+wire("M352 55H533V112",true)+
- wire("M533 228V287H352",true)+wire("M236 287H87V265",edge("B","N"))+
+ wire("M87 74V55H236",true)+wire("M352 55H533V112",true)+
+ wire("M533 228V287H352",true)+wire("M236 287H87V265",true)+
  gap(294,55,slots.a,"修理 A")+gap(294,287,slots.b,"修理 B")+
  '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#204961")+'" stroke="#e8f4ee" stroke-width="6"/>'+
  '<circle cx="533" cy="170" r="27" fill="none" stroke="'+(isLit?"#b67932":"#9abac8")+'" stroke-width="5"/>'+
@@ -92,16 +90,15 @@ function circuit(slots={},isLit=false){
  '<circle cx="533" cy="112" r="8" fill="#fff2cc"/><circle cx="533" cy="228" r="8" fill="#fff2cc"/>'+
  label(616,174,"豆電球")+
  (isLit?'<g class="bridge-sparkles"><circle cx="591" cy="101" r="7" fill="#ffe699"/><circle cx="483" cy="111" r="5" fill="#ffe699"/></g>':"")+
- '</svg>';
+ '</g></svg>';
 }
-const inspectArtwork={"battery":"<svg viewBox=\"0 0 160 96\" aria-hidden=\"true\"><defs><linearGradient id=\"b3batt\" x2=\"0\" y2=\"1\"><stop stop-color=\"#fff2bd\"/><stop offset=\".4\" stop-color=\"#d8b86f\"/><stop offset=\"1\" stop-color=\"#75654d\"/></linearGradient></defs><rect width=\"160\" height=\"96\" fill=\"#173a4b\"/><rect y=\"65\" width=\"160\" height=\"31\" fill=\"#655440\"/><path d=\"M0 71H160M0 83H160\" stroke=\"#a48968\" opacity=\".4\"/><path d=\"M24 69V94M104 69V94\" stroke=\"#443f3a\" opacity=\".3\"/><ellipse cx=\"81\" cy=\"79\" rx=\"69\" ry=\"6\" fill=\"#182d34\" opacity=\".48\"/><rect x=\"28\" y=\"30\" width=\"111\" height=\"38\" rx=\"14\" fill=\"url(#b3batt)\" stroke=\"#d9d1ae\" stroke-width=\"2.4\"/><rect x=\"30\" y=\"30\" width=\"37\" height=\"38\" rx=\"12\" fill=\"#ad4033\"/><path d=\"M57 30H67V68H57\" fill=\"#ba5144\"/><path d=\"M64 32H128\" stroke=\"#fffce3\" opacity=\".55\" stroke-width=\"3\"/><rect x=\"18\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\" fill=\"#c9dce3\" stroke=\"#6f8b99\"/><rect x=\"139\" y=\"41\" width=\"8\" height=\"16\" rx=\"2\" fill=\"#a7b4b6\"/><text x=\"47\" y=\"55\" font-size=\"20\" text-anchor=\"middle\" fill=\"#fff6e7\" font-weight=\"900\">＋</text><text x=\"119\" y=\"55\" font-size=\"20\" text-anchor=\"middle\" fill=\"#374656\" font-weight=\"900\">−</text><path d=\"M19 49H5V20H40\" stroke=\"#d6a35b\" stroke-width=\"5\" fill=\"none\"/><path d=\"M147 49H158V21H119\" stroke=\"#acbdc1\" stroke-width=\"4\" fill=\"none\"/><circle cx=\"40\" cy=\"20\" r=\"6\" fill=\"#cda77b\" stroke=\"#fff0b8\" stroke-width=\"2\"/><circle cx=\"119\" cy=\"21\" r=\"6\" fill=\"#cda77b\" stroke=\"#fff0b8\" stroke-width=\"2\"/></svg>","lamp":"<svg viewBox=\"0 0 160 96\" aria-hidden=\"true\"><defs><radialGradient id=\"b3glass\" cx=\".36\" cy=\".20\"><stop stop-color=\"#ffffff\" stop-opacity=\".98\"/><stop offset=\".65\" stop-color=\"#bddfe4\" stop-opacity=\".65\"/><stop offset=\"1\" stop-color=\"#6e9baa\" stop-opacity=\".9\"/></radialGradient></defs><rect width=\"160\" height=\"96\" fill=\"#173a4b\"/><rect y=\"65\" width=\"160\" height=\"31\" fill=\"#655440\"/><path d=\"M0 71H160M0 83H160\" stroke=\"#a48968\" opacity=\".4\"/><path d=\"M24 69V94M104 69V94\" stroke=\"#443f3a\" opacity=\".3\"/><ellipse cx=\"80\" cy=\"84\" rx=\"33\" ry=\"6\" fill=\"#102b3d\" opacity=\".6\"/><path d=\"M57 47Q43 29 51 15Q62 -3 80 3Q99 -3 110 17Q117 32 103 47L98 59H63Z\" fill=\"url(#b3glass)\" stroke=\"#e9f3ea\" stroke-width=\"3\"/><path d=\"M60 24Q61 12 70 9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M70 45V29L76 24L83 32L89 24L96 30V45\" stroke=\"#b89c72\" stroke-width=\"2.6\" fill=\"none\"/><rect x=\"63\" y=\"48\" width=\"35\" height=\"24\" rx=\"5\" fill=\"#94aab1\" stroke=\"#e1d9c5\" stroke-width=\"2\"/><path d=\"M65 54H96M65 62H96M65 69H96\" stroke=\"#455b65\" stroke-width=\"3\"/><circle cx=\"80\" cy=\"75\" r=\"5\" fill=\"#d9b878\"/><path d=\"M63 56H28V84M80 76V89H132V56H98\" fill=\"none\" stroke=\"#ccaa68\" stroke-width=\"5\"/><circle cx=\"28\" cy=\"84\" r=\"5\" fill=\"#e8d9b7\"/><circle cx=\"132\" cy=\"56\" r=\"5\" fill=\"#e8d9b7\"/></svg>","return":"<svg viewBox=\"0 0 160 96\" aria-hidden=\"true\"><rect width=\"160\" height=\"96\" fill=\"#173a4b\"/><rect y=\"65\" width=\"160\" height=\"31\" fill=\"#655440\"/><path d=\"M0 71H160M0 83H160\" stroke=\"#a48968\" opacity=\".4\"/><path d=\"M24 69V94M104 69V94\" stroke=\"#443f3a\" opacity=\".3\"/><ellipse cx=\"81\" cy=\"78\" rx=\"67\" ry=\"7\" fill=\"#172b31\" opacity=\".5\"/><rect x=\"17\" y=\"32\" width=\"126\" height=\"38\" rx=\"8\" fill=\"#344d52\" stroke=\"#b1bfa8\" stroke-width=\"3\"/><path d=\"M20 51H53M105 51H140\" stroke=\"#c1a575\" stroke-width=\"8\" stroke-linecap=\"round\"/><path d=\"M20 51H53M105 51H140\" stroke=\"#f3cf88\" stroke-width=\"3\" stroke-linecap=\"round\"/><rect x=\"45\" y=\"37\" width=\"18\" height=\"29\" rx=\"4\" fill=\"#b8ad91\" stroke=\"#f0d6a6\" stroke-width=\"2\"/><rect x=\"97\" y=\"37\" width=\"18\" height=\"29\" rx=\"4\" fill=\"#b8ad91\" stroke=\"#f0d6a6\" stroke-width=\"2\"/><circle cx=\"54\" cy=\"51\" r=\"5\" fill=\"#d1b86f\"/><circle cx=\"106\" cy=\"51\" r=\"5\" fill=\"#d1b86f\"/><path d=\"M72 35L87 67M86 35L72 67\" stroke=\"#f2b263\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M78 23V13M61 28L55 20M95 28L103 20\" stroke=\"#f9cc7a\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>"};
 function render(raw){
  const s=normalize(raw),step=s.inspected.length<3?0:!evidenceReady(s)?1:2;
  const selected=material(s.selected),test=selected&&s.tests[selected.id],lit=sceneLit(s);
  const art=window.AkariArt||{};
  const details=sites.map(site=>{
   const done=s.inspected.includes(site.id);
-  return '<button type="button" class="bridge-site'+(done?" found":"")+'" data-bridge-inspect="'+site.id+'"><span class="bridge-site-art" aria-hidden="true">'+inspectArtwork[site.id]+'</span><strong>'+site.name+'</strong><small>'+(done?"✓ "+site.finding:"調査する")+'</small></button>';
+  return '<button type="button" class="bridge-site'+(done?" found":"")+'" data-bridge-inspect="'+site.id+'"><span class="bridge-site-art" aria-hidden="true"><svg class="bridge-site-crop" viewBox="'+site.diagram.viewBox+'"><use href="#akari-bridge-drawing"></use></svg></span><strong>'+site.name+'</strong><small>'+(done?"✓ "+site.finding:"調査する")+'</small></button>';
  }).join("");
  const source=materials.map(m=>{
   const observed=s.tests[m.id];
