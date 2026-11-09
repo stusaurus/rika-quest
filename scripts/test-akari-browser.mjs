@@ -489,7 +489,7 @@ try{
    assert.equal(await page.locator("#workspace").isVisible(),true,"Original circuit still works");
    assert.equal(await page.locator("#predictStep").count(),0,"Returning from free lab does not reintroduce a prediction gate");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Children can experiment before answering the scientific reasoning question");
-   assert.match(await page.locator(".circuit-question").textContent(),/どこを つなぐと 光る/,"The same open circuit is ready for direct interaction");
+   assert.match(await page.locator(".circuit-question").textContent(),/4つの まるから えらぼう/,"The same open circuit visually offers four choices");
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"The first lamp lights by wiring: no test button");
    assert.equal(await page.locator(".circuit-svg-v2").count(),1,"Updated detailed physical battery-and-bulb art must render");
    assert.equal(await page.locator(".circuit-svg-v2 .battery-model").count(),1);
@@ -515,7 +515,7 @@ try{
    await page.mouse.move(dragEnd.x+dragEnd.width/2,dragEnd.y+dragEnd.height/2,{steps:8});
    await page.mouse.up();
    assert.equal(await page.locator(".wire-chip").count(),1,"Dragging between contact circles must build exactly one wire");
-   assert.match(await page.locator(".circuit-question").textContent(),/もう1本は どこへ/,"After the first wire, the single question updates without another dialog");
+   assert.match(await page.locator(".circuit-question").textContent(),/まだ つかない。つぎは どの まる/,"After the first wire, the single question updates without another dialog");
    assert.equal(await page.locator(".terminal.selected").count(),0,"A completed drag should not leave a dangling tap selection");
    const wireRoute=async()=>page.locator(".circuit-svg-v2 .lead-on-top .wire").evaluateAll(paths=>paths.map(path=>{
      const length=path.getTotalLength(),inside={battery:0,bulb:0};
