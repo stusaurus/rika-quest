@@ -302,7 +302,7 @@ try{
    assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
    assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
-   assert.match(await page.locator(".circuit-question").textContent(),/どこを つなぐと 光る/, "The actual circuit asks the first open-ended question");
+   assert.match(await page.locator(".circuit-question").textContent(),/4つの まるから えらぼう/, "The live circuit explicitly directs attention to four equally available contacts");
    const focusWidth=await page.evaluate(()=>({board:document.querySelector(".circuit-board").getBoundingClientRect().width,main:document.querySelector(".main").getBoundingClientRect().width}));
    assert.ok(focusWidth.board>focusWidth.main*.75,"The real touch-operated circuit should dominate the main layout: "+JSON.stringify(focusWidth));
    assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning appears after observing the experiment");
@@ -904,8 +904,29 @@ try{
    await closeDrawer("left");
    await page.locator("#checkBtn").click();
    assert.equal(await page.locator("#discovery").isVisible(),false,"Picking a winner without experiment cannot clear bridge");
-   await openDrawer("left");
-   for(const site of ["battery","lamp","return"])await page.locator('[data-bridge-inspect="'+site+'"]').click();
+   // Observe the actual circuit: no reading, no opened palette, no answer given.
+   assert.equal(await page.locator(".akari-inspection-pin").count(),3,"Three independent science investigation sites are present ON the live circuit");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/どこから しらべる/, "The circuit names the next interaction in a few words");
+   assert.equal(await page.locator(".akari-inspection-pin.found").count(),0,"No site may be pre-inspected");
+   assert.equal(await page.locator(".akari-dock-drawer:not([hidden])").count(),0,"Children can begin from the circuit without opening a drawer");
+   const pinsInsideCircuit=await page.locator(".akari-inspection-pin").evaluateAll(els=>{
+     const rect=els[0].closest(".bridge-circuit").getBoundingClientRect();
+     return els.every(el=>{const p=el.getBoundingClientRect();return p.left>=rect.left&&p.right<=rect.right&&p.top>=rect.top&&p.bottom<=rect.bottom;});
+   });
+   assert.equal(pinsInsideCircuit,true,"All touchable inquiry pins belong inside the illustration, not outside it");
+   await page.locator('[data-dock-inspect="battery"]').click();
+   assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/1 \/ 3/,"The board reflects the actual investigation progress");
+   await page.locator('[data-dock-inspect="lamp"]').focus();
+   await page.keyboard.press("Enter");
+   assert.equal(await page.locator(".bridge-site.found").count(),2,"Keyboard Enter can investigate a real circuit location");
+   await page.locator('[data-dock-inspect="return"]').click();
+   assert.equal(await page.locator(".bridge-site.found").count(),3,"All three inspections remain required");
+   assert.equal(await page.locator(".akari-inspection-pin").count(),0,"The temporary attention markers leave the circuit once observation is complete");
+   assert.equal(await page.locator("[data-dock-jump='right']").count(),1,"Materials become the next visible choice after the three investigations");
+   assert.equal(await page.locator(".bridge-materials [data-bridge-sample]").count(),4,"Four materials remain available, without revealing the correct one");
+   await page.locator("[data-dock-jump='right']").click();
+   assert.equal(await drawer("right").getAttribute("aria-expanded"),"true","The next visible action opens the original material controls beside the circuit");
    await openDrawer("right");
    assert.equal(await drawer("left").getAttribute("aria-expanded"),"false","Opening material palette keeps central circuit unobstructed on the other side");
    assert.equal(await page.locator(".akari-dock-right .bridge-materials").count(),1,"Material choices are inside the right drawer and use real lab controls");
