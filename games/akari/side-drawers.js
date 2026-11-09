@@ -202,6 +202,13 @@
       lastInspection=id;
       root.querySelector('.akari-dock-left [data-bridge-inspect="'+id+'"]')?.click();
       requestAnimationFrame(()=>{
+       const observation=root.querySelector(".akari-observation");
+       if(observation){
+        const box=observation.getBoundingClientRect();
+        if(box.top<72||box.bottom>window.innerHeight-12){
+         observation.scrollIntoView({block:"nearest",behavior:"instant"});
+        }
+       }
        const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
        (marker||root.querySelector("[data-dock-jump]"))?.focus({preventScroll:true});
       });
@@ -210,6 +217,12 @@
      const jump=event.target.closest("[data-dock-jump]");
      if(jump&&root.contains(jump)){
       if(opened!=="right")toggle(root,"right");
+      return;
+     }
+     // The original inspection shelf still works and shows the same finding.
+     const shelfInspection=event.target.closest("[data-bridge-inspect]");
+     if(shelfInspection&&root.contains(shelfInspection)){
+      lastInspection=shelfInspection.dataset.bridgeInspect;
       return;
      }
      const insertion=event.target.closest("[data-dock-place]");
