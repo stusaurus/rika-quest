@@ -4,9 +4,9 @@
  * The sample test is simulated; a metal is only proven conductive after prediction and measurement.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
- {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113"},finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
- {id:"lamp",name:"まめ電球",icon:"💡",diagram:{x:533,y:170,viewBox:"446 84 174 173"},finding:"まめ電球の 上と 下に 線が ある。 でも、まだ 光っていない。"},
- {id:"return",name:"B（−がわ）",icon:"🔌",diagram:{x:294,y:287,viewBox:"192 227 204 113"},finding:"Bで 線が とぎれている。 でんちの −へ もどる 線だよ。"}
+ {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113",pin:{x:399,y:124}},finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
+ {id:"lamp",name:"まめ電球",icon:"💡",diagram:{x:533,y:170,viewBox:"446 84 174 173",pin:{x:612,y:280}},finding:"まめ電球の 上と 下に 線が ある。 でも、まだ 光っていない。"},
+ {id:"return",name:"B（−がわ）",icon:"🔌",diagram:{x:294,y:287,viewBox:"192 227 204 113",pin:{x:191,y:216}},finding:"Bで 線が とぎれている。 でんちの −へ もどる 線だよ。"}
 ];
 const materials=[
  {id:"iron",name:"鉄のくぎ",conductive:true,detail:"鉄は金属。"},
@@ -70,11 +70,25 @@ function canFinish(s){
 }
 function sceneLit(s){const d=normalize(s);return d.repairResult?.signature===signature(d.slots)&&d.repairResult.actual==="lit"&&evaluate(d.slots).lit}
 function circuit(slots={},isLit=false){
- const c=isLit?"#ffe5a0":"#a9ced7";
- const wire=(d,on)=>'<path d="'+d+'" stroke="'+(on?c:"#5c7683")+'" stroke-width="7" stroke-linecap="round" fill="none" '+(on?'':'stroke-dasharray="7 8"')+'/>';
- const label=(x,y,s)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="15" font-weight="800" fill="#e7f8f8">'+s+'</text>';
- const gap=(x,y,id,name)=>'<rect x="'+(x-58)+'" y="'+(y-23)+'" width="116" height="45" rx="9" fill="'+(id?"#dbeddf":"#254761")+'" stroke="'+(id?"#84be96":"#d49f83")+'" stroke-width="3"/>'+
- '<text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+(id?"#1b4c38":"#fff0dd")+'">'+(id?(material(id)?.name||""):"未修理")+'</text>'+label(x,y-34,name);
+ const c=isLit?"#ffefb3":"#ffe2a3";
+ const wire=(d,on)=>'<path class="bridge-main-wire" d="'+d+'" stroke="'+(on?c:"#72838a")+'" stroke-width="8" stroke-linecap="round" fill="none" '+(on?'':'stroke-dasharray="7 8"')+'/>';
+ const label=(x,y,s)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="15" font-weight="800" fill="#fff9e7">'+s+'</text>';
+ // Draw the actual missing METAL CONTACTS, not an opaque box saying "unrepaired".
+ // The repair gap is electrically open until a tested conducting sample joins both ends.
+ const gap=(x,y,id,name)=>{
+  const specimen=material(id),joins=!!specimen?.conductive;
+  const letter=name.endsWith("A")?"A":"B",status=!id?"open":joins?"conductive":"insulator";
+  const terminals='<path class="bridge-gap-stubs" d="M'+(x-57)+' '+y+'h38 M'+(x+19)+' '+y+'h38" fill="none" stroke="'+c+'" stroke-width="9" stroke-linecap="round"/>'+
+   '<circle cx="'+(x-19)+'" cy="'+y+'" r="8" fill="#ffe4a3" stroke="#234e60" stroke-width="3"/>'+
+   '<circle cx="'+(x+19)+'" cy="'+y+'" r="8" fill="#ffe4a3" stroke="#234e60" stroke-width="3"/>';
+  const bridge=joins?'<path class="bridge-conducting-insert" d="M'+(x-19)+' '+y+'h38" fill="none" stroke="#fef2c5" stroke-width="11" stroke-linecap="round"/>':
+   id?'<rect class="bridge-insulating-insert" x="'+(x-13)+'" y="'+(y-13)+'" width="26" height="26" rx="5" fill="#a87952" stroke="#f9dca9" stroke-width="3"/>':
+   '<path class="bridge-visible-break" d="M'+(x-8)+' '+(y-9)+'l16 18M'+(x+8)+' '+(y-9)+'l-16 18" stroke="#fff0d4" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+  const placard='<rect x="'+(x-17)+'" y="'+(y-43)+'" width="34" height="26" rx="8" fill="#1e4353" stroke="#f9e2a0" stroke-width="2"/>'+
+   '<text x="'+x+'" y="'+(y-25)+'" text-anchor="middle" font-size="18" font-weight="900" fill="#fff7de">'+letter+'</text>';
+  const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+28)+'" text-anchor="middle" font-size="14" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
+  return '<g class="bridge-gap-visual" data-bridge-gap="'+letter.toLowerCase()+'" data-bridge-gap-state="'+status+'">'+terminals+bridge+placard+caption+'</g>';
+ };
  return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。"><g id="akari-bridge-drawing">'+
  '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+
  '<rect x="31" y="85" width="112" height="172" rx="14" fill="#b9644d" stroke="#ffe5ad" stroke-width="5"/>'+
@@ -86,7 +100,7 @@ function circuit(slots={},isLit=false){
  gap(294,55,slots.a,"修理 A")+gap(294,287,slots.b,"修理 B")+
  '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#204961")+'" stroke="#e8f4ee" stroke-width="6"/>'+
  '<circle cx="533" cy="170" r="27" fill="none" stroke="'+(isLit?"#b67932":"#9abac8")+'" stroke-width="5"/>'+
- '<path d="M518 154L548 186M548 154L518 186" stroke="'+(isLit?"#9d6b39":"#bbd9df")+'" stroke-width="6"/>'+
+ '<path class="bridge-filament" d="M513 170L520 161L528 179L536 161L544 179L551 170" fill="none" stroke="'+(isLit?"#fff3ab":"#a9c4c7")+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
  '<circle cx="533" cy="112" r="8" fill="#fff2cc"/><circle cx="533" cy="228" r="8" fill="#fff2cc"/>'+
  label(616,174,"豆電球")+
  (isLit?'<g class="bridge-sparkles"><circle cx="591" cy="101" r="7" fill="#ffe699"/><circle cx="483" cy="111" r="5" fill="#ffe699"/></g>':"")+
