@@ -343,9 +343,8 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
 }
 .akari-inspection-pin>span{font-size:18px;line-height:1.2}
 .akari-inspection-pin>strong{font-size:11px;line-height:1.2;white-space:nowrap}
-.akari-inspection-pin[data-dock-inspect="battery"]{left:14%;top:53%}
-.akari-inspection-pin[data-dock-inspect="lamp"]{left:79%;top:50%}
-.akari-inspection-pin[data-dock-inspect="return"]{left:20%;top:85%}
+/* Pin positions come from the same site.diagram coordinates as the SVG.
+   Old battery/return positions were away from the actual A/B breaks. */
 .akari-inspection-pin.found{
  background:#ddf5e3;color:#1e6852;border-color:#f6ffef;
  box-shadow:0 0 0 2px #528a70,0 2px 6px #173a4c42;
@@ -482,5 +481,17 @@ body[data-visual-theme="reference-rebuild"] #workspace:has(.akari-dock[data-open
 @media(min-width:1150px){
  .akari-dock .akari-memo-notes{
   overflow:visible;
+ }
+}
+
+/* Inspection cards now show a cropped view of the REAL streetlamp circuit,
+   instead of unrelated horizontal battery/bulb artwork. */
+.akari-dock-drawer .bridge-site-art .bridge-site-crop{
+ display:block;width:100%;height:100%;max-height:54px;
+ border-radius:7px;background:#b7dcdf;
+}
+@media(max-width:740px){
+ .akari-dock-drawer .bridge-site-art .bridge-site-crop{
+  max-height:43px;
  }
 }
