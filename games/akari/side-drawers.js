@@ -108,9 +108,10 @@
    focus.setAttribute("aria-label","回路の いまの しらべどころ");
    const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
    const explained=lab.querySelector(".bridge-why");
-   // Use the authoritative findings, and reveal them only after inspection.
-   const inspectedSite=window.AkariBridge?.sites?.find(site=>site.id===lastInspection);
-   const justFound=inspectedSite&&!!sections[0].querySelector('[data-bridge-inspect="'+lastInspection+'"].found');
+   // Restore the memo cards from actual inspection state after each rerender.
+   // Nothing undiscovered or merely guessed can appear in this list.
+   const inspectedSites=(window.AkariBridge?.sites||[]).filter(site=>
+    !!sections[0].querySelector('[data-bridge-inspect="'+site.id+'"].found'));
    focus.setAttribute("aria-live","polite");
    if(inspected<3){
     focus.innerHTML='<strong>🔎 '+(inspected?"つぎは どこを しらべる？":"どこから しらべる？")+'</strong><span class="akari-focus-count">'+inspected+' / 3</span>';
@@ -139,21 +140,36 @@
    }else{
     focus.innerHTML='<strong>🧩 すき間 A・B を なおそう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
    }
-   if(justFound){
-    const names={battery:"でんち",lamp:"まめ電球",return:"もどる線"};
-    const result=document.createElement("div");
-    result.className="akari-observation";
-    const heading=document.createElement("strong");
-    heading.textContent="👀 "+names[lastInspection]+"を しらべた！";
-    const finding=document.createElement("span");
-    finding.className="akari-observation-finding";
-    finding.textContent=inspectedSite.finding;
-    result.append(heading,finding);
+   if(inspectedSites.length){
     readout.hidden=false;
-    const caption=document.createElement("strong");
-    caption.className="akari-readout-title";
-    caption.textContent="👀 みつけたこと";
-    readout.append(caption,result);
+    const caption=document.createElement("div");
+    caption.className="akari-memo-heading";
+    const title=document.createElement("strong");
+    title.className="akari-readout-title";
+    title.textContent="📝 わかったこと";
+    const count=document.createElement("span");
+    count.className="akari-memo-count";
+    count.textContent=inspectedSites.length+" / 3";
+    caption.append(title,count);
+    const notes=document.createElement("div");
+    notes.className="akari-memo-notes";
+    notes.tabIndex=0;
+    notes.setAttribute("role","region");
+    notes.setAttribute("aria-label","しらべて わかったことの メモ");
+    const names={battery:"でんち",lamp:"まめ電球",return:"もどる線"};
+    for(const site of inspectedSites){
+     const result=document.createElement("div");
+     result.className="akari-observation"+(site.id===lastInspection?" is-latest":"");
+     result.dataset.observedSite=site.id;
+     const heading=document.createElement("strong");
+     heading.textContent="✓ "+names[site.id]+"を しらべた！";
+     const finding=document.createElement("span");
+     finding.className="akari-observation-finding";
+     finding.textContent=site.finding;
+     result.append(heading,finding);
+     notes.append(result);
+    }
+    readout.append(caption,notes);
    }
    center.insertBefore(focus,circuit);
    const leftIntro=document.createElement("p");
@@ -217,11 +233,17 @@
       lastInspection=id;
       root.querySelector('.akari-dock-left [data-bridge-inspect="'+id+'"]')?.click();
       requestAnimationFrame(()=>{
-       const observation=root.querySelector(".akari-observation");
+       const observation=root.querySelector(".akari-observation.is-latest");
        if(observation){
-        const box=observation.getBoundingClientRect();
+        const strip=observation.closest(".akari-memo-notes");
+        const box=strip.getBoundingClientRect();
         if(box.top<72||box.bottom>window.innerHeight-12){
-         observation.scrollIntoView({block:"nearest",behavior:"instant"});
+         strip.scrollIntoView({block:"nearest",behavior:"instant"});
+        }
+        // On narrow screens the latest memo must be visible within the strip.
+        const card=observation.getBoundingClientRect();
+        if(card.left<box.left||card.right>box.right){
+         observation.scrollIntoView({block:"nearest",inline:"nearest",behavior:"instant"});
         }
        }
        const marker=root.querySelector('[data-dock-inspect="'+id+'"]');
