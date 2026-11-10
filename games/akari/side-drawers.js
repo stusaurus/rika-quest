@@ -5,6 +5,8 @@
 (function(){
  let opened="";
  let lastInspection="";
+ let dragging=null;
+ let suppressClick=null;
  const get=id=>document.getElementById(id);
  const sides=["left","right"];
  // Show a concise cue only while horizontal options remain out of sight.
@@ -229,6 +231,12 @@
      const choices=materialsSection.querySelector(".bridge-materials");
      if(choices){
        choices.classList.add("akari-sample-choices");
+       choices.setAttribute("aria-label","材料を つかんで A または B に はこぶ。タップでも えらべる");
+       for(const card of choices.querySelectorAll("[data-bridge-sample]")){
+        card.classList.add("akari-draggable-material");
+        card.setAttribute("draggable","false");
+        card.setAttribute("aria-description","指で 回路の A か B に はこべるよ。タップしてから A か B を おしてもよい");
+       }
        desk.append(choices);
      }
      // The original material section is now empty; don't expose another
@@ -271,6 +279,14 @@
        target.append(letter,contents);
        target.setAttribute("aria-label",slot.toUpperCase()+(placed?"には "+placed.name+" が はいっている。":"は あいている。")+(chosen?" えらんだ "+chosen.name+" を はめる。":" まず 材料を えらぼう。"));
        overlay.append(target);
+     }
+     // Halo marks the real exposed A/B contacts, not a separate test panel.
+     for(const slot of ["a","b"]){
+      const pad=document.createElement("span");
+      pad.className="akari-drop-pad akari-drop-pad-"+slot;
+      pad.dataset.dropSlot=slot;
+      pad.setAttribute("aria-hidden","true");
+      overlay.append(pad);
      }
      circuit.append(overlay);
    }
