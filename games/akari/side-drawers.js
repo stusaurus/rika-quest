@@ -223,6 +223,9 @@
        choices.classList.add("akari-sample-choices");
        desk.append(choices);
      }
+     // The original material section is now empty; don't expose another
+     // misleading "材料を選ぼう" panel inside the optional history drawer.
+     materialsSection.remove();
      center.append(desk);
    }
    // The central diagram remains visible during material selection and repair.
