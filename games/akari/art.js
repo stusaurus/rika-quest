@@ -54,14 +54,17 @@ function bulb(on=false,short=false){
  "bulb-art bulb-art-v2");
 }
 
-function material(id){
- let obj={
+function materialShape(id){
+ return ({
  clip:'<path d="M120 49Q171 31 175 75L175 140Q170 173 138 169Q110 164 110 134L110 80Q110 61 124 62Q139 64 140 80L140 137Q142 148 130 146Q121 142 122 128" fill="none" stroke="#476c81" stroke-width="15" stroke-linecap="round"/><path d="M120 49Q171 31 175 75L175 140Q170 173 138 169Q110 164 110 134L110 80Q110 61 124 62Q139 64 140 80L140 137Q142 148 130 146Q121 142 122 128" fill="none" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>',
  foil:'<path d="M54 63 190 38 204 164 70 180Z" fill="#8ca6b6" stroke="#d9eff6" stroke-width="4"/><path d="M54 63 160 83 190 38 148 112 204 164 109 149 70 180 87 107Z" fill="#e3eff3" opacity=".8"/><path d="M98 65 132 96 107 149M159 87 174 148M87 107 156 119" stroke="#728d9e" stroke-width="3" fill="none"/>',
  wood:'<path d="M50 104 179 48 208 81 78 136Z" fill="#c88d54" stroke="#f4c890" stroke-width="4"/><path d="M78 136V163L208 105V81Z" fill="#90653f"/><path d="M50 104V133L78 163V136Z" fill="#ad794e"/><path d="M68 108 178 61M84 126 187 80M96 141 192 101" stroke="#8d5939" stroke-width="3" opacity=".8"/>',
  plastic:'<g transform="rotate(-17 120 100)"><rect x="29" y="74" width="190" height="60" rx="8" fill="#76ccef" stroke="#e3f7ff" stroke-width="5"/><path d="M45 79v23m18-23v11m18-11v22m18-22v11m18-11v22m18-22v11m18-11v22m18-22v11m18-11v22" stroke="#f9ffff" stroke-width="3"/><path d="M35 115H211" stroke="#488bb3" stroke-width="3" opacity=".5"/></g>',
  iron:'<path d="M90 46 152 111 143 120 79 59Z" fill="url(#metal)" stroke="#c9e1e7" stroke-width="3"/><path d="M150 108 188 149 179 158 140 118Z" fill="#829caa"/><ellipse cx="82" cy="50" rx="17" ry="9" transform="rotate(45 82 50)" fill="#b5d2d7" stroke="#e5eff4" stroke-width="3"/>'
- }[id]||'';
+ }[id]||'');
+}
+function material(id){
+ const obj=materialShape(id);
  return wrap("0 0 250 205",defs+plate(3,3,244,198)+obj,
  {clip:"鉄のクリップ",foil:"アルミはく",wood:"木の棒",plastic:"プラスチックの定規",iron:"鉄のくぎ"}[id]||"材料の見本","material-art");
 }
@@ -205,5 +208,15 @@ function workbench(wires,lit){
   scheme+battery+bulb+leads+'</svg>';
 }
 
-window.AkariArt={battery,bulb,material,circuit,shortDiagram,testCircuit,workbench};
+// The very same original vector paths used by the material cards can now
+// be placed into the actual electrical gap. Only the decorative card plate
+// is omitted; no icon substitute, square or "conducting bar" is invented.
+function materialPiece(id){
+ const original=materialShape(id);
+ if(!original)return "";
+ return '<svg class="bridge-installed-material" data-installed-material="'+id+'" xmlns="http://www.w3.org/2000/svg" '+
+  'viewBox="20 25 210 155" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+
+  defs+original+'</svg>';
+}
+window.AkariArt={battery,bulb,material,materialShape,materialPiece,circuit,shortDiagram,testCircuit,workbench};
 })();
