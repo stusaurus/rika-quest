@@ -1029,6 +1029,7 @@ try{
    });
    assert.ok(positions.targets.every(x=>x.left>positions.gapX),"A/B status badges must be to the RIGHT of the exposed wire contacts, not cover the actual gaps: "+JSON.stringify(positions));
    assert.equal(await page.locator("#scienceCompass").isVisible(),false,"The extra generic free-lab heading must not push the circuit below the main activity");
+   assert.equal(await page.locator("#freeLabToggle").isVisible(),false,"An unrelated sandbox entry must not appear above the stage-3 circuit");
    assert.equal(await page.locator(".reading-task-row .quest-desc").isVisible(),false,"The stale separate task description should not compete with the live on-board step");
    assert.equal(await page.locator(".reading-task-row").isVisible(),false,"Mission 3 has no redundant empty task banner");
    const audioPlacement=await page.locator("#readTaskBtn").evaluate(button=>{
@@ -1082,6 +1083,8 @@ try{
    assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"The physical circuit shows both gaps as connected conductors");
    assert.equal(await page.locator(".bridge-direct-history .bridge-record").count(),2,"The tested failed and successful combinations both remain recorded");
    assert.equal(await page.locator(".bridge-why").count(),1,"The immediate observation now invites explanation of the closed current path");
+   assert.equal(await page.locator(".bridge-why>h3").isVisible(),false,"The reason screen must not repeat the same giant question twice");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/光った！ なぜかな/,"One current question appears above the lit circuit");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town lights follow the live real circuit");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-lantern-glass").count(),1,"Streetlamp light appears in the circuit scenery");
    assert.equal(await page.locator(".bridge-circuit.is-lit .bridge-filament").getAttribute("stroke"),"#fff3ab","The filament itself glows");
@@ -1109,6 +1112,7 @@ try{
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".reading-task-row #readTaskBtn").count(),1,"The original read-aloud button returns to its normal task row in other missions");
    assert.equal(await page.locator(".garden-contacts button").count(),2,"Stage4 asks about contact control");
+   assert.equal(await page.locator("#freeLabToggle").isVisible(),true,"Outside stage3 the free experiment feature remains accessible");
    assert.equal(await page.locator(".garden-samples").count(),0,"Do not give materials before discovering experimental control");
    assert.equal(await page.locator('[data-garden-calibrate]').isDisabled(),true,"Calibration requires a prediction");
    await page.locator('[data-garden-guess="lit"]').click();await page.locator('[data-garden-calibrate]').click();
