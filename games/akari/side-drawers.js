@@ -309,7 +309,7 @@
      const distance=Math.hypot(x-p.x,y-p.y);
      const button=root.querySelector('.akari-dock-gap[data-dock-place="'+slot+'"]');
      const r=button?.getBoundingClientRect();
-     const onButton=!!r&&x>=r.left-12&&x<=r.right+12&&y>=r.top-12&&y<=r.bottom+12;
+     const onButton=!!r&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
      if((distance<=radius||onButton)&&distance<score){found=slot;score=distance;}
    }
    return found;
