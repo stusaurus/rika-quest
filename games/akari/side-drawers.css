@@ -858,3 +858,64 @@ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) #freeLabToggl
 body[data-visual-theme="reference-rebuild"] .akari-dock .bridge-direct-repair .bridge-why>h3{
  display:none!important;
 }
+
+/* Stage 3: carry a real material to the open contacts just like drawing
+   a lead. Pointer Events support touch, pen and mouse; buttons still work
+   for keyboard / switch access without ever requiring a drag gesture. */
+.akari-dock .akari-draggable-material{
+ touch-action:none;user-select:none;-webkit-user-select:none;
+ -webkit-touch-callout:none;cursor:grab;
+ transition:filter .15s ease,box-shadow .15s ease,opacity .15s ease;
+}
+.akari-dock .akari-draggable-material:active{cursor:grabbing}
+.akari-dock .akari-draggable-material.is-drag-source{opacity:.45;filter:saturate(.7)}
+.akari-dock .akari-drop-pad{
+ position:absolute;z-index:2;pointer-events:none;
+ left:43.235%;width:55px;height:55px;
+ transform:translate(-50%,-50%);
+ border:3px dashed #ffdf8f;border-radius:50%;
+ background:#fef3ce22;opacity:0;
+ box-shadow:0 0 0 0 #ffedb871;
+ transition:opacity .1s ease,background .1s ease,border-color .1s ease;
+}
+.akari-dock .akari-drop-pad-a{top:16.176%}
+.akari-dock .akari-drop-pad-b{top:84.411%}
+.akari-dock.is-dragging-material .akari-drop-pad{
+ opacity:1;box-shadow:0 0 0 6px #fff5bc40;
+}
+.akari-dock.is-dragging-material .akari-drop-pad.is-over{
+ border:4px solid #fff7c0;background:#fceaa188;
+ box-shadow:0 0 0 9px #ffdf7a80,0 0 17px 9px #fef2bb;
+}
+.akari-dock.is-dragging-material .akari-dock-gap{
+ outline:3px dashed #d68f37;outline-offset:1px;
+}
+.akari-dock .akari-dock-gap.drag-over{
+ outline:4px solid #f8d77e!important;
+ outline-offset:2px;
+ background:#fff3c3!important;
+ box-shadow:0 0 0 8px #ffefaa8a,0 1px 10px #f6d782!important;
+}
+.akari-material-ghost{
+ position:fixed;left:0;top:0;z-index:99999;pointer-events:none;
+ width:93px;min-height:87px;transform:translate(-50%,-108%);
+ border:3px solid #ffe7a4;border-radius:14px;
+ background:#fff2bb;box-shadow:0 8px 24px #122f48a6;
+ display:grid;align-content:center;justify-items:center;gap:2px;
+ padding:4px 5px;color:#204d5d;text-align:center;
+}
+.akari-material-ghost .bridge-material-art{
+ display:block;width:70px;height:49px;overflow:hidden;
+}
+.akari-material-ghost .bridge-material-art svg{width:100%;height:100%}
+.akari-material-ghost>strong{font-size:12px;line-height:1.2;white-space:nowrap}
+@media(max-width:740px){
+ .akari-dock .akari-drop-pad{width:45px;height:45px;border-width:2px}
+ .akari-material-ghost{width:83px;min-height:77px;border-radius:11px}
+ .akari-material-ghost .bridge-material-art{width:60px;height:42px}
+ .akari-material-ghost>strong{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .akari-dock .akari-draggable-material,
+ .akari-dock .akari-drop-pad{transition:none}
+}
