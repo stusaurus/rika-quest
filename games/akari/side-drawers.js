@@ -5,6 +5,8 @@
 (function(){
  let opened="";
  let lastInspection="";
+ let dragging=null;
+ let suppressClick=null;
  const get=id=>document.getElementById(id);
  const sides=["left","right"];
  // Show a concise cue only while horizontal options remain out of sight.
@@ -160,7 +162,7 @@
    }else{
     const selectedId=sections.find(section=>section.querySelector(".bridge-material.selected"))?.querySelector(".bridge-material.selected")?.dataset.bridgeSample;
     const selectedName=window.AkariBridge?.material(selectedId)?.name;
-    focus.innerHTML='<strong>'+(selectedName?"② 回路の A か B を タップ":"① 材料を ひとつ タップ")+'</strong>';
+    focus.innerHTML='<strong>'+(selectedName?"② A か B へ はこぼう":"🖐 材料を A か B へ はこぼう")+'</strong>';
     if(selectedName){
      const badge=document.createElement("span");
      badge.className="akari-carrying-material";
@@ -229,6 +231,12 @@
      const choices=materialsSection.querySelector(".bridge-materials");
      if(choices){
        choices.classList.add("akari-sample-choices");
+       choices.setAttribute("aria-label","材料を つかんで A または B に はこぶ。タップでも えらべる");
+       for(const card of choices.querySelectorAll("[data-bridge-sample]")){
+        card.classList.add("akari-draggable-material");
+        card.setAttribute("draggable","false");
+        card.setAttribute("aria-description","指で 回路の A か B に はこべるよ。タップしてから A か B を おしてもよい");
+       }
        desk.append(choices);
      }
      // The original material section is now empty; don't expose another
@@ -272,15 +280,150 @@
        target.setAttribute("aria-label",slot.toUpperCase()+(placed?"には "+placed.name+" が はいっている。":"は あいている。")+(chosen?" えらんだ "+chosen.name+" を はめる。":" まず 材料を えらぼう。"));
        overlay.append(target);
      }
+     // Halo marks the real exposed A/B contacts, not a separate test panel.
+     for(const slot of ["a","b"]){
+      const pad=document.createElement("span");
+      pad.className="akari-drop-pad akari-drop-pad-"+slot;
+      pad.dataset.dropSlot=slot;
+      pad.setAttribute("aria-hidden","true");
+      overlay.append(pad);
+     }
      circuit.append(overlay);
    }
    const info=lab.querySelector(".bridge-quest-strip");
    info?.classList.add("akari-dock-status");
    if(opened)attachShelfGuide(shell.querySelector('[data-dock-panel="'+opened+'"]'));
  }
+ // Pointer Events work for a finger, mouse, and pen. Hit-testing accepts
+ // either exposed A/B wire contacts or their accessible labeled buttons.
+ function dropSlotAt(root,x,y){
+   const svg=root.querySelector(".akari-dock .bridge-circuit-svg");
+   if(!svg||typeof svg.getScreenCTM!=="function")return null;
+   const matrix=svg.getScreenCTM(),point=svg.createSVGPoint();
+   if(!matrix)return null;
+   const radius=Math.max(34,Math.min(52,svg.getBoundingClientRect().width*.14));
+   let found=null,score=Infinity;
+   for(const slot of ["a","b"]){
+     point.x=294;point.y=slot==="a"?55:287;
+     const p=point.matrixTransform(matrix);
+     const distance=Math.hypot(x-p.x,y-p.y);
+     const button=root.querySelector('.akari-dock-gap[data-dock-place="'+slot+'"]');
+     const r=button?.getBoundingClientRect();
+     const onButton=!!r&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+     if((distance<=radius||onButton)&&distance<score){found=slot;score=distance;}
+   }
+   return found;
+ }
+ function highlightDrops(root,slot){
+   for(const pad of root.querySelectorAll(".akari-drop-pad")){
+     pad.classList.toggle("is-over",pad.dataset.dropSlot===slot);
+   }
+   for(const button of root.querySelectorAll(".akari-dock-gap")){
+     button.classList.toggle("drag-over",button.dataset.dockPlace===slot);
+   }
+ }
+ function stopDrag(root){
+   const previous=dragging;
+   dragging=null;
+   previous?.ghost?.remove();
+   previous?.source?.classList.remove("is-drag-source");
+   root.querySelector(".akari-dock")?.classList.remove("is-dragging-material");
+   highlightDrops(root,null);
+   if(previous?.source?.hasPointerCapture?.(previous.pointerId)){
+     try{previous.source.releasePointerCapture(previous.pointerId);}catch{}
+   }
+   return previous;
+ }
+ function showDrag(root,g,x,y){
+   if(!g.active){
+     const ghost=document.createElement("div");
+     ghost.className="akari-material-ghost";
+     ghost.dataset.dragMaterial=g.id;
+     ghost.setAttribute("aria-hidden","true");
+     const artwork=g.source.querySelector(".bridge-material-art")?.cloneNode(true);
+     if(artwork)ghost.append(artwork);
+     const name=document.createElement("strong");
+     name.textContent=window.AkariBridge?.material(g.id)?.name||"ざいりょう";
+     ghost.append(name);
+     document.body.append(ghost);
+     g.ghost=ghost;
+     g.active=true;
+     g.source.classList.add("is-drag-source");
+     root.querySelector(".akari-dock")?.classList.add("is-dragging-material");
+   }
+   g.ghost.style.left=x+"px";
+   g.ghost.style.top=y+"px";
+   g.over=dropSlotAt(root,x,y);
+   highlightDrops(root,g.over);
+   // Gentle edge scrolling keeps the upper sockets reachable on short phones.
+   if(typeof window.scrollBy==="function"&&window.innerHeight){
+     if(y<62)window.scrollBy(0,-14);
+     else if(y>window.innerHeight-46)window.scrollBy(0,14);
+   }
+ }
  function attach(root){
    if(!root||root.dataset.akariDockReady)return;
    root.dataset.akariDockReady="yes";
+   // A normal short tap still selects a sample; moving 9+ pixels turns it
+   // into a material carried directly to the real electrical gap.
+   root.addEventListener("pointerdown",event=>{
+     if(dragging||!event.isPrimary||(event.pointerType==="mouse"&&event.button!==0))return;
+     const source=event.target.closest(".akari-sample-desk [data-bridge-sample]");
+     if(!source||!root.contains(source)||!root.querySelector(".akari-dock-gap-controls"))return;
+     dragging={source,id:source.dataset.bridgeSample,pointerId:event.pointerId,x:event.clientX,y:event.clientY,active:false,ghost:null,over:null};
+     try{source.setPointerCapture(event.pointerId);}catch{}
+   });
+   root.addEventListener("pointermove",event=>{
+     const g=dragging;
+     if(!g||g.pointerId!==event.pointerId)return;
+     if(!g.active&&Math.hypot(event.clientX-g.x,event.clientY-g.y)<9)return;
+     if(event.cancelable)event.preventDefault();
+     showDrag(root,g,event.clientX,event.clientY);
+   },{passive:false});
+   root.addEventListener("pointerup",event=>{
+     const g=dragging;
+     if(!g||g.pointerId!==event.pointerId)return;
+     if(!g.active){stopDrag(root);return;}
+     const slot=dropSlotAt(root,event.clientX,event.clientY);
+     if(event.cancelable)event.preventDefault();
+     event.stopPropagation();
+     stopDrag(root);
+     const original=g.source;
+     if(slot){
+       const specimen=window.AkariBridge?.material(g.id);
+       const current=root.querySelector('.akari-dock-gap[data-dock-place="'+slot+'"] .akari-gap-contents')?.textContent;
+       if(specimen&&current!==specimen.name){
+         // Call the actual material button before suppressing any browser
+         // compatibility click generated by the original pointer gesture.
+         const source=root.querySelector('.akari-sample-desk [data-bridge-sample="'+g.id+'"]');
+         if(source){
+           source.click();
+           // source.click() rerenders the board, so query the NEW socket.
+           const target=root.querySelector('.akari-dock-gap[data-dock-place="'+slot+'"]');
+           if(target&&!target.disabled)target.click();
+         }
+       }
+     }
+     suppressClick={source:original,until:Date.now()+460};
+   });
+   for(const name of ["pointercancel","lostpointercapture"]){
+     root.addEventListener(name,event=>{
+       if(dragging?.pointerId===event.pointerId){
+         const previous=stopDrag(root);
+         if(previous?.active)suppressClick={source:previous.source,until:Date.now()+460};
+       }
+     });
+   }
+   root.addEventListener("click",event=>{
+     if(!suppressClick)return;
+     if(Date.now()>suppressClick.until){suppressClick=null;return;}
+     const source=suppressClick.source;
+     if(event.target===source||source?.contains?.(event.target)){
+       suppressClick=null;
+       event.preventDefault();
+       event.stopImmediatePropagation();
+     }
+   },true);
    // Capture original shelf taps before the game controller replaces its DOM.
    // Bubble listeners can observe a detached target after renderWorkspace().
    root.addEventListener("click",event=>{
