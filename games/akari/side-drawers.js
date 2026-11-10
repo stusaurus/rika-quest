@@ -340,8 +340,14 @@
      ghost.className="akari-material-ghost";
      ghost.dataset.dragMaterial=g.id;
      ghost.setAttribute("aria-hidden","true");
-     const artwork=g.source.querySelector(".bridge-material-art")?.cloneNode(true);
-     if(artwork)ghost.append(artwork);
+     // Use the exact same unframed vector as the installed A/B specimen.
+     // The card still has its decorative background, but the held object
+     // and the object on the circuit have the same original shape.
+     const artwork=document.createElement("span");
+     artwork.className="bridge-material-art";
+     artwork.innerHTML=window.AkariArt?.materialPiece?.(g.id,0,0,100,70)||
+      g.source.querySelector(".bridge-material-art")?.innerHTML||"";
+     ghost.append(artwork);
      const name=document.createElement("strong");
      name.textContent=window.AkariBridge?.material(g.id)?.name||"ざいりょう";
      ghost.append(name);
