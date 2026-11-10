@@ -4,9 +4,9 @@
  * Children put samples straight into the real A/B gaps; the circuit responds immediately.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
- {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113",pin:{x:399,y:124}},finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
- {id:"lamp",name:"まめ電球",icon:"💡",diagram:{x:533,y:170,viewBox:"446 84 174 173",pin:{x:612,y:280}},finding:"まめ電球の 上と 下に 線が ある。 でも、まだ 光っていない。"},
- {id:"return",name:"B（−がわ）",icon:"🔌",diagram:{x:294,y:287,viewBox:"192 227 204 113",pin:{x:191,y:216}},finding:"Bで 線が とぎれている。 でんちの −へ もどる 線だよ。"}
+ {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113",pin:{x:399,y:124}},memo:"Aの せんが きれている。",finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
+ {id:"lamp",name:"まめ電球",icon:"💡",diagram:{x:533,y:170,viewBox:"446 84 174 173",pin:{x:612,y:280}},memo:"まめ電球は まだ 光っていない。",finding:"まめ電球の 上と 下に 線が ある。 でも、まだ 光っていない。"},
+ {id:"return",name:"B（−がわ）",icon:"🔌",diagram:{x:294,y:287,viewBox:"192 227 204 113",pin:{x:191,y:216}},memo:"Bの せんが きれている。",finding:"Bで 線が とぎれている。 でんちの −へ もどる 線だよ。"}
 ];
 const materials=[
  {id:"iron",name:"鉄のくぎ",conductive:true,detail:"鉄は金属。"},
