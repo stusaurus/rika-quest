@@ -54,7 +54,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=clar
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
-output=replaceOne(output,'<script src="./game.js?v=live12" defer></script>',inlineScript(game));
+output=replaceOne(output,'<script src="./game.js?v=clarity15" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
 output=replaceOne(output,"<script src=\"./cute-town.js?v=streetlamp3\" defer></script>",inlineScript(cuteTownArt));
 output=replaceOne(output,"<script src=\"./circuit-village.js?v=inside1\" defer></script>",inlineScript(circuitVillage));
