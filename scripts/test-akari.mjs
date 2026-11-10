@@ -217,6 +217,21 @@ move(2);assert.equal(el("restorationTrail").hidden,true,"Transition must cancel 
 move(3);
 const bridge=window.AkariBridge;
 assert.ok(bridge,"Direct streetlamp circuit model is installed");
+const sharedArt=window.AkariArt;
+assert.equal(typeof sharedArt?.materialShape,"function","Original illustration geometry is available to the circuit");
+assert.equal(typeof sharedArt?.materialPiece,"function","Original materials render without decorative card plate");
+for(const id of ["iron","foil","wood","plastic"]){
+ const shape=sharedArt.materialShape(id);
+ const sample=sharedArt.material(id);
+ const inserted=sharedArt.materialPiece(id,250,20,100,70);
+ assert.ok(shape&&sample.includes(shape)&&inserted.includes(shape),"Same EXACT vector paths in material card and placed circuit object: "+id);
+ assert.ok(!inserted.includes('width="244"'),"Installed specimen does not carry its decorative selection-card background: "+id);
+}
+const drawn=bridge.circuit({a:"iron",b:"wood"});
+assert.ok(drawn.includes(sharedArt.materialShape("iron"))&&drawn.includes(sharedArt.materialShape("wood")),"Actual A/B circuit reuses the exact nail and wood illustration, not substitute drawings");
+assert.match(drawn,/data-installed-material="iron"/,"The iron drawing remains in physical gap A");
+assert.match(drawn,/data-installed-material="wood"/,"The wooden drawing remains in physical gap B even when lamp is off");
+assert.doesNotMatch(drawn,/bridge-conducting-insert|bridge-insulating-insert/,"Do not reduce placed material illustrations to lines or squares");
 assert.equal(bridge.sites.length,3,"Three parts of the real circuit remain inspectable");
 assert.equal(bridge.materials.length,4,"Four candidate repair materials are available");
 assert.equal(bridge.evaluate({a:"iron",b:"foil"}).lit,true,"Two metals close A and B");
