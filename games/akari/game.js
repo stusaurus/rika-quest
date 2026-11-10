@@ -341,7 +341,22 @@ function renderScene(){
  const m=current(),scene=$("storyScene");scene.dataset.place=m.place;scene.dataset.stage=m.id;scene.closest?.(".main")?.classList?.toggle("bridge-immersive",false);scene.closest?.(".main")?.classList?.toggle("town-immersive",m.id>=1&&m.id<=3);$("litPlaceCount").textContent=Object.keys(state.completed).length;const props=$("sceneProps");if(props&&window.AkariScenes)props.innerHTML=window.AkariScenes.render(m.id);scene.classList.toggle("restored",stageComplete||!!state.completed[m.id]);scene.classList.toggle("bridge-powered",m.id===3&&!!window.AkariBridge?.sceneLit(ui.bridge));scene.classList.toggle("garden-powered",m.id===5&&!!window.AkariGarden?.measured5(ui.garden)&&!!window.AkariGarden?.evaluate5(ui.garden.slots).lit);scene.classList.toggle("finale-powered",m.id===14&&!!ui.finale?.overall&&ui.finale.overall.kind==="bright"&&ui.finale.overall.signature===window.AkariFinaleLab?.signature(ui.finale.installed));scene.classList.toggle("double-powered",m.id===13&&!!window.AkariDoubleFault?.canFinish(ui.doubleFault));$("placeLabel").textContent=m.placeName;$("missionTitle").textContent=m.name;$("missionStory").textContent=stageComplete?"ありがとう！この場所にあかりが戻ったよ！":state.completed[m.id]?"この場所には、前の冒険であかりをともしたよ。もう一度実験してみよう！":m.story;$("landmark").innerHTML='<svg viewBox="0 0 290 245" aria-hidden="true"><ellipse cx="147" cy="233" rx="125" ry="10" fill="#284a5a" opacity=".28"/>'+(window.AkariScenes&&window.AkariScenes.landmark?window.AkariScenes.landmark(m.place):buildings[m.place])+'</svg>';
 }
 function renderHeader(){
- const m=current();$("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
+ const m=current();
+ // Move the existing speech button rather than cloning it. The reference
+ // game layout renders .quest-panel as display:contents, so an absolutely
+ // positioned "task row" would escape the mission header entirely.
+ const speechButton=$("readTaskBtn");
+ const taskRow=document.querySelector(".reading-task-row");
+ const heading=document.querySelector(".quest-head");
+ if(speechButton&&taskRow&&heading){
+  if(m.id===3){
+   const readingToggle=$("readingToggle");
+   if(speechButton.parentElement!==heading&&readingToggle)heading.insertBefore(speechButton,readingToggle);
+  }else if(speechButton.parentElement!==taskRow){
+   taskRow.append(speechButton);
+  }
+ }
+ $("missionNumber").textContent="MISSION "+String(m.id).padStart(2,"0")+" / 14";$("missionGoal").textContent=m.goal;$("missionInstructions").textContent=m.instructions;
  $("questStars").textContent=stageComplete?"★ ".repeat(state.completed[m.id]||3):state.completed[m.id]?"★ "+state.completed[m.id]+"つ獲得済み":"☆ ☆ ☆";
  $("checkBtn").hidden=stageComplete||m.mode==="wire"||!!ui.transfer||!!ui.builder||!!ui.switchLab;$("checkBtn").textContent=m.id===12?"🛡 安全点検の最終確認":m.id===3?"💡 街灯の復旧を確認する":m.id===4?"🔬 研究結果を確かめる":m.id===5?"🛡 安全な修理を確認する":m.id===13?"🔎 灯台の復旧を確認する":m.id===14?"🌟 最終回路を確認する":[9,10,11].includes(m.id)?"🔋 点灯のしくみを確認":m.id<=2?"💡 つなぐと つくよ":"⚡ 電気を流してみる";$("nextBtn").hidden=!stageComplete||m.id===14;$("nextBtn").textContent="つぎへ すすむ ➜";$("hintBtn").hidden=stageComplete;
  $("discovery").hidden=!stageComplete;if(stageComplete)$("discoveryText").textContent=m.discovery;
