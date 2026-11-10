@@ -463,7 +463,7 @@ function check(){
  if(stageComplete)return;const m=current();if(ui.switchLab){setFeedback("4通りの通電実験と理由の確認を完成させよう。");return;}if(ui.builder){setFeedback("導線をつなぎ、OFFとONの両方を実験してから完成ボタンを押そう。");return;}if(ui.transfer){setFeedback("追加依頼の3つの予想と理由を選び、最後の「街を救う」を押そう。");return;}
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){
-  if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("メモ → ざいりょうを ためす → A・Bを つなぐ → 光った わけを えらぼう。","warning");return;}
+  if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("A と B に 材料を はめて、まめ電球を 光らせよう。光った わけも えらぼう。","warning");return;}
   recordObservation("bridge:proof","【街灯の回路】"+ui.bridge.slots.a+"と"+ui.bridge.slots.b+"を使い、乾電池＋→修理A→豆電球→修理B→乾電池−の通り道を復旧した。");
   clearBridgeDraft();success();return;
  }
@@ -981,50 +981,40 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-bridge-sample")){
    const id=target.dataset.bridgeSample;
    if(!B.material(id)||b.inspected.length<3)return;
-   b.selected=id;b.sampleGuess=null;ui.bridge=b;saveBridgeDraft();
-   if(B.evidenceReady(b)&&b.tests[id])window.AkariDock?.collapse?.();
-   renderWorkspace();
-   setFeedback(B.material(id).name+"を選んだ。予想してから実験しよう。");reactCharacter("inspect");return;
-  }
-  if(target.hasAttribute("data-bridge-guess")){
-   if(!B.material(b.selected)||b.tests[b.selected])return;
-   const guess=target.dataset.bridgeGuess;if(!["lit","dark"].includes(guess))return;
-   b.sampleGuess=guess;saveBridgeDraft();renderWorkspace();setFeedback("仮説を立てたよ。実験で確かめよう。");return;
-  }
-  if(target.hasAttribute("data-bridge-test")){
-   const m=B.material(b.selected);if(!m||b.inspected.length<3||b.tests[m.id]||!["lit","dark"].includes(b.sampleGuess))return;
-   const actual=m.conductive?"lit":"dark";
-   b.tests[m.id]={guess:b.sampleGuess,actual};
-   b.sampleGuess=null;saveBridgeDraft();renderWorkspace();
-   recordObservation("bridge:sample:"+m.id,"【材料実験】"+m.name+"：予想は"+(b.tests[m.id].guess==="lit"?"点灯":"消灯")+"、実際は"+(actual==="lit"?"点灯":"消灯")+"。");
-   setFeedback("仮想実験："+m.name+" → "+(actual==="lit"?"豆電球が点灯した！":"豆電球は消えたまま。")+" 他の材料と比べよう。","success");reactCharacter("discover");return;
+   b.selected=id;ui.bridge=b;saveBridgeDraft();renderWorkspace();
+   setFeedback(B.material(id).name+"を えらんだよ。A か B に はめよう。");reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-bridge-place")){
    const slot=target.dataset.bridgePlace,id=b.selected;
-   if(!["a","b"].includes(slot)||!B.material(id)||!b.tests[id]||!B.evidenceReady(b))return;
-   if(b.slots[slot]===id){b.slots[slot]=null;}
-   else{const other=slot==="a"?"b":"a";if(b.slots[other]===id)b.slots[other]=null;b.slots[slot]=id;}
-   b.repairGuess=null;b.repairResult=null;b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("修理"+slot.toUpperCase()+"の材料を変更した。以前の通電結果は無効になったよ。");reactCharacter("inspect");return;
-  }
-  if(target.hasAttribute("data-bridge-repair-guess")){
-   const v=target.dataset.bridgeRepairGuess;if(!["lit","dark"].includes(v)||!b.slots.a||!b.slots.b)return;
-   b.repairGuess=v;b.repairResult=null;b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("修理回路の予想を決めた。仮想通電で確かめよう。");return;
-  }
-  if(target.hasAttribute("data-bridge-repair-test")){
-   if(!b.slots.a||!b.slots.b||!b.repairGuess||!B.evidenceReady(b))return;
-   const actual=B.evaluate(b.slots);
-   b.repairResult={signature:B.signature(b.slots),guess:b.repairGuess,actual:actual.lit?"lit":"dark"};
-   b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("仮想通電："+(actual.lit?"街灯のあかりがともった！ 光ったわけも考えよう。":"消灯。材料が電気を通すか、両方のすき間を見直してみよう。"),actual.lit?"success":"warning");
-   reactCharacter(actual.lit?"discover":"think");return;
+   if(!["a","b"].includes(slot)||!B.material(id)||!B.evidenceReady(b))return;
+   if(b.slots[slot]===id)b.slots[slot]=null;
+   else{
+    const other=slot==="a"?"b":"a";
+    if(b.slots[other]===id)b.slots[other]=null;
+    b.slots[slot]=id;
+   }
+   // The assembled live circuit is the experiment. No separate "test"
+   // button or hidden material conductivity preview is required.
+   b.reason=null;
+   const result=B.evaluate(b.slots);
+   if(b.slots.a&&b.slots.b){
+    b.trialLog=Array.isArray(b.trialLog)?b.trialLog:[];
+    const key=B.signature(b.slots);
+    if(!b.trialLog.some(t=>t.signature===key)){
+     b.trialLog.push({a:b.slots.a,b:b.slots.b,signature:key,actual:result.lit?"lit":"dark"});
+     if(b.trialLog.length>12)b.trialLog=b.trialLog.slice(-12);
+    }
+    recordObservation("bridge:trial:"+key,"【回路でためした】A："+B.material(b.slots.a).name+"、B："+B.material(b.slots.b).name+" → "+(result.lit?"まめ電球が光った。":"まめ電球は光らなかった。"));
+   }
+   ui.bridge=b;saveBridgeDraft();renderWorkspace();renderScene();
+   setFeedback(result.lit?"💡 光った！ 2つの 材料で 道が できたよ。 わけを 考えよう。":b.slots.a&&b.slots.b?"◯ まだ 光らないね。A と B の 材料を かえてみよう。":"A と B の 両方に 材料を はめてみよう。",result.lit?"success":"warning");
+   reactCharacter(result.lit?"discover":"think");return;
   }
   if(target.hasAttribute("data-bridge-reason")){
    if(!B.sceneLit(b))return;
    const reason=target.dataset.bridgeReason;if(!B.reasonOptions.some(([id])=>id===reason))return;
    b.reason=reason;saveBridgeDraft();renderWorkspace();
-   setFeedback("理由を選んだ。最後に「街灯の復旧を確認する」で回路の説明を確かめよう。");return;
+   setFeedback("わけを えらんだよ。回路の ひかりかたを もう一度 見てみよう。");return;
   }
  }
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);
