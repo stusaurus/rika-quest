@@ -963,7 +963,7 @@ try{
    assert.equal(await page.locator(".bridge-site.found").count(),1,"Directly investigating the battery records the same authoritative observation");
    assert.match(await page.locator(".akari-board-focus").textContent(),/1 \/ 3/,"The board reflects the actual investigation progress");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),1,"One real inspection adds exactly one memo card");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/A（＋がわ）.*Aで 線が とぎれている/s,"Battery memo identifies a specific break on the actual diagram");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/A（＋がわ）.*Aの せんが きれている/s,"Battery memo identifies a specific break on the actual diagram");
    assert.equal(await page.locator('[data-observed-site="battery"].is-latest').count(),1,"The newest observation is highlighted in the memo");
    assert.match(await page.locator(".akari-memo-count").textContent(),/1 \/ 3/,"The memo shows observed fact count"); 
    assert.equal(await page.locator(".akari-board-focus .akari-observation").count(),0,"The instruction banner does not duplicate findings");
@@ -985,8 +985,8 @@ try{
    await page.keyboard.press("Enter");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Keyboard Enter can investigate a real circuit location");
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"The first observation must remain when the second is added");
-   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/Aで 線が とぎれている/,"Battery evidence remains readable after testing the bulb");
-   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球.*上と 下に 線が ある.*光っていない/s,"Bulb memo reports an observed condition instead of instructing the child to connect wires");
+   assert.match(await page.locator('[data-observed-site="battery"]').textContent(),/Aの せんが きれている/,"Battery evidence remains readable after testing the bulb");
+   assert.match(await page.locator('[data-observed-site="lamp"]').textContent(),/まめ電球.*まだ 光っていない/s,"Bulb memo reports an observed condition instead of instructing the child to connect wires");
    assert.equal(await page.locator('[data-observed-site="lamp"].is-latest').count(),1,"The last inspected fact is highlighted");
    if(width<1150){
      const memoStrip=await page.locator(".akari-memo-notes").evaluate(el=>({horizontal:getComputedStyle(el).overflowX,flow:getComputedStyle(el).gridAutoFlow,height:el.getBoundingClientRect().height}));
@@ -998,16 +998,16 @@ try{
    await openDrawer("left");
    await page.locator('[data-bridge-inspect="battery"]').click();
    assert.equal(await page.locator(".akari-dock-readout .akari-observation").count(),2,"Reviewing a finding never erases earlier memos or duplicates them");
-   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/A（＋がわ）.*Aで 線が とぎれている/s,"Re-inspecting the battery highlights its existing memo");
+   assert.match(await page.locator('[data-observed-site="battery"].is-latest').textContent(),/A（＋がわ）.*Aの せんが きれている/s,"Re-inspecting the battery highlights its existing memo");
    assert.equal(await page.locator(".bridge-site.found").count(),2,"Reviewing a finding does not fake another inspection");
    await closeDrawer("left");
    await page.locator('[data-dock-inspect="return"]').click();
    assert.equal(await page.locator(".bridge-site.found").count(),3,"All three inspections remain required");
    assert.equal(await page.locator(".akari-inspection-pin").count(),0,"The temporary attention markers leave the circuit once observation is complete");
-   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bで 線が とぎれている/s,"Return wire memo points to the second break after the pins disappear");
+   assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bの せんが きれている/s,"Return wire memo points to the second break after the pins disappear");
    assert.equal(await page.locator(".akari-observation").count(),3,"All three findings remain available, not just the latest one");
    assert.equal(await page.locator(".akari-memo-notes").textContent().then(s=>/つなごう。/.test(s)),false,"Discovery memos must state observable facts, not pretend commands were findings");
-   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/材料を えらぼう/,"The circuit leads directly to material selection without a preliminary test");
+   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/① 材料を ひとつ タップ/,"The circuit gives only the NEXT action, not several competing explanations");
    assert.equal(await page.locator(".akari-observation.is-latest").count(),1,"Only the latest memo is highlighted");
    assert.match(await page.locator(".akari-memo-count").textContent(),/3 \/ 3/,"Complete observations show three of three memo cards");
    for(const id of ["battery","lamp","return"])assert.equal(await page.locator('[data-observed-site="'+id+'"]').count(),1,"One saved memo per location: "+id);
@@ -1017,6 +1017,31 @@ try{
    assert.equal(await page.locator(".bridge-materials").count(),1,"The four original sample controls are used directly");
    assert.equal(await page.locator(".akari-sample-desk .bridge-materials").count(),1,"Material choice remains directly under the LIVE circuit");
    assert.equal(await page.locator(".akari-dock-gap").count(),2,"A/B have real insertion targets on the same circuit");
+   assert.equal(await page.locator(".akari-dock-drop-note").count(),0,"The screen must not repeat the same instruction underneath the materials");
+   assert.equal(await page.locator(".akari-dock-gap[data-gap-state='empty']").count(),2,"Both gaps visibly say they are empty before any material is placed");
+   assert.equal(await page.locator(".akari-dock-gap .akari-gap-contents").count(),2,"The two tappable targets each visibly display their ACTUAL contents");
+   assert.deepEqual(await page.locator(".akari-gap-contents").allTextContents(),["あいてる","あいてる"],"An unfilled gap is not mislabeled 'insert material' or 'repaired'");
+   const positions=await page.evaluate(()=>{
+     const circuit=document.querySelector(".bridge-circuit").getBoundingClientRect();
+     const gapX=circuit.left+circuit.width*294/680;
+     const targets=[...document.querySelectorAll(".akari-dock-gap")].map(x=>{const r=x.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,label:x.textContent}});
+     return {gapX,targets};
+   });
+   assert.ok(positions.targets.every(x=>x.left>positions.gapX),"A/B status badges must be to the RIGHT of the exposed wire contacts, not cover the actual gaps: "+JSON.stringify(positions));
+   assert.equal(await page.locator("#scienceCompass").isVisible(),false,"The extra generic free-lab heading must not push the circuit below the main activity");
+   assert.equal(await page.locator("#freeLabToggle").isVisible(),false,"An unrelated sandbox entry must not appear above the stage-3 circuit");
+   assert.equal(await page.locator(".reading-task-row .quest-desc").isVisible(),false,"The stale separate task description should not compete with the live on-board step");
+   assert.equal(await page.locator(".reading-task-row").isVisible(),false,"Mission 3 has no redundant empty task banner");
+   const audioPlacement=await page.locator("#readTaskBtn").evaluate(button=>{
+     const head=document.querySelector(".quest-head"),h=head.getBoundingClientRect(),r=button.getBoundingClientRect();
+     return {inHeading:button.parentElement===head,visible:getComputedStyle(button).display!=="none",
+       headerTop:h.top,headerBottom:h.bottom,buttonTop:r.top,buttonBottom:r.bottom};
+   });
+   assert.equal(audioPlacement.inHeading,true,"The SAME read-aloud button must be reparented into the mission heading");
+   if(audioPlacement.visible){
+     assert.ok(audioPlacement.buttonTop>=audioPlacement.headerTop-4&&audioPlacement.buttonBottom<=audioPlacement.headerBottom+7,
+       "Read-aloud stays inside the title row, not in an empty panel: "+JSON.stringify(audioPlacement));
+   }
    assert.equal(await page.locator("[data-bridge-guess],[data-bridge-test],[data-bridge-repair-guess],[data-bridge-repair-test]").count(),0,"No preliminary test or second experimental confirmation is present");
    assert.equal(await page.locator("[data-dock-place='a']").isDisabled(),true,"A placement needs a selected material");
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"No results are shown before any complete circuit was tried");
@@ -1027,14 +1052,21 @@ try{
    }
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
    await page.locator('.akari-sample-desk [data-bridge-sample="iron"]').click();
+   assert.match(await page.locator(".akari-carrying-material").textContent(),/鉄のくぎ/,"The selected material is shown beside the NEXT action above the circuit");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/② 回路の A か B を タップ/,"The child sees exactly WHERE to act after selecting a material");
+   assert.equal(await page.locator(".akari-dock-gap.is-ready").count(),2,"Selecting a material visually highlights both valid circuit target buttons");
    assert.equal(await page.locator("[data-dock-place='a']").isDisabled(),false,"Selecting a material immediately enables insertion at A");
    assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Selecting a material never opens a modal or a drawer");
    await page.locator("[data-dock-place='a']").click();
    assert.match(await page.locator('.bridge-slot-actions [data-bridge-place="a"]').textContent(),/鉄のくぎ/,"Iron is directly installed in the actual A gap");
+   assert.equal(await page.locator('[data-dock-place="a"]').getAttribute("data-gap-state"),"filled","A button visibly becomes occupied once iron is installed");
+   assert.match(await page.locator('[data-dock-place="a"]').textContent(),/A.*鉄のくぎ/s,"The A button itself shows iron rather than a misleading generic 'insert' message");
+   assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*あいてる/s,"B remains clearly labeled empty");
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),0,"One repaired gap cannot light the lamp");
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"An incomplete circuit cannot produce a fabricated full-circuit trial");
    await page.locator('.akari-sample-desk [data-bridge-sample="wood"]').click();
    await page.locator("[data-dock-place='b']").click();
+   assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*乾いた木片/s,"B shows the actually installed piece of wood");
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"A nonconductor in B immediately leaves the circuit dark");
    assert.equal(await page.locator('[data-bridge-gap="a"][data-bridge-gap-state="conductive"]').count(),1,"A is physically bridged by iron");
    assert.equal(await page.locator('[data-bridge-gap="b"][data-bridge-gap-state="insulator"]').count(),1,"B is physically blocked by the wooden sample");
@@ -1045,11 +1077,14 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-dark-material.png",fullPage:true});
    await page.locator('.akari-sample-desk [data-bridge-sample="foil"]').click();
    await page.locator("[data-dock-place='b']").click();
+   assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*アルミはく/s,"B's visible label updates immediately when wood is replaced with foil");
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"The bulb lights AUTOMATICALLY when a second metal closes the loop");
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Visual light and physical A/B slots update in the same interaction");
    assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"The physical circuit shows both gaps as connected conductors");
    assert.equal(await page.locator(".bridge-direct-history .bridge-record").count(),2,"The tested failed and successful combinations both remain recorded");
    assert.equal(await page.locator(".bridge-why").count(),1,"The immediate observation now invites explanation of the closed current path");
+   assert.equal(await page.locator(".bridge-why>h3").isVisible(),false,"The reason screen must not repeat the same giant question twice");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/光った！ なぜかな/,"One current question appears above the lit circuit");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town lights follow the live real circuit");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-lantern-glass").count(),1,"Streetlamp light appears in the circuit scenery");
    assert.equal(await page.locator(".bridge-circuit.is-lit .bridge-filament").getAttribute("stroke"),"#fff3ab","The filament itself glows");
@@ -1057,6 +1092,8 @@ try{
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-lit.png",fullPage:true});
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Reload preserves the live repaired lamp");
+   assert.match(await page.locator('[data-dock-place="a"]').textContent(),/鉄のくぎ/,"Saved A material is again visible on the circuit after reload");
+   assert.match(await page.locator('[data-dock-place="b"]').textContent(),/アルミはく/,"Saved B material is again visible on the circuit after reload");
    assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","The installed material at B survives a saved-game reload");
    assert.equal(await page.locator(".bridge-direct-history .bridge-record").count(),2,"The observation history survives reload");
    assert.equal(await page.locator(".akari-observation").count(),3,"Three earlier investigation notes remain available");
@@ -1073,7 +1110,9 @@ try{
      s.active=4;s.gardenDrafts={};localStorage.setItem(key,JSON.stringify(s));
    });
    await page.reload({waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator(".reading-task-row #readTaskBtn").count(),1,"The original read-aloud button returns to its normal task row in other missions");
    assert.equal(await page.locator(".garden-contacts button").count(),2,"Stage4 asks about contact control");
+   assert.equal(await page.locator("#freeLabToggle").isVisible(),true,"Outside stage3 the free experiment feature remains accessible");
    assert.equal(await page.locator(".garden-samples").count(),0,"Do not give materials before discovering experimental control");
    assert.equal(await page.locator('[data-garden-calibrate]').isDisabled(),true,"Calibration requires a prediction");
    await page.locator('[data-garden-guess="lit"]').click();await page.locator('[data-garden-calibrate]').click();
