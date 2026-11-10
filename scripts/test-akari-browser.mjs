@@ -1089,6 +1089,12 @@ try{
      assert.ok(sampleGrid.scroll<=sampleGrid.client+2,"None of the four material choices are offscreen: "+JSON.stringify(sampleGrid));
    }
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
+   // Dropping a specimen into the wrong part of the diagram must never
+   // silently select it, place it, or create science evidence.
+   await dragMaterialToGap("plastic","none");
+   assert.equal(await page.locator(".bridge-material.selected").count(),0,"A failed drag must not turn into an accidental specimen tap");
+   assert.equal(await page.locator('.akari-dock-gap[data-gap-state="filled"]').count(),0,"A failed drag cannot insert anything into A or B");
+   assert.equal(await page.locator(".bridge-direct-history").count(),0,"Invalid drop is not a measured circuit experiment");
    await dragMaterialToGap("iron","a");
    assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Dragging into A does not open another drawer or experiment");
    assert.match(await page.locator('.bridge-slot-actions [data-bridge-place="a"]').textContent(),/鉄のくぎ/,"Iron is directly installed in the actual A gap");
@@ -1124,6 +1130,34 @@ try{
    assert.equal(await page.locator(".bridge-circuit.is-lit .bridge-filament").getAttribute("stroke"),"#fff3ab","The filament itself glows");
    assert.equal(await page.locator(".bridge-circuit.is-lit .town-stage-lights").first().evaluate(el=>getComputedStyle(el).opacity),"1","Lights respond without extra experiment button");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-lit.png",fullPage:true});
+   if(engine==="webkit"){
+     // WebKit with hasTouch=true: dispatch primary touch-type pointer input
+     // through the SAME handler as an actual finger, in addition to the
+     // genuine mouse-pointer drags already tested on all four layouts.
+     const touchDrop=async(material,slot)=>{
+       await page.evaluate(({material,slot})=>{
+         const root=document.getElementById("workspace");
+         const source=root.querySelector('.akari-sample-desk [data-bridge-sample="'+material+'"]');
+         const svg=root.querySelector(".akari-dock .bridge-circuit-svg");
+         const rect=source.getBoundingClientRect(),p=svg.createSVGPoint();
+         p.x=294;p.y=slot==="a"?55:287;
+         const dest=p.matrixTransform(svg.getScreenCTM());
+         const start={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+         const send=(target,type,x,y)=>target.dispatchEvent(new PointerEvent(type,{
+           bubbles:true,cancelable:true,pointerId:99,pointerType:"touch",
+           isPrimary:true,button:0,clientX:x,clientY:y
+         }));
+         send(source,"pointerdown",start.x,start.y);
+         send(root,"pointermove",start.x+12,start.y-16);
+         send(root,"pointermove",dest.x,dest.y);
+         send(root,"pointerup",dest.x,dest.y);
+       },{material,slot});
+     };
+     await touchDrop("wood","b");
+     assert.equal(await page.locator(".bridge-circuit.is-lit").count(),0,"Touch-type finger gesture inserting wood must darken the physical circuit");
+     await touchDrop("foil","b");
+     assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Touch-type finger gesture restoring foil must light the physical circuit immediately");
+   }
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Reload preserves the live repaired lamp");
    assert.match(await page.locator('[data-dock-place="a"]').textContent(),/鉄のくぎ/,"Saved A material is again visible on the circuit after reload");
