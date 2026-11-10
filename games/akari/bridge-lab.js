@@ -90,7 +90,7 @@ function circuit(slots={},isLit=false){
   // an abstract conductive bar or insulating square. The scientific status
   // still comes exclusively from evaluate(), not from the drawing.
   const piece=id&&window.AkariArt?.materialPiece?
-   window.AkariArt.materialPiece(id,x-50,y-35,100,70):"";
+   window.AkariArt.materialPiece(id,x-50,y-35,100,70,true):"";
   const bridge=id?
    '<g class="bridge-installed-specimen" data-bridge-specimen="'+id+'" data-bridge-joins="'+(joins?"true":"false")+'">'+piece+'</g>':
    '<path class="bridge-visible-break" d="M'+(x-8)+' '+(y-9)+'l16 18M'+(x+8)+' '+(y-9)+'l-16 18" stroke="#fff0d4" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
