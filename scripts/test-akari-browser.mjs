@@ -1089,13 +1089,8 @@ try{
      assert.ok(sampleGrid.scroll<=sampleGrid.client+2,"None of the four material choices are offscreen: "+JSON.stringify(sampleGrid));
    }
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-explore.png",fullPage:true});
-   await page.locator('.akari-sample-desk [data-bridge-sample="iron"]').click();
-   assert.match(await page.locator(".akari-carrying-material").textContent(),/鉄のくぎ/,"The selected material is shown beside the NEXT action above the circuit");
-   assert.match(await page.locator(".akari-board-focus").textContent(),/② 回路の A か B を タップ/,"The child sees exactly WHERE to act after selecting a material");
-   assert.equal(await page.locator(".akari-dock-gap.is-ready").count(),2,"Selecting a material visually highlights both valid circuit target buttons");
-   assert.equal(await page.locator("[data-dock-place='a']").isDisabled(),false,"Selecting a material immediately enables insertion at A");
-   assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Selecting a material never opens a modal or a drawer");
-   await page.locator("[data-dock-place='a']").click();
+   await dragMaterialToGap("iron","a");
+   assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Dragging into A does not open another drawer or experiment");
    assert.match(await page.locator('.bridge-slot-actions [data-bridge-place="a"]').textContent(),/鉄のくぎ/,"Iron is directly installed in the actual A gap");
    assert.equal(await page.locator('[data-dock-place="a"]').getAttribute("data-gap-state"),"filled","A button visibly becomes occupied once iron is installed");
    assert.match(await page.locator('[data-dock-place="a"]').textContent(),/A.*鉄のくぎ/s,"The A button itself shows iron rather than a misleading generic 'insert' message");
@@ -1103,6 +1098,8 @@ try{
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),0,"One repaired gap cannot light the lamp");
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"An incomplete circuit cannot produce a fabricated full-circuit trial");
    await page.locator('.akari-sample-desk [data-bridge-sample="wood"]').click();
+   assert.match(await page.locator(".akari-carrying-material").textContent(),/乾いた木片/,"The tap fallback still selects a material");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/② A か B へ はこぼう/,"The selected item can now be carried or inserted by tap");
    await page.locator("[data-dock-place='b']").click();
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*乾いた木片/s,"B shows the actually installed piece of wood");
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"A nonconductor in B immediately leaves the circuit dark");
@@ -1113,8 +1110,7 @@ try{
    assert.equal(await page.locator(".bridge-why").count(),0,"A failed circuit cannot ask children to explain a light that never appeared");
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"No finish button before the scientific reason");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-dark-material.png",fullPage:true});
-   await page.locator('.akari-sample-desk [data-bridge-sample="foil"]').click();
-   await page.locator("[data-dock-place='b']").click();
+   await dragMaterialToGap("foil","b");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*アルミはく/s,"B's visible label updates immediately when wood is replaced with foil");
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"The bulb lights AUTOMATICALLY when a second metal closes the loop");
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Visual light and physical A/B slots update in the same interaction");
