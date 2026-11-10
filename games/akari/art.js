@@ -211,13 +211,19 @@ function workbench(wires,lit){
 // The very same original vector paths used by the material cards can now
 // be placed into the actual electrical gap. Only the decorative card plate
 // is omitted; no icon substitute, square or "conducting bar" is invented.
-function materialPiece(id,x=0,y=0,width=100,height=70){
+function materialPiece(id,x=0,y=0,width=100,height=70,alignToWire=false){
  const original=materialShape(id);
  if(!original)return "";
+ // Keep every vector path unchanged. When mounted on the horizontal
+ // A/B contacts, merely rotate the entire physical object into the wire's
+ // direction (the same way a child would turn a nail or wood strip).
+ // The material card and the dragging ghost retain their original angle.
+ const angle=alignToWire?({iron:-46,wood:24,plastic:17}[id]||0):0;
+ const oriented=angle?'<g class="bridge-piece-rotation" transform="rotate('+angle+' 125 102.5)">'+original+'</g>':original;
  return '<svg class="bridge-installed-material" data-installed-material="'+id+'" '+
   'x="'+x+'" y="'+y+'" width="'+width+'" height="'+height+'" '+
   'viewBox="20 25 210 155" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+
-  defs+original+'</svg>';
+  defs+oriented+'</svg>';
 }
 window.AkariArt={battery,bulb,material,materialShape,materialPiece,circuit,shortDiagram,testCircuit,workbench};
 })();
