@@ -211,10 +211,11 @@ function workbench(wires,lit){
 // The very same original vector paths used by the material cards can now
 // be placed into the actual electrical gap. Only the decorative card plate
 // is omitted; no icon substitute, square or "conducting bar" is invented.
-function materialPiece(id){
+function materialPiece(id,x=0,y=0,width=100,height=70){
  const original=materialShape(id);
  if(!original)return "";
- return '<svg class="bridge-installed-material" data-installed-material="'+id+'" xmlns="http://www.w3.org/2000/svg" '+
+ return '<svg class="bridge-installed-material" data-installed-material="'+id+'" '+
+  'x="'+x+'" y="'+y+'" width="'+width+'" height="'+height+'" '+
   'viewBox="20 25 210 155" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+
   defs+original+'</svg>';
 }
