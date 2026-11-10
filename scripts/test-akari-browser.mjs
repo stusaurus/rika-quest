@@ -1041,7 +1041,7 @@ try{
    assert.match(await page.locator('[data-observed-site="return"]').textContent(),/B（−がわ）.*Bの せんが きれている/s,"Return wire memo points to the second break after the pins disappear");
    assert.equal(await page.locator(".akari-observation").count(),3,"All three findings remain available, not just the latest one");
    assert.equal(await page.locator(".akari-memo-notes").textContent().then(s=>/つなごう。/.test(s)),false,"Discovery memos must state observable facts, not pretend commands were findings");
-   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/① 材料を ひとつ タップ/,"The circuit gives only the NEXT action, not several competing explanations");
+   assert.match(await page.locator(".akari-dock-center .akari-board-focus").textContent(),/材料を A か B へ はこぼう/,"The circuit gives only the NEXT action, not several competing explanations");
    assert.equal(await page.locator(".akari-observation.is-latest").count(),1,"Only the latest memo is highlighted");
    assert.match(await page.locator(".akari-memo-count").textContent(),/3 \/ 3/,"Complete observations show three of three memo cards");
    for(const id of ["battery","lamp","return"])assert.equal(await page.locator('[data-observed-site="'+id+'"]').count(),1,"One saved memo per location: "+id);
