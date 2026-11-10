@@ -226,7 +226,7 @@ assert.equal(bridge.evaluate({a:"iron",b:null}).lit,false,"One missing gap keeps
 assert.equal(bridge.evaluate({a:null,b:null}).short,false,"An open circuit never counts as a short");
 assert.match(el("workspace").innerHTML,/bridge-sites/,"Inspection is still available");
 click({bridgeSample:"iron"});
-assert.equal(saved().bridgeDraft.selected,null,"Materials cannot be selected until three circuit observations are made");
+assert.equal(saved().bridgeDraft?.selected ?? null,null,"Materials cannot be selected until three circuit observations are made");
 check();assert.equal(saved().completed[3],undefined,"Cannot finish without circuit inspection");
 for(const id of ["battery","lamp","return"])click({bridgeInspect:id});
 assert.match(el("workspace").innerHTML,/bridge-materials/,"Three observations unlock real material choices");
