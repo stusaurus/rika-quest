@@ -820,3 +820,23 @@ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) #readTaskBtn{
 @media(prefers-reduced-motion:reduce){
  .akari-dock .akari-dock-gap{transition:none!important}
 }
+
+/* Keep the read-aloud affordance, but place it alongside the mission title.
+   An otherwise empty "やること" panel is a competing visual step. */
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .quest-panel{
+ position:relative;
+}
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .reading-task-row{
+ position:absolute;top:19px;right:245px;z-index:5;
+ display:flex;width:max-content;max-width:none;
+ min-height:0;margin:0!important;padding:0!important;
+ background:none!important;border:0!important;box-shadow:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .reading-task-row::before{
+ display:none!important;content:none!important;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .reading-task-row{
+  top:18px;right:66px;
+ }
+}
