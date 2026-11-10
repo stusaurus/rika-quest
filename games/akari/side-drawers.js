@@ -156,10 +156,18 @@
     }
     circuit.append(markers);
    }else if(explained){
-    focus.innerHTML='<strong>💡 光った！ どうしてかな？</strong>';
+    focus.innerHTML='<strong>③ 💡 どうして 光った？</strong>';
    }else{
-    const selected=sections.some(section=>section.querySelector(".bridge-material.selected"));
-    focus.innerHTML='<strong>'+(selected?"🧩 えらんだ材料を A か B に はめよう":"🧱 材料を えらぼう")+'</strong>';
+    const selectedId=sections.find(section=>section.querySelector(".bridge-material.selected"))?.querySelector(".bridge-material.selected")?.dataset.bridgeSample;
+    const selectedName=window.AkariBridge?.material(selectedId)?.name;
+    focus.innerHTML='<strong>'+(selectedName?"② 回路の A か B を タップ":"① 材料を ひとつ タップ")+'</strong>';
+    if(selectedName){
+     const badge=document.createElement("span");
+     badge.className="akari-carrying-material";
+     badge.textContent="🧱 "+selectedName;
+     badge.setAttribute("aria-label","いま えらんでいるのは "+selectedName);
+     focus.append(badge);
+    }
    }
    if(inspectedSites.length){
     readout.hidden=false;
@@ -185,7 +193,7 @@
      heading.textContent="✓ "+site.name;
      const finding=document.createElement("span");
      finding.className="akari-observation-finding";
-     finding.textContent=site.finding;
+     finding.textContent=site.memo||site.finding;
      result.append(heading,finding);
      notes.append(result);
     }
@@ -216,7 +224,7 @@
      desk.setAttribute("aria-label","A と B に はめる 材料");
      const heading=document.createElement("strong");
      heading.className="akari-sample-heading";
-     heading.textContent="🧱 材料を えらぶ";
+     heading.textContent="🧱 材料";
      desk.append(heading);
      const choices=materialsSection.querySelector(".bridge-materials");
      if(choices){
@@ -232,6 +240,7 @@
    // After enough contrasting evidence, repair controls appear immediately below.
    const repair=sections.find(x=>x.querySelector(".bridge-slot-actions"));
    if(repair){
+     repair.setAttribute("aria-label","A と B に 材料を はめて 回路を つくる");
      center.append(repair);
      const history=repair.querySelector(".bridge-direct-history");
      if(history)right.append(history);
@@ -239,22 +248,31 @@
      // duplicating the model or changing the existing repair state machine.
      const overlay=document.createElement("div");
      overlay.className="akari-dock-gap-controls";
+     const cards=[...center.querySelectorAll(".bridge-materials [data-bridge-sample]")];
+     const chosenId=cards.find(card=>card.classList.contains("selected"))?.dataset.bridgeSample;
+     const chosen=window.AkariBridge?.material(chosenId);
      for(const slot of ["a","b"]){
        const source=repair.querySelector('[data-bridge-place="'+slot+'"]');
        if(!source)continue;
+       const placedId=cards.find(card=>card.querySelector("small")?.textContent.includes(slot.toUpperCase()+" に はめた"))?.dataset.bridgeSample;
+       const placed=window.AkariBridge?.material(placedId);
        const target=document.createElement("button");
-       target.type="button";target.dataset.dockPlace=slot;
-       target.className="akari-dock-gap akari-dock-gap-"+slot;
+       target.type="button";
+       target.dataset.dockPlace=slot;
+       target.dataset.gapState=placed?"filled":"empty";
+       target.className="akari-dock-gap akari-dock-gap-"+slot+(chosen?" is-ready":"");
        target.disabled=source.disabled;
-       target.setAttribute("aria-label","切れ目 "+slot.toUpperCase()+" に えらんだ材料を はめる");
-       target.textContent=slot.toUpperCase()+" に はめる";
+       const letter=document.createElement("strong");
+       letter.className="akari-gap-letter";
+       letter.textContent=slot.toUpperCase();
+       const contents=document.createElement("span");
+       contents.className="akari-gap-contents";
+       contents.textContent=placed?placed.name:"あいてる";
+       target.append(letter,contents);
+       target.setAttribute("aria-label",slot.toUpperCase()+(placed?"には "+placed.name+" が はいっている。":"は あいている。")+(chosen?" えらんだ "+chosen.name+" を はめる。":" まず 材料を えらぼう。"));
        overlay.append(target);
      }
      circuit.append(overlay);
-     const note=document.createElement("p");
-     note.className="akari-dock-drop-note";
-     note.textContent="材料を えらんで、回路の A と B に はめよう。";
-     center.insertBefore(note,repair);
    }
    const info=lab.querySelector(".bridge-quest-strip");
    info?.classList.add("akari-dock-status");
