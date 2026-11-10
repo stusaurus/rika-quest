@@ -32,7 +32,7 @@ try{
     const targetInfo=()=>page.evaluate(slot=>{
       const svg=document.querySelector(".akari-dock .bridge-circuit-svg");
       const p=svg.createSVGPoint();
-      p.x=294;p.y=slot==="a"?55:slot==="b"?287:166;
+      p.x=slot==="none"?630:294;p.y=slot==="a"?55:slot==="b"?287:170;
       const screen=p.matrixTransform(svg.getScreenCTM());
       return {x:screen.x,y:screen.y,viewport:window.innerHeight};
     },slot);
