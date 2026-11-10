@@ -1030,6 +1030,19 @@ try{
    assert.ok(positions.targets.every(x=>x.left>positions.gapX),"A/B status badges must be to the RIGHT of the exposed wire contacts, not cover the actual gaps: "+JSON.stringify(positions));
    assert.equal(await page.locator("#scienceCompass").isVisible(),false,"The extra generic free-lab heading must not push the circuit below the main activity");
    assert.equal(await page.locator(".reading-task-row .quest-desc").isVisible(),false,"The stale separate task description should not compete with the live on-board step");
+   const audioPlacement=await page.locator(".reading-task-row").evaluate(row=>{
+     const t=row.getBoundingClientRect(),head=document.querySelector(".quest-head").getBoundingClientRect();
+     const speaker=document.querySelector("#readTaskBtn"),r=speaker?.getBoundingClientRect();
+     return {position:getComputedStyle(row).position,
+       taskPanelHeight:t.height,headTop:head.top,headBottom:head.bottom,
+       audioVisible:!!speaker&&getComputedStyle(speaker).display!=="none",
+       buttonTop:r?.top,buttonBottom:r?.bottom};
+   });
+   assert.equal(audioPlacement.position,"absolute","The unused task row must not occupy an extra line above the circuit");
+   if(audioPlacement.audioVisible){
+     assert.ok(audioPlacement.buttonTop>=audioPlacement.headTop-4&&audioPlacement.buttonBottom<=audioPlacement.headBottom+7,
+       "The original read-aloud button must sit alongside the title rather than in a separate empty panel: "+JSON.stringify(audioPlacement));
+   }
    assert.equal(await page.locator("[data-bridge-guess],[data-bridge-test],[data-bridge-repair-guess],[data-bridge-repair-test]").count(),0,"No preliminary test or second experimental confirmation is present");
    assert.equal(await page.locator("[data-dock-place='a']").isDisabled(),true,"A placement needs a selected material");
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"No results are shown before any complete circuit was tried");
