@@ -85,12 +85,18 @@ function circuit(slots={},isLit=false){
   const terminals='<path class="bridge-gap-stubs" d="M'+(x-57)+' '+y+'h38 M'+(x+19)+' '+y+'h38" fill="none" stroke="'+c+'" stroke-width="9" stroke-linecap="round"/>'+
    '<circle cx="'+(x-19)+'" cy="'+y+'" r="8" fill="#ffe4a3" stroke="#234e60" stroke-width="3"/>'+
    '<circle cx="'+(x+19)+'" cy="'+y+'" r="8" fill="#ffe4a3" stroke="#234e60" stroke-width="3"/>';
-  const bridge=joins?'<path class="bridge-conducting-insert" d="M'+(x-19)+' '+y+'h38" fill="none" stroke="#fef2c5" stroke-width="11" stroke-linecap="round"/>':
-   id?'<rect class="bridge-insulating-insert" x="'+(x-13)+'" y="'+(y-13)+'" width="26" height="26" rx="5" fill="#a87952" stroke="#f9dca9" stroke-width="3"/>':
+  // A piece on the board is THE SAME ORIGINAL SVG SHAPE as the material
+  // card the learner dragged. Do not replace nails, foil, wood or plastic with
+  // an abstract conductive bar or insulating square. The scientific status
+  // still comes exclusively from evaluate(), not from the drawing.
+  const piece=id&&window.AkariArt?.materialPiece?
+   window.AkariArt.materialPiece(id,x-50,y-35,100,70):"";
+  const bridge=id?
+   '<g class="bridge-installed-specimen" data-bridge-specimen="'+id+'" data-bridge-joins="'+(joins?"true":"false")+'">'+piece+'</g>':
    '<path class="bridge-visible-break" d="M'+(x-8)+' '+(y-9)+'l16 18M'+(x+8)+' '+(y-9)+'l-16 18" stroke="#fff0d4" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
   const placard='<rect x="'+(x-17)+'" y="'+(y-43)+'" width="34" height="26" rx="8" fill="#1e4353" stroke="#f9e2a0" stroke-width="2"/>'+
    '<text x="'+x+'" y="'+(y-25)+'" text-anchor="middle" font-size="18" font-weight="900" fill="#fff7de">'+letter+'</text>';
-  const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+28)+'" text-anchor="middle" font-size="14" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
+  const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+43)+'" text-anchor="middle" font-size="13" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
   return '<g class="bridge-gap-visual" data-bridge-gap="'+letter.toLowerCase()+'" data-bridge-gap-state="'+status+'">'+terminals+bridge+placard+caption+'</g>';
  };
  return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。"><g id="akari-bridge-drawing">'+
