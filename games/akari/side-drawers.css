@@ -919,3 +919,26 @@ body[data-visual-theme="reference-rebuild"] .akari-dock .bridge-direct-repair .b
  .akari-dock .akari-draggable-material,
  .akari-dock .akari-drop-pad{transition:none}
 }
+
+/* The object left in the wire gap has the SAME original illustration vector
+   as its draggable card (without the decorative card backdrop). This never
+   paints a guessed result; the circuit model still controls the lamp. */
+.akari-dock .bridge-installed-specimen,
+.akari-dock .bridge-installed-material{
+ pointer-events:none;
+}
+.akari-dock .bridge-installed-material{
+ overflow:visible;
+ filter:drop-shadow(0 2px 2px #18384880);
+}
+.akari-dock .bridge-gap-visual .bridge-sample-label{
+ pointer-events:none;
+}
+.akari-material-ghost .bridge-installed-material{
+ display:block;width:100%;height:100%;
+}
+@media(prefers-reduced-motion:reduce){
+ .akari-dock .bridge-installed-material{
+  transition:none;
+ }
+}
