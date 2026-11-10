@@ -156,7 +156,7 @@
     }
     circuit.append(markers);
    }else if(explained){
-    focus.innerHTML='<strong>③ 💡 どうして 光った？</strong>';
+    focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
    }else{
     const selectedId=sections.find(section=>section.querySelector(".bridge-material.selected"))?.querySelector(".bridge-material.selected")?.dataset.bridgeSample;
     const selectedName=window.AkariBridge?.material(selectedId)?.name;
