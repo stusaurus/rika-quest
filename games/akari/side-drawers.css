@@ -669,3 +669,46 @@ body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.brid
  .akari-dock .akari-sample-test .bridge-mini-circuit{max-height:124px}
  .akari-dock .akari-sample-test .bridge-mini-circuit svg{max-height:122px}
 }
+
+/* Direct circuit experiments: the board is the apparatus, not a separate
+   preliminary bench. Keep the material choices beside the real A/B gap
+   controls and the optional trial-history shelf readable. */
+.akari-dock .akari-sample-desk{
+ gap:6px;padding:8px 10px;
+}
+.akari-dock .akari-sample-choices .bridge-material{
+ min-height:84px;
+}
+.akari-dock .bridge-direct-repair{
+ margin-top:0;padding:9px 11px;
+}
+.akari-dock .bridge-direct-repair>h3{
+ font-size:15px;line-height:1.4;
+}
+.akari-dock .bridge-direct-repair .bridge-outcome{
+ font-size:14px;font-weight:800;line-height:1.45;
+ padding:8px 10px;border-radius:10px;
+}
+.akari-dock .bridge-direct-repair .bridge-why{
+ gap:7px;padding-top:10px;
+}
+.akari-dock .bridge-direct-history{
+ display:grid;gap:7px;min-width:0;
+ background:#f2f7ed;color:#224c59;
+ padding:8px;border:1px solid #aac7b8;border-radius:10px;
+}
+.akari-dock .bridge-direct-history>strong{
+ color:#214c5e;font-size:13px;
+}
+.akari-dock .bridge-direct-history ol{
+ display:grid;gap:6px;padding:0;margin:0;list-style:none;
+}
+.akari-dock .bridge-direct-history .bridge-record{
+ display:block;color:#f4fffb;background:#31596d;
+ font-size:12px;line-height:1.55;padding:7px 9px;
+}
+@media(max-width:740px){
+ .akari-dock .akari-sample-desk{gap:5px;padding:7px}
+ .akari-dock .akari-sample-choices .bridge-material{min-height:68px}
+ .akari-dock .bridge-direct-repair{padding:8px}
+}
