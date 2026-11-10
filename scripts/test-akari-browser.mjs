@@ -23,6 +23,30 @@ try{
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,hasTouch:engine==="webkit",isMobile:engine==="webkit",reducedMotion:"reduce"});
    const page=await context.newPage(),errors=[];
+   const assertSameCircuitArtwork=async(slot,id)=>{
+     const found=await page.evaluate(({slot,id})=>{
+       const card=document.querySelector('.akari-sample-desk [data-bridge-sample="'+id+'"] .bridge-material-art svg');
+       const circuit=document.querySelector('.bridge-gap-visual[data-bridge-gap="'+slot+'"] .bridge-installed-material');
+       if(!card||!circuit)return {card:!!card,circuit:!!circuit};
+       const shapes=svg=>({
+         paths:[...svg.querySelectorAll("path")].map(el=>el.getAttribute("d")),
+         ellipses:[...svg.querySelectorAll("ellipse")].map(el=>[el.getAttribute("cx"),el.getAttribute("cy"),el.getAttribute("rx"),el.getAttribute("ry"),el.getAttribute("transform")]),
+         rects:[...svg.querySelectorAll("rect")].filter(el=>el.getAttribute("width")!=="244").map(el=>[el.getAttribute("x"),el.getAttribute("y"),el.getAttribute("width"),el.getAttribute("height"),el.getAttribute("rx")]),
+         transforms:[...svg.querySelectorAll("g[transform]:not(.bridge-piece-rotation)")].map(el=>el.getAttribute("transform"))
+       });
+       const picture=circuit.getBoundingClientRect(),diagram=document.querySelector(".bridge-circuit-svg").getBoundingClientRect();
+       return {card:true,circuit:true,displayed:circuit.dataset.installedMaterial,exact:JSON.stringify(shapes(card))===JSON.stringify(shapes(circuit)),
+         picture:{width:picture.width,height:picture.height,top:picture.top,bottom:picture.bottom},diagram:{top:diagram.top,bottom:diagram.bottom},
+         noCardPlate:!circuit.querySelector('rect[width="244"][height="198"]')};
+     },{slot,id});
+     assert.equal(found.card,true,"Original material card exists for "+id);
+     assert.equal(found.circuit,true,"Original specimen shape appears INSIDE "+slot.toUpperCase()+" for "+id);
+     assert.equal(found.displayed,id,"Wrong illustration must never stand in for "+id);
+     assert.equal(found.exact,true,"The card and circuit must share identical original vector geometry: "+JSON.stringify(found));
+     assert.equal(found.noCardPlate,true,"Only the object shape enters the wire break, never its decorative card");
+     assert.ok(found.picture.width>15&&found.picture.height>12,"The placed specimen cannot shrink into an indistinguishable icon: "+JSON.stringify(found));
+     assert.ok(found.picture.top>=found.diagram.top-3&&found.picture.bottom<=found.diagram.bottom+3,"Installed illustration stays visible inside the real circuit: "+JSON.stringify(found));
+   };
    const dragMaterialToGap=async(id,slot)=>{
     const sourceSelector='.akari-sample-desk [data-bridge-sample="'+id+'"]';
     await page.locator(sourceSelector).scrollIntoViewIfNeeded();
@@ -40,6 +64,7 @@ try{
     await page.mouse.down();
     await page.mouse.move(start.x+7,start.y-18,{steps:5});
     assert.equal(await page.locator(".akari-material-ghost").count(),1,"A material image must visibly follow the dragging finger");
+    assert.equal(await page.locator(".akari-material-ghost .bridge-installed-material").getAttribute("data-installed-material"),id,"The object held by the finger uses the same original specimen vector as the circuit insert");
     assert.equal(await page.locator(".akari-drop-pad").count(),2,"The two electrical breaks are legitimate drop targets");
     let target=await targetInfo();
     if(target.y<42){
@@ -1053,6 +1078,8 @@ try{
    assert.equal(await page.locator(".akari-dock-gap").count(),2,"A/B have real insertion targets on the same circuit");
    assert.equal(await page.locator(".akari-drop-pad").count(),2,"Both discovered breaks have finger-drop zones");
    assert.equal(await page.locator(".akari-draggable-material").count(),4,"All four materials can be carried directly into the circuit");
+   assert.equal(await page.locator(".bridge-installed-material").count(),0,"An unfilled circuit shows no fake material artwork");
+   assert.equal(await page.locator(".bridge-conducting-insert,.bridge-insulating-insert").count(),0,"No generic bar or square may substitute for the child's object");
    assert.equal(await page.locator(".akari-draggable-material").first().evaluate(e=>getComputedStyle(e).touchAction),"none","Touch gestures drag the materials instead of scrolling them");
    assert.match(await page.locator(".akari-board-focus").textContent(),/材料を A か B へ はこぼう/,"A child sees one direct action, not a second experiment");
    assert.equal(await page.locator(".akari-dock-drop-note").count(),0,"The screen must not repeat the same instruction underneath the materials");
@@ -1096,6 +1123,9 @@ try{
    assert.equal(await page.locator('.akari-dock-gap[data-gap-state="filled"]').count(),0,"A failed drag cannot insert anything into A or B");
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"Invalid drop is not a measured circuit experiment");
    await dragMaterialToGap("iron","a");
+   await assertSameCircuitArtwork("a","iron");
+   assert.match(await page.locator('[data-bridge-gap="a"] .bridge-piece-rotation').getAttribute("transform"),/rotate\(-46 /,"The SAME nail drawing is turned to lie across both wire contacts");
+   assert.equal(await page.locator('.bridge-gap-visual[data-bridge-gap="b"] .bridge-installed-material').count(),0,"B remains physically empty until a material is inserted");
    assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Dragging into A does not open another drawer or experiment");
    assert.match(await page.locator('.bridge-slot-actions [data-bridge-place="a"]').textContent(),/鉄のくぎ/,"Iron is directly installed in the actual A gap");
    assert.equal(await page.locator('[data-dock-place="a"]').getAttribute("data-gap-state"),"filled","A button visibly becomes occupied once iron is installed");
@@ -1107,6 +1137,8 @@ try{
    assert.match(await page.locator(".akari-carrying-material").textContent(),/乾いた木片/,"The tap fallback still selects a material");
    assert.match(await page.locator(".akari-board-focus").textContent(),/② A か B へ はこぼう/,"The selected item can now be carried or inserted by tap");
    await page.locator("[data-dock-place='b']").click();
+   await assertSameCircuitArtwork("b","wood");
+   assert.match(await page.locator('[data-bridge-gap="b"] .bridge-piece-rotation').getAttribute("transform"),/rotate\(24 /,"The wooden strip keeps its shape but lies across the real contacts");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*乾いた木片/s,"B shows the actually installed piece of wood");
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"A nonconductor in B immediately leaves the circuit dark");
    assert.equal(await page.locator('[data-bridge-gap="a"][data-bridge-gap-state="conductive"]').count(),1,"A is physically bridged by iron");
@@ -1117,6 +1149,10 @@ try{
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"No finish button before the scientific reason");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-streetlamp-dark-material.png",fullPage:true});
    await dragMaterialToGap("foil","b");
+   await assertSameCircuitArtwork("a","iron");
+   await assertSameCircuitArtwork("b","foil");
+   assert.equal(await page.locator('[data-bridge-gap="b"] .bridge-piece-rotation').count(),0,"The folded foil retains its original orientation and folds");
+   assert.equal(await page.locator(".bridge-conducting-insert,.bridge-insulating-insert").count(),0,"Correct materials remain original 3D object drawings, not anonymous conductive lines");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*アルミはく/s,"B's visible label updates immediately when wood is replaced with foil");
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"The bulb lights AUTOMATICALLY when a second metal closes the loop");
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Visual light and physical A/B slots update in the same interaction");
@@ -1160,6 +1196,8 @@ try{
    }
    await page.reload({waitUntil:"domcontentloaded"});
    assert.equal(await page.locator(".bridge-circuit.is-lit").count(),1,"Reload preserves the live repaired lamp");
+   await assertSameCircuitArtwork("a","iron");
+   await assertSameCircuitArtwork("b","foil");
    assert.match(await page.locator('[data-dock-place="a"]').textContent(),/鉄のくぎ/,"Saved A material is again visible on the circuit after reload");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/アルミはく/,"Saved B material is again visible on the circuit after reload");
    assert.equal(await page.locator('.bridge-slot-actions [data-bridge-place="b"] span').textContent(),"アルミはく","The installed material at B survives a saved-game reload");
