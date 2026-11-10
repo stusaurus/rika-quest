@@ -712,3 +712,111 @@ body[data-visual-theme="reference-rebuild"] .akari-dock .akari-dock-center>.brid
  .akari-dock .akari-sample-choices .bridge-material{min-height:68px}
  .akari-dock .bridge-direct-repair{padding:8px}
 }
+
+/* Stage 3 clarity: one active step, and slots whose labels disclose the
+   physical contents. Keep exposed contact points visible beside the buttons. */
+.akari-dock .akari-board-focus{
+ min-height:40px;padding:6px 9px;flex-wrap:wrap;gap:5px 8px;
+}
+.akari-dock .akari-carrying-material{
+ display:inline-flex;align-items:center;justify-content:center;
+ background:#ffdf89;border:2px solid #bf8d3c;color:#553c20;
+ border-radius:12px;padding:5px 9px;
+ font-size:13px;font-weight:900;line-height:1.25;
+}
+.akari-dock .akari-dock-gap{
+ left:61%;width:clamp(92px,28%,112px);
+ min-width:0;min-height:49px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:1px;padding:4px 6px;border-radius:13px;
+ border:2px solid #6b9b9e;background:#f9fbf5;color:#274b5c;
+ box-shadow:0 2px 0 #618e91,0 0 0 2px #fff8df7f;
+}
+.akari-dock .akari-dock-gap-a{top:29%}
+.akari-dock .akari-dock-gap-b{top:72%}
+.akari-dock .akari-dock-gap:disabled{
+ opacity:1;background:#eff5ef;color:#294c56;
+ border-color:#89a8a6;box-shadow:0 2px 0 #a5c6c1;
+}
+.akari-dock .akari-dock-gap.is-ready:not(:disabled){
+ border-color:#c37b2f;background:#ffe1a0;color:#563f25;
+ box-shadow:0 0 0 3px #ffecb8,0 3px 0 #c3964b;
+}
+.akari-dock .akari-dock-gap[data-gap-state="filled"]{
+ border-color:#327d86;background:#d4f1e9;color:#174f5b;
+}
+.akari-dock .akari-dock-gap[data-gap-state="filled"].is-ready{
+ background:#ffe6b1;border-color:#bc8a3c;
+}
+.akari-dock .akari-gap-letter{font-size:16px;line-height:1;font-weight:950}
+.akari-dock .akari-gap-contents{
+ display:block;max-width:100%;font-size:11px;line-height:1.2;
+ font-weight:900;overflow-wrap:anywhere;text-align:center;
+}
+.akari-dock .akari-dock-gap:focus-visible{outline:3px solid #c77b37;outline-offset:3px}
+.akari-dock .akari-sample-desk{padding:7px 9px;gap:5px}
+.akari-dock .akari-sample-heading{font-size:12px;line-height:1.25}
+.akari-dock .bridge-direct-repair>h3,
+.akari-dock .bridge-direct-repair>.lab-sub{display:none}
+/* The active instruction above the circuit replaces the separate
+   "choose materials and insert them" note and redundant repair heading. */
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) #scienceCompass{
+ display:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .reading-task-row{
+ margin:3px 0 6px;justify-content:flex-end;
+}
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .reading-task-row .quest-desc{
+ display:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) #readTaskBtn{
+ min-width:52px;min-height:38px;padding:5px 7px;
+}
+@media(max-width:740px){
+ .layout:has(.akari-dock)>.sidebar{
+  padding:5px 9px;margin-bottom:6px;
+ }
+ .layout:has(.akari-dock)>.sidebar .side-heading{
+  padding:2px 4px;font-size:13px;min-height:29px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .quest-panel{
+  padding:7px 8px 10px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .quest-head h2{
+  font-size:16px;line-height:1.35;
+ }
+ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .quest-head{
+  gap:6px;
+ }
+ .akari-dock{gap:4px}
+ .akari-dock .akari-dock-tab[data-dock-tab]{min-height:40px}
+ .akari-dock .akari-dock-readout{
+  gap:3px;padding:5px 7px;border-radius:10px;
+ }
+ .akari-dock .akari-memo-notes{
+  grid-auto-columns:minmax(152px,65%);gap:5px;
+  padding:1px 2px 4px;
+ }
+ .akari-dock .akari-dock-readout .akari-observation{
+  gap:1px;padding:4px 6px;min-height:53px;
+ }
+ .akari-dock .akari-dock-readout .akari-observation strong{
+  font-size:11px;line-height:1.2;
+ }
+ .akari-dock .akari-dock-readout .akari-observation-finding{
+  font-size:11px;line-height:1.28;
+ }
+ .akari-dock .akari-memo-heading .akari-readout-title{
+  font-size:12px;
+ }
+ .akari-dock .akari-dock-center{gap:6px}
+ .akari-dock .akari-board-focus{min-height:35px;padding:4px 7px}
+ .akari-dock .akari-board-focus>strong{font-size:13px}
+ .akari-dock .akari-carrying-material{font-size:11px;padding:4px 6px}
+ .akari-dock .akari-dock-gap{min-height:44px;padding:3px 4px}
+ .akari-dock .akari-gap-letter{font-size:14px}
+ .akari-dock .akari-gap-contents{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .akari-dock .akari-dock-gap{transition:none!important}
+}
