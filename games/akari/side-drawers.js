@@ -70,11 +70,11 @@
    if(!circuit||!sections[0])return;
    const inspected=sections[0].querySelectorAll(".bridge-site.found").length;
    const repairReady=sections.some(section=>section.querySelector(".bridge-slot-actions"));
-   const directTesting=inspected===3&&!repairReady;
+   const directTesting=inspected===3;
    const shell=document.createElement("div");
    shell.className="akari-dock";
    shell.dataset.open=opened;
-   shell.setAttribute("aria-label","回路を真ん中にして、左右から道具と材料を引き出す");
+   shell.setAttribute("aria-label","中央の回路に選んだ材料を直接はめる");
    const left=document.createElement("div");
    left.className="akari-dock-drawer akari-dock-left";
    left.dataset.dockPanel="left";left.id="akariToolsDrawer";
@@ -100,7 +100,7 @@
    readout.setAttribute("aria-live","polite");
    readout.setAttribute("aria-label","回路で みつけたこと");
    readout.hidden=true;
-   shell.append(makeTab("left","しらべる","🔎","akariToolsDrawer"),readout,center,makeTab("right",directTesting?"きろく":"ざいりょう",directTesting?"📝":"🧱","akariMaterialsDrawer"),left,right);
+   shell.append(makeTab("left","しらべる","🔎","akariToolsDrawer"),readout,center,makeTab("right","きろく","📝","akariMaterialsDrawer"),left,right);
    lab.insertBefore(shell,circuit);
    center.append(circuit);
    // The circuit is the entrypoint. No observation or answer is revealed
@@ -155,12 +155,11 @@
      markers.append(button);
     }
     circuit.append(markers);
-   }else if(!repairReady){
-    focus.innerHTML='<strong>🧩 A と B、なにで つなぐ？</strong>';
    }else if(explained){
-    focus.innerHTML='<strong>💡 光った！ なぜかな？</strong>';
+    focus.innerHTML='<strong>💡 光った！ どうしてかな？</strong>';
    }else{
-    focus.innerHTML='<strong>🧩 A と B を つなごう</strong><button type="button" data-dock-jump="right">🧱 ざいりょうを みる →</button>';
+    const selected=sections.some(section=>section.querySelector(".bridge-material.selected"));
+    focus.innerHTML='<strong>'+(selected?"🧩 えらんだ材料を A か B に はめよう":"🧱 材料を えらぼう")+'</strong>';
    }
    if(inspectedSites.length){
     readout.hidden=false;
@@ -199,7 +198,7 @@
    left.append(leftIntro,sections[0]);
    const rightIntro=document.createElement("p");
    rightIntro.className="akari-dock-intro";
-   rightIntro.textContent=directTesting?"ためした きろくを みられるよ。":"材料を えらんで、光るか ためそう。";
+   rightIntro.textContent="回路で ためした きろく。";
    right.append(rightIntro);
    const materialsSection=sections.find(section=>section.querySelector(".bridge-materials"));
    if(materialsSection)right.append(materialsSection);
@@ -209,38 +208,24 @@
      waiting.textContent="まず 回路の 🔎 を 3つ さわろう。";
      right.append(waiting);
    }
-   // Move the ACTUAL material controls and original prediction experiment
-   // directly below the live circuit. No duplicate choices, hidden answers,
-   // extra drawer opening, or changes to the authoritative game state.
+   // Move the original four materials beneath the circuit (no cloning).
+   // Inserting either material into A or B is the actual live experiment.
    if(directTesting&&materialsSection){
      const desk=document.createElement("section");
      desk.className="akari-sample-desk";
-     desk.setAttribute("aria-label","どの ざいりょうを ためす？");
+     desk.setAttribute("aria-label","A と B に はめる 材料");
      const heading=document.createElement("strong");
      heading.className="akari-sample-heading";
-     heading.textContent="🧪 どれを ためす？";
+     heading.textContent="🧱 材料を えらぶ";
      desk.append(heading);
      const choices=materialsSection.querySelector(".bridge-materials");
      if(choices){
-       // Count actual experiment results only. Never infer a sample result
-       // from a material's properties before the child has measured it.
-       const cards=[...choices.querySelectorAll("[data-bridge-sample]")];
-       const litCount=cards.filter(card=>card.querySelector("small")?.textContent.match(/実験済：\s*点灯/)).length;
-       const darkCount=cards.filter(card=>card.querySelector("small")?.textContent.match(/実験済：\s*消灯/)).length;
-       const progress=document.createElement("span");
-       progress.className="akari-sample-goal";
-       progress.textContent="💡 "+litCount+" / 2　◯ "+darkCount+" / 1";
-       progress.setAttribute("aria-label","実験で 光った もの "+litCount+"こ、光らなかった もの "+darkCount+"こ。目標は 光るもの 2こ、光らないもの 1こ。");
-       desk.append(progress);
        choices.classList.add("akari-sample-choices");
        desk.append(choices);
      }
-     const testBox=materialsSection.querySelector(".bridge-test-box");
-     if(testBox){
-       testBox.classList.add("akari-sample-test");
-       if(!testBox.querySelector("strong"))testBox.hidden=true;
-       desk.append(testBox);
-     }
+     // The original material section is now empty; don't expose another
+     // misleading "材料を選ぼう" panel inside the optional history drawer.
+     materialsSection.remove();
      center.append(desk);
    }
    // The central diagram remains visible during material selection and repair.
@@ -248,6 +233,8 @@
    const repair=sections.find(x=>x.querySelector(".bridge-slot-actions"));
    if(repair){
      center.append(repair);
+     const history=repair.querySelector(".bridge-direct-history");
+     if(history)right.append(history);
      // Put the action exactly on the two gaps in the actual circuit, without
      // duplicating the model or changing the existing repair state machine.
      const overlay=document.createElement("div");
@@ -259,14 +246,14 @@
        target.type="button";target.dataset.dockPlace=slot;
        target.className="akari-dock-gap akari-dock-gap-"+slot;
        target.disabled=source.disabled;
-       target.setAttribute("aria-label","修理 "+slot.toUpperCase()+" に えらんだ材料を いれる");
-       target.textContent=slot.toUpperCase()+" に いれる";
+       target.setAttribute("aria-label","切れ目 "+slot.toUpperCase()+" に えらんだ材料を はめる");
+       target.textContent=slot.toUpperCase()+" に はめる";
        overlay.append(target);
      }
      circuit.append(overlay);
      const note=document.createElement("p");
      note.className="akari-dock-drop-note";
-     note.textContent="ためした 材料を、回路の A と B に いれよう。";
+     note.textContent="材料を えらんで、回路の A と B に はめよう。";
      center.insertBefore(note,repair);
    }
    const info=lab.querySelector(".bridge-quest-strip");

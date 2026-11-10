@@ -4,7 +4,7 @@ const Art=window.AkariArt||{};
 const M=[
 {id:1,name:"はじめてのひかり",place:"village",placeName:"ひかりの村",mode:"wire",goal:"小屋のあかりをつけよう",story:"村の小屋がまっくらだ。乾電池と豆電球をつないで、はじめてのひかりをともそう。",instructions:"乾電池の＋と−を、豆電球の金属の横部分・底の接点につなごう。端子を2つ順番にタップすると導線を引けるよ。",discovery:"豆電球は、乾電池の＋極と−極が豆電球を通る1つの輪でつながると光る。電気の通り道を「回路」というよ。",hints:["豆電球には電気が出入りする2つの接点があるよ。","＋から豆電球の金属の横部分へ、−から底の接点へ。2本つなごう。"]},
 {id:2,name:"切れた通り道",place:"village",placeName:"ひかりの村",mode:"wire",prefill:[["P","L"]],goal:"消えた街灯を直そう",story:"さっきまで明るかった街灯が消えちゃった。1本の導線がはずれているみたい。",instructions:"すでにつながっている導線を観察して、足りない1本をつなごう。",discovery:"回路にすき間があると電気が流れず、豆電球はつかない。1か所でも切れていると点灯しないんだ。",hints:["すでに＋極と豆電球はつながっているよ。","−極と、まだつながっていない底の接点をつなごう。"]},
-{id:3,name:"街灯の材料さがし",place:"village",placeName:"ひかりの村",mode:"explore",goal:"まちの街灯を直そう",story:"まちの 街灯が まっくら！ 回路の どこで 電気の 道が とぎれているのかな？",instructions:"回路の 3かしょを しらべて、わかったことを メモに のこそう。材料を ためしたら、AとBを つなごう。",discovery:"でんちの ＋から まめ電球を 通り、−まで 道が つながると 光る。鉄や アルミは 電気を 通す。木や プラスチックは 通しにくい。",hints:["メモの A と B を 見くらべよう。どちらも 線が とぎれているね。","ためした 材料の 中で、電気が 通ったのは どれ？ A と B に 使えるかな？"]},
+{id:3,name:"街灯の材料さがし",place:"village",placeName:"ひかりの村",mode:"explore",goal:"まちの街灯を直そう",story:"まちの 街灯が まっくら！ 回路の どこで 電気の 道が とぎれているのかな？",instructions:"回路の 3かしょを しらべて、わかったことを メモに のこそう。材料を えらんで、AとBに はめよう。まめ電球を 見てね。",discovery:"でんちの ＋から まめ電球を 通り、−まで 道が つながると 光る。鉄や アルミは 電気を 通す。木や プラスチックは 通しにくい。",hints:["メモの A と B を 見くらべよう。どちらも 線が とぎれているね。","A と B の 材料を かえると、明かりは どうなるかな？"]},
 {id:4,name:"庭の実験工房",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"conductor",goal:"電気を通すものを2つ見つけよう",story:"庭師さんが材料を集めてきた。豆電球を使って、どれが電気を通すのか実験しよう。",instructions:"同じクリップで接点の条件を変えたらどうなる？基準実験から始め、条件をそろえて材料を比べ、電気を通す性質を説明しよう。",discovery:"同じ金属でも接点が離れると消灯する。接点条件をそろえて比べると、鉄やアルミニウムは電気を通し、乾いた木やプラスチックは通しにくいとわかる。",hints:["最初は材料を変えず、同じクリップの接点だけを変えてみよう。","材料を比べるときは接点を両方しっかり合わせて、条件をそろえよう。"]},
 {id:5,name:"にせものの金属",place:"garden",placeName:"ふしぎな庭",mode:"material",target:"insulator",goal:"電気を通さないものを見つけよう",story:"ぴかぴかの材料は全部電気を通す？ 見た目にだまされないで調べてみよう。",instructions:"見た目が似た4材料を仮想実験で見分け、電気を通す修理部品1つ・電気を通しにくい仕切り2つを選び、ショートせず点灯する設備を完成させよう。",discovery:"主回路では導体を使うと豆電球に電気が流れる。一方、乾電池の＋と−を隔てる仕切りは不導体が適している。金属が両極をつなぐとショートし危険。",hints:["豆電球に電気を通す部分と、電池の＋と−が直接触れるのを防ぐ部分では必要な材料が違うよ。","主回路には金属、むき出しの2極の間には木やプラスチックなど電気を通しにくい材料を考えよう。"]},
 {id:6,name:"時計塔の故障調査",place:"tower",placeName:"古時計の塔",mode:"repair",goal:"故障した回路を修理しよう",story:"時計塔の時計が暗くて読めない。点灯しない理由を、部品を調べて探そう。",instructions:"3つの部品を調査して原因を推理。修理後は自分で回路を作り、点灯を実験して＋極から−極までの道をたどろう。",discovery:"電球がつかないとき、すぐに乾電池のせいと決めつけず、接点や導線を1か所ずつ調べると原因がわかる。",hints:["故障は乾電池とは限らないよ。","3つの部品の観察結果を比較し、異常のあるものを考えよう。"]},
@@ -463,7 +463,7 @@ function check(){
  if(stageComplete)return;const m=current();if(ui.switchLab){setFeedback("4通りの通電実験と理由の確認を完成させよう。");return;}if(ui.builder){setFeedback("導線をつなぎ、OFFとONの両方を実験してから完成ボタンを押そう。");return;}if(ui.transfer){setFeedback("追加依頼の3つの予想と理由を選び、最後の「街を救う」を押そう。");return;}
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
  if(m.mode==="explore"){
-  if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("メモ → ざいりょうを ためす → A・Bを つなぐ → 光った わけを えらぼう。","warning");return;}
+  if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("A と B に 材料を はめて、まめ電球を 光らせよう。光った わけも えらぼう。","warning");return;}
   recordObservation("bridge:proof","【街灯の回路】"+ui.bridge.slots.a+"と"+ui.bridge.slots.b+"を使い、乾電池＋→修理A→豆電球→修理B→乾電池−の通り道を復旧した。");
   clearBridgeDraft();success();return;
  }
@@ -981,50 +981,40 @@ function handleWorkspace(e){
   if(target.hasAttribute("data-bridge-sample")){
    const id=target.dataset.bridgeSample;
    if(!B.material(id)||b.inspected.length<3)return;
-   b.selected=id;b.sampleGuess=null;ui.bridge=b;saveBridgeDraft();
-   if(B.evidenceReady(b)&&b.tests[id])window.AkariDock?.collapse?.();
-   renderWorkspace();
-   setFeedback(B.material(id).name+"を選んだ。予想してから実験しよう。");reactCharacter("inspect");return;
-  }
-  if(target.hasAttribute("data-bridge-guess")){
-   if(!B.material(b.selected)||b.tests[b.selected])return;
-   const guess=target.dataset.bridgeGuess;if(!["lit","dark"].includes(guess))return;
-   b.sampleGuess=guess;saveBridgeDraft();renderWorkspace();setFeedback("仮説を立てたよ。実験で確かめよう。");return;
-  }
-  if(target.hasAttribute("data-bridge-test")){
-   const m=B.material(b.selected);if(!m||b.inspected.length<3||b.tests[m.id]||!["lit","dark"].includes(b.sampleGuess))return;
-   const actual=m.conductive?"lit":"dark";
-   b.tests[m.id]={guess:b.sampleGuess,actual};
-   b.sampleGuess=null;saveBridgeDraft();renderWorkspace();
-   recordObservation("bridge:sample:"+m.id,"【材料実験】"+m.name+"：予想は"+(b.tests[m.id].guess==="lit"?"点灯":"消灯")+"、実際は"+(actual==="lit"?"点灯":"消灯")+"。");
-   setFeedback("仮想実験："+m.name+" → "+(actual==="lit"?"豆電球が点灯した！":"豆電球は消えたまま。")+" 他の材料と比べよう。","success");reactCharacter("discover");return;
+   b.selected=id;ui.bridge=b;saveBridgeDraft();renderWorkspace();
+   setFeedback(B.material(id).name+"を えらんだよ。A か B に はめよう。");reactCharacter("inspect");return;
   }
   if(target.hasAttribute("data-bridge-place")){
    const slot=target.dataset.bridgePlace,id=b.selected;
-   if(!["a","b"].includes(slot)||!B.material(id)||!b.tests[id]||!B.evidenceReady(b))return;
-   if(b.slots[slot]===id){b.slots[slot]=null;}
-   else{const other=slot==="a"?"b":"a";if(b.slots[other]===id)b.slots[other]=null;b.slots[slot]=id;}
-   b.repairGuess=null;b.repairResult=null;b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("修理"+slot.toUpperCase()+"の材料を変更した。以前の通電結果は無効になったよ。");reactCharacter("inspect");return;
-  }
-  if(target.hasAttribute("data-bridge-repair-guess")){
-   const v=target.dataset.bridgeRepairGuess;if(!["lit","dark"].includes(v)||!b.slots.a||!b.slots.b)return;
-   b.repairGuess=v;b.repairResult=null;b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("修理回路の予想を決めた。仮想通電で確かめよう。");return;
-  }
-  if(target.hasAttribute("data-bridge-repair-test")){
-   if(!b.slots.a||!b.slots.b||!b.repairGuess||!B.evidenceReady(b))return;
-   const actual=B.evaluate(b.slots);
-   b.repairResult={signature:B.signature(b.slots),guess:b.repairGuess,actual:actual.lit?"lit":"dark"};
-   b.reason=null;saveBridgeDraft();renderWorkspace();renderScene();
-   setFeedback("仮想通電："+(actual.lit?"街灯のあかりがともった！ 光ったわけも考えよう。":"消灯。材料が電気を通すか、両方のすき間を見直してみよう。"),actual.lit?"success":"warning");
-   reactCharacter(actual.lit?"discover":"think");return;
+   if(!["a","b"].includes(slot)||!B.material(id)||!B.evidenceReady(b))return;
+   if(b.slots[slot]===id)b.slots[slot]=null;
+   else{
+    const other=slot==="a"?"b":"a";
+    if(b.slots[other]===id)b.slots[other]=null;
+    b.slots[slot]=id;
+   }
+   // The assembled live circuit is the experiment. No separate "test"
+   // button or hidden material conductivity preview is required.
+   b.reason=null;
+   const result=B.evaluate(b.slots);
+   if(b.slots.a&&b.slots.b){
+    b.trialLog=Array.isArray(b.trialLog)?b.trialLog:[];
+    const key=B.signature(b.slots);
+    if(!b.trialLog.some(t=>t.signature===key)){
+     b.trialLog.push({a:b.slots.a,b:b.slots.b,signature:key,actual:result.lit?"lit":"dark"});
+     if(b.trialLog.length>12)b.trialLog=b.trialLog.slice(-12);
+    }
+    recordObservation("bridge:trial:"+key,"【回路でためした】A："+B.material(b.slots.a).name+"、B："+B.material(b.slots.b).name+" → "+(result.lit?"まめ電球が光った。":"まめ電球は光らなかった。"));
+   }
+   ui.bridge=b;saveBridgeDraft();renderWorkspace();renderScene();
+   setFeedback(result.lit?"💡 光った！ 2つの 材料で 道が できたよ。 わけを 考えよう。":b.slots.a&&b.slots.b?"◯ まだ 光らないね。A と B の 材料を かえてみよう。":"A と B の 両方に 材料を はめてみよう。",result.lit?"success":"warning");
+   reactCharacter(result.lit?"discover":"think");return;
   }
   if(target.hasAttribute("data-bridge-reason")){
    if(!B.sceneLit(b))return;
    const reason=target.dataset.bridgeReason;if(!B.reasonOptions.some(([id])=>id===reason))return;
    b.reason=reason;saveBridgeDraft();renderWorkspace();
-   setFeedback("理由を選んだ。最後に「街灯の復旧を確認する」で回路の説明を確かめよう。");return;
+   setFeedback("わけを えらんだよ。回路の ひかりかたを もう一度 見てみよう。");return;
   }
  }
  if(target.hasAttribute("data-choice")){const id=target.dataset.choice;ui.selected!==undefined&&(ui.selected=id);

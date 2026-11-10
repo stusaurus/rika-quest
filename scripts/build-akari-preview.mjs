@@ -50,11 +50,11 @@ output=replaceOne(output,'<link rel="stylesheet" href="./bridge-cinematic.css?v=
 output=replaceOne(output,'<link rel="stylesheet" href="./cute-town.css?v=1">',"<style>\n"+cuteTownCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside2">',"<style>\n"+circuitVillageCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=1">',"<style>\n"+wireFocusCss+"\n</style>");
-output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=direct11">',"<style>\n"+sideDrawersCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=live12">',"<style>\n"+sideDrawersCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js" defer></script>',inlineScript(art));
-output=replaceOne(output,'<script src="./game.js?v=copy7" defer></script>',inlineScript(game));
+output=replaceOne(output,'<script src="./game.js?v=live12" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
 output=replaceOne(output,"<script src=\"./cute-town.js?v=streetlamp3\" defer></script>",inlineScript(cuteTownArt));
 output=replaceOne(output,"<script src=\"./circuit-village.js?v=inside1\" defer></script>",inlineScript(circuitVillage));
@@ -62,8 +62,8 @@ output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScr
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
 output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
 output=replaceOne(output,'<script src="./safety-lab.js" defer></script>',inlineScript(safetyLab));
-output=replaceOne(output,'<script src="./bridge-lab.js?v=streetlamp7" defer></script>',inlineScript(bridgeLab));
-output=replaceOne(output,'<script src="./side-drawers.js?v=direct10" defer></script>',inlineScript(sideDrawers));
+output=replaceOne(output,'<script src="./bridge-lab.js?v=direct8" defer></script>',inlineScript(bridgeLab));
+output=replaceOne(output,'<script src="./side-drawers.js?v=live11" defer></script>',inlineScript(sideDrawers));
 output=replaceOne(output,'<script src="./garden-lab.js" defer></script>',inlineScript(gardenLab));
 output=replaceOne(output,'<script src="./battery-lab.js" defer></script>',inlineScript(batteryLab));
 output=replaceOne(output,'<script src="./double-fault-lab.js" defer></script>',inlineScript(doubleFaultLab));

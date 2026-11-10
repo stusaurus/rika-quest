@@ -1,7 +1,7 @@
 "use strict";
 (function(){
 /* Streetlamp repair: a real two-gap series circuit rather than a lucky material choice.
- * The sample test is simulated; a metal is only proven conductive after prediction and measurement.
+ * Children put samples straight into the real A/B gaps; the circuit responds immediately.
  * The lamp is a load (L--R), not an ordinary piece of wire. */
 const sites=[
  {id:"battery",name:"A（＋がわ）",icon:"🔋",diagram:{x:294,y:55,viewBox:"192 0 204 113",pin:{x:399,y:124}},finding:"Aで 線が とぎれている。 でんちの ＋から 来た 線だよ。"},
@@ -21,7 +21,7 @@ const reasonOptions=[
 ];
 const material=id=>materials.find(x=>x.id===id);
 const valid=id=>Boolean(material(id));
-const initial=()=>({inspected:[],selected:null,sampleGuess:null,tests:{},slots:{a:null,b:null},repairGuess:null,repairResult:null,reason:null});
+const initial=()=>({inspected:[],selected:null,sampleGuess:null,tests:{},slots:{a:null,b:null},repairGuess:null,repairResult:null,trialLog:[],reason:null});
 function normalize(raw){
  const o=initial();if(!raw||typeof raw!=="object")return o;
  o.inspected=[...new Set(Array.isArray(raw.inspected)?raw.inspected:[])].filter(id=>sites.some(s=>s.id===id));
@@ -31,14 +31,24 @@ function normalize(raw){
  for(const m of materials)if(["lit","dark"].includes(tests[m.id]?.guess)&&tests[m.id]?.actual===(m.conductive?"lit":"dark"))
    o.tests[m.id]={guess:tests[m.id].guess,actual:tests[m.id].actual};
  const slots=raw.slots&&typeof raw.slots==="object"?raw.slots:{};
- for(const slot of ["a","b"])if(valid(slots[slot])&&o.tests[slots[slot]])o.slots[slot]=slots[slot];
+ for(const slot of ["a","b"])if(valid(slots[slot]))o.slots[slot]=slots[slot];
  if(o.slots.a===o.slots.b)o.slots.b=null;
+ // Legacy saved sample predictions are retained but never gate direct repair.
  o.repairGuess=["lit","dark"].includes(raw.repairGuess)?raw.repairGuess:null;
  o.reason=reasonOptions.some(([id])=>id===raw.reason)?raw.reason:null;
- const status=evaluate(o.slots);
- if(raw.repairResult&&raw.repairResult.signature===signature(o.slots)&&
-    raw.repairResult.actual===(status.lit?"lit":"dark")&&raw.repairResult.guess===o.repairGuess)
-     o.repairResult={signature:signature(o.slots),guess:o.repairGuess,actual:status.lit?"lit":"dark"};
+ const log=Array.isArray(raw.trialLog)?raw.trialLog:[];
+ for(const trial of log.slice(-12)){
+  if(!valid(trial?.a)||!valid(trial?.b)||trial.a===trial.b)continue;
+  const actual=evaluate({a:trial.a,b:trial.b}).lit?"lit":"dark";
+  const key=signature({a:trial.a,b:trial.b});
+  if(o.trialLog.some(x=>x.signature===key))continue;
+  o.trialLog.push({a:trial.a,b:trial.b,signature:key,actual});
+ }
+ // Old saves with a fully repaired circuit stay playable after migration.
+ if(o.slots.a&&o.slots.b&&!o.trialLog.some(x=>x.signature===signature(o.slots))){
+  const status=evaluate(o.slots);
+  o.trialLog.push({a:o.slots.a,b:o.slots.b,signature:signature(o.slots),actual:status.lit?"lit":"dark"});
+ }
  return o;
 }
 function traced(edges,from,to,includeBulb){
@@ -57,18 +67,12 @@ function evaluate(slots={}){
  return {short,lit:!short&&traced(wires,"P","N",true),wires};
 }
 function signature(slots){return ["a","b"].map(k=>valid(slots[k])?slots[k]:"-").join("|")}
-function evidenceReady(s){
- const d=normalize(s);
- if(d.inspected.length!==3)return false;
- const seen=Object.keys(d.tests).map(material);
- return seen.filter(m=>m.conductive).length>=2&&seen.some(m=>!m.conductive);
-}
+function evidenceReady(s){return normalize(s).inspected.length===3;}
 function canFinish(s){
  const d=normalize(s),e=evaluate(d.slots);
- return evidenceReady(d)&&d.slots.a!==null&&d.slots.b!==null&&d.slots.a!==d.slots.b&&e.lit&&
-  d.repairResult?.signature===signature(d.slots)&&d.repairResult.guess==="lit"&&d.repairResult.actual==="lit"&&d.reason==="both";
+ return evidenceReady(d)&&d.slots.a!==null&&d.slots.b!==null&&d.slots.a!==d.slots.b&&e.lit&&d.reason==="both";
 }
-function sceneLit(s){const d=normalize(s);return d.repairResult?.signature===signature(d.slots)&&d.repairResult.actual==="lit"&&evaluate(d.slots).lit}
+function sceneLit(s){return evaluate(normalize(s).slots).lit}
 function circuit(slots={},isLit=false){
  const c=isLit?"#ffefb3":"#ffe2a3";
  const wire=(d,on)=>'<path class="bridge-main-wire" d="'+d+'" stroke="'+(on?c:"#72838a")+'" stroke-width="8" stroke-linecap="round" fill="none" '+(on?'':'stroke-dasharray="7 8"')+'/>';
@@ -107,42 +111,31 @@ function circuit(slots={},isLit=false){
  '</g></svg>';
 }
 function render(raw){
- const s=normalize(raw),step=s.inspected.length<3?0:!evidenceReady(s)?1:2;
- const selected=material(s.selected),test=selected&&s.tests[selected.id],lit=sceneLit(s);
+ const s=normalize(raw),ready=evidenceReady(s),lit=sceneLit(s);
  const art=window.AkariArt||{};
  const details=sites.map(site=>{
   const done=s.inspected.includes(site.id);
   return '<button type="button" class="bridge-site'+(done?" found":"")+'" data-bridge-inspect="'+site.id+'"><span class="bridge-site-art" aria-hidden="true"><svg class="bridge-site-crop" viewBox="'+site.diagram.viewBox+'"><use href="#akari-bridge-drawing"></use></svg></span><strong>'+site.name+'</strong><small>'+(done?"✓ "+site.finding:"調査する")+'</small></button>';
  }).join("");
  const source=materials.map(m=>{
-  const observed=s.tests[m.id];
-  return '<button type="button" class="bridge-material'+(s.selected===m.id?" selected":"")+'" data-bridge-sample="'+m.id+'" aria-pressed="'+(s.selected===m.id)+'"><span class="bridge-material-art">'+(art.material?art.material(m.id):"")+'</span><strong>'+m.name+'</strong><small>'+(observed?"実験済： "+(observed.actual==="lit"?"点灯":"消灯"):"未実験")+'</small></button>';
+  const places=[s.slots.a===m.id?"A":"",s.slots.b===m.id?"B":""].filter(Boolean).join("・");
+  return '<button type="button" class="bridge-material'+(s.selected===m.id?" selected":"")+'" data-bridge-sample="'+m.id+'" aria-pressed="'+(s.selected===m.id)+'"><span class="bridge-material-art">'+(art.material?art.material(m.id):"")+'</span><strong>'+m.name+'</strong><small>'+(places?places+" に はめた":"えらぶ")+'</small></button>';
  }).join("");
- const tests=Object.entries(s.tests).map(([id,o])=>'<span class="bridge-record">'+material(id).name+"：予想 "+(o.guess==="lit"?"点灯":"消灯")+" → 実際 "+(o.actual==="lit"?"点灯":"消灯")+'</span>').join("");
+ const trials=s.trialLog.map(t=>'<li class="bridge-record">A：'+material(t.a).name+' ／ B：'+material(t.b).name+' → '+(t.actual==="lit"?"💡 光った":"◯ 光らない")+'</li>').join("");
  return '<div class="bridge-lab">'+
- '<div class="bridge-quest-strip"><strong>💡 街灯のあかりをもどそう</strong><span>回路の調査 '+s.inspected.length+'/3　｜　実験 '+Object.keys(s.tests).length+'/4　｜　回路 '+(lit?"点灯":"未復旧")+'</span></div>'+
+ '<div class="bridge-quest-strip"><strong>💡 街灯のあかりをもどそう</strong><span>調査 '+s.inspected.length+'/3 ｜ 回路 '+(lit?"点灯":"まだ光らない")+'</span></div>'+
  '<div class="bridge-circuit circuit-town-repair'+(lit?' is-lit':'')+'">'+circuit(s.slots,lit)+'</div>'+
-
  '<section class="lab-panel bridge-section"><h3>① 3かしょを しらべよう</h3><p class="lab-sub">🔎 を さわろう。わかったことが メモに のこるよ。</p><div class="bridge-sites">'+details+'</div></section>'+
- (step>=1?'<section class="lab-panel bridge-section"><h3>② どれなら 電気が 通る？</h3><p class="lab-sub">材料を えらんで、光るか よそうして ためそう。</p>'+
- '<div class="bridge-materials">'+source+'</div>'+
- '<div class="bridge-test-box">'+
- (selected?'<strong>🔮 '+selected.name+'で まめ電球は 光る？</strong>'+
- (test?'<p class="lab-reading">予想：'+(test.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(test.actual==="lit"?"点灯":"消灯")+'。'+(test.guess===test.actual?"予想が合ったね。":"予想と違った！ 発見だね。")+'</p>':
- '<div class="bridge-guesses">'+[["lit","💡 点灯する"],["dark","◯ 点灯しない"]].map(([k,label])=>'<button type="button" data-bridge-guess="'+k+'" class="'+(s.sampleGuess===k?" chosen":"")+'" aria-pressed="'+(s.sampleGuess===k)+'">'+label+'</button>').join("")+'</div><button type="button" class="bridge-measure" data-bridge-test '+(!s.sampleGuess?"disabled":"")+'>🔬 光るか ためす</button>')+
- '<div class="bridge-mini-circuit">'+(art.testCircuit?art.testCircuit(selected.id,!!test&&test.actual==="lit"):"")+'</div>':
- '<p>どれを ためす？</p>')+
- '</div><div class="bridge-log"><strong>📖 実験の記録</strong><div>'+ (tests||'<span class="bridge-record">まだ測定結果はないよ。</span>')+'</div></div>'+
- (step===1?'<p class="bridge-proceed">電気が 通るものを 2つ、通らないものを 1つ みつけよう。</p>':"")+
+ (ready?'<section class="lab-panel bridge-section bridge-direct-materials"><h3>② 材料を えらぼう</h3><p class="lab-sub">材料を えらんだら、回路の AかBに はめよう。</p><div class="bridge-materials">'+source+'</div></section>'+
+ '<section class="lab-panel bridge-section bridge-direct-repair"><h3>③ A と B に はめよう</h3>'+
+ '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!s.selected?"disabled":"")+'><strong>'+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"空いている")+'</span><small>'+(s.selected?"えらんだ材料を はめる":"先に 材料を えらぼう")+'</small></button>').join("")+'</div>'+
+ '<p class="lab-sub">2かしょが つながったら、まめ電球を 見てみよう。</p>'+
+ ((s.slots.a&&s.slots.b)?'<div class="bridge-outcome '+(lit?"lit":"dark")+'" role="status">'+(lit?"💡 光った！ ＋から −まで 道が できた。":"◯ まだ 光らない。A と B の 材料を かえてみよう。")+'</div>':"")+
+ (s.trialLog.length?'<div class="bridge-direct-history"><strong>📖 ためした きろく</strong><ol>'+trials+'</ol></div>':"")+
+ (lit?'<div class="bridge-why"><h3>④ どうして 光った？</h3><p class="lab-sub">回路を 見て、わけを えらぼう。</p>'+
+ reasonOptions.map(([id,txt])=>'<button type="button" data-bridge-reason="'+id+'" class="'+(s.reason===id?" chosen":"")+'" aria-pressed="'+(s.reason===id)+'">'+txt+'</button>').join("")+
+ '<p class="lab-sub">わけを えらんだら、「街灯の復旧を確認する」へ。</p></div>':"")+
  '</section>':"")+
- (step===2?'<section class="lab-panel bridge-section"><h3>③ A と B を つなごう</h3><p class="lab-sub">メモを みよう。ためした 材料を A と B に いれよう。</p>'+
- '<div class="bridge-slot-actions">'+["a","b"].map(slot=>'<button type="button" data-bridge-place="'+slot+'" '+(!selected||!s.tests[selected.id]?"disabled":"")+'><strong>修理 '+slot.toUpperCase()+'</strong><span>'+(material(s.slots[slot])?.name||"未修理")+'</span><small>'+(!selected?"実験済み材料を選択":!s.tests[selected.id]?"選んだ材料を先に実験":"選択中の材料をはめる")+'</small></button>').join("")+'</div>'+
- '<div class="bridge-predict"><strong>🔮 A と B を つないだら 光る？</strong><div class="bridge-guesses">'+[["lit","💡 点灯"],["dark","◯ 消灯"]].map(([id,label])=>'<button type="button" data-bridge-repair-guess="'+id+'" class="'+(s.repairGuess===id?" chosen":"")+'" aria-pressed="'+(s.repairGuess===id)+'">'+label+'</button>').join("")+'</div>'+
- '<button class="bridge-measure" type="button" data-bridge-repair-test '+(!s.slots.a||!s.slots.b||!s.repairGuess?"disabled":"")+'>🔬 光るか たしかめる</button></div>'+
- (s.repairResult?'<div class="bridge-outcome '+(lit?"lit":"dark")+'" role="status">予想：'+(s.repairResult.guess==="lit"?"点灯":"消灯")+' ／ 実際：'+(lit?"点灯":"消灯")+(lit?"。街灯のあかりがともった！":"。実験結果を比べて、2つのすき間の材料を見直そう。")+'</div>':"")+
- (lit?'<div class="bridge-why"><h3>④ どうして 光った？</h3><p class="lab-sub">実際に組み立てた回路を見て、理由を選ぼう。</p>'+
- reasonOptions.map(([id,text])=>'<button type="button" data-bridge-reason="'+id+'" class="'+(s.reason===id?" chosen":"")+'" aria-pressed="'+(s.reason===id)+'">'+text+'</button>').join("")+
- '<p class="lab-sub">理由を選んだら、画面下の「街灯の復旧を確認する」でクリア。</p></div>':"")+'</section>':"")+
  '</div>';
 }
 window.AkariBridge={sites,materials,reasonOptions,initial,normalize,material,evaluate,signature,evidenceReady,canFinish,sceneLit,render,circuit};
