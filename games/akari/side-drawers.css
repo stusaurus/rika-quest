@@ -849,3 +849,12 @@ body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) .quest-head #
   min-width:42px;min-height:39px;padding:4px 5px;font-size:11px;
  }
 }
+
+/* On mission 3 the circuit IS the experiment. The separate sandbox entry
+   and the duplicate "why did it light" heading should not compete with it. */
+body[data-visual-theme="reference-rebuild"] .main:has(.akari-dock) #freeLabToggle{
+ display:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .akari-dock .bridge-direct-repair .bridge-why>h3{
+ display:none!important;
+}
