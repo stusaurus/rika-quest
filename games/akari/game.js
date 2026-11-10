@@ -346,8 +346,8 @@ function renderHeader(){
  // game layout renders .quest-panel as display:contents, so an absolutely
  // positioned "task row" would escape the mission header entirely.
  const speechButton=$("readTaskBtn");
- const taskRow=document.querySelector(".reading-task-row");
- const heading=document.querySelector(".quest-head");
+ const taskRow=typeof document.querySelector==="function"?document.querySelector(".reading-task-row"):null;
+ const heading=typeof document.querySelector==="function"?document.querySelector(".quest-head"):null;
  if(speechButton&&taskRow&&heading){
   if(m.id===3){
    const readingToggle=$("readingToggle");
