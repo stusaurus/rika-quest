@@ -32,7 +32,7 @@ try{
          paths:[...svg.querySelectorAll("path")].map(el=>el.getAttribute("d")),
          ellipses:[...svg.querySelectorAll("ellipse")].map(el=>[el.getAttribute("cx"),el.getAttribute("cy"),el.getAttribute("rx"),el.getAttribute("ry"),el.getAttribute("transform")]),
          rects:[...svg.querySelectorAll("rect")].filter(el=>el.getAttribute("width")!=="244").map(el=>[el.getAttribute("x"),el.getAttribute("y"),el.getAttribute("width"),el.getAttribute("height"),el.getAttribute("rx")]),
-         transforms:[...svg.querySelectorAll("g[transform]")].map(el=>el.getAttribute("transform"))
+         transforms:[...svg.querySelectorAll("g[transform]:not(.bridge-piece-rotation)")].map(el=>el.getAttribute("transform"))
        });
        const picture=circuit.getBoundingClientRect(),diagram=document.querySelector(".bridge-circuit-svg").getBoundingClientRect();
        return {card:true,circuit:true,displayed:circuit.dataset.installedMaterial,exact:JSON.stringify(shapes(card))===JSON.stringify(shapes(circuit)),
@@ -1124,6 +1124,7 @@ try{
    assert.equal(await page.locator(".bridge-direct-history").count(),0,"Invalid drop is not a measured circuit experiment");
    await dragMaterialToGap("iron","a");
    await assertSameCircuitArtwork("a","iron");
+   assert.match(await page.locator('[data-bridge-gap="a"] .bridge-piece-rotation').getAttribute("transform"),/rotate\(-46 /,"The SAME nail drawing is turned to lie across both wire contacts");
    assert.equal(await page.locator('.bridge-gap-visual[data-bridge-gap="b"] .bridge-installed-material').count(),0,"B remains physically empty until a material is inserted");
    assert.equal(await drawer("right").getAttribute("aria-expanded"),"false","Dragging into A does not open another drawer or experiment");
    assert.match(await page.locator('.bridge-slot-actions [data-bridge-place="a"]').textContent(),/鉄のくぎ/,"Iron is directly installed in the actual A gap");
@@ -1137,6 +1138,7 @@ try{
    assert.match(await page.locator(".akari-board-focus").textContent(),/② A か B へ はこぼう/,"The selected item can now be carried or inserted by tap");
    await page.locator("[data-dock-place='b']").click();
    await assertSameCircuitArtwork("b","wood");
+   assert.match(await page.locator('[data-bridge-gap="b"] .bridge-piece-rotation').getAttribute("transform"),/rotate\(24 /,"The wooden strip keeps its shape but lies across the real contacts");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*乾いた木片/s,"B shows the actually installed piece of wood");
    assert.equal(await page.locator(".bridge-outcome.dark").count(),1,"A nonconductor in B immediately leaves the circuit dark");
    assert.equal(await page.locator('[data-bridge-gap="a"][data-bridge-gap-state="conductive"]').count(),1,"A is physically bridged by iron");
@@ -1149,6 +1151,7 @@ try{
    await dragMaterialToGap("foil","b");
    await assertSameCircuitArtwork("a","iron");
    await assertSameCircuitArtwork("b","foil");
+   assert.equal(await page.locator('[data-bridge-gap="b"] .bridge-piece-rotation').count(),0,"The folded foil retains its original orientation and folds");
    assert.equal(await page.locator(".bridge-conducting-insert,.bridge-insulating-insert").count(),0,"Correct materials remain original 3D object drawings, not anonymous conductive lines");
    assert.match(await page.locator('[data-dock-place="b"]').textContent(),/B.*アルミはく/s,"B's visible label updates immediately when wood is replaced with foil");
    assert.equal(await page.locator(".bridge-outcome.lit").count(),1,"The bulb lights AUTOMATICALLY when a second metal closes the loop");
