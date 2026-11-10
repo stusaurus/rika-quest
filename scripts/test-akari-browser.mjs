@@ -23,6 +23,40 @@ try{
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,hasTouch:engine==="webkit",isMobile:engine==="webkit",reducedMotion:"reduce"});
    const page=await context.newPage(),errors=[];
+   const dragMaterialToGap=async(id,slot)=>{
+    const sourceSelector='.akari-sample-desk [data-bridge-sample="'+id+'"]';
+    await page.locator(sourceSelector).scrollIntoViewIfNeeded();
+    const box=await page.locator(sourceSelector).boundingBox();
+    assert.ok(box,"The material must be reachable for a real pointer drag");
+    const start={x:box.x+box.width/2,y:box.y+box.height/2};
+    const targetInfo=()=>page.evaluate(slot=>{
+      const svg=document.querySelector(".akari-dock .bridge-circuit-svg");
+      const p=svg.createSVGPoint();
+      p.x=294;p.y=slot==="a"?55:slot==="b"?287:166;
+      const screen=p.matrixTransform(svg.getScreenCTM());
+      return {x:screen.x,y:screen.y,viewport:window.innerHeight};
+    },slot);
+    await page.mouse.move(start.x,start.y);
+    await page.mouse.down();
+    await page.mouse.move(start.x+7,start.y-18,{steps:5});
+    assert.equal(await page.locator(".akari-material-ghost").count(),1,"A material image must visibly follow the dragging finger");
+    assert.equal(await page.locator(".akari-drop-pad").count(),2,"The two electrical breaks are legitimate drop targets");
+    let target=await targetInfo();
+    if(target.y<42){
+      for(let i=0;i<75&&target.y<42;i++){
+        await page.mouse.move(start.x+(i%2),55+(i%2));
+        target=await targetInfo();
+      }
+    }
+    assert.ok(target.y>24&&target.y<target.viewport-20,"The child must be able to reach an A/B contact while holding the specimen: "+JSON.stringify(target));
+    await page.mouse.move(target.x,target.y,{steps:12});
+    if(slot==="a"||slot==="b"){
+      assert.equal(await page.locator(".akari-drop-pad-"+slot+".is-over").count(),1,"The actual circuit contact glows while the sample is over it");
+    }
+    await page.mouse.up();
+    assert.equal(await page.locator(".akari-material-ghost").count(),0,"The held-material image disappears on release");
+    assert.equal(await page.locator(".akari-dock.is-dragging-material").count(),0,"Dragging does not leave a stuck state");
+   };
    const drawShortByHand=async(mode)=>{
     const attr=mode==="builder"?"data-builder-t":"data-net-t";
     const board=mode==="builder"?".builder-puzzle .builder-board":".network-lab .network-board";
@@ -1017,6 +1051,10 @@ try{
    assert.equal(await page.locator(".bridge-materials").count(),1,"The four original sample controls are used directly");
    assert.equal(await page.locator(".akari-sample-desk .bridge-materials").count(),1,"Material choice remains directly under the LIVE circuit");
    assert.equal(await page.locator(".akari-dock-gap").count(),2,"A/B have real insertion targets on the same circuit");
+   assert.equal(await page.locator(".akari-drop-pad").count(),2,"Both discovered breaks have finger-drop zones");
+   assert.equal(await page.locator(".akari-draggable-material").count(),4,"All four materials can be carried directly into the circuit");
+   assert.equal(await page.locator(".akari-draggable-material").first().evaluate(e=>getComputedStyle(e).touchAction),"none","Touch gestures drag the materials instead of scrolling them");
+   assert.match(await page.locator(".akari-board-focus").textContent(),/材料を A か B へ はこぼう/,"A child sees one direct action, not a second experiment");
    assert.equal(await page.locator(".akari-dock-drop-note").count(),0,"The screen must not repeat the same instruction underneath the materials");
    assert.equal(await page.locator(".akari-dock-gap[data-gap-state='empty']").count(),2,"Both gaps visibly say they are empty before any material is placed");
    assert.equal(await page.locator(".akari-dock-gap .akari-gap-contents").count(),2,"The two tappable targets each visibly display their ACTUAL contents");
