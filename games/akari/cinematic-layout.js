@@ -10,6 +10,14 @@
   if(!main)return;
   const heading=main.querySelector(".quest-head");
   const progress=document.getElementById("sceneProgress");
+  const workspace=document.getElementById("workspace");
+  const freeLabToggle=document.getElementById("freeLabToggle");
+  const learningSteps=document.getElementById("learningSteps");
+  // This button is originally a sibling BEFORE #workspace. Never place it
+  // inside #workspace: renderAll() replaces that subtree during wiring.
+  const afterCircuit=learningSteps||workspace;
+  if(freeLabToggle&&afterCircuit&&afterCircuit.nextElementSibling!==freeLabToggle)
+   afterCircuit.after(freeLabToggle);
   const celebration=document.getElementById("stageCelebration");
   const shortFlash=document.getElementById("spark");
   if(progress&&heading&&!heading.contains(progress))heading.append(progress);
