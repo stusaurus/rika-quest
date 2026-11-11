@@ -26,6 +26,21 @@ try{
    await page.goto(url,{waitUntil:"domcontentloaded"});
    await page.locator(".circuit-svg-v2 .battery-model").waitFor();
    assert.equal(await page.locator("html.akari-cinematic").count(),1,"Opt-in cinematic look must initialize before original game scripts");
+   await page.waitForFunction(()=>{
+     const board=document.querySelector(".circuit-town-board");
+     return !!board&&getComputedStyle(board).borderTopColor==="rgb(198, 165, 116)";
+   },null,{timeout:7000}).catch(async error=>{
+     const diagnostics=await page.evaluate(()=>{
+       const board=document.querySelector(".circuit-town-board");
+       return {body:document.body.outerHTML.slice(0,350),
+         board:board?.outerHTML.slice(0,260),
+         boardColor:board&&getComputedStyle(board).borderTopColor,
+         bodyWireFocus:document.body.dataset.wireFocus,
+         cssHref:[...document.styleSheets].map(x=>x.href).filter(Boolean).slice(-6),
+         classes:document.documentElement.className};
+     });
+     throw new Error("Game-theme CSS not ready: "+JSON.stringify(diagnostics)+"; "+error);
+   });
    const stageOne=await page.evaluate(()=>{
      const board=document.querySelector(".circuit-board.circuit-town-board"),head=document.querySelector(".quest-head"),
       terminal=document.querySelector(".terminal"),sky=document.querySelector("#tcSky stop");
