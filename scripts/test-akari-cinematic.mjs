@@ -52,6 +52,16 @@ try{
        touch:Math.min(tap.width,tap.height),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
    assert.equal(stageOne.sky,"#172f4f","Cinematic version must repaint the actual world, not merely recolor website boxes");
+   assert.equal(await page.locator(".circuit-town-board .town-house").count(),3,
+     "Painted depth includes the three actual village houses, not a static screenshot");
+   assert.equal(await page.locator(".circuit-town-board .town-roof-detail").count(),6,
+     "Each painted gabled roof has two vector detail layers");
+   assert.equal(await page.locator(".circuit-town-board .town-stone-bridge").count(),1,
+     "The river bridge is painted behind, not substituted for, any electrical wire");
+   assert.equal(await page.locator(".circuit-town-board .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0",
+     "Electric reflections must be invisible while the real circuit is open");
+   assert.equal(await page.locator(".circuit-town-board .town-window").first().evaluate(el=>getComputedStyle(el).fill),"rgb(54, 85, 105)",
+     "A dark village must not show simulated electrical window light before the experiment");
    assert.equal(await page.locator(".main.town-immersive>.story-scene").isVisible(),false,
      "The redundant scenic header is removed in game mode; the real village lives in the playable board");
    assert.equal(await page.locator(".quest-head #sceneProgress").count(),1,
@@ -76,6 +86,10 @@ try{
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    await page.locator('[data-t="R"]').click();await page.locator('[data-t="N"]').click();
    assert.equal(await page.locator(".circuit-town-board.is-lit").count(),1,"The new visual design must respond to a real connected loop");
+   assert.equal(await page.locator(".circuit-town-board .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0.75",
+     "Water reflections appear only when the circuit has genuinely powered the village");
+   assert.equal(await page.locator(".circuit-town-board .town-window").first().evaluate(el=>getComputedStyle(el).fill),"rgb(255, 226, 160)",
+     "Windows gain warm light only after the student closes the electrical loop");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-cinematic-lit.png",fullPage:true});
    await page.evaluate(()=>{
      const key="rika-akari-quest-v2",state=JSON.parse(localStorage.getItem(key));
@@ -91,6 +105,10 @@ try{
        width:r.width,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
    assert.equal(stageThree.frame,"rgb(198, 165, 116)","Stage 3 should use the same game-world frame");
+   assert.equal(await page.locator(".circuit-town-repair .town-stone-bridge").count(),1,
+     "The repair experiment uses the SAME painted 2.5D village as the early missions");
+   assert.equal(await page.locator(".circuit-town-repair .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0",
+     "Stage 3 cannot spoil the measured outcome with premature river illumination");
    assert.ok(stageThree.overflow<=2,"Stage 3 must not introduce horizontal overflow");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-cinematic-investigate.png",fullPage:true});
    // A later mission must recover the default HUD and free-lab location.
