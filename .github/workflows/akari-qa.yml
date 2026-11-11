@@ -33,6 +33,7 @@ jobs:
           node --check games/akari/scenes.js
           node --check games/akari/bridge-panorama.js
           node --check games/akari/cute-town.js
+          node --check games/akari/cinematic-scenery.js
           node --check games/akari/circuit-village.js
           node --check games/akari/character.js
           node --check games/akari/transfer.js
