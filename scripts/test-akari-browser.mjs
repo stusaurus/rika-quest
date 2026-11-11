@@ -677,6 +677,8 @@ try{
    assert.equal((await wireRoute()).every(p=>p.battery===0),true,"The short lead must also travel outside the battery body");
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/);
    assert.match(await page.locator("#feedbackText").textContent(),/ショート/,"The danger is explained without mascot reactions");
+   assert.equal(await page.locator(".circuit-board.is-short").evaluate(el=>getComputedStyle(el).borderTopColor),"rgb(212, 127, 92)",
+     "The visual refresh must keep the short-circuit hazard border visibly orange/red");
     await page.locator(".short-event").waitFor({state:"visible",timeout:1200});
     assert.equal(await page.locator(".short-flames span").count(),3,"The short event shows fire");
     assert.equal(await page.locator(".short-smoke span").count(),3,"The short event then shows smoke");
