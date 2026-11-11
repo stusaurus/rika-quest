@@ -93,6 +93,15 @@ try{
    assert.equal(stageThree.frame,"rgb(198, 165, 116)","Stage 3 should use the same game-world frame");
    assert.ok(stageThree.overflow<=2,"Stage 3 must not introduce horizontal overflow");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-cinematic-investigate.png",fullPage:true});
+   // A later mission must recover the default HUD and free-lab location.
+   await page.evaluate(()=>document.querySelector(".main").classList.remove("town-immersive"));
+   await page.waitForFunction(()=>
+     !!document.querySelector("#storyScene #sceneProgress")&&
+     !!document.querySelector("#storyScene #stageCelebration")&&
+     document.getElementById("freeLabToggle")?.nextElementSibling?.id==="workspace"
+   );
+   assert.equal(await page.locator("#storyScene #spark").count(),1,
+     "Restoration of the ordinary scene includes the genuine short-circuit warning");
    assert.deepEqual(errors,[],"No runtime exceptions during stage 1 or stage 3");
    console.log("CINEMATIC PASS",engine,width,{stageOne,stageThree});
    await context.close();
