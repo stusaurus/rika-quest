@@ -364,7 +364,7 @@ try{
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
    assert.equal(await page.locator("body[data-wire-focus='true']").count(),1,"Stage 1 uses the one-screen wiring focus layout");
-   assert.equal(await page.locator('link[href="./storybook-skin.css?v=3"]').count(),1,"Missions 1–3 load the new shared storybook skin");
+   assert.equal(await page.locator('link[href="./storybook-skin.css?v=4"]').count(),1,"Missions 1–3 load the new shared storybook skin");
    const stageOneSkin=await page.evaluate(()=>{
      const board=document.querySelector(".circuit-board.circuit-town-board");
      const terminal=document.querySelector(".circuit-inner .terminal");
@@ -379,6 +379,20 @@ try{
    assert.match(stageOneSkin.paper,/gradient/,"Mission heading should appear on illustrated paper");
    assert.match(stageOneSkin.scenery,/gradient/,"The experiment and the town share the same calm color language");
    assert.ok(stageOneSkin.touchWidth>=44&&stageOneSkin.touchHeight>=44,"Real circuit contacts remain touchable despite visual polish");
+   assert.equal(await page.locator(".circuit-svg-v2 .battery-shell").count(),1,
+     "The 1.5V dry cell must read as a single physical cylinder, not three toy color blocks");
+   assert.equal(await page.locator(".circuit-svg-v2 .battery-sleeve").count(),1,
+     "The battery carries one legible label without hiding its metal contacts");
+   const batteryGeometry=await page.locator(".circuit-svg-v2").evaluate(svg=>{
+     const shell=svg.querySelector(".battery-shell"),terminals=[...svg.querySelectorAll(".battery-model>rect")].filter(el=>el.getAttribute("width")==="8");
+     return {shellFill:shell.getAttribute("fill"),sleeve:!!svg.querySelector(".battery-sleeve"),
+       protrudingContact:!!svg.querySelector('.battery-model>rect[x="40"]'),
+       flatContact:!!svg.querySelector('.battery-model>rect[x="170"]')};
+   });
+   assert.equal(batteryGeometry.shellFill,"url(#workBatteryBody)",
+     "Teal battery shading should not depend on output/answer state");
+   assert.ok(batteryGeometry.protrudingContact&&batteryGeometry.flatContact,
+     "Both plus and minus metal contacts remain in the original physical positions");
    if(width<741){
      const focusHierarchy=await page.evaluate(()=>{
        const rect=s=>document.querySelector(s).getBoundingClientRect();
@@ -1069,6 +1083,19 @@ try{
    assert.equal(await page.locator(".akari-inspection-pin").count(),3,"Three independent science investigation sites are present ON the live circuit");
    assert.match(await page.locator(".akari-board-focus").textContent(),/どこから しらべる/, "The circuit names the next interaction in a few words");
    assert.equal(await page.locator(".akari-inspection-pin.found").count(),0,"No site may be pre-inspected");
+   const compactPins=await page.locator(".akari-inspection-pin").evaluateAll(els=>
+     els.map(el=>{const r=el.getBoundingClientRect();return {
+       id:el.dataset.dockInspect,width:r.width,height:r.height,
+       radius:getComputedStyle(el).borderRadius,accessible:el.getAttribute("aria-label"),
+       visual:el.querySelector("span")?.textContent||""};}));
+   assert.ok(compactPins.every(p=>p.width>=44&&p.height>=44),
+     "Circular investigation chips remain thumb-sized: "+JSON.stringify(compactPins));
+   assert.ok(compactPins.every(p=>p.width<=52&&p.height<=52),
+     "Markers cannot become huge panels that cover the real apparatus: "+JSON.stringify(compactPins));
+   assert.ok(compactPins.find(p=>p.id==="lamp")?.visual.includes("💡"),
+     "The light-bulb investigation uses a recognizable icon rather than a third redundant magnifier");
+   assert.ok(compactPins.every(p=>p.accessible?.includes("しらべる")),
+     "Symbol-only inspection chips must keep their full accessible Japanese label");
    assert.equal(await page.locator(".akari-observation").count(),0,"Findings must not appear before a real inspection");
    assert.equal(await page.locator(".akari-dock-readout").count(),1,"The observation rail is a dedicated place beside the circuit");
    assert.equal(await page.locator(".akari-dock-readout").isVisible(),false,"Before investigation the empty observation rail stays out of the way");
@@ -1256,6 +1283,15 @@ try{
    assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"The physical circuit shows both gaps as connected conductors");
    assert.equal(await page.locator(".bridge-direct-history .bridge-record").count(),2,"The tested failed and successful combinations both remain recorded");
    assert.equal(await page.locator(".bridge-why").count(),1,"The immediate observation now invites explanation of the closed current path");
+   const reasons=await page.locator("[data-bridge-reason]").allTextContents();
+   assert.equal(reasons.length,3,"One scientific question has three competing closed-loop explanations");
+   assert.ok(reasons.every(x=>x.includes("まめ電球")),"Every reason refers to the ACTUAL bulb in the circuit");
+   assert.ok(reasons[0].includes("＋")&&reasons[0].includes("−"),
+     "Only the closed-loop choice explains the battery's return path");
+   assert.ok(reasons[1].includes("＋")&&!reasons[1].includes("−"),
+     "One plausible distractor incorrectly requires only the positive side");
+   assert.ok(reasons[2].includes("−")&&!reasons[2].includes("＋"),
+     "One plausible distractor incorrectly requires only the negative side");
    const stageThreeSkin=await page.evaluate(()=>{
      const circuit=document.querySelector(".akari-dock-center>.bridge-circuit");
      const sample=document.querySelector(".akari-sample-choices .bridge-material");

@@ -15,9 +15,9 @@ const materials=[
  {id:"plastic",name:"プラスチック片",conductive:false,detail:"プラスチックは通常は電気を通しにくい。"}
 ];
 const reasonOptions=[
- ["both","＋から 電球を 通り、−へ もどる 道が できた"],
- ["one","ガラスに ＋を つければ、もどる道は いらない"],
- ["bright","ピカピカなら ぜんぶ 電気が 通る"]
+ ["both","＋から まめ電球を 通り、−へ もどる 道が ある"],
+ ["one","＋から まめ電球まで つながれば 光る"],
+ ["bright","−から まめ電球まで つながれば 光る"]
 ];
 const material=id=>materials.find(x=>x.id===id);
 const valid=id=>Boolean(material(id));
