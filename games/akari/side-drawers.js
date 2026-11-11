@@ -153,7 +153,7 @@
      button.style.setProperty("--akari-pin-y",(site.diagram.pin.y/340*100).toFixed(3)+"%");
      button.setAttribute("aria-label",spot.description+(found?"・しらべた":""));
      button.setAttribute("aria-pressed",String(found));
-     button.innerHTML='<span aria-hidden="true">'+(found?"✓":"🔎")+'</span><strong>'+spot.label+'</strong>';
+     button.innerHTML='<span aria-hidden="true">'+(found?"✓":spot.id==="lamp"?"💡":"🔎")+'</span><strong>'+spot.label+'</strong>';
      markers.append(button);
     }
     circuit.append(markers);
