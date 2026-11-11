@@ -1,0 +1,189 @@
+/* Cinematic game art direction v1. Experimental, opt-in via ?visual=cinematic.
+ * Three stages only; existing learning flow, physics and controls unchanged. */
+html.akari-cinematic body[data-visual-theme="reference-rebuild"]:has(.main.town-immersive){
+ --akari-ink:#f5e8cc;--akari-paper:#122d43;--akari-paper-deep:#143b50;
+ --akari-line:#8eb9ad;--akari-gold:#f2c678;--akari-focus:#f4c17e;
+ background:radial-gradient(ellipse at 40% -16%,#517978 0,transparent 45%),
+ radial-gradient(ellipse at 92% 55%,#28576b 0,transparent 40%),
+ linear-gradient(165deg,#193e50,#102d41 55%,#081b31);
+ color:#fff1d5
+}
+html.akari-cinematic body:has(.main.town-immersive) .sky-particles{opacity:.3;filter:drop-shadow(0 0 5px #ffda89)}
+html.akari-cinematic body:has(.main.town-immersive) .topbar{
+ height:61px;min-height:61px;background:linear-gradient(95deg,#092239f5,#1b4853f5);
+ border-bottom:2px solid #cca66d91;box-shadow:0 7px 24px #071724bf
+}
+html.akari-cinematic body:has(.main.town-immersive) .topbar .brand{
+ min-height:47px;min-width:0;max-width:245px;padding:6px 12px;
+ background:transparent!important;border:0!important;border-left:3px solid #f5c77e!important;
+ border-radius:4px!important;box-shadow:none!important;
+ color:#fff4dd!important;font-size:19px;letter-spacing:.06em
+}
+html.akari-cinematic body:has(.main.town-immersive) .topbar .brand-symbol{
+ color:#ffcc70;font-size:24px;margin-right:8px;text-shadow:0 0 12px #ffcf72a8
+}
+html.akari-cinematic body:has(.main.town-immersive) .star-count{
+ min-height:44px;background:linear-gradient(#694e34,#403b37);
+ border:1.5px solid #d9af70;color:#ffe2a4;
+ box-shadow:0 3px 0 #0b2234,0 0 16px #f4bc6b2b
+}
+html.akari-cinematic body:has(.main.town-immersive) .icon-btn,
+html.akari-cinematic body:has(.main.town-immersive) #sidebar .map-toggle{
+ background:linear-gradient(#286070,#1d485a);color:#fff1d3;
+ border:1px solid #86bbb3;box-shadow:0 3px 0 #0b2536
+}
+html.akari-cinematic body:has(.main.town-immersive) #sidebar{
+ background:linear-gradient(#214653,#112b42);border-color:#759a92;
+ color:#ffe9ca;box-shadow:0 13px 32px #041727a1
+}
+html.akari-cinematic body .main.town-immersive{
+ background:transparent;row-gap:8px;padding-top:10px
+}
+html.akari-cinematic body .main.town-immersive>.story-scene{
+ height:44px!important;min-height:44px!important;max-height:44px!important;
+ border:1px solid #698f8a!important;border-radius:10px!important;
+ background:linear-gradient(100deg,#21495b,#284657)!important;
+ box-shadow:0 4px 14px #061b2a78!important
+}
+html.akari-cinematic body .main.town-immersive>.story-scene>.scene-props{display:none!important}
+html.akari-cinematic body .main.town-immersive .scene-caption{
+ top:4px!important;left:10px!important;background:transparent!important;
+ border:0!important;padding:0!important;box-shadow:none!important
+}
+html.akari-cinematic body .main.town-immersive .scene-caption h1{
+ color:#ffde9c!important;font-size:13px!important;text-shadow:0 1px 5px #071b2e
+}
+html.akari-cinematic body .main.town-immersive .scene-progress{
+ top:6px!important;right:8px!important;
+ background:#234c5d!important;color:#ffe0a3!important;
+ border:1px solid #c29d6f!important;border-radius:99px!important;padding:3px 9px!important
+}
+html.akari-cinematic body .main.town-immersive .quest-head{
+ min-height:68px!important;padding:9px 14px!important;gap:8px!important;
+ background:linear-gradient(120deg,#15394ce9,#265667ee)!important;
+ border:1px solid #88ada2!important;border-left:4px solid #f5be71!important;
+ border-radius:12px!important;box-shadow:0 8px 20px #03192d81!important;color:#fff1d9!important
+}
+html.akari-cinematic body .main.town-immersive .quest-head .eyebrow{
+ padding:0!important;border:0!important;background:transparent!important;
+ font-size:11px!important;color:#ffcb7c!important;letter-spacing:.11em!important
+}
+html.akari-cinematic body .main.town-immersive .quest-head h2{
+ color:#fffaed!important;font-size:clamp(20px,2.4vw,31px)!important;
+ line-height:1.25!important;text-shadow:0 2px 5px #05172c9e
+}
+html.akari-cinematic body .main.town-immersive .quest-head :is(.reading-toggle,#readTaskBtn){
+ background:linear-gradient(#2d6070,#214b5d)!important;
+ border:1.5px solid #a2cbb7!important;color:#fff4d7!important;
+ border-radius:11px!important;box-shadow:0 3px 0 #0b2938!important;min-height:44px!important
+}
+html.akari-cinematic body .main.town-immersive .quest-stars{color:#ffcf76!important;text-shadow:0 0 9px #f3c4768c}
+html.akari-cinematic body .main.town-immersive #freeLabToggle{
+ min-height:44px;color:#d9f3e6!important;background:#214b56d6!important;
+ border:1px solid #7bafa3!important;box-shadow:0 2px 0 #071f2f!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-toolbar{
+ border:1px solid #8daf9c!important;
+ background:linear-gradient(100deg,#163b4deb,#214d5aeb)!important;
+ color:#fff1ca!important;box-shadow:0 3px 0 #061e3077!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-question{color:#ffedc7!important}
+html.akari-cinematic body .main.town-immersive .circuit-zoom-btn,
+html.akari-cinematic body .main.town-immersive .circuit-quicknav button{
+ background:#275364!important;color:#fff3d5!important;
+ border:1.5px solid #8bbab0!important;box-shadow:0 2px 0 #0c2a3e!important
+}
+html.akari-cinematic body[data-wire-focus="true"] .circuit-board.circuit-town-board,
+html.akari-cinematic body .main.town-immersive .akari-dock-center>.bridge-circuit{
+ background:#1b4351!important;border:3px solid #c6a574!important;border-radius:15px!important;
+ box-shadow:0 0 0 3px #112a3b,0 7px 0 #051b2c,0 20px 35px #000c1bc1!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-village-backdrop{
+ background:#173d55!important;border-radius:12px!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-village-art{
+ filter:saturate(1.04) contrast(1.04)!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#04152812,#102b3f28 46%,#03162676)!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-board.is-lit .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#ffb2561c,#ffa95d0a 46%,#061d2f55)!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-board.is-short{
+ border-color:#ff7856!important;box-shadow:0 0 0 3px #f5664db0,0 5px 0 #712623,0 15px 28px #43141ca6!important
+}
+html.akari-cinematic body[data-wire-focus="true"] .circuit-inner .terminal{
+ min-width:46px!important;min-height:46px!important;width:46px!important;height:46px!important;
+ border:3px solid #6ca9b8!important;background:#fff6dc!important;color:#1d4a59!important;
+ box-shadow:0 0 0 4px #16495b,0 3px 9px #001b2dbd!important
+}
+html.akari-cinematic body[data-wire-focus="true"] .circuit-inner .terminal.selected{
+ background:#ffd98d!important;border-color:#ebaa4e!important;
+ box-shadow:0 0 0 5px #ffd885a1,0 0 18px #ffbb65b0!important
+}
+html.akari-cinematic body .main.town-immersive .circuit-help{
+ background:#0a2637db!important;color:#fff6de!important;
+ border:1px solid #93bfb1!important;border-radius:10px!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock :is(.akari-board-focus,.akari-dock-readout,.akari-sample-desk),
+html.akari-cinematic body .main.town-immersive .akari-dock-center>.bridge-direct-repair{
+ background:linear-gradient(110deg,#153b4e,#204f59)!important;
+ border:1px solid #89b5a2!important;border-left:3px solid #d7a86b!important;
+ box-shadow:0 6px 16px #05192788!important;color:#fff1d8!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock :is(.akari-board-focus,.akari-sample-heading)>strong{
+ color:#ffe5b0!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock .akari-dock-readout .akari-observation{
+ background:#f5ebd8!important;color:#294655!important;border-color:#a8c3a8!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock .akari-sample-choices .bridge-material{
+ background:linear-gradient(#fff9e9,#e8eee5)!important;color:#214756!important;
+ border:2px solid #a6c5b1!important;box-shadow:0 3px 0 #143747,0 6px 16px #04182d9c!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock .akari-sample-choices .bridge-material.selected{
+ background:#ffe7b3!important;border-color:#c89442!important;box-shadow:0 0 0 3px #e7b26394!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock .akari-dock-gap{
+ color:#23495b!important;background:#ffefd1!important;border-color:#d2aa62!important
+}
+html.akari-cinematic body .main.town-immersive .akari-dock .bridge-why button{
+ color:#2e4f5c!important;background:#fff9e9!important;border-color:#b3cdbd!important
+}
+html.akari-cinematic body .main.town-immersive .feedback{
+ background:#173d4c!important;color:#fff3d8!important;
+ border:1px solid #8baea4!important;box-shadow:0 4px 10px #051b2a81!important
+}
+html.akari-cinematic body .main.town-immersive .action-row .btn{
+ background:#225467!important;border:1px solid #86aea7!important;
+ color:#fff0d4!important;box-shadow:0 3px 0 #092335!important
+}
+html.akari-cinematic body .main.town-immersive .action-row #nextBtn{
+ color:#4c3825!important;background:linear-gradient(#ffdf98,#ebaf55)!important;
+ border:2px solid #ffefbd!important;box-shadow:0 4px 0 #926339!important
+}
+html.akari-cinematic body .main.town-immersive .journal{
+ background:#183e4f!important;border:1px solid #89b5a8!important;
+ box-shadow:0 4px 12px #0718277f!important;color:#fcecd3!important
+}
+html.akari-cinematic body .main.town-immersive #stageCelebration:not([hidden]){
+ color:#fff7df!important;border:2px solid #ffe1a0!important;
+ background:linear-gradient(135deg,#194356f0,#3a6a61f2)!important;
+ box-shadow:0 0 0 5px #e6ba5a4d,0 15px 45px #000b1caf,0 0 40px #ffcd784f!important
+}
+@media(max-width:740px){
+ html.akari-cinematic body:has(.main.town-immersive) .topbar{height:49px;min-height:49px}
+ html.akari-cinematic body:has(.main.town-immersive) .topbar .brand{
+  height:42px;min-height:42px;max-width:158px;padding:3px 5px;font-size:14px
+ }
+ html.akari-cinematic body:has(.main.town-immersive) .topbar .brand-symbol{font-size:18px;margin-right:3px}
+ html.akari-cinematic body:has(.main.town-immersive) .star-count{min-height:40px;padding:4px 7px;font-size:13px}
+ html.akari-cinematic body .main.town-immersive>.story-scene{height:41px!important;min-height:41px!important;max-height:41px!important}
+ html.akari-cinematic body .main.town-immersive .quest-head{padding:7px 9px!important;min-height:63px!important}
+ html.akari-cinematic body .main.town-immersive .quest-head h2{font-size:19px!important}
+ html.akari-cinematic body .main.town-immersive .akari-dock-center>.bridge-circuit{border-width:2px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-cinematic .main.town-immersive .circuit-village-backdrop::after{transition:none!important}
+}
