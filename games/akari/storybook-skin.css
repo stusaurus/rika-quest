@@ -332,7 +332,9 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive
 }
 @media(prefers-reduced-motion:reduce){
  body[data-visual-theme="reference-rebuild"] .main.town-immersive
- :is(.reason-option,.bridge-material,.circuit-village-backdrop::after){
+ :is(.reason-option,.bridge-material),
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .circuit-village-backdrop::after{
   transition:none!important;animation:none!important;
  }
 }
