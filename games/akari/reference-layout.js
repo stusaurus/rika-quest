@@ -8,6 +8,8 @@
 
  let reasons={};try{reasons=JSON.parse(localStorage.getItem("rika-akari-first-reasons-v1")||"{}")||{}}catch{reasons={}};
  let reasonFeedback="";
+ // Track the transition from an unlit circuit, not merely rerenders or saved progress.
+ let previousLight={mission:null,lit:false};
  const reasonsByMission={
   1:{title:"どうして 豆電球が 光った？",correct:"loop",success:"電池から 豆電球を 通って、ぐるっと つながった！",
     choices:[["loop","🔁","＋から 電球の 金ぞく2か所を 通って −に もどれた"],["cut","➕","＋だけ つながれば 光る"],["extra","💡","ガラスに 線を つけたから 光る"]]},
@@ -36,7 +38,12 @@
     '<p id="designComparisonNote" aria-live="polite">どうして ついた？</p>',
     '<div class="reason-choices" id="reasonChoices" role="group" aria-label="じっけんの わけを えらぶ"></div></section>'
    ].join("");
-   main.insertBefore(steps,main.querySelector(".story-scene"));
+   // The "why?" choices belong to the experiment just performed, never to
+   // the top of the page. Keep this node OUTSIDE #workspace because the game
+   // replaces that element's contents whenever the learner edits a wire.
+   const workspace=get("workspace");
+   if(workspace)workspace.insertAdjacentElement("afterend",steps);
+   else main.append(steps);
    steps.addEventListener("click",e=>{
     const reasoning=e.target.closest("[data-first-reason]");
     if(reasoning){
@@ -96,8 +103,22 @@
   const stage=done||liveLit?"reflect":wireCount>=2?"fix":hasSelection?"second":"connect";
   document.body.dataset.wireFocus=firstSteps?"true":"false";
   document.body.dataset.guidePhase=firstSteps?stage:"lesson";
+  // Show the explanation in reading order immediately after the circuit.
+  // Scroll just enough to reveal it on the FIRST unlit -> lit transition;
+  // never jump to an earlier part of the page, nor move the child on rerenders.
+  const becameLit=firstSteps&&!done&&liveLit&&previousLight.mission===n&&!previousLight.lit;
+  previousLight={mission:n,lit:liveLit};
   steps.hidden=!firstSteps||(!done&&!liveLit);
   think.hidden=!firstSteps||(!done&&!liveLit);
+  if(becameLit){
+   requestAnimationFrame(()=>{
+    if(mission()!==n||steps.hidden||!steps.isConnected)return;
+    const bounds=steps.getBoundingClientRect();
+    if(bounds.top>=0&&bounds.bottom<=window.innerHeight-12)return;
+    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    steps.scrollIntoView({behavior:reduced?"auto":"smooth",block:"nearest",inline:"nearest"});
+   });
+  }
   if(!done&&!liveLit&&reasonFeedback)reasonFeedback="";
   const name=get("guideActionLabel"),hint=get("guideActionText"),compare=get("designComparisonNote");
   if(name)name.textContent=stage==="fix"?"なおす":"つなぐ";
