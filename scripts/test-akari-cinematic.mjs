@@ -52,6 +52,8 @@ try{
        touch:Math.min(tap.width,tap.height),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
    assert.equal(stageOne.sky,"#172f4f","Cinematic version must repaint the actual world, not merely recolor website boxes");
+   assert.equal(await page.locator(".circuit-svg-v2 .workbench-fixture").count(),1,
+     "Real 1.5V battery and bulb mount on a sculpted game board with original contacts untouched");
    assert.equal(await page.locator(".circuit-town-board .town-house").count(),3,
      "Painted depth includes the three actual village houses, not a static screenshot");
    assert.equal(await page.locator(".circuit-town-board .town-roof-detail").count(),6,
@@ -105,6 +107,8 @@ try{
        width:r.width,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
    assert.equal(stageThree.frame,"rgb(198, 165, 116)","Stage 3 should use the same game-world frame");
+   assert.equal(await page.locator(".bridge-circuit-svg .bridge-repair-fixtures").count(),1,
+     "The battery and bulb share the same crafted hardware language in repair mode");
    assert.equal(await page.locator(".circuit-town-repair .town-stone-bridge").count(),1,
      "The repair experiment uses the SAME painted 2.5D village as the early missions");
    assert.equal(await page.locator(".circuit-town-repair .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0",
