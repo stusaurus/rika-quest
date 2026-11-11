@@ -501,8 +501,8 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock
   border-radius:12px;
  }
  body[data-visual-theme="reference-rebuild"] .main.town-immersive #freeLabToggle{
-  min-height:34px;
-  padding:5px 10px;
+  min-height:44px;
+  padding:6px 12px;
   font-size:12px;
  }
  body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock) .quest-head{
