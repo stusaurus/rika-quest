@@ -10,6 +10,7 @@ const cuteTownCss=readFileSync("games/akari/cute-town.css","utf8");
 const circuitVillageCss=readFileSync("games/akari/circuit-village.css","utf8");
 const wireFocusCss=readFileSync("games/akari/wire-focus.css","utf8");
 const sideDrawersCss=readFileSync("games/akari/side-drawers.css","utf8");
+const storybookCss=readFileSync("games/akari/storybook-skin.css","utf8");
 const switchFocusCss=readFileSync("games/akari/switch-focus.css","utf8");
 const freeLabCss=readFileSync("games/akari/free-lab.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
@@ -51,6 +52,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./cute-town.css?v=1">',"<
 output=replaceOne(output,'<link rel="stylesheet" href="./circuit-village.css?v=inside2">',"<style>\n"+circuitVillageCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-focus.css?v=reason-flow-2">',"<style>\n"+wireFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./side-drawers.css?v=piece18">',"<style>\n"+sideDrawersCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./storybook-skin.css?v=1">',"<style>\n"+storybookCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
 output=replaceOne(output,'<script src="./art.js?v=piece1" defer></script>',inlineScript(art));
