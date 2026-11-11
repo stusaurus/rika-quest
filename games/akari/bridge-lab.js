@@ -99,16 +99,23 @@ function circuit(slots={},isLit=false){
   const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+43)+'" text-anchor="middle" font-size="13" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
   return '<g class="bridge-gap-visual" data-bridge-gap="'+letter.toLowerCase()+'" data-bridge-gap-state="'+status+'">'+terminals+bridge+placard+caption+'</g>';
  };
- return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。"><g id="akari-bridge-drawing">'+
+ return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。">'+
+ '<defs><linearGradient id="akariRepairBattery" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#265e6d"/><stop offset=".3" stop-color="#5ca9ad"/><stop offset=".75" stop-color="#317e8e"/><stop offset="1" stop-color="#215666"/></linearGradient></defs><g id="akari-bridge-drawing">'+
  '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+
- '<rect x="31" y="85" width="112" height="172" rx="14" fill="#b9644d" stroke="#ffe5ad" stroke-width="5"/>'+
- '<text x="87" y="130" font-size="19" text-anchor="middle" fill="#fff">乾電池</text><text x="87" y="172" font-size="24" font-weight="800" text-anchor="middle" fill="#fff">1.5V</text>'+
+ '<rect class="bridge-battery-body" x="31" y="85" width="112" height="172" rx="16" fill="url(#akariRepairBattery)" stroke="#d4ede5" stroke-width="4"/>'+
+ '<path d="M43 102V239" stroke="#dcf6ed" stroke-opacity=".44" stroke-width="6" stroke-linecap="round"/>'+
+ '<rect x="45" y="137" width="85" height="72" rx="11" fill="#fcf8e9" stroke="#b4d2c1" stroke-width="2"/>'+
+ '<text x="87" y="126" font-size="19" font-weight="900" text-anchor="middle" fill="#fdf9e9">乾電池</text>'+
+ '<text x="87" y="177" font-size="24" font-weight="900" text-anchor="middle" fill="#27576a">1.5V</text>'+
+ '<text x="87" y="196" font-size="12" text-anchor="middle" fill="#43736f">かんでんち</text>'+
  '<circle cx="87" cy="74" r="15" fill="#fff6da"/><circle cx="87" cy="265" r="15" fill="#fff6da"/>'+
  label(114,70,"＋")+label(114,292,"−")+
  wire("M87 74V55H236",true)+wire("M352 55H533V112",true)+
  wire("M533 228V287H352",true)+wire("M236 287H87V265",true)+
  gap(294,55,slots.a,"修理 A")+gap(294,287,slots.b,"修理 B")+
- '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#204961")+'" stroke="#e8f4ee" stroke-width="6"/>'+
+ '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#dcebee")+'" stroke="#e8f4ee" stroke-width="6"/>'+
+ '<path d="M499 129Q514 116 526 117" fill="none" stroke="#fffef6" stroke-width="8" stroke-linecap="round" opacity=".8"/>'+
+ '<circle cx="533" cy="170" r="57" fill="none" stroke="#88aeb4" stroke-width="2.5" opacity=".7"/>'+
  '<circle cx="533" cy="170" r="27" fill="none" stroke="'+(isLit?"#b67932":"#9abac8")+'" stroke-width="5"/>'+
  '<path class="bridge-filament" d="M513 170L520 161L528 179L536 161L544 179L551 170" fill="none" stroke="'+(isLit?"#fff3ab":"#a9c4c7")+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
  '<circle cx="533" cy="112" r="8" fill="#fff2cc"/><circle cx="533" cy="228" r="8" fill="#fff2cc"/>'+

@@ -1,0 +1,374 @@
+/* Storybook visual system for Akari missions 1–3.
+   Presentation only: never substitute the science model or cover a contact.
+   Source of truth for all light/dark/short states remains the game engine. */
+body[data-visual-theme="reference-rebuild"]:has(.main.town-immersive){
+ --akari-ink:#234454;
+ --akari-muted:#4f6e70;
+ --akari-paper:#fffaf0;
+ --akari-paper-deep:#f5f0dc;
+ --akari-mint:#e9f5ed;
+ --akari-sea:#6d9d98;
+ --akari-line:#a9c9ba;
+ --akari-gold:#edb853;
+ --akari-focus:#bb6728;
+ --akari-soft-shadow:0 3px 0 #67908424,0 11px 24px #244b5530;
+ background:
+   radial-gradient(ellipse at 92% 7%,#fff0cbb5 0,transparent 28%),
+   radial-gradient(ellipse at 3% 63%,#b9d8b49c 0,transparent 38%),
+   linear-gradient(180deg,#c6e5e7 0%,#d7e9d7 42%,#b7cfb2 100%);
+ color:var(--akari-ink);
+}
+body[data-visual-theme="reference-rebuild"]:has(.main.town-immersive) .topbar{
+ background:linear-gradient(115deg,#244e61,#356f70 72%,#447a71);
+ border-bottom:2px solid #c8d8b9;
+ box-shadow:0 5px 18px #244c4e28;
+}
+body[data-visual-theme="reference-rebuild"]:has(.main.town-immersive) .topbar .brand{
+ border-color:#d8bc83;
+ background:linear-gradient(150deg,#8f6145,#644b3c);
+ box-shadow:0 3px 0 #344b41,0 6px 14px #193e4730;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head{
+ border:2px solid #d8c49e;
+ border-radius:17px;
+ background:linear-gradient(150deg,#fffdf5 0%,#f7f1df 100%);
+ color:var(--akari-ink);
+ box-shadow:var(--akari-soft-shadow);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head h2{
+ color:var(--akari-ink);letter-spacing:.005em;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head .eyebrow{
+ background:#477d79;color:#fffdf0;border:1px solid #37665e;
+ box-shadow:none;letter-spacing:.035em;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-stars{
+ color:#bd8845;text-shadow:0 1px 0 #fff8d5;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .reading-toggle,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive #readTaskBtn{
+ background:#f4faf3;color:#2a5960;border:2px solid #aacaba;
+ border-radius:12px;box-shadow:none;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-toolbar{
+ border:2px solid #a6c5b4!important;
+ border-radius:13px!important;
+ background:linear-gradient(100deg,#fffbef,#eaf5e6)!important;
+ box-shadow:0 2px 0 #91b4a341;
+ padding:9px 12px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-question{
+ color:var(--akari-ink)!important;font-weight:900;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-zoom-btn,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-quicknav button{
+ background:#fffdf3;border:2px solid #92b9ae;color:#22566a;
+ border-radius:12px;box-shadow:0 2px 0 #6e9c9650;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-board.circuit-town-board{
+ border:4px solid #9ebfae!important;
+ border-radius:19px!important;
+ background:#bfded4;
+ box-shadow:inset 0 0 0 2px #f5eadc,0 5px 0 #668f82,0 13px 28px #24475c36!important;
+}
+/* The short-circuit hazard must override the decorative sage frame. */
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-board.circuit-town-board.is-short{
+ border-color:#d47f5c!important;
+ box-shadow:0 0 0 3px #ffb18e8a,0 7px 18px #70362a36!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-village-backdrop{
+ border-radius:14px;
+ background:linear-gradient(180deg,#cde9e8,#b4d3c5 72%,#a3c4b4);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-village-art{
+ filter:saturate(.91) brightness(1.06);
+}
+/* Home light stays dark until the actual physical circuit is complete.
+   It never lights from saved progress or inside prediction cards. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair) .town-home-glow{
+ opacity:0;
+ pointer-events:none;
+ filter:blur(8px);
+ transition:opacity .42s ease-out;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair).is-lit .town-home-glow{
+ opacity:.24;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair) .town-roof-detail{
+ filter:drop-shadow(0 1px 1px #7f6f6344);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair).is-lit .town-window{
+ filter:drop-shadow(0 0 5px #ffdc96);
+}
+body[data-visual-theme="reference-rebuild"] .transfer-diagram .town-home-glow{
+ opacity:0!important;
+ filter:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#fff4db18 0%,#d6ebd107 45%,#2a5b5b43 100%);
+ transition:background-color .3s ease;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board.circuit-town-board.is-lit .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#ffe5a735 0%,#ffd99d1a 48%,#3d626639 100%);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board .circuit-inner :is(.battery-model,.bulb-model){
+ filter:drop-shadow(1px 4px 3px #284c5870);
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-inner .terminal{
+ min-width:44px;min-height:44px;width:44px;height:44px;
+ background:#fffcf2;color:#275971;border:3px solid #317f98;
+ box-shadow:0 0 0 3px #fff9eac9,0 3px 7px #234a597a;
+ font-weight:900;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-inner .terminal.selected{
+ background:#ffe398!important;color:#54371c;
+ border-color:#c17f30;
+ box-shadow:0 0 0 5px #ffe6a5bd,0 2px 10px #9a67318a;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-board .circuit-help{
+ background:#244b59e8;color:#fff9eb;
+ border:1px solid #d7e8d1;border-radius:9px;
+ box-shadow:0 2px 8px #24455044;
+ text-shadow:none;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep{
+ border:2px solid #d5bd8c;border-radius:16px;
+ background:linear-gradient(145deg,#fffdf4,#f7f0d9);
+ box-shadow:var(--akari-soft-shadow);
+ padding:11px 13px;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep h3{
+ color:var(--akari-ink);text-align:left;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .step-index{
+ background:#dcaa4e;color:#473d23;box-shadow:none;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep p{
+ color:#496461;font-weight:800;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option{
+ background:#fffef7;color:#234953;border:2px solid #b5cebe;
+ border-radius:12px;min-height:52px;
+ box-shadow:0 2px 0 #a0bfa54b;
+ text-align:left;transition:background-color .16s,border-color .16s,transform .16s;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option small{
+ font-size:clamp(13px,1.3vw,15px);line-height:1.4;
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option:active:not(:disabled){
+ transform:translateY(1px);
+}
+body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option[aria-pressed="true"]{
+ border-color:#5a9a78;background:#e5f5e7;color:#265b49;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .feedback{
+ border:1px solid #aac8b8;
+ background:#fffef6;color:var(--akari-ink);
+ border-radius:12px;box-shadow:0 2px 0 #7da59322;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .action-row .btn,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .free-lab-trigger{
+ border-radius:12px;box-shadow:0 3px 0 #6d927850;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .action-row #nextBtn,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .action-row #checkBtn{
+ background:linear-gradient(#f3d58e,#e8b95e);
+ border:2px solid #c0934b;color:#4f3b23;
+ box-shadow:0 4px 0 #a5783f,0 8px 15px #67523d23;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .action-row #nextBtn:disabled{
+ opacity:.56;filter:grayscale(.3);
+}
+
+/* Mission 3: same paper, ink and warm highlights as missions 1–2.
+   The original materialSVG stays untouched from card -> drag -> inserted part. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock{
+ gap:7px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-tab{
+ background:#f7f1d9;color:#28515b;border:2px solid #aec7ad;
+ border-radius:12px;box-shadow:0 2px 0 #87a79650;
+ min-height:47px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-tab[aria-expanded="true"]{
+ background:#ffebba;color:#644c27;border-color:#d6ad62;
+ box-shadow:0 2px 0 #b48d51;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-board-focus{
+ background:linear-gradient(100deg,#fffaf0,#e9f5eb);
+ border:2px solid #aecbb6;color:var(--akari-ink);
+ border-radius:13px;box-shadow:0 2px 0 #89ac9a41;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-focus-count{
+ background:#ffedb8;color:#695024;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-readout{
+ background:linear-gradient(125deg,#e9f5ed,#f8faee);
+ border:2px solid #aacbb6;color:#28545b;
+ border-radius:12px;box-shadow:0 2px 0 #89ac9a33;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-readout .akari-observation{
+ background:#fffdf4;border:1px solid #c7d8bf;
+ color:#294a50;border-radius:10px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-readout .akari-observation.is-latest{
+ border:2px solid #d2a24d;background:#fff4cd;
+ box-shadow:0 2px 0 #deb75a33;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-memo-count{
+ background:#f7e7ae;color:#624d2c;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock-center>.bridge-circuit{
+ border:3px solid #9bbbac;border-radius:18px;
+ background:#a9d2cb;
+ box-shadow:0 5px 0 #6f9a89,0 12px 25px #1c4b563b;
+ overflow:hidden;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-circuit-svg{
+ background:linear-gradient(180deg,#d6eae0,#a4c9c2);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-main-wire,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-gap-stubs{
+ filter:drop-shadow(0 1px 2px #233d48ba);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-inspection-pin{
+ border:2px solid #fff2d0;border-radius:12px;
+ background:#f4c876;color:#294a4c;
+ box-shadow:0 0 0 2px #37636d,0 3px 7px #244f5580;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-inspection-pin.found{
+ background:#e8f5e7;color:#285b4b;
+ border-color:#fffdf1;box-shadow:0 0 0 2px #6c9880;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-desk{
+ background:#fffaf0;border:2px solid #c3d1b3;border-radius:15px;
+ color:var(--akari-ink);box-shadow:0 3px 0 #a3b99844;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-heading{
+ color:#294e52;font-size:14px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-choices .bridge-material{
+ background:linear-gradient(#fffef9,#f5f5e9);
+ border:2px solid #b5cfc0;border-radius:13px;
+ color:var(--akari-ink);
+ box-shadow:0 2px 0 #8ead9d4d;
+ transition:border-color .15s,background-color .15s,box-shadow .15s;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-choices .bridge-material.selected{
+ background:#ffeed0;border-color:#c68e37;
+ box-shadow:0 0 0 2px #ffe5a59c,0 2px 0 #b18d50;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-choices .bridge-material .bridge-material-art{
+ background:transparent;border-color:transparent;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-gap{
+ border:2px solid #5b8d8e;background:#fff9e9;color:#294d59;
+ border-radius:13px;
+ box-shadow:0 2px 0 #507b7d,0 0 0 2px #f7ecc5a1;
+ min-height:49px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-gap.is-ready:not(:disabled){
+ background:#ffe6ac;border-color:#c58b39;
+ box-shadow:0 0 0 3px #fff0bd,0 2px 0 #b58d49;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-gap[data-gap-state="filled"]{
+ background:#e1f1e5;color:#23514f;border-color:#699b8b;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-gap[data-gap-state="filled"].is-ready{
+ background:#ffe9c0;border-color:#c69b48;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock-center>.bridge-direct-repair{
+ background:#fffaf0;border:2px solid #c5d2b8;
+ border-radius:14px;box-shadow:0 3px 0 #a3b99833;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-direct-repair .bridge-why{
+ background:transparent;border-top:1px solid #d6d5b6;
+ color:#294951;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-direct-repair .bridge-why button{
+ background:#fffef8;border:2px solid #b3cdbd;
+ color:#254d56;border-radius:12px;font-weight:850;
+ min-height:48px;line-height:1.5;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-direct-repair .bridge-why button.chosen{
+ border-color:#bf8e43;background:#ffecbd;color:#5c462c;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-outcome{
+ border-radius:10px;border:1px solid #c7d0b9;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-outcome.lit{
+ background:#e6f4d8;color:#265740;border-color:#98b88d;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .bridge-outcome.dark{
+ background:#f7efe1;color:#69513a;border-color:#d5bea6;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-drawer{
+ background:#fffcf0;border:2px solid #b8d0ba;
+ border-radius:13px;box-shadow:0 3px 0 #80a99c2b;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .shelf-scroll-hint{
+ background:#e8f3e7;color:#28575a;
+}
+/* Never rely on hue alone: existing text, icons and measured outcomes remain. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+:is(.reason-option,.bridge-why button,.akari-inspection-pin,.akari-dock-gap,.bridge-material,.terminal):focus-visible{
+ outline:3px solid var(--akari-focus)!important;outline-offset:3px;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head{
+  padding:8px 10px;border-radius:12px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-toolbar{
+  padding:7px 8px;border-radius:10px!important;
+ }
+ body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] .circuit-board.circuit-town-board{
+  border-width:3px!important;border-radius:13px!important;
+ }
+ body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep{
+  padding:10px;border-radius:13px;
+ }
+ body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option{
+  padding:8px 10px;min-height:49px;flex-direction:row;
+  align-items:center;justify-content:flex-start;text-align:left;
+ }
+ body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option span{
+  font-size:22px;flex:0 0 25px;
+ }
+ body[data-visual-theme="reference-rebuild"][data-wire-focus="true"] #thinkStep .reason-option small{
+  font-size:13px;line-height:1.45;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock{
+  gap:5px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-board-focus{
+  padding:5px 7px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock-center>.bridge-circuit{
+  border-width:2px;border-radius:12px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-desk{
+  padding:8px;border-radius:12px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-sample-choices .bridge-material{
+  min-height:68px;padding:4px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .akari-dock .akari-dock-gap{
+  min-height:44px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .town-home-glow{
+  transition:none!important;animation:none!important;
+ }
+
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.reason-option,.bridge-material),
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .circuit-village-backdrop::after{
+  transition:none!important;animation:none!important;
+ }
+}
