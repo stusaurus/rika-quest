@@ -189,6 +189,16 @@ html.akari-cinematic body .main.town-immersive #stageCelebration:not([hidden]){
 }
 
 /* v2 composition: a game board, not successive website panels. */
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive{
+ grid-template-areas:"heading" "task" "workplace" "steps" "optional"
+ "feedback" "actions" "journal" "discovery" "report" "footer"!important;
+}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive #freeLabToggle{
+ grid-area:optional!important;justify-self:end!important;
+ margin:2px 0 0 auto!important;width:max-content!important;
+ min-height:44px!important;
+}
+
 html.akari-cinematic body .main.town-immersive>.story-scene{display:none!important}
 html.akari-cinematic body .main.town-immersive .quest-head{
  position:relative;overflow:visible;isolation:isolate
@@ -204,7 +214,7 @@ html.akari-cinematic body .main.town-immersive .quest-head #sceneProgress{
 }
 html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive #workspace:has(.circuit-town-board){
  display:grid!important;grid-template-columns:minmax(0,1fr);
- grid-template-areas:"toolbar" "board" "optional";
+ grid-template-areas:"toolbar" "board";
  gap:6px;align-items:start
 }
 html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
