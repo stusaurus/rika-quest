@@ -6,6 +6,7 @@ on:
       - 'scripts/test-akari.mjs'
       - 'tests/akari-switch-focus.test.cjs'
       - 'scripts/test-akari-browser.mjs'
+      - 'scripts/test-akari-cinematic.mjs'
       - 'scripts/build-akari-preview.mjs'
       - '.github/workflows/akari-qa.yml'
   workflow_dispatch:
@@ -40,6 +41,7 @@ jobs:
           node --check games/akari/wire-cut.js
           node --check tests/akari-switch-focus.test.cjs
           node --check scripts/test-akari-browser.mjs
+          node --check scripts/test-akari-cinematic.mjs
           node --check scripts/build-akari-preview.mjs
       - name: Check switch circuit regression cases
         run: node --test tests/akari-switch-focus.test.cjs
@@ -54,6 +56,8 @@ jobs:
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Verify real mobile / desktop interactions
         run: node scripts/test-akari-browser.mjs
+      - name: Verify cinematic game direction separately from current published UI
+        run: node scripts/test-akari-cinematic.mjs
       - name: Build self-contained playable preview
         if: always()
         env:
