@@ -358,6 +358,21 @@ try{
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
    assert.equal(await page.locator("body[data-wire-focus='true']").count(),1,"Stage 1 uses the one-screen wiring focus layout");
+   assert.equal(await page.locator('link[href="./storybook-skin.css?v=1"]').count(),1,"Missions 1–3 load the new shared storybook skin");
+   const stageOneSkin=await page.evaluate(()=>{
+     const board=document.querySelector(".circuit-board.circuit-town-board");
+     const terminal=document.querySelector(".circuit-inner .terminal");
+     const heading=document.querySelector(".quest-head");
+     const back=document.querySelector(".circuit-village-backdrop");
+     const css=getComputedStyle(board),touch=getComputedStyle(terminal);
+     return {frame:css.borderTopColor,paper:getComputedStyle(heading).backgroundImage,
+       scenery:getComputedStyle(back).backgroundImage,
+       touchWidth:parseFloat(touch.width),touchHeight:parseFloat(touch.height)};
+   });
+   assert.ok(stageOneSkin.frame==="rgb(158, 191, 174)","Circuit frame should use the shared warm sage palette");
+   assert.match(stageOneSkin.paper,/gradient/,"Mission heading should appear on illustrated paper");
+   assert.match(stageOneSkin.scenery,/gradient/,"The experiment and the town share the same calm color language");
+   assert.ok(stageOneSkin.touchWidth>=44&&stageOneSkin.touchHeight>=44,"Real circuit contacts remain touchable despite visual polish");
    assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
    assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
@@ -1179,6 +1194,23 @@ try{
    assert.equal(await page.locator(".bridge-gap-visual[data-bridge-gap-state='conductive']").count(),2,"The physical circuit shows both gaps as connected conductors");
    assert.equal(await page.locator(".bridge-direct-history .bridge-record").count(),2,"The tested failed and successful combinations both remain recorded");
    assert.equal(await page.locator(".bridge-why").count(),1,"The immediate observation now invites explanation of the closed current path");
+   const stageThreeSkin=await page.evaluate(()=>{
+     const circuit=document.querySelector(".akari-dock-center>.bridge-circuit");
+     const sample=document.querySelector(".akari-sample-choices .bridge-material");
+     const focus=document.querySelector(".akari-board-focus");
+     const why=document.querySelector(".bridge-direct-repair .bridge-why button");
+     const gap=document.querySelector(".akari-dock-gap");
+     return {frame:getComputedStyle(circuit).borderTopColor,
+       material:getComputedStyle(sample).backgroundImage,
+       prompt:getComputedStyle(focus).backgroundImage,
+       reason:getComputedStyle(why).borderTopColor,
+       gapHeight:parseFloat(getComputedStyle(gap).height)};
+   });
+   assert.equal(stageThreeSkin.frame,"rgb(155, 187, 172)","Material repair has the same sage experimental frame as the first circuits");
+   assert.match(stageThreeSkin.material,/gradient/,"The material choice is illustrated on a warm paper card");
+   assert.match(stageThreeSkin.prompt,/gradient/,"The live task prompt shares the unified visual language");
+   assert.equal(stageThreeSkin.reason,"rgb(179, 205, 189)","The post-experiment reasoning card stays legible");
+   assert.ok(stageThreeSkin.gapHeight>=44,"A/B drop targets remain at least 44px tall");
    assert.equal(await page.locator(".bridge-why>h3").isVisible(),false,"The reason screen must not repeat the same giant question twice");
    assert.match(await page.locator(".akari-board-focus").textContent(),/光った！ なぜかな/,"One current question appears above the lit circuit");
    assert.equal(await page.locator(".story-scene.bridge-powered").count(),1,"The town lights follow the live real circuit");
