@@ -99,7 +99,7 @@ function circuit(slots={},isLit=false){
   const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+43)+'" text-anchor="middle" font-size="13" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
   return '<g class="bridge-gap-visual" data-bridge-gap="'+letter.toLowerCase()+'" data-bridge-gap-state="'+status+'">'+terminals+bridge+placard+caption+'</g>';
  };
- const cinematic=document.documentElement.classList.contains("akari-cinematic");
+ const cinematic=!!document?.documentElement?.classList?.contains("akari-cinematic");
  const mount=cinematic?
   '<g class="bridge-repair-fixtures" pointer-events="none" aria-hidden="true">'+
   '<ellipse cx="89" cy="276" rx="88" ry="14" fill="#091b29" opacity=".45"/>'+
