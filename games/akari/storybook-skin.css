@@ -454,6 +454,38 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board.
  border-color:#d47f5c!important;
  box-shadow:0 0 0 3px #ffb18e8a,0 8px 15px #70362a33!important;
 }
+/* Keep the victory reward visible while the scenic ribbon stays slim.
+   Only the temporary noninteractive celebration escapes the scene clip;
+   experiment terminals and all regular scenery are unaffected. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ >.story-scene:has(#stageCelebration:not([hidden])){
+ z-index:40!important;
+ overflow:visible!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ #stageCelebration:not([hidden]){
+ position:fixed;
+ top:32vh;
+ left:50vw;
+ z-index:90;
+ transform:translateX(-50%);
+ width:min(330px,calc(100vw - 40px));
+ padding:12px 14px;
+ border:2px solid #f7d48a;
+ border-radius:18px;
+ background:linear-gradient(150deg,#214e5de8,#386f65ee);
+ box-shadow:0 14px 42px #173a4e8a,0 0 20px #f7df9652;
+ backdrop-filter:blur(5px);
+ pointer-events:none;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive #stageCelebration:not([hidden]){
+  top:35vh;
+  width:min(290px,calc(100vw - 34px));
+  padding:10px 12px;
+ }
+}
+
 /* Stage 3 speaks with the same hierarchy: the circuit starts close to
    the task, and the audio / details controls stay in the header's top row. */
 body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock) .quest-head{
