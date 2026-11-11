@@ -38,6 +38,7 @@ const wireCut=readFileSync("games/akari/wire-cut.js","utf8");
 const freeLabModel=readFileSync("games/akari/free-lab-model.js","utf8");
 const freeLab=readFileSync("games/akari/free-lab.js","utf8");
 const shortEffects=readFileSync("games/akari/short-effects.js","utf8");
+const cinematicLayoutJs=readFileSync("games/akari/cinematic-layout.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
  return source.replace(what,withText);
@@ -81,6 +82,7 @@ output=replaceOne(output,'<script src="./wire-cut.js" defer></script>',inlineScr
 output=replaceOne(output,'<script src="./free-lab-model.js?v=drawer1" defer></script>',inlineScript(freeLabModel));
 output=replaceOne(output,'<script src="./free-lab.js?v=discovery1" defer></script>',inlineScript(freeLab));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
+output=replaceOne(output,'<script src="./cinematic-layout.js?v=prototype2" defer></script>',inlineScript(cinematicLayoutJs));
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
  output=output.replace(
