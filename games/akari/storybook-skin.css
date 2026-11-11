@@ -597,3 +597,169 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock
   transition:none!important;
  }
 }
+
+
+/* Professional finishing pass: touch targets read as precise instruments,
+   not callout panels covering the working electrical schematic. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin{
+ width:48px;
+ min-width:48px;
+ max-width:48px;
+ height:48px;
+ min-height:48px;
+ padding:3px 2px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:0;
+ border:2px solid #fffbec;
+ border-radius:50%;
+ background:linear-gradient(150deg,#fff2ce,#f4cb7a);
+ color:#284c56;
+ box-shadow:0 0 0 2px #366a6c,0 4px 9px #193f4b70;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin > span{
+ font-size:12px;
+ line-height:1.05;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin > strong{
+ font-size:16px;
+ line-height:1.1;
+ font-weight:900;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin[data-dock-inspect="lamp"] > span{
+ font-size:23px;
+ line-height:1.05;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin[data-dock-inspect="lamp"] > strong{
+ /* Label remains in the DOM for text-based tests and accessibility name. */
+ position:absolute;
+ width:1px;height:1px;
+ padding:0;margin:-1px;overflow:hidden;
+ clip:rect(0,0,0,0);
+ white-space:nowrap;
+ border:0;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin.found{
+ background:linear-gradient(145deg,#f0ffed,#cdebdc);
+ border-color:#fffdf0;
+ color:#255c4e;
+ box-shadow:0 0 0 2px #629783,0 2px 6px #204c4c55;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin.found > span{
+ font-size:15px;
+ font-weight:900;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-leaders path{
+ stroke:#fffef0;
+ stroke-width:2.5;
+ stroke-dasharray:4 6;
+ opacity:.80;
+ filter:drop-shadow(0 1px 1px #21435270);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-leaders circle{
+ fill:#ffebad;
+ stroke:#386c71;
+ stroke-width:2.8;
+ opacity:.92;
+ filter:none;
+}
+/* Important: these A/B badges remain the REAL tappable and draggable targets.
+   A small caption makes the SVG material beneath visually inspectable. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-dock-gap{
+ border-color:#548b8b;
+ background:linear-gradient(165deg,#fffcf0,#e6f3e9);
+ color:#274e57;
+ box-shadow:0 2px 0 #658b83,0 0 0 2px #fffef6aa;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-dock-gap[data-gap-state="filled"]{
+ background:linear-gradient(165deg,#f6fff5,#dceee1);
+ color:#245e4d;
+ border-color:#70a68a;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-dock-gap.is-ready:not(:disabled){
+ border-color:#be8537;
+ background:linear-gradient(155deg,#fff4d2,#f8d990);
+ box-shadow:0 0 0 3px #ffedbd,0 2px 0 #b0884d;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-dock-gap .akari-gap-letter{
+ font-weight:950;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-sample-choices .bridge-material:focus-visible,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-sample-choices .bridge-material.selected{
+ outline:3px solid #d09b4a;
+ outline-offset:1px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .bridge-why button{
+ background:#fffefa;
+ border:2px solid #b8d1be;
+ border-radius:12px;
+ min-height:52px;
+ text-align:left;
+ line-height:1.45;
+ font-weight:800;
+ color:#234f57;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .bridge-why button.chosen{
+ background:#ffefcb;
+ border-color:#bf8d44;
+ color:#55432a;
+ box-shadow:0 2px 0 #b58b4d40;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-inspection-pin{
+  width:46px;min-width:46px;max-width:46px;
+  height:46px;min-height:46px;
+  box-shadow:0 0 0 2px #366a6c,0 2px 5px #2349505e;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-inspection-pin > strong{
+  font-size:15px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-dock-gap{
+  width:clamp(78px,24%,88px);
+  min-height:44px;
+  padding:3px 5px;
+  border-radius:10px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-gap-letter{
+  font-size:13px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-gap-contents{
+  font-size:10px;
+  line-height:1.25;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+  .akari-dock .akari-sample-choices .bridge-material{
+  min-height:75px;
+  border-radius:13px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ .akari-dock .akari-inspection-pin{
+  animation:none!important;transition:none!important;
+ }
+}
