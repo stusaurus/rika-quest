@@ -167,27 +167,27 @@ function workbench(wires,lit){
    '</g>';
  }).join("");
  const scheme='<defs>'+
-  '<linearGradient id="workBatteryBody" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fcf1d0"/><stop offset=".12" stop-color="#fdf9db"/><stop offset=".5" stop-color="#f4da80"/><stop offset=".87" stop-color="#d6a94d"/><stop offset="1" stop-color="#885c23"/></linearGradient>'+
+  '<linearGradient id="workBatteryBody" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1e5263"/><stop offset=".16" stop-color="#4c9297"/><stop offset=".44" stop-color="#7ab7b2"/><stop offset=".72" stop-color="#3f8890"/><stop offset="1" stop-color="#214d60"/></linearGradient>'+
+  '<linearGradient id="workBatterySleeve" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#e0dac3"/><stop offset=".2" stop-color="#fffef1"/><stop offset=".78" stop-color="#f9f1d7"/><stop offset="1" stop-color="#cbbfa5"/></linearGradient>'+
   '<linearGradient id="workMetal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".26" stop-color="#b4c6d0"/><stop offset=".56" stop-color="#e9f4f6"/><stop offset=".85" stop-color="#879da8"/><stop offset="1" stop-color="#576e79"/></linearGradient>'+
   '<radialGradient id="workGlass" cx=".35" cy=".24" r=".86"><stop stop-color="'+(lit?"#fff1bc":"#faffff")+'" stop-opacity=".98"/><stop offset=".57" stop-color="'+(lit?"#ffe9a3":"#d3eff9")+'" stop-opacity=".72"/><stop offset="1" stop-color="#a3c4d9" stop-opacity=".76"/></radialGradient>'+
   '<filter id="workGlow"><feGaussianBlur stdDeviation="11"/></filter>'+
   '</defs>';
- const battery='<g class="battery-model" role="group" aria-label="よこ向きの乾電池。左はプラス極、右はマイナス極">'+
-  '<ellipse cx="112" cy="194" rx="75" ry="7" fill="#718695" opacity=".23"/>'+
-  '<rect x="49" y="115" width="123" height="67" rx="12" fill="url(#workBatteryBody)" stroke="#314d66" stroke-width="3"/>'+
-  '<path d="M59 117H97V180H59Q49 180 49 171V126Q49 117 59 117Z" fill="#e33f39"/>'+
-  '<path d="M97 117H144V180H97Z" fill="#ffe35f"/>'+
-  '<path d="M144 117H161Q171 117 171 127V171Q171 180 161 180H144Z" fill="#246fc6"/>'+
-  '<path d="M52 124H169" stroke="#fff" opacity=".8" stroke-width="5" stroke-linecap="round"/>'+
-  '<path d="M56 175H165" stroke="#4b608c" opacity=".24" stroke-width="4"/>'+
+ const battery='<g class="battery-model" role="group" aria-label="よこ向きの1.5ボルト乾電池。左の出っぱりがプラス極、右の平らな金属がマイナス極">'+
+  '<ellipse cx="112" cy="194" rx="75" ry="7" fill="#395e67" opacity=".24"/>'+
+  '<rect class="battery-shell" x="49" y="115" width="123" height="67" rx="20" fill="url(#workBatteryBody)" stroke="#284e5b" stroke-width="3.2"/>'+
+  '<path d="M58 123Q110 117 163 123" fill="none" stroke="#d4f4e7" opacity=".62" stroke-width="4.2" stroke-linecap="round"/>'+
+  '<path d="M58 175Q111 179 162 175" fill="none" stroke="#133d50" opacity=".36" stroke-width="3.5" stroke-linecap="round"/>'+
+  '<path d="M66 122V175M157 122V175" stroke="#16485d" opacity=".24" stroke-width="2"/>'+
+  '<rect class="battery-sleeve" x="87" y="119" width="57" height="59" rx="5" fill="url(#workBatterySleeve)" stroke="#d4c9ae" stroke-width="1.3"/>'+
+  '<path d="M92 127H139M92 169H139" fill="none" stroke="#88aba2" opacity=".72" stroke-width="1.7"/>'+
+  '<text x="115" y="150" fill="#245164" font-size="19" font-weight="900" text-anchor="middle">1.5V</text>'+
+  '<text x="115" y="165" fill="#477b78" font-size="10.5" font-weight="800" text-anchor="middle">乾電池</text>'+
+  '<path d="M53 130Q60 127 65 131" stroke="#effcf5" opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/>'+
   '<rect x="46" y="135" width="7" height="34" rx="3" fill="url(#workMetal)" stroke="#8ba0ae" stroke-width="1.4"/>'+
   '<rect x="40" y="145" width="8" height="12" rx="3" fill="url(#workMetal)" stroke="#849baa" stroke-width="1.5"/>'+
   '<rect x="170" y="137" width="8" height="29" rx="3" fill="url(#workMetal)" stroke="#7892a5" stroke-width="1.2"/>'+
-  '<text x="72" y="157" fill="#fff" stroke="#ba3429" stroke-width=".2" font-size="25" text-anchor="middle" font-weight="900">＋</text>'+
-  '<text x="153" y="157" fill="#fff" font-size="24" text-anchor="middle" font-weight="900">−</text>'+
-  '<text x="120" y="158" text-anchor="middle" fill="#2d333d" font-size="18" font-weight="900">1.5V</text>'+
-  '<path d="M49 118H172" fill="none" stroke="#2c4659" stroke-width="3"/>'+
-  '<path d="M49 180H172" fill="none" stroke="#2c4659" stroke-width="3"/>'+
+  '<path d="M51 137L51 167M174 139L174 164" stroke="#fffdf1" opacity=".64" stroke-width="1.5"/>'+
   '</g>';
  const filament='<path d="M296 133V102L303 98L311 105L319 98L326 104V133" fill="none" stroke="'+(lit?"#fff5ae":"#c5894e")+'" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>'+
   '<path d="M298 107L298 145M325 107L325 145" stroke="#849eaa" stroke-width="2.2"/>';
