@@ -27,7 +27,7 @@ try{
    await page.locator(".circuit-svg-v2 .battery-model").waitFor();
    assert.equal(await page.locator("html.akari-cinematic").count(),1,"Opt-in cinematic look must initialize before original game scripts");
    const stageOne=await page.evaluate(()=>{
-     const board=document.querySelector(".circuit-board"),head=document.querySelector(".quest-head"),
+     const board=document.querySelector(".circuit-board.circuit-town-board"),head=document.querySelector(".quest-head"),
       terminal=document.querySelector(".terminal"),sky=document.querySelector("#tcSky stop");
      const rect=board.getBoundingClientRect(),tap=terminal.getBoundingClientRect();
      return {frame:getComputedStyle(board).borderTopColor,
