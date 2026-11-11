@@ -187,3 +187,69 @@ html.akari-cinematic body .main.town-immersive #stageCelebration:not([hidden]){
 @media(prefers-reduced-motion:reduce){
  html.akari-cinematic .main.town-immersive .circuit-village-backdrop::after{transition:none!important}
 }
+
+/* v2 composition: a game board, not successive website panels. */
+html.akari-cinematic body .main.town-immersive>.story-scene{display:none!important}
+html.akari-cinematic body .main.town-immersive .quest-head{
+ position:relative;overflow:visible;isolation:isolate
+}
+html.akari-cinematic body .main.town-immersive .quest-head #sceneProgress{
+ position:static!important;display:inline-flex!important;align-items:center;justify-content:center;
+ opacity:1!important;min-height:35px;padding:5px 9px!important;
+ background:#245468!important;color:#ffe5ab!important;
+ border:1px solid #d3ad73!important;border-radius:999px!important;
+ box-shadow:0 2px 0 #0b2737!important;
+ font-size:12px!important;white-space:nowrap;
+ flex:0 0 auto
+}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive #workspace:has(.circuit-town-board){
+ display:grid!important;grid-template-columns:minmax(0,1fr);
+ grid-template-areas:"toolbar" "board" "optional";
+ gap:6px;align-items:start
+}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
+ #workspace>.circuit-toolbar{grid-area:toolbar;margin:0!important}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
+ #workspace>.circuit-board.circuit-town-board{grid-area:board}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
+ #workspace>#freeLabToggle{
+ grid-area:optional;justify-self:end;
+ width:max-content!important;max-width:100%;
+ margin:3px 0 0!important;min-height:44px
+}
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
+ #workspace>.circuit-legend{display:none!important}
+html.akari-cinematic body .main.town-immersive .journal summary{
+ color:#fff0d6!important;font-size:14px!important;
+ text-shadow:0 1px 3px #081827;
+}
+html.akari-cinematic body .main.town-immersive .journal :is(.journal-count,.journal-foot){
+ color:#c7e1d5!important;
+}
+html.akari-cinematic body .main.town-immersive .journal .journal-rows{
+ color:#244756;
+}
+html.akari-cinematic #stageCelebration:not([hidden]){
+ position:fixed!important;top:32vh!important;left:50vw!important;z-index:100!important;
+ transform:translateX(-50%)!important;pointer-events:none!important;
+ width:min(350px,calc(100vw - 34px))!important;
+ border:2px solid #ffdd91!important;border-radius:18px!important;
+ background:linear-gradient(125deg,#194458ee,#326b68f6)!important;
+ box-shadow:0 0 0 5px #eebc5a66,0 18px 42px #000f24bb,0 0 45px #ffe3a64d!important
+}
+html.akari-cinematic #spark.active{
+ position:fixed!important;inset:0!important;z-index:95!important;pointer-events:none!important
+}
+html.akari-cinematic #spark.active:after{
+ color:#fff!important;box-shadow:0 4px 15px #160a14aa
+}
+@media(max-width:740px){
+ html.akari-cinematic body .main.town-immersive .quest-head #sceneProgress{display:none!important}
+ html.akari-cinematic body .main.town-immersive .quest-head{margin:0!important}
+ html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive
+  #workspace>.circuit-board.circuit-town-board{min-height:350px}
+ html.akari-cinematic body .main.town-immersive .journal summary{
+  font-size:13px!important;letter-spacing:.005em
+ }
+ html.akari-cinematic #stageCelebration:not([hidden]){top:34vh!important}
+}
