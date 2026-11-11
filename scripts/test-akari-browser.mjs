@@ -361,6 +361,8 @@ try{
    assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
    assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
+   assert.equal(await page.locator("#workspace + #learningSteps").count(),1,
+     "The real explanation sits immediately AFTER the circuit workspace, not above it");
    assert.match(await page.locator(".circuit-question").textContent(),/4つの まるから えらぼう/, "The live circuit explicitly directs attention to four equally available contacts");
    const focusWidth=await page.evaluate(()=>({board:document.querySelector(".circuit-board").getBoundingClientRect().width,main:document.querySelector(".main").getBoundingClientRect().width}));
    assert.ok(focusWidth.board>focusWidth.main*.75,"The real touch-operated circuit should dominate the main layout: "+JSON.stringify(focusWidth));
@@ -698,6 +700,18 @@ try{
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"After observing a lit lamp, the pupil can explain the result");
    assert.match(await page.locator(".circuit-question").textContent(),/どうして 光った/,"The board itself now asks for causal reasoning");
    assert.equal(await page.locator("#learningSteps").isVisible(),true,"Only the scientific reasoning choices appear after a real closed circuit");
+   const explanationFlow=await page.evaluate(()=>{
+     const board=document.querySelector(".circuit-board").getBoundingClientRect();
+     const why=document.querySelector("#learningSteps").getBoundingClientRect();
+     return {below:why.top>=board.bottom-2,withinScreen:why.top>=0&&why.top<window.innerHeight};
+   });
+   assert.equal(explanationFlow.below,true,
+     "Wiring on a scrolled screen must not put the newly unlocked question ABOVE the circuit: "+JSON.stringify(explanationFlow));
+   await page.waitForFunction(()=>{
+     const panel=document.querySelector("#learningSteps");
+     return panel&&!panel.hidden&&panel.getBoundingClientRect().top>=0&&
+       panel.getBoundingClientRect().top<window.innerHeight;
+   },null,{timeout:5000});
    assert.equal(await page.locator("#discovery").isVisible(),false,"A light bulb alone must not bypass scientific reasoning");
    assert.equal((await wireRoute()).every(p=>p.battery===0&&p.bulb===0),true,"Closed-loop wires must avoid the physical parts, not vanish behind them");
    // A slash must start on the visible board, never in the offscreen part of zoom mode.
@@ -781,6 +795,12 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"Repairing stage two lights the bulb immediately");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"Repair reasoning follows live lighting");
+   assert.equal(await page.locator("#workspace + #learningSteps").count(),1,
+     "Mission two keeps the reason question directly after the live circuit");
+   assert.equal(await page.evaluate(()=>
+     document.querySelector("#learningSteps").getBoundingClientRect().top>=
+     document.querySelector(".circuit-board").getBoundingClientRect().bottom-2),true,
+     "Mission two must never ask a question above the circuit the child just repaired");
    assert.equal(await page.locator("#checkBtn").isVisible(),false,"Stage two needs no test button");
    await page.locator('[data-first-reason="joined"]').click();
    assert.equal(await page.locator(".transfer-probe").count(),1,"Correct reason opens the existing scientific transfer challenge");
