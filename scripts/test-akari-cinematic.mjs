@@ -37,8 +37,25 @@ try{
        touch:Math.min(tap.width,tap.height),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
    assert.equal(stageOne.sky,"#172f4f","Cinematic version must repaint the actual world, not merely recolor website boxes");
+   assert.equal(await page.locator(".main.town-immersive>.story-scene").isVisible(),false,
+     "The redundant scenic header is removed in game mode; the real village lives in the playable board");
+   assert.equal(await page.locator(".quest-head #sceneProgress").count(),1,
+     "Actual progress status moves into the mission HUD without duplicating state");
+   assert.equal(await page.locator("body>#stageCelebration").count(),1,
+     "Victory art is decoupled from the clipped scenic banner");
    assert.equal(stageOne.frame,"rgb(198, 165, 116)","Real circuit should sit within the new cinematic warm-metal frame");
    assert.ok(stageOne.touch>=44,"Electrical contacts remain thumb-sized");
+   assert.equal(await page.locator("#workspace>.circuit-board").count(),1,
+     "The real circuit is a single interactive scene, not a redundant decorative thumbnail");
+   if(width<741){
+     const flow=await page.evaluate(()=>{
+       const board=document.querySelector(".circuit-town-board").getBoundingClientRect();
+       const free=document.querySelector("#freeLabToggle").getBoundingClientRect();
+       return {boardTop:board.top,freeTop:free.top,boardBottom:board.bottom};
+     });
+     assert.ok(flow.boardTop<275,"The circuit begins above the first mobile fold: "+JSON.stringify(flow));
+     assert.ok(flow.freeTop>=flow.boardBottom-3,"The optional sandbox follows, rather than precedes, the primary experiment");
+   }
    assert.ok(stageOne.overflow<=2,"No sideways page scroll");
    await page.screenshot({path:"artifacts/akari/"+engine+"-"+width+"-cinematic-start.png",fullPage:true});
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
