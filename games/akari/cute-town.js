@@ -101,5 +101,5 @@
   2:town+lantern(325,286,.94,false)+lantern(605,286,.91,false),
   3:streetlamp
  };
- window.AkariTownArt={render:stage=>art[Number(stage)]||art[2]};
+ window.AkariTownArt={render:stage=>(twilight&&window.AkariCinematicScenery)?window.AkariCinematicScenery.render(stage):(art[Number(stage)]||art[2])};
 })();
