@@ -83,6 +83,31 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-villag
 body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-village-art{
  filter:saturate(.91) brightness(1.06);
 }
+/* Home light stays dark until the actual physical circuit is complete.
+   It never lights from saved progress or inside prediction cards. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair) .town-home-glow{
+ opacity:0;
+ pointer-events:none;
+ filter:blur(8px);
+ transition:opacity .42s ease-out;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair).is-lit .town-home-glow{
+ opacity:.24;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair) .town-roof-detail{
+ filter:drop-shadow(0 1px 1px #7f6f6344);
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-town-board,.circuit-town-repair).is-lit .town-window{
+ filter:drop-shadow(0 0 5px #ffdc96);
+}
+body[data-visual-theme="reference-rebuild"] .transfer-diagram .town-home-glow{
+ opacity:0!important;
+ filter:none!important;
+}
 body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-village-backdrop::after{
  background:linear-gradient(180deg,#fff4db18 0%,#d6ebd107 45%,#2a5b5b43 100%);
  transition:background-color .3s ease;
@@ -336,6 +361,10 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive
  }
 }
 @media(prefers-reduced-motion:reduce){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .town-home-glow{
+  transition:none!important;animation:none!important;
+ }
+
  body[data-visual-theme="reference-rebuild"] .main.town-immersive
  :is(.reason-option,.bridge-material),
  body[data-visual-theme="reference-rebuild"] .main.town-immersive
