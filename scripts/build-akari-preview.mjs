@@ -61,7 +61,7 @@ output=replaceOne(output,'<link rel="stylesheet" href="./cinematic-direction.css
 output=replaceOne(output,'<link rel="stylesheet" href="./cinematic-scenery.css?v=paint1">',"<style>\n"+cinematicSceneryCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./switch-focus.css">',"<style>\n"+switchFocusCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovered1">',"<style>\n"+freeLabCss+"\n</style>");
-output=replaceOne(output,'<script src="./art.js?v=pro-battery1" defer></script>',inlineScript(art));
+output=replaceOne(output,'<script src="./art.js?v=cinematic-mount1" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js?v=clarity15" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
 output=replaceOne(output,'<script src="./cinematic-scenery.js?v=layered1" defer></script>',inlineScript(layeredTownArt));
@@ -71,7 +71,7 @@ output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScr
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
 output=replaceOne(output,'<script src="./switch-lab.js" defer></script>',inlineScript(switchLab));
 output=replaceOne(output,'<script src="./safety-lab.js" defer></script>',inlineScript(safetyLab));
-output=replaceOne(output,'<script src="./bridge-lab.js?v=pro-reasons1" defer></script>',inlineScript(bridgeLab));
+output=replaceOne(output,'<script src="./bridge-lab.js?v=cinematic-mount1" defer></script>',inlineScript(bridgeLab));
 output=replaceOne(output,'<script src="./side-drawers.js?v=pro-inspect1" defer></script>',inlineScript(sideDrawers));
 output=replaceOne(output,'<script src="./garden-lab.js" defer></script>',inlineScript(gardenLab));
 output=replaceOne(output,'<script src="./battery-lab.js" defer></script>',inlineScript(batteryLab));
