@@ -361,7 +361,7 @@ try{
    assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
    assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
-   assert.equal(await page.locator("#workspace + #learningSteps").count(),1,
+   assert.equal(await page.locator("#workspace ~ #learningSteps").count(),1,
      "The real explanation sits immediately AFTER the circuit workspace, not above it");
    assert.match(await page.locator(".circuit-question").textContent(),/4つの まるから えらぼう/, "The live circuit explicitly directs attention to four equally available contacts");
    const focusWidth=await page.evaluate(()=>({board:document.querySelector(".circuit-board").getBoundingClientRect().width,main:document.querySelector(".main").getBoundingClientRect().width}));
@@ -795,7 +795,7 @@ try{
    await page.locator('[data-t="N"]').click();await page.locator('[data-t="R"]').click();
    assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"Repairing stage two lights the bulb immediately");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"Repair reasoning follows live lighting");
-   assert.equal(await page.locator("#workspace + #learningSteps").count(),1,
+   assert.equal(await page.locator("#workspace ~ #learningSteps").count(),1,
      "Mission two keeps the reason question directly after the live circuit");
    assert.equal(await page.evaluate(()=>
      document.querySelector("#learningSteps").getBoundingClientRect().top>=
