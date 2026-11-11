@@ -17,6 +17,7 @@ const freeLabCss=readFileSync("games/akari/free-lab.css","utf8");
 const art=readFileSync("games/akari/art.js","utf8");
 const scenes=readFileSync("games/akari/scenes.js","utf8");
 const cuteTownArt=readFileSync("games/akari/cute-town.js","utf8");
+const layeredTownArt=readFileSync("games/akari/cinematic-scenery.js","utf8");
 const circuitVillage=readFileSync("games/akari/circuit-village.js","utf8");
 const transfer=readFileSync("games/akari/transfer.js","utf8");
 const builder=readFileSync("games/akari/builder.js","utf8");
@@ -61,7 +62,8 @@ output=replaceOne(output,'<link rel="stylesheet" href="./free-lab.css?v=uncovere
 output=replaceOne(output,'<script src="./art.js?v=pro-battery1" defer></script>',inlineScript(art));
 output=replaceOne(output,'<script src="./game.js?v=clarity15" defer></script>',inlineScript(game));
 output=replaceOne(output,"<script src=\"./scenes.js?v=streetlamp3\" defer></script>",inlineScript(scenes));
-output=replaceOne(output,"<script src=\"./cute-town.js?v=cinematic1\" defer></script>",inlineScript(cuteTownArt));
+output=replaceOne(output,'<script src="./cinematic-scenery.js?v=layered1" defer></script>',inlineScript(layeredTownArt));
+output=replaceOne(output,"<script src=\"./cute-town.js?v=cinematic2\" defer></script>",inlineScript(cuteTownArt));
 output=replaceOne(output,"<script src=\"./circuit-village.js?v=inside1\" defer></script>",inlineScript(circuitVillage));
 output=replaceOne(output,'<script src="./transfer.js" defer></script>',inlineScript(transfer));
 output=replaceOne(output,'<script src="./builder.js" defer></script>',inlineScript(builder));
