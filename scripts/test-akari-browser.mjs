@@ -364,7 +364,7 @@ try{
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
    assert.equal(await page.locator("body[data-wire-focus='true']").count(),1,"Stage 1 uses the one-screen wiring focus layout");
-   assert.equal(await page.locator('link[href="./storybook-skin.css?v=2"]').count(),1,"Missions 1–3 load the new shared storybook skin");
+   assert.equal(await page.locator('link[href="./storybook-skin.css?v=3"]').count(),1,"Missions 1–3 load the new shared storybook skin");
    const stageOneSkin=await page.evaluate(()=>{
      const board=document.querySelector(".circuit-board.circuit-town-board");
      const terminal=document.querySelector(".circuit-inner .terminal");
@@ -379,6 +379,23 @@ try{
    assert.match(stageOneSkin.paper,/gradient/,"Mission heading should appear on illustrated paper");
    assert.match(stageOneSkin.scenery,/gradient/,"The experiment and the town share the same calm color language");
    assert.ok(stageOneSkin.touchWidth>=44&&stageOneSkin.touchHeight>=44,"Real circuit contacts remain touchable despite visual polish");
+   if(width<741){
+     const focusHierarchy=await page.evaluate(()=>{
+       const rect=s=>document.querySelector(s).getBoundingClientRect();
+       const scene=rect(".main.town-immersive>.story-scene");
+       const free=rect("#freeLabToggle");
+       const board=rect(".circuit-board.circuit-town-board");
+       const toolbar=rect(".circuit-toolbar");
+       return {sceneHeight:scene.height,freeWidth:free.width,freeHeight:free.height,
+         boardTop:board.top,toolbarHeight:toolbar.height,viewport:window.innerWidth};
+     });
+     assert.ok(focusHierarchy.sceneHeight<=49,"A duplicated scenic panel must not push the actual circuit down: "+JSON.stringify(focusHierarchy));
+     assert.ok(focusHierarchy.freeWidth<200&&focusHierarchy.freeHeight>=44,
+       "The optional sandbox is a compact but thumb-sized secondary control: "+JSON.stringify(focusHierarchy));
+     assert.ok(focusHierarchy.boardTop<=(width<=320?345:320),
+       "The main experiment should start within the first mobile screen: "+JSON.stringify(focusHierarchy));
+     console.log("Akari first-screen visual hierarchy:",engine,width,focusHierarchy);
+   }
    assert.equal(await page.locator("#predictStep").count(),0,"No extra prediction tap before the child may wire");
    assert.equal(await page.locator("#connectStep").count(),0,"Duplicate operation cards no longer crowd the board");
    assert.equal(await page.locator("#learningSteps").isVisible(),false,"Reason choices remain hidden until a real lamp is lit");
@@ -796,6 +813,15 @@ try{
    await page.locator(".discovery-more summary").click();
    assert.equal(await page.locator("#sceneCharacter").count(),0,"Celebration must use restored lights rather than a cropped character");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
+   const victoryViewport=await page.locator("#stageCelebration").evaluate(el=>{
+     const box=el.getBoundingClientRect(),style=getComputedStyle(el);
+     return {top:box.top,bottom:box.bottom,viewport:window.innerHeight,
+       position:style.position,pointerEvents:style.pointerEvents};
+   });
+   assert.equal(victoryViewport.position,"fixed","Compact scenery must not clip the child's victory reward");
+   assert.equal(victoryViewport.pointerEvents,"none","Victory art must never block circuit or Next interactions");
+   assert.ok(victoryViewport.top>=0&&victoryViewport.bottom<=victoryViewport.viewport,
+     "The victory message must stay in the visible screen after completing a circuit: "+JSON.stringify(victoryViewport));
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"First clear should illuminate one journey map lantern");
    assert.equal(await page.locator(".story-scene.energizing").count(),1,"First successful experiment should trigger the town restoration pulse");
@@ -1163,6 +1189,20 @@ try{
    if(audioPlacement.visible){
      assert.ok(audioPlacement.buttonTop>=audioPlacement.headerTop-4&&audioPlacement.buttonBottom<=audioPlacement.headerBottom+7,
        "Read-aloud stays inside the title row, not in an empty panel: "+JSON.stringify(audioPlacement));
+   }
+   if(width<741){
+     const stageThreeHeader=await page.evaluate(()=>{
+       const head=document.querySelector(".quest-head").getBoundingClientRect();
+       const audio=document.querySelector("#readTaskBtn").getBoundingClientRect();
+       const more=document.querySelector("#readingToggle").getBoundingClientRect();
+       return {height:head.height,centerDifference:Math.abs((audio.top+audio.bottom)/2-(more.top+more.bottom)/2),
+         audioWidth:audio.width,audioHeight:audio.height,moreHeight:more.height};
+     });
+     assert.ok(stageThreeHeader.height<=120&&stageThreeHeader.centerDifference<=25,
+       "The audio and more-info controls should stay in one compact row: "+JSON.stringify(stageThreeHeader));
+     assert.ok(stageThreeHeader.audioHeight>=44&&stageThreeHeader.moreHeight>=44,
+       "Stage 3 keeps both header controls accessible to touch: "+JSON.stringify(stageThreeHeader));
+     console.log("Akari stage-three header:",engine,width,stageThreeHeader);
    }
    assert.equal(await page.locator("[data-bridge-guess],[data-bridge-test],[data-bridge-repair-guess],[data-bridge-repair-test]").count(),0,"No preliminary test or second experimental confirmation is present");
    assert.equal(await page.locator("[data-dock-place='a']").isDisabled(),true,"A placement needs a selected material");

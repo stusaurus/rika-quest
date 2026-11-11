@@ -372,3 +372,228 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive
   transition:none!important;animation:none!important;
  }
 }
+
+
+/* NEXT: visual hierarchy refined after reviewing actual 390px / 1440px screenshots.
+   The backdrop is already IN the real circuit: keep stage context as a slim
+   progress ribbon, not a second illustration ahead of the workbench. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+ height:62px!important;
+ max-height:62px!important;
+ min-height:62px!important;
+ border:1px solid #b8ceba!important;
+ background:linear-gradient(115deg,#eff4e2,#f9edce)!important;
+ box-shadow:0 2px 0 #7eaa9545!important;
+ border-radius:13px!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption{
+ background:transparent!important;
+ border:0!important;
+ box-shadow:none!important;
+ padding:1px 4px!important;
+ top:7px!important;
+ left:10px!important;
+ opacity:1!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-progress{
+ border:1px solid #d9c494;
+ background:#fff9e7;
+ box-shadow:0 1px 4px #7b756a2a;
+ top:11px;
+ right:10px;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head{
+ box-shadow:0 3px 0 #7f9a8738,0 6px 18px #1c405028;
+}
+body[data-visual-theme="reference-rebuild"]:has(.main.town-immersive) .topbar .brand{
+ background:linear-gradient(125deg,#2a5355,#477466)!important;
+ border:2px solid #bfd1a6!important;
+ box-shadow:0 2px 0 #183f425c,0 5px 13px #1434382b!important;
+ color:#fff9e9;
+}
+/* Free experimentation is an OPTIONAL mode. It must not resemble the
+   primary instruction that precedes each wiring activity. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive #freeLabToggle{
+ width:max-content;
+ max-width:100%;
+ justify-self:end;
+ min-height:36px;
+ margin:1px 0 2px auto;
+ padding:5px 11px;
+ background:#f7fbf2;
+ color:#325b5e;
+ border:1.5px solid #9bbeb2;
+ border-radius:999px;
+ box-shadow:0 2px 0 #7aa39336;
+ font-size:12px;
+ font-weight:800;
+ line-height:1.3;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive #freeLabToggle:hover,
+body[data-visual-theme="reference-rebuild"] .main.town-immersive #freeLabToggle:focus-visible{
+ background:#fff2ce;
+ border-color:#b98b42;
+ outline:3px solid #b97737;
+ outline-offset:2px;
+}
+/* The circuit already contains the live task wording. A large empty
+   toolbar containing only a magnifier was competing with the illustration. */
+body[data-visual-theme="reference-rebuild"].gesture-first[data-wire-focus="true"]
+ .main.town-immersive #workspace:not(:has(.circuit-board.zoomed))>.circuit-toolbar{
+ min-height:40px;
+ padding:1px 5px!important;
+ margin:0 0 4px;
+ border:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board.is-lit:not(.is-short){
+ box-shadow:0 0 0 2px #ffdfa16e,0 5px 0 #799887,0 13px 32px #d69c5638!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive .circuit-board.is-short{
+ border-color:#d47f5c!important;
+ box-shadow:0 0 0 3px #ffb18e8a,0 8px 15px #70362a33!important;
+}
+/* Keep the victory reward visible while the scenic ribbon stays slim.
+   Only the temporary noninteractive celebration escapes the scene clip;
+   experiment terminals and all regular scenery are unaffected. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ >.story-scene:has(#stageCelebration:not([hidden])){
+ z-index:40!important;
+ overflow:visible!important;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ #stageCelebration:not([hidden]){
+ position:fixed;
+ top:32vh;
+ left:50vw;
+ z-index:90;
+ transform:translateX(-50%);
+ width:min(330px,calc(100vw - 40px));
+ padding:12px 14px;
+ border:2px solid #f7d48a;
+ border-radius:18px;
+ background:linear-gradient(150deg,#214e5de8,#386f65ee);
+ box-shadow:0 14px 42px #173a4e8a,0 0 20px #f7df9652;
+ backdrop-filter:blur(5px);
+ pointer-events:none;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive #stageCelebration:not([hidden]){
+  top:35vh;
+  width:min(290px,calc(100vw - 34px));
+  padding:10px 12px;
+ }
+}
+
+/* Stage 3 speaks with the same hierarchy: the circuit starts close to
+   the task, and the audio / details controls stay in the header's top row. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock) .quest-head{
+ box-shadow:0 3px 0 #7f9a8738,0 6px 18px #1c405028;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+ .akari-dock .akari-board-focus{
+ border-radius:13px;
+ box-shadow:0 3px 0 #83a69932;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+ .akari-dock .akari-sample-choices .bridge-material{
+ box-shadow:0 2px 0 #8dad9d44,0 5px 10px #244c5220;
+}
+body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+ .akari-dock .akari-dock-gap:focus-visible{
+ outline:3px solid #bb6a29;
+ outline-offset:3px;
+}
+@media(max-width:740px){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive>.story-scene{
+  height:47px!important;
+  max-height:47px!important;
+  min-height:47px!important;
+  border-radius:10px!important;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption{
+  top:5px!important;
+  left:7px!important;
+  max-width:58%!important;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-caption h1{
+  font-size:13px!important;
+  margin:0!important;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .story-scene .scene-progress{
+  top:9px;
+  right:7px;
+  padding:3px 7px;
+  font-size:11px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive .quest-head{
+  min-height:65px;
+  padding:7px 9px;
+  border-radius:12px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive #freeLabToggle{
+  min-height:44px;
+  padding:6px 12px;
+  font-size:12px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock) .quest-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 48px 43px;
+  grid-template-rows:auto;
+  gap:5px;
+  align-items:center;
+  min-height:72px;
+  padding:8px 9px;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+  .quest-head>div:first-child{
+  grid-area:auto!important;
+  grid-column:1;
+  grid-row:1;
+  margin:0;
+  min-width:0;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+  .quest-head #readTaskBtn{
+  grid-column:2;
+  grid-row:1;
+  width:48px;
+  min-width:48px;
+  min-height:44px;
+  padding:5px 2px;
+  font-size:11px;
+  line-height:1.2;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+  .quest-head .reading-toggle{
+  grid-area:auto!important;
+  grid-column:3;
+  grid-row:1;
+  width:43px;
+  height:44px;
+  min-height:44px;
+  justify-self:end;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+  .quest-head .quest-stars{
+  grid-column:1/-1;
+  grid-row:2;
+  justify-self:start;
+ }
+ body[data-visual-theme="reference-rebuild"].reading-easy
+  .main.town-immersive:has(.akari-dock) .quest-head .quest-stars{
+  display:none!important;
+ }
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock)
+  .akari-dock .akari-dock-tab[data-dock-tab]{
+  min-height:44px;
+  border-radius:12px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ :is(.circuit-board,.bridge-material,.quest-head){
+  transition:none!important;
+ }
+}
