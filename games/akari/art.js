@@ -204,7 +204,7 @@ function workbench(wires,lit){
   '<path d="M313 187V209" stroke="#c5d1d6" stroke-width="7" stroke-linecap="round"/>'+
   '<circle cx="313" cy="210" r="5.2" fill="#f9dba0" stroke="#c2a166" stroke-width="1.4"/>'+
   '</g>';
- const gameMount=document.documentElement.classList.contains("akari-cinematic")?
+ const gameMount=!!document?.documentElement?.classList?.contains("akari-cinematic")?
  '<g class="workbench-fixture" aria-hidden="true" pointer-events="none">'+
  '<defs><linearGradient id="tcLabRail" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e5c89e"/><stop offset=".18" stop-color="#a7886c"/><stop offset=".58" stop-color="#6b5e61"/><stop offset="1" stop-color="#38475c"/></linearGradient></defs>'+
  '<ellipse cx="111" cy="202" rx="82" ry="11" fill="#031b2c" opacity=".39"/>'+
