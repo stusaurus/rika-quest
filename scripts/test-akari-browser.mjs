@@ -813,6 +813,15 @@ try{
    await page.locator(".discovery-more summary").click();
    assert.equal(await page.locator("#sceneCharacter").count(),0,"Celebration must use restored lights rather than a cropped character");
    assert.equal(await page.locator("#stageCelebration").isVisible(),true,"A nonblocking victory burst should show");
+   const victoryViewport=await page.locator("#stageCelebration").evaluate(el=>{
+     const box=el.getBoundingClientRect(),style=getComputedStyle(el);
+     return {top:box.top,bottom:box.bottom,viewport:window.innerHeight,
+       position:style.position,pointerEvents:style.pointerEvents};
+   });
+   assert.equal(victoryViewport.position,"fixed","Compact scenery must not clip the child's victory reward");
+   assert.equal(victoryViewport.pointerEvents,"none","Victory art must never block circuit or Next interactions");
+   assert.ok(victoryViewport.top>=0&&victoryViewport.bottom<=victoryViewport.viewport,
+     "The victory message must stay in the visible screen after completing a circuit: "+JSON.stringify(victoryViewport));
    assert.equal(await page.locator("#litPlaceCount").textContent(),"1","The map restoration counter should advance");
    assert.equal(await page.locator("#mapLights .map-lamp.lit").count(),1,"First clear should illuminate one journey map lantern");
    assert.equal(await page.locator(".story-scene.energizing").count(),1,"First successful experiment should trigger the town restoration pulse");
