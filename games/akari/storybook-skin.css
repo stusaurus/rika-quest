@@ -599,6 +599,11 @@ body[data-visual-theme="reference-rebuild"] .main.town-immersive:has(.akari-dock
 }
 
 
+/* The scenery is already painted INSIDE the interactive circuit.
+   Explicitly suppress the duplicate exterior illustration on all engines. */
+body[data-visual-theme="reference-rebuild"] .main.town-immersive
+ >.story-scene>.scene-props{display:none!important}
+
 /* Professional finishing pass: touch targets read as precise instruments,
    not callout panels covering the working electrical schematic. */
 body[data-visual-theme="reference-rebuild"] .main.town-immersive
