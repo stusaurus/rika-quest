@@ -289,6 +289,12 @@ try{
    await page.locator("#missionTitle").waitFor();
    assert.equal(await page.locator("#missionTitle").textContent(),"はじめてのひかり");
    assert.equal(await page.locator(".circuit-town-board .town-house").count(),3,"Stage 1 displays the illustrated village INSIDE the wiring board");
+   assert.equal(await page.locator(".circuit-town-board .town-roof-detail").count(),6,
+     "The same storybook roof detailing must appear on all three homes");
+   assert.equal(await page.locator(".circuit-town-board .town-home-glow").count(),3,
+     "Every house has ambient light that follows the actual experiment");
+   assert.equal(await page.locator(".circuit-town-board .town-home-glow").first().evaluate(e=>getComputedStyle(e).opacity),"0",
+     "Decorative home light stays off before a complete circuit");
    assert.equal(await page.locator(".circuit-town-board .battery-model").count(),1,"Physical battery stays over the scenery");
    assert.equal(await page.locator(".circuit-town-board .bulb-model").count(),1,"Physical bulb stays over the scenery");
    assert.equal(await page.locator(".circuit-town-board .terminal").count(),4,"All four real wiring terminals remain usable");
@@ -358,7 +364,7 @@ try{
    assert.equal(await page.locator("body.gesture-first").count(),1,"Gesture-first mode should be enabled");
    assert.equal(await page.locator(".wire-palette").count(),0,"Decorative wire-color choices must not burden beginners");
    assert.equal(await page.locator("body[data-wire-focus='true']").count(),1,"Stage 1 uses the one-screen wiring focus layout");
-   assert.equal(await page.locator('link[href="./storybook-skin.css?v=1"]').count(),1,"Missions 1–3 load the new shared storybook skin");
+   assert.equal(await page.locator('link[href="./storybook-skin.css?v=2"]').count(),1,"Missions 1–3 load the new shared storybook skin");
    const stageOneSkin=await page.evaluate(()=>{
      const board=document.querySelector(".circuit-board.circuit-town-board");
      const terminal=document.querySelector(".circuit-inner .terminal");
@@ -714,6 +720,11 @@ try{
    assert.equal(await page.locator(".circuit-board.is-lit").count(),1,"The lamp lights as soon as a complete loop is connected");
    assert.equal(await page.locator(".story-scene.live-powered").count(),1,"The village light responds immediately to electricity");
    assert.equal(await page.locator(".circuit-town-board.is-lit .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"1","Drawing a correct wire lights the streetlamp in the interactive circuit");
+   await page.waitForFunction(()=>
+     parseFloat(getComputedStyle(document.querySelector(".circuit-town-board .town-home-glow")).opacity)>.20,
+     null,{timeout:2500});
+   assert.equal(await page.locator(".circuit-town-board .town-home-glow").count(),3,
+     "House windows gain ambient light only AFTER the circuit works");
    assert.equal(await page.locator("#thinkStep").isVisible(),true,"After observing a lit lamp, the pupil can explain the result");
    assert.match(await page.locator(".circuit-question").textContent(),/どうして 光った/,"The board itself now asks for causal reasoning");
    assert.equal(await page.locator("#learningSteps").isVisible(),true,"Only the scientific reasoning choices appear after a real closed circuit");
@@ -759,6 +770,9 @@ try{
    assert.equal(await page.locator(".circuit-board.is-lit").count(),0,"Cutting one necessary lead turns the lamp off immediately");
    assert.equal(await page.locator(".story-scene.live-powered").count(),0,"The village light also turns off with the broken circuit");
    assert.equal(await page.locator(".circuit-town-board .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","Cutting a necessary wire darkens the streetlamp INSIDE the interactive circuit");
+   await page.waitForFunction(()=>
+     parseFloat(getComputedStyle(document.querySelector(".circuit-town-board .town-home-glow")).opacity)<.02,
+     null,{timeout:2500});
    assert.equal(await page.locator("#thinkStep").isVisible(),false,"Reasoning prompt waits for a completed live experiment");
    await page.locator('[data-t="P"]').click();await page.locator('[data-t="L"]').click();
    assert.equal(await page.locator(".wire-chip").count(),2,
@@ -824,6 +838,8 @@ try{
    assert.equal(await page.locator(".transfer-diagram .town-house").count(),3,"The streetlamp prediction includes real village art INSIDE the circuit diagram");
    assert.equal(await page.locator(".transfer-diagram .town-lamp").count(),2,"The streetlamp probe is not a bare navy schematic");
    assert.equal(await page.locator(".transfer-diagram .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","A prediction diagram must never reveal the correct illuminated result");
+   assert.equal(await page.locator(".transfer-diagram .town-home-glow").first().evaluate(e=>getComputedStyle(e).opacity),"0",
+     "Predictions must never reveal the home-light result before a real test");
    await completeTransfer(2,true);
    await page.locator("#thinkStep").waitFor({state:"visible"});
    assert.equal(await page.locator("#nextBtn").isDisabled(),false,"Completed scientific transfer makes next stage available");
@@ -987,6 +1003,10 @@ try{
    assert.equal(await page.locator(".bridge-quest-strip.akari-dock-status").isVisible(),false,"The duplicate stage-3 status row must not hide or compete with the circuit");
    assert.equal(await page.locator(".bridge-circuit.circuit-town-repair .town-house").count(),3,"Mission 3 places three village houses INSIDE the repair diagram");
    assert.equal(await page.locator(".bridge-circuit-svg .bridge-filament").count(),1,"The lamp contains a single real zigzag filament rather than a misleading X-shaped failure mark");
+   assert.equal(await page.locator(".bridge-circuit-svg .bridge-battery-body").count(),1,
+     "Stage three has a recognizable 1.5V dry cell in the same illustrated style as stages one and two");
+   assert.equal(await page.locator(".bridge-circuit-svg .bridge-battery-body").getAttribute("fill"),"url(#akariRepairBattery)",
+     "The battery drawing uses the shared teal color treatment without changing the electrical contacts");
    assert.equal(await page.locator(".bridge-circuit .bridge-monument").count(),0,"Stage 3 must not show a bridge in the active circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-lamp").count(),1,"Stage 3 must have a streetlamp INSIDE the circuit diagram");
    assert.equal(await page.locator(".bridge-circuit .town-stage-lights").count(),2,"Two lamp-light elements exist INSIDE the repair diagram");
