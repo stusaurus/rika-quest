@@ -47,12 +47,28 @@ if(online){
   await new Promise(resolve=>setTimeout(resolve,3000));
  }while(true);
  assert.ok(verified,"The anonymous online URL must serve the unchanged game payload, not a sign-in or interstitial page; status "+lastStatus);
- const downloadable=await fetch(new URL('akari-mission1-complete.html',online),{redirect:'manual'});
+ writeFileSync(`${out}/online-preflight.json`,JSON.stringify(onlineVerification,null,2));
+ // The static host can canonicalize .html to its extensionless route. Follow
+ // only same-origin redirects, without credentials; the final payload must
+ // still match every game byte. A sign-in redirect cannot pass this check.
+ let downloadURL=new URL('akari-mission1-complete.html',online);
+ const downloadRedirects=[];
+ let downloadable;
+ for(let hop=0;hop<4;hop++){
+  downloadable=await fetch(downloadURL,{redirect:'manual'});
+  if(![301,302,303,307,308].includes(downloadable.status))break;
+  const location=downloadable.headers.get('location');assert.ok(location);
+  const next=new URL(location,downloadURL);
+  assert.equal(next.origin,new URL(online).origin,'The download must not redirect to an account service');
+  downloadRedirects.push({status:downloadable.status,from:downloadURL.href,to:next.href});
+  console.log('Public download redirect',downloadable.status,downloadURL.href,'to',next.href);
+  downloadURL=next;
+ }
  const downloadProof=publicHTMLProof(bytes,Buffer.from(await downloadable.arrayBuffer()));
  assert.equal(downloadable.status,200);assert.ok(downloadProof.matches,'The public download contains the same mission-1-only game');
  const robots=await fetch(new URL('robots.txt',online),{redirect:'manual'});
  assert.equal(robots.status,200);assert.equal((await robots.text()).trim(),'User-agent: *\nDisallow: /');
- onlineVerification.download={status:downloadable.status,...downloadProof};
+ onlineVerification.download={status:downloadable.status,url:downloadURL.href,redirects:downloadRedirects,...downloadProof};
  onlineVerification.robots='User-agent: *; Disallow: /';
  transports.push(["online",online]);
 }
