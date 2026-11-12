@@ -37,6 +37,7 @@ try{
    const connect=async(a,b)=>{await tap(a);await tap(b);};
    const reset=async()=>{await page.locator("#resetBtn").click();await page.locator(".painted-bulb-image").waitFor();};
    const state=async(lit,short=false)=>{
+    await page.evaluate(()=>new Promise((resolve,reject)=>{const i=new Image();i.onload=resolve;i.onerror=reject;i.src=document.querySelector('.painted-bulb-image').getAttribute('href');}));
     const actual=await page.evaluate(()=>{
      const board=document.querySelector(".circuit-board");
      return {lit:board.classList.contains("is-lit"),short:board.classList.contains("is-short"),
@@ -78,6 +79,12 @@ try{
    assert.ok(layout.hud.includes("hud-panel.webp"),"The generated HUD art must be in the real game");
    await snapshot("painted-start");
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-dark.png",animations:"disabled"});
+   if(width<741){
+    await page.locator("[data-zoom]").click();await page.locator('[data-view="bulb"]').click();
+    const zoom=await page.evaluate(()=>{const b=document.querySelector('.circuit-board').getBoundingClientRect(),p=document.querySelector('[data-t="R"]').getBoundingClientRect();return{left:b.left,right:b.right,x:p.x+p.width/2};});
+    assert.ok(zoom.x>=zoom.left&&zoom.x<=zoom.right,"Enlarged bulb contact remains reachable");
+    await page.locator("[data-zoom]").click();
+   }
    // One wire is not a loop.
    await connect("P","L");await state(false);
    await connect("R","N");await state(true);await snapshot("painted-lit");

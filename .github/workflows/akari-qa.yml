@@ -72,16 +72,44 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: akari-playable-preview
-          path: |
-            artifacts/akari-preview.html
-            artifacts/akari-mission1-painted.html
+          path: artifacts/akari-preview.html
           if-no-files-found: error
-      - name: Verify painted mission 1 art and scientific interactions
-        run: node scripts/test-akari-painted.mjs
       - name: Save diagnostic screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: akari-visual-qa
+          path: artifacts/akari/
+          if-no-files-found: ignore
+  painted-mission1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install matching Playwright client
+        run: npm install --no-save --no-audit --no-fund playwright@1.56.1
+      - name: Build identical offline art preview
+        env:
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build-akari-preview.mjs
+      - name: Operate painted mission 1 in Chromium and WebKit
+        run: node scripts/test-akari-painted.mjs
+      - name: Upload painted playable preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-mission1-painted-preview
+          path: artifacts/akari-mission1-painted.html
+          if-no-files-found: error
+      - name: Upload painted comparison and operation screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-mission1-painted-qa
           path: artifacts/akari/
           if-no-files-found: ignore

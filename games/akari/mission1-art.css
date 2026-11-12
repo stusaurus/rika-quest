@@ -56,9 +56,15 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  display:flex!important;align-items:center;justify-content:space-between;gap:8px;
  padding:0 4px!important;margin:0 0 8px!important;min-height:44px!important;
  background:none!important;border:0!important;box-shadow:none!important;
+ flex-wrap:nowrap!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
  display:block!important;flex:1 1 190px!important;color:#f2dfb9!important;font-size:15px!important;
+ min-width:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn{
+ position:static!important;inset:auto!important;width:auto!important;min-width:96px!important;
+ flex:0 0 auto!important;transform:none!important;margin-left:auto!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .circuit-board.circuit-town-board{
  min-height:0!important;height:auto!important;overflow:hidden;
@@ -130,9 +136,9 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag.battery-tag{left:28%!important;top:31%!important}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag.bulb-tag{left:78%!important;top:0!important}
-html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip-list{top:calc(var(--painted-village-height) + 8px);max-width:60%}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip-list{top:calc(var(--painted-village-height) + 8px);left:12px;right:auto;max-width:60%}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip{
- background:#153a42eb!important;color:#ffedc8;border:1px solid #cdaf7a;min-height:32px;
+ background:#153a42eb!important;color:#ffedc8;border:1px solid #cdaf7a;min-height:44px;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board .circuit-help{
  background:#173b40ed!important;color:#ffedcc!important;border:1px solid #c3a46e!important;
@@ -148,6 +154,8 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.journal,.feedback){
  color:#efe2c5!important;border:1px solid #6f8d83!important;background:#15323c!important;box-shadow:none!important;
 }
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .journal summary{color:#f3e8ce!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .journal-count{background:#234d54!important;color:#e0eddc!important}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row .btn{
  min-height:44px!important;background:#183c43!important;border:1px solid #8da18a!important;
  color:#fae9c8!important;box-shadow:0 3px 0 #081e29!important;border-radius:10px!important;
@@ -191,7 +199,7 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-live-state{font-size:10px;right:8px}
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-place{font-size:10px;left:8px}
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag{font-size:10px!important;padding:3px 8px!important}
- html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip{min-height:32px;padding:3px 7px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip{min-height:44px;padding:3px 7px}
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board .circuit-help{font-size:10px!important;padding:5px!important}
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-choices{grid-template-columns:1fr!important}
 }
