@@ -36,6 +36,7 @@
   return '<div class="painted-world" aria-hidden="true">'+
    '<div class="painted-village"><img class="painted-world-dark" src="'+images.villageDark+'" alt="" width="1536" height="456" draggable="false">'+
    '<img class="painted-world-lit" style="opacity:0" src="'+images.villageLit+'" alt="" width="1536" height="456" draggable="false">'+
+   '<span class="painted-village-revival" aria-hidden="true"></span>'+
    '<span class="painted-place">ひかりの村</span><span class="painted-live-state">'+
    '<span class="painted-off-label">あかりを ともそう</span><span class="painted-on-label">ひかりが もどった！</span></span></div>'+
    '<div class="painted-desk"></div></div>';
