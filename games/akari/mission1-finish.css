@@ -80,7 +80,8 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  padding:5px 12px!important;min-height:46px!important;margin:0 0 -2px!important;
  border:2px solid #be9b62!important;border-bottom:0!important;
  border-radius:14px 14px 0 0!important;
- background:linear-gradient(90deg,#142f37fa,#28504df2),var(--mission1-hud) center/cover!important;
+ background-image:linear-gradient(90deg,#142f37fa,#28504df2),url("./assets/mission1/hud-panel.webp")!important;
+ background-size:cover,100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
  box-shadow:inset 0 1px 0 #f3cb9255!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
