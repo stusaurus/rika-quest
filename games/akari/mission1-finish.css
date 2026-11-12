@@ -272,6 +272,27 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  from{opacity:0;filter:brightness(1.8);translate:0 16px}
  to{opacity:1;filter:brightness(1);translate:0 0}
 }
+/* On wide screens a fixed four-slot game HUD prevents browser-specific
+   flex wrapping from turning the mission title into stacked website cards. */
+@media(min-width:741px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto auto!important;
+  grid-template-rows:auto!important;align-items:center!important;
+  min-height:74px!important;padding:8px 16px!important;column-gap:10px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head>div:first-child{
+  grid-column:1;grid-row:1;min-width:0;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head #readingToggle{grid-column:2;grid-row:1}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head .quest-stars{grid-column:3;grid-row:1}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head .scene-progress{grid-column:4;grid-row:1}
+}
 @media(max-width:740px){
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
   height:46px!important;min-height:46px!important;padding-inline:8px!important;
