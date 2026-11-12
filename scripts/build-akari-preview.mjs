@@ -41,12 +41,16 @@ const freeLabModel=readFileSync("games/akari/free-lab-model.js","utf8");
 const freeLab=readFileSync("games/akari/free-lab.js","utf8");
 const shortEffects=readFileSync("games/akari/short-effects.js","utf8");
 const cinematicLayoutJs=readFileSync("games/akari/cinematic-layout.js","utf8");
+const paintedCss=readFileSync("games/akari/mission1-art.css","utf8");
+const paintedArt=readFileSync("games/akari/mission1-art.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
  return source.replace(what,withText);
 }
 function inlineScript(source){return "<script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./mission1-art.css?v=1">',"<style>\n"+paintedCss+"\n</style>");
+output=replaceOne(output,'<script src="./mission1-art.js?v=1" defer></script>',inlineScript(paintedArt));
 output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./reference-layout.css">',"<style>\n"+referenceCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css?v=4690ff5">',"<style>\n"+wireCss+"\n</style>");
@@ -100,3 +104,18 @@ output=output.replace("<title>あかりクエスト | Rika Quest</title>","<titl
 mkdirSync("artifacts",{recursive:true});
 writeFileSync("artifacts/akari-preview.html",output,"utf8");
 console.log("Created standalone playable HTML:",Buffer.byteLength(output),"bytes");
+
+// Embed the exact production assets, including CSS textures and SVG <image>
+// hrefs. This preview must be genuinely playable offline with no art downgrade.
+let paintedOutput=output;
+for(const name of ["battery","bulb-dark","bulb-lit","hud-panel","village-dark","village-lit","workbench"]){
+ const relative="./assets/mission1/"+name+".webp";
+ const bytes=readFileSync("games/akari/assets/mission1/"+name+".webp");
+ paintedOutput=paintedOutput.replaceAll(relative,"data:image/webp;base64,"+bytes.toString("base64"));
+}
+writeFileSync("artifacts/akari-preview.html",paintedOutput,"utf8");
+paintedOutput=paintedOutput.replace('new URLSearchParams(location.search).get("visual")==="painted"',
+ '(new URLSearchParams(location.search).get("visual")||"painted")==="painted"');
+if(paintedOutput.includes('./assets/mission1/'))throw new Error("Painted preview contains an external image reference");
+writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
+console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");
