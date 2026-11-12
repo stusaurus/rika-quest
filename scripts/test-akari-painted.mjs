@@ -119,6 +119,11 @@ try{
      "The actual village has one noninteractive restoration light");
    assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"0",
      "The restoration glow is OFF before a closed circuit");
+   assert.equal(await page.locator(".quest-panel").evaluate(el=>getComputedStyle(el).backgroundColor),
+     "rgba(0, 0, 0, 0)",
+     "The reasoning and journal should not sit on a pale website-colored sheet");
+   assert.equal(await page.locator(".quest-panel").evaluate(el=>getComputedStyle(el).backgroundImage),"none",
+     "The game stage, objectives and discoveries must share the same world background");
    const layout=await page.evaluate(()=>{
     const inner=document.querySelector(".circuit-inner"),r=inner.getBoundingClientRect();
     const expected={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
@@ -201,7 +206,10 @@ try{
    await page.locator('[data-first-reason="cut"]').click();
    assert.equal(await page.locator("#nextBtn").isVisible(),false);
    await page.locator('[data-first-reason="loop"]').click();
-   await page.locator("#nextBtn").waitFor({state:"visible"});await snapshot("painted-complete");
+   await page.locator("#nextBtn").waitFor({state:"visible"});
+   assert.ok((await page.locator("#discovery").evaluate(el=>getComputedStyle(el).backgroundImage)).includes("hud-panel.webp"),
+     "The discovery reward uses the same painted game HUD instead of a separate worksheet card");
+   await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
    assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),0,"Pilot MUST stop at mission 1");
