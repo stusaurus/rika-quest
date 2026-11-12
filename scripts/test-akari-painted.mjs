@@ -105,7 +105,8 @@ try{
    assert.ok(finishHud.quest.height<=105,"Mission title remains compact even with real HUD texture: "+JSON.stringify(finishHud));
    assert.ok(finishHud.tools.bottom<=finishHud.board.top+8,
      "The live instruction belongs directly to the physical stage, not a detached webpage card");
-   assert.ok(finishHud.tools.bg.includes("hud-panel.webp"),"The actual interactive toolbar reuses the painted HUD asset");
+   assert.ok(finishHud.tools.bg.includes("hud-panel.webp"),
+     "The actual interactive toolbar reuses the painted HUD asset: "+JSON.stringify({painted:page.url(),actual:finishHud.tools.bg.slice(0,600)}));
    assert.equal(finishHud.contacts.length,4);
    assert.ok(finishHud.contacts.every(c=>c.width>=44&&c.height>=44&&c.metal.includes("gradient")&&
      c.aria&&c.metalWidth==="32px"&&c.mark!=="none"),
