@@ -1,6 +1,15 @@
 /* Mission 1, final visual-system pass. Existing WebP art is the art source;
    this file composes its REAL controls into one coherent game surface.
    Every selector is opt-in, only while mission 1 is actually active. */
+/* Full-page captures and long scrolls must never reveal the white canvas
+   beyond the first mobile viewport when the source image uses fixed sizing. */
+html.akari-painted:has(body[data-painted-mission="1"]){
+ background:#0b2431!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{
+ background-color:#0b2431!important;
+ background-attachment:scroll!important;
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{
  --mission1-brass:#d7b883;--mission1-ink:#102d38;--mission1-parchment:#f8ebcd;
  --mission1-hud:url("./assets/mission1/hud-panel.webp");
