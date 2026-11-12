@@ -480,3 +480,29 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
   animation:none!important;
  }
 }
+/* Narrow phones must keep the map control in the real header row. A fixed
+   46px header with wrapping children previously placed it over MISSION 01. */
+@media(max-width:360px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
+  flex-wrap:nowrap!important;gap:3px!important;padding-inline:5px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{
+  flex:1 1 auto!important;min-width:0;max-width:none!important;
+  padding:0!important;font-size:11px!important;white-space:nowrap;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand-symbol{
+  font-size:17px!important;margin-right:3px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .top-actions{
+  flex:0 0 auto;flex-wrap:nowrap;gap:3px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .star-count{
+  font-size:12px!important;padding:3px 4px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar #sidebar{
+  flex:0 0 auto!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar .map-toggle{
+  width:44px!important;min-width:44px!important;padding:4px!important;font-size:11px!important;
+ }
+}

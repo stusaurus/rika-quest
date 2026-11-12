@@ -59,6 +59,14 @@ async function operate(browser,engine,width,height,transport,url){
  const snap=async state=>{
   if(transport==="file")return;
   await p.evaluate(()=>scrollTo(0,0));
+  const header=await p.locator('.topbar').evaluate(el=>{
+   const h=el.getBoundingClientRect();return{top:h.top,bottom:h.bottom,
+    buttons:[...el.querySelectorAll('#soundBtn,#helpBtn,#mapToggle')].map(b=>{
+     const r=b.getBoundingClientRect();return{id:b.id,top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};
+    })};
+  });
+  assert.ok(header.buttons.every(b=>b.width>=44&&b.height>=44&&b.top>=header.top-2&&b.bottom<=header.bottom+2&&b.left>=0&&b.right<=width),
+   `Header overlap in ${engine}/${width}/${transport}/${state}: `+JSON.stringify(header));
   await p.screenshot({path:`${out}/${engine}-${width}-${transport}-${state}.png`,fullPage:true,animations:"disabled"});
  };
  const press=async t=>{const button=p.locator(`[data-t="${t}"]`);if(width<741)await button.tap();else await button.click();};

@@ -96,7 +96,9 @@ try{
        board=document.querySelector(".circuit-board"),points=[...document.querySelectorAll(".circuit-inner .terminal")],
        m=document.querySelector(".topbar");
      const summarize=el=>{const r=el.getBoundingClientRect(),st=getComputedStyle(el);return {top:r.top,bottom:r.bottom,height:r.height,bg:st.backgroundImage};};
-     return {header:summarize(m),quest:summarize(q),tools:{...summarize(tools),
+     return {header:summarize(m),headerButtons:[...m.querySelectorAll('#soundBtn,#helpBtn,#mapToggle')].map(el=>{
+       const r=el.getBoundingClientRect();return{id:el.id,top:r.top,bottom:r.bottom,width:r.width,height:r.height};
+     }),quest:summarize(q),tools:{...summarize(tools),
        parent:tools.parentElement?.id,rootMatches:tools.matches('html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar'),
        border:getComputedStyle(tools).borderTopColor,
        rule:[...document.styleSheets].flatMap(sheet=>{try{return [...sheet.cssRules].filter(rule=>rule.selectorText?.includes('mission1')&&rule.selectorText?.includes('circuit-toolbar')).slice(-2).map(rule=>rule.cssText.slice(0,350));}catch{return[]}}).slice(-3)
@@ -106,6 +108,8 @@ try{
            width:r.width,height:r.height,metal:before.backgroundImage,metalWidth:before.width,mark:after.content};})};
    });
    assert.ok(finishHud.header.height<=54,"Game chrome takes less space than the experiment: "+JSON.stringify(finishHud));
+   assert.ok(finishHud.headerButtons.every(b=>b.width>=44&&b.height>=44&&b.top>=finishHud.header.top-2&&b.bottom<=finishHud.header.bottom+2),
+     "All header controls stay in the header instead of wrapping over the mission: "+JSON.stringify(finishHud.headerButtons));
    assert.ok(finishHud.quest.height<=105,"Mission title remains compact even with real HUD texture: "+JSON.stringify(finishHud));
    assert.ok(finishHud.tools.bottom<=finishHud.board.top+8,
      "The live instruction belongs directly to the physical stage, not a detached webpage card");
