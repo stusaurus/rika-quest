@@ -219,13 +219,16 @@ try{
    assert.equal(await page.locator("#discovery .discovery-more").evaluate(el=>el.open),true,
      "The in-world discovery remains an actual expandable, readable explanation");
    await page.locator("#discovery .discovery-more>summary").click();
-   const clearPlakat=await page.evaluate(()=>{
+   const clearPlakat=await page.evaluate(async()=>{
+     scrollTo(0,0);
+     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
      const banner=document.getElementById("stageCelebration").getBoundingClientRect();
      const bulb=document.querySelector(".painted-bulb-image").getBoundingClientRect();
-     return {bannerBottom:banner.bottom,bulbTop:bulb.top};
+     return {bannerBottom:banner.bottom,bulbTop:bulb.top,
+       bannerPointerEvents:getComputedStyle(document.getElementById("stageCelebration")).pointerEvents};
    });
-   assert.ok(clearPlakat.bannerBottom<clearPlakat.bulbTop,
-     "Victory reward must not obscure the lit bulb: "+JSON.stringify(clearPlakat));
+   assert.ok(clearPlakat.bannerBottom<clearPlakat.bulbTop&&clearPlakat.bannerPointerEvents==="none",
+     "Victory reward must not obscure the lit bulb or intercept input: "+JSON.stringify(clearPlakat));
    await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
