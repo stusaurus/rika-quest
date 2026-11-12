@@ -1,4 +1,5 @@
 import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
+import {createHash} from "node:crypto";
 const html=readFileSync("games/akari/index.html","utf8");
 const css=readFileSync("games/akari/style.css","utf8");
 const polish=readFileSync("games/akari/design-polish.css","utf8");
@@ -127,6 +128,31 @@ writeFileSync("artifacts/akari-preview.html",paintedOutput,"utf8");
 paintedOutput=paintedOutput.replace('new URLSearchParams(location.search).get("visual")==="painted"',
  '(new URLSearchParams(location.search).get("visual")||"painted")==="painted"');
 paintedOutput=paintedOutput.replace(/(https:\/\/rawcdn\.githack\.com\/stusaurus\/rika-quest\/[a-f0-9]+\/games\/akari\/index\.html)(?=")/g,"$1?visual=painted");
+// A file viewer is not necessarily a JavaScript-capable browser. Give that
+// route a real online alternative without diagnosing the user's device.
+const reviewURL=process.env.AKARI_REVIEW_URL;
+if(reviewURL){
+ const parsed=new URL(reviewURL);
+ if(parsed.protocol!=="https:"||parsed.username||parsed.password||/["<>]/.test(reviewURL)){
+  throw new Error("AKARI_REVIEW_URL must be an ordinary HTTPS review URL");
+ }
+ paintedOutput=paintedOutput.replace(/<div id="startupFallback"[\s\S]*?<\/div>/,
+  '<div id="startupFallback" class="startup-fallback" role="status"><strong>実験画面が 表示されないとき</strong><p>オンライン試遊版を、ChromeやSafariなどのブラウザで ひらいてください。</p><a class="startup-open-web" href="'+parsed.href+'" target="_blank" rel="noopener noreferrer">オンライン試遊版を ひらく ↗</a><small>ファイルのプレビューでは、ゲームのプログラムが動かないことがあります。</small></div>');
+}
+paintedOutput=paintedOutput.replace("</head>",'<meta name="robots" content="noindex,nofollow">\n</head>');
 if(paintedOutput.includes('./assets/mission1/'))throw new Error("Painted preview contains an external image reference");
 writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
 console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");
+// Online and downloaded review routes use IDENTICAL bytes and the real engine.
+// No loader, iframe, mock UI, dependency CDN, or second implementation.
+mkdirSync("artifacts/akari-review",{recursive:true});
+for(const name of ["index.html","akari-mission1-complete.html"]){
+ writeFileSync("artifacts/akari-review/"+name,paintedOutput,"utf8");
+}
+writeFileSync("artifacts/akari-review/robots.txt","User-agent: *\nDisallow: /\n");
+writeFileSync("artifacts/akari-review/build-manifest.json",JSON.stringify({
+ sourceCommit:previewCommit||null,
+ htmlSha256:createHash("sha256").update(paintedOutput).digest("hex"),
+ reviewURL:reviewURL||null,
+ designScope:"mission-1-only",
+},null,2)+"\n");

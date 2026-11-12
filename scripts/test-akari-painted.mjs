@@ -39,7 +39,7 @@ function visibleCutStroke(path){
  throw new Error('No visible wire-cut stroke avoids the actual control buttons: '+board.getBoundingClientRect().toJSON());
 }
 try{
- for(const [engine,width,height] of [["chromium",320,740],["chromium",390,844],["chromium",1440,1000],["webkit",390,844],["webkit",1440,1000]]){
+ for(const [engine,width,height] of [["chromium",320,740],["chromium",390,844],["chromium",1440,1000],["webkit",320,740],["webkit",390,844],["webkit",1440,1000]]){
   const browser=await (engine==="webkit"?webkit:chromium).launch({headless:true});
   try{
    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:"reduce",hasTouch:width<741,isMobile:width<741});
@@ -153,7 +153,7 @@ try{
     await page.locator("[data-zoom]").click();
    }
    // One wire is not a loop.
-   await connect("P","L");await state(false);
+   await connect("P","L");await state(false);await snapshot("painted-one-wire");
    await connect("R","N");await state(true);
    assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"1",
      "The village's new glow only appears after a genuine circuit");
@@ -166,7 +166,7 @@ try{
    assert.equal(await page.locator(".wire.lit").first().evaluate(el=>getComputedStyle(el).stroke),"rgb(52, 139, 150)","Only the measured bulb is luminous; the insulated wire keeps its material");
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-lit.png",animations:"disabled"});
    // Cutting a real connected wire immediately extinguishes the scene.
-   await page.locator("[data-unwire]").first().click();await state(false);
+   await page.locator("[data-unwire]").first().click();await state(false);await snapshot("painted-cut");
    assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"0",
      "Cutting a necessary wire immediately extinguishes the village restoration glow");
    // A battery short never lights the bulb, even alongside a closed lamp loop.
@@ -205,6 +205,7 @@ try{
    // The explanation stays with the experiment; wrong reasons cannot complete it.
    await page.locator('[data-first-reason="cut"]').click();
    assert.equal(await page.locator("#nextBtn").isVisible(),false);
+   await snapshot("painted-reason");
    await page.locator('[data-first-reason="loop"]').click();
    await page.locator("#nextBtn").waitFor({state:"visible"});
    assert.ok((await page.locator("#discovery").evaluate(el=>getComputedStyle(el).backgroundImage)).includes("hud-panel.webp"),

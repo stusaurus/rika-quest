@@ -8,6 +8,7 @@ on:
       - 'scripts/test-akari-browser.mjs'
       - 'scripts/test-akari-cinematic.mjs'
       - 'scripts/test-akari-painted.mjs'
+      - 'scripts/test-akari-delivery.mjs'
       - 'scripts/build-akari-art-baseline.mjs'
       - 'scripts/build-akari-preview.mjs'
       - '.github/workflows/akari-qa.yml'
@@ -47,6 +48,7 @@ jobs:
           node --check scripts/test-akari-browser.mjs
           node --check scripts/test-akari-cinematic.mjs
           node --check scripts/test-akari-painted.mjs
+          node --check scripts/test-akari-delivery.mjs
           node --check scripts/build-akari-preview.mjs
       - name: Check switch circuit regression cases
         run: node --test tests/akari-switch-focus.test.cjs
@@ -67,6 +69,7 @@ jobs:
         if: always()
         env:
           AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+          AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
         run: node scripts/build-akari-preview.mjs
       - name: Upload playable preview
         if: always()
@@ -97,6 +100,7 @@ jobs:
       - name: Build identical offline art preview
         env:
           AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+          AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
         run: node scripts/build-akari-preview.mjs
       - name: Prepare immutable PR35 art comparison
         run: |
@@ -118,3 +122,30 @@ jobs:
           name: akari-mission1-painted-qa
           path: artifacts/akari/
           if-no-files-found: ignore
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    env:
+      AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install matching Playwright client
+        run: npm install --no-save --no-audit --no-fund playwright@1.56.1
+      - name: Build identical online and offline review
+        env:
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build-akari-preview.mjs
+      - name: Operate delivered HTML over file and HTTP, including saves
+        run: node scripts/test-akari-delivery.mjs
+      - name: Save delivery results and actual game screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-delivery-qa
+          path: artifacts/akari-delivery/
+          if-no-files-found: error
