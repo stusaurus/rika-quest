@@ -71,6 +71,27 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  background:linear-gradient(#355f5d,#214049)!important;
  color:#ffeed0!important;box-shadow:0 2px 0 #0b2028!important;
 }
+/* Eliminate the underlying pale webpage sheet from the lesson.
+   Stage, question, actions and observations all live over the SAME dusk world. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-panel{
+ background:transparent!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;padding:0!important;overflow:visible!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery{
+ margin:8px 4px 0!important;padding:12px 17px!important;
+ border:2px solid #c2a36c!important;border-radius:14px!important;
+ background:linear-gradient(120deg,#173e42ef,#122e3cef),url("./assets/mission1/hud-panel.webp") center/cover no-repeat!important;
+ color:#f5e4c4!important;box-shadow:inset 0 1px 0 #f5d79b55,0 5px 12px #071a288e!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery .discovery-badge{
+ color:#ffe09c!important;text-shadow:0 1px 3px #061b24;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery :is(summary,p){
+ color:#fff0cd!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery summary{
+ min-height:44px;display:flex;align-items:center;
+}
 /* The real scene, interactive toolbar and science question read as one
    handcrafted instrument; decorative art is never an inert screenshot. */
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace{
