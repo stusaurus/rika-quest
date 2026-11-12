@@ -157,17 +157,22 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
    or wires. The persistent in-game feedback and Next button remain visible. */
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
  #stageCelebration:not([hidden]){
- top:clamp(135px,16vh,185px)!important;max-width:280px!important;
- padding:11px 14px!important;min-height:0!important;
+ top:190px!important;width:min(305px,calc(100vw - 32px))!important;max-width:305px!important;
+ padding:9px 12px!important;min-height:56px!important;
+ display:flex!important;align-items:center;justify-content:center;flex-wrap:wrap;
+ gap:6px!important;white-space:normal;line-height:1.25!important;
  animation:mission1-reward-burst 2.1s cubic-bezier(.16,.85,.22,1) forwards!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
  #stageCelebration strong{
- font-size:clamp(14px,2vw,18px)!important;
+ font-size:clamp(14px,2vw,18px)!important;line-height:1.3!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration .celebration-sparks{
+ display:none!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
  #stageCelebration .celebration-stars{
- font-size:29px!important;line-height:1.1!important;
+ font-size:23px!important;line-height:1.1!important;letter-spacing:1px!important;
 }
 @keyframes mission1-reward-burst{
  0%{opacity:0;scale:.88;filter:brightness(1.85)}
@@ -360,7 +365,7 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  padding:11px 14px;color:#f7e5bb!important;min-height:44px;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration:not([hidden]){
- position:fixed!important;top:clamp(135px,16vh,185px)!important;left:50%!important;
+ position:fixed!important;top:190px!important;left:50%!important;
  transform:translateX(-50%)!important;width:min(335px,calc(100vw - 34px))!important;
  padding:11px 14px!important;border:3px solid #f7d390!important;border-radius:18px!important;
  background:linear-gradient(#1b4d50ed,#142e3bef),var(--mission1-hud) center/cover!important;
@@ -396,6 +401,10 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  .main.town-immersive .quest-head .quest-stars{grid-column:3;grid-row:1}
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
  .main.town-immersive .quest-head .scene-progress{grid-column:4;grid-row:1}
+}
+@media(min-width:741px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration:not([hidden]){top:234px!important}
 }
 @media(max-width:740px){
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
