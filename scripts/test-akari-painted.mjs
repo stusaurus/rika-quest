@@ -209,6 +209,23 @@ try{
    await page.locator("#nextBtn").waitFor({state:"visible"});
    assert.ok((await page.locator("#discovery").evaluate(el=>getComputedStyle(el).backgroundImage)).includes("hud-panel.webp"),
      "The discovery reward uses the same painted game HUD instead of a separate worksheet card");
+   const discovery=await page.locator("#discovery .discovery-more>summary").evaluate(el=>{
+     const r=el.getBoundingClientRect(),c=getComputedStyle(el);
+     return {height:r.height,color:c.color,bg:c.backgroundImage};
+   });
+   assert.ok(discovery.height>=44&&discovery.color==="rgb(255, 241, 206)"&&discovery.bg.includes("gradient"),
+     "The optional discovery remains visibly readable and thumb-tappable: "+JSON.stringify(discovery));
+   await page.locator("#discovery .discovery-more>summary").click();
+   assert.equal(await page.locator("#discovery .discovery-more").evaluate(el=>el.open),true,
+     "The in-world discovery remains an actual expandable, readable explanation");
+   await page.locator("#discovery .discovery-more>summary").click();
+   const clearPlakat=await page.evaluate(()=>{
+     const banner=document.getElementById("stageCelebration").getBoundingClientRect();
+     const bulb=document.querySelector(".painted-bulb-image").getBoundingClientRect();
+     return {bannerBottom:banner.bottom,bulbTop:bulb.top};
+   });
+   assert.ok(clearPlakat.bannerBottom<clearPlakat.bulbTop,
+     "Victory reward must not obscure the lit bulb: "+JSON.stringify(clearPlakat));
    await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
@@ -255,6 +272,9 @@ try{
    const press=async t=>{const b=p.locator('[data-t="'+t+'"]');if(width<741)await b.tap();else await b.click();};
    for(const t of ['P','L','R','N'])await press(t);
    await p.waitForFunction(()=>document.querySelector('.painted-light-enter'));
+   assert.equal(await p.locator(".painted-world-lit").evaluate(el=>getComputedStyle(el).animationName),
+     "mission1-town-awakens",
+     "The physical lamp reveals the powered town with its original light artwork");
    await p.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.painted-light-pool')).opacity)===1);
    await p.locator('[data-unwire]').first().click();
    assert.equal(await p.locator('.painted-light-pool').evaluate(el=>getComputedStyle(el).opacity),'0','Light disappears immediately on cutting, without a lingering animation');
