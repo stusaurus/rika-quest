@@ -66,6 +66,18 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  position:static!important;inset:auto!important;width:auto!important;min-width:96px!important;
  flex:0 0 auto!important;transform:none!important;margin-left:auto!important;
 }
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn::after{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav){
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-question{grid-column:1/-1}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav{
+ display:flex;gap:6px;margin:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav button{
+ min-height:44px!important;background:#183d47!important;color:#f5e8cb!important;
+ border:1px solid #9ca18b!important;box-shadow:none!important;font-size:12px!important;
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .circuit-board.circuit-town-board{
  min-height:0!important;height:auto!important;overflow:hidden;
  background:#774b31!important;border:3px solid #ae8c59!important;border-radius:16px!important;
@@ -105,6 +117,8 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed{
  overflow-x:auto!important;
 }
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .painted-world{width:max(100%,640px)}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .circuit-help{display:none!important}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .circuit-inner{
  width:640px!important;max-width:none!important;position:relative!important;left:auto!important;top:auto!important;
  margin:var(--painted-village-height) auto 40px!important;transform:none!important;

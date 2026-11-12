@@ -81,8 +81,11 @@ try{
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-dark.png",animations:"disabled"});
    if(width<741){
     await page.locator("[data-zoom]").click();await page.locator('[data-view="bulb"]').click();
-    const zoom=await page.evaluate(()=>{const b=document.querySelector('.circuit-board').getBoundingClientRect(),p=document.querySelector('[data-t="R"]').getBoundingClientRect();return{left:b.left,right:b.right,x:p.x+p.width/2};});
+    const zoom=await page.evaluate(()=>{const board=document.querySelector('.circuit-board'),b=board.getBoundingClientRect(),p=document.querySelector('[data-t="R"]').getBoundingClientRect();return{left:b.left,right:b.right,x:p.x+p.width/2,art:board.querySelector('.painted-world').getBoundingClientRect().width,content:board.scrollWidth,overflow:document.documentElement.scrollWidth-innerWidth};});
     assert.ok(zoom.x>=zoom.left&&zoom.x<=zoom.right,"Enlarged bulb contact remains reachable");
+    assert.ok(zoom.art>=zoom.content-2,"Painted workbench covers the entire enlarged play area");
+    assert.ok(zoom.overflow<=2,"Zooming must not turn the page into a horizontal scroller");
+    await snapshot("painted-zoom");
     await page.locator("[data-zoom]").click();
    }
    // One wire is not a loop.
