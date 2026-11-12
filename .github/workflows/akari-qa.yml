@@ -100,7 +100,7 @@ jobs:
         run: node scripts/build-akari-preview.mjs
       - name: Prepare immutable PR35 art comparison
         run: |
-          git fetch --depth=1 origin bec6d99f67f40818266c855e7ee28435ade0be78
+          git -c safe.directory="$GITHUB_WORKSPACE" fetch --depth=1 origin bec6d99f67f40818266c855e7ee28435ade0be78
           node scripts/build-akari-art-baseline.mjs
       - name: Operate painted mission 1 in Chromium and WebKit
         run: node scripts/test-akari-painted.mjs

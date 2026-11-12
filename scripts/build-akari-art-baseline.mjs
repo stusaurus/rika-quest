@@ -6,6 +6,6 @@ import {resolve} from "node:path";
 const ref="bec6d99f67f40818266c855e7ee28435ade0be78";
 const directory=resolve("artifacts/akari-art-baseline");
 mkdirSync(directory,{recursive:true});
-const archive=execFileSync("git",["archive","--format=tar",ref,"games/akari"],{maxBuffer:32*1024*1024});
+const archive=execFileSync("git",["-c","safe.directory="+process.cwd(),"archive","--format=tar",ref,"games/akari"],{maxBuffer:32*1024*1024});
 execFileSync("tar",["-x","-C",directory],{input:archive,maxBuffer:1024*1024});
 console.log("Prepared real mission 1 baseline:",ref);
