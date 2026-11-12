@@ -110,7 +110,7 @@ try{
    assert.ok(finishHud.tools.bottom<=finishHud.board.top+8,
      "The live instruction belongs directly to the physical stage, not a detached webpage card");
    assert.ok(finishHud.tools.bg.includes("hud-panel.webp"),
-     "The actual interactive toolbar reuses the painted HUD asset: "+JSON.stringify({painted:page.url(),actual:finishHud.tools.bg.slice(0,600)}));
+     "The actual interactive toolbar reuses the painted HUD asset: "+JSON.stringify({...finishHud.tools,questBg:finishHud.quest.bg.slice(0,300),stage:await page.locator("body").getAttribute("data-painted-mission")}));
    assert.equal(finishHud.contacts.length,4);
    assert.ok(finishHud.contacts.every(c=>c.width>=44&&c.height>=44&&c.metal.includes("gradient")&&
      c.aria&&c.metalWidth==="32px"&&c.mark!=="none"),
