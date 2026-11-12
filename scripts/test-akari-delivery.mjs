@@ -134,8 +134,8 @@ async function operate(browser,engine,width,height,transport,url){
   if(trial){
    assert.equal(await p.locator('meta[name="akari-trial-scope"]').getAttribute('content'),'mission-1-only');
    assert.equal(await p.locator('#mapToggle').isVisible(),false);
-   assert.equal(await p.locator('[data-mission]').count(),1);
-   assert.equal(await p.locator('[data-mission]').getAttribute('data-mission'),'1');
+   assert.equal(await p.locator('#missionList [data-mission]').count(),1);
+   assert.equal(await p.locator('#missionList [data-mission]').getAttribute('data-mission'),'1');
    assert.equal(await p.locator('meta[name="robots"]').getAttribute('content'),'noindex,nofollow');
   }
   await p.evaluate(()=>document.fonts.ready);
