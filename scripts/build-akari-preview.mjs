@@ -1,5 +1,6 @@
 import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
 import {createHash} from "node:crypto";
+import {mission1Trial} from "./akari-mission1-trial.mjs";
 const html=readFileSync("games/akari/index.html","utf8");
 const sourceCss=readFileSync("games/akari/style.css","utf8");
 const fontFiles={"Kosugi Maru":"kosugi-maru-game.woff",Nunito:"nunito-latin.woff"};
@@ -151,17 +152,20 @@ paintedOutput=paintedOutput.replace("</head>",'<meta name="robots" content="noin
 if(paintedOutput.includes('./assets/mission1/'))throw new Error("Painted preview contains an external image reference");
 writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
 console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");
-// Online and downloaded review routes use IDENTICAL bytes and the real engine.
-// No loader, iframe, mock UI, dependency CDN, or second implementation.
+// Public review + its downloadable copy are limited to the approved mission.
+// The full 14-mission painted preview above is retained for regression testing.
+const publicTrial=mission1Trial(paintedOutput,game);
 mkdirSync("artifacts/akari-review",{recursive:true});
 for(const name of ["index.html","akari-mission1-complete.html"]){
- writeFileSync("artifacts/akari-review/"+name,paintedOutput,"utf8");
+ writeFileSync("artifacts/akari-review/"+name,publicTrial,"utf8");
 }
 writeFileSync("artifacts/akari-review/robots.txt","User-agent: *\nDisallow: /\n");
 writeFileSync("artifacts/akari-review/font-licenses.txt",Object.entries(fontLicenses).map(([name,text])=>name+"\n\n"+text).join("\n\n"));
 writeFileSync("artifacts/akari-review/build-manifest.json",JSON.stringify({
  sourceCommit:previewCommit||null,
- htmlSha256:createHash("sha256").update(paintedOutput).digest("hex"),
+ htmlSha256:createHash("sha256").update(publicTrial).digest("hex"),
+ fullPreviewHtmlSha256:createHash("sha256").update(paintedOutput).digest("hex"),
  reviewURL:reviewURL||null,
  designScope:"mission-1-only",
+ playableMissions:[1],
 },null,2)+"\n");

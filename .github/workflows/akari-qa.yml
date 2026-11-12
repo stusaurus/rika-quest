@@ -11,6 +11,7 @@ on:
       - 'scripts/test-akari-delivery.mjs'
       - 'scripts/build-akari-art-baseline.mjs'
       - 'scripts/build-akari-preview.mjs'
+      - 'scripts/akari-mission1-trial.mjs'
       - '.github/workflows/akari-qa.yml'
   workflow_dispatch:
     inputs:
@@ -134,7 +135,6 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
     env:
       AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
-      AKARI_DELIVERY_ONLINE_URL: ${{ inputs.online_review_url || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -148,6 +148,21 @@ jobs:
         run: node scripts/build-akari-preview.mjs
       - name: Operate delivered HTML over file and HTTP, including saves
         run: node scripts/test-akari-delivery.mjs
+      - name: Operate the approved public mission in fresh anonymous browsers
+        env:
+          AKARI_TRIAL_MODE: '1'
+          AKARI_DELIVERY_HTML: artifacts/akari-review/index.html
+          AKARI_DELIVERY_OUT: artifacts/akari-public
+          AKARI_DELIVERY_ONLINE_URL: ${{ inputs.online_review_url || 'https://akari-mission1-review-20261112.jyoker.chatgpt.site/' }}
+          AKARI_DELIVERY_WAIT_MS: '180000'
+        run: node scripts/test-akari-delivery.mjs
+      - name: Save public mission screenshots and anonymous operation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-public-mission1-qa
+          path: artifacts/akari-public/
+          if-no-files-found: ignore
       - name: Save delivery results and actual game screenshots
         if: always()
         uses: actions/upload-artifact@v4

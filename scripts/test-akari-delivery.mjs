@@ -7,7 +7,9 @@ import {createHash} from "node:crypto";
 import {chromium,webkit} from "playwright";
 
 // Test the deliverable itself, not only the source page that generated it.
-const root=process.cwd(),out="artifacts/akari-delivery",key="rika-akari-quest-v2";
+const trial=process.env.AKARI_TRIAL_MODE==="1";
+const root=process.cwd(),out=process.env.AKARI_DELIVERY_OUT||"artifacts/akari-delivery";
+const key=trial?"rika-akari-quest-mission1-trial-v2":"rika-akari-quest-v2";
 const htmlPath=process.env.AKARI_DELIVERY_HTML||join(root,"artifacts/akari-mission1-painted.html");
 const bytes=readFileSync(htmlPath),hash=createHash("sha256").update(bytes).digest("hex");
 const origin="http://127.0.0.1:8768",online=process.env.AKARI_DELIVERY_ONLINE_URL;
@@ -16,14 +18,21 @@ const server=createServer((_req,res)=>{
  res.writeHead(200,{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store"});res.end(bytes);
 });
 await new Promise(resolve=>server.listen(8768,"127.0.0.1",resolve));
-const transports=[["http",origin+"/"],["file",pathToFileURL(htmlPath).href]];
+const transports=trial&&online?[]:[["http",origin+"/"],["file",pathToFileURL(htmlPath).href]];
 const results=[],storageResults=[],fallbackResults=[];
 if(online){
  // A login/interstitial page must not be mistaken for a successfully deployed game.
- const response=await fetch(online),actual=Buffer.from(await response.arrayBuffer());
- assert.equal(response.status,200,"Online review URL must serve successfully");
- assert.equal(createHash("sha256").update(actual).digest("hex"),hash,
-  "Online review must serve the tested HTML bytes, not a sign-in, download or interstitial page");
+ const deadline=Date.now()+Number(process.env.AKARI_DELIVERY_WAIT_MS||0);
+ let verified=false,lastStatus;
+ do{
+  const response=await fetch(online,{redirect:"manual"});lastStatus=response.status;
+  const actual=Buffer.from(await response.arrayBuffer());
+  verified=response.status===200&&createHash("sha256").update(actual).digest("hex")===hash;
+  if(verified||Date.now()>=deadline)break;
+  console.log("Waiting for the approved public artifact; status",lastStatus);
+  await new Promise(resolve=>setTimeout(resolve,3000));
+ }while(true);
+ assert.ok(verified,"The anonymous online URL must serve the tested HTML bytes, not a sign-in, download or interstitial page; status "+lastStatus);
  transports.push(["online",online]);
 }
 
@@ -47,6 +56,8 @@ function cutStroke(path){
 async function operate(browser,engine,width,height,transport,url){
  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,
   hasTouch:width<741,isMobile:width<741,reducedMotion:"reduce"});
+ const initialCookies=(await context.cookies()).length;
+ assert.equal(initialCookies,0,"Every browser run starts without an account or cookie session");
  // WebKit 1.56.1 throws an internal navigation error for file:// when its
  // global offline flag is set. Block every possible network request instead;
  // the downloaded file must still run without any remote asset or font.
@@ -63,7 +74,7 @@ async function operate(browser,engine,width,height,transport,url){
    const h=el.getBoundingClientRect();return{top:h.top,bottom:h.bottom,
     buttons:[...el.querySelectorAll('#soundBtn,#helpBtn,#mapToggle')].map(b=>{
      const r=b.getBoundingClientRect();return{id:b.id,top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};
-    })};
+    }).filter(b=>b.width>0&&b.height>0)};
   });
   assert.ok(header.buttons.every(b=>b.width>=44&&b.height>=44&&b.top>=header.top-2&&b.bottom<=header.bottom+2&&b.left>=0&&b.right<=width),
    `Header overlap in ${engine}/${width}/${transport}/${state}: `+JSON.stringify(header));
@@ -83,6 +94,13 @@ async function operate(browser,engine,width,height,transport,url){
   const response=await p.goto(url,{waitUntil:"networkidle"});
   if(transport!=="file")assert.equal(response.status(),200);
   await p.waitForFunction(()=>document.body.dataset.paintedMission==="1");
+  if(trial){
+   assert.equal(await p.locator('meta[name="akari-trial-scope"]').getAttribute('content'),'mission-1-only');
+   assert.equal(await p.locator('#mapToggle').isVisible(),false);
+   assert.equal(await p.locator('[data-mission]').count(),1);
+   assert.equal(await p.locator('[data-mission]').getAttribute('data-mission'),'1');
+   assert.equal(await p.locator('meta[name="robots"]').getAttribute('content'),'noindex,nofollow');
+  }
   await p.evaluate(()=>document.fonts.ready);
   assert.equal(await p.evaluate(()=>document.fonts.check('16px "Kosugi Maru"','あかり')&&document.fonts.check('700 16px "Nunito"','MISSION 01')),true,
    'The original Japanese and Latin typefaces load without a font CDN');
@@ -140,13 +158,21 @@ async function operate(browser,engine,width,height,transport,url){
   await circuit(false);
   for(const t of['P','L','R','N'])await press(t);
   await p.locator('[data-first-reason="loop"]').click();await p.locator('#nextBtn').click();
-  await p.waitForFunction(()=>document.body.dataset.paintedMission==='');
-  assert.equal(await p.locator('.painted-world,.painted-battery,.painted-bulb').count(),0);
-  await p.reload({waitUntil:'networkidle'});
-  assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'2',"Progress persists on the same delivery route");
+  if(trial){
+   await circuit(false);
+   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'1','Replay stays inside the approved mission');
+   await p.reload({waitUntil:'networkidle'});
+   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'1');
+   assert.equal(await p.evaluate(()=>localStorage.getItem('rika-akari-quest-v2')),null,'The public trial never writes the full-game save');
+  }else{
+   await p.waitForFunction(()=>document.body.dataset.paintedMission==='');
+   assert.equal(await p.locator('.painted-world,.painted-battery,.painted-bulb').count(),0);
+   await p.reload({waitUntil:'networkidle'});
+   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'2',"Progress persists on the same delivery route");
+  }
   assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);assert.deepEqual(externalAssets,[]);
-  results.push({engine,width,height,transport,status:'pass',layout,reasonContrast:contrasts,
-   savedVersion:saved.version,checks:['start','one-wire','lit','swipe-cut','short','reason-wrong','reason-correct','complete','reload','stage-2-original']});
+  results.push({engine,width,height,transport,status:'pass',initialCookies,layout,reasonContrast:contrasts,
+   savedVersion:saved.version,checks:['start','one-wire','lit','swipe-cut','short','reason-wrong','reason-correct','complete','reload',trial?'mission-1-only-replay':'stage-2-original']});
   console.log('DELIVERY PASS',engine,width,transport);
  }finally{await context.close();}
 }
@@ -158,29 +184,30 @@ try{
    for(const[width,height]of[[320,740],[390,844],[1440,1000]]){
     for(const[transport,url]of transports)await operate(browser,engine,width,height,transport,url);
    }
-   const fixture={version:2,active:2,completed:{1:3},sound:false,masteries:{2:true},drafts:{},
+   const fixture={version:2,active:trial?14:2,completed:{1:3},sound:false,masteries:{2:true},drafts:{},
     notes:[{mission:1,key:'existing-note',text:'前の実験のきろく'}]};
+   const fixtureURL=trial&&online?online:origin;
    const context=await browser.newContext({viewport:{width:390,height:844}});
    await context.addInitScript(({key,fixture})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(fixture));},{key,fixture});
-   const p=await context.newPage();await p.goto(origin,{waitUntil:'networkidle'});
-   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'2');
-   assert.equal(await p.locator('.painted-world').count(),0);
+   const p=await context.newPage();await p.goto(fixtureURL,{waitUntil:'networkidle'});
+   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),trial?'1':'2');
+   assert.equal(await p.locator('.painted-world').count(),trial?1:0);
    await p.locator('#soundBtn').click();
    const saved=await p.evaluate(key=>JSON.parse(localStorage.getItem(key)),key);
    assert.deepEqual(saved.completed,fixture.completed);assert.deepEqual(saved.notes,fixture.notes);
    assert.deepEqual(saved.masteries,fixture.masteries);assert.equal(saved.version,2);
-   storageResults.push({engine,status:'pass',fixture:'existing version 2: progress, notes, masteries, active mission 2'});
+   storageResults.push({engine,status:'pass',fixture:trial?'stale later-mission save still opens only mission 1':'existing version 2: progress, notes, masteries, active mission 2'});
    await context.close();
    const blocked=await browser.newContext({viewport:{width:390,height:844}});
    await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked for the test','SecurityError');}}));
-   const bp=await blocked.newPage();await bp.goto(origin,{waitUntil:'networkidle'});
+   const bp=await blocked.newPage();await bp.goto(fixtureURL,{waitUntil:'networkidle'});
    await bp.waitForFunction(()=>document.body.dataset.paintedMission==='1');
    for(const t of['P','L','R','N'])await bp.locator(`[data-t="${t}"]`).click();
    await bp.locator('[data-first-reason="loop"]').click();await bp.locator('#nextBtn').waitFor({state:'visible'});
    storageResults.push({engine,status:'pass',fixture:'blocked storage still permits experiment and completion; persistence unavailable'});
    await blocked.close();
    const nojs=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
-   const np=await nojs.newPage();await np.goto(origin,{waitUntil:'load'});
+   const np=await nojs.newPage();await np.goto(fixtureURL,{waitUntil:'load'});
    assert.equal(await np.locator('#startupFallback').isVisible(),true);
    const fallback=await np.locator('.startup-open-web').getAttribute('href');
    if(process.env.AKARI_REVIEW_URL)assert.equal(fallback,new URL(process.env.AKARI_REVIEW_URL).href);
@@ -189,6 +216,6 @@ try{
   }finally{await browser.close();}
  }
 }finally{
- writeFileSync(out+'/delivery-qa.json',JSON.stringify({htmlSha256:hash,onlineRequested:!!online,results,storageResults,fallbackResults},null,2));
+ writeFileSync(out+'/delivery-qa.json',JSON.stringify({htmlSha256:hash,onlineRequested:!!online,trialOnly:trial,onlineURL:online||null,results,storageResults,fallbackResults},null,2));
  await new Promise(resolve=>server.close(resolve));
 }
