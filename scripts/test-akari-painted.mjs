@@ -96,7 +96,11 @@ try{
        board=document.querySelector(".circuit-board"),points=[...document.querySelectorAll(".circuit-inner .terminal")],
        m=document.querySelector(".topbar");
      const summarize=el=>{const r=el.getBoundingClientRect(),st=getComputedStyle(el);return {top:r.top,bottom:r.bottom,height:r.height,bg:st.backgroundImage};};
-     return {header:summarize(m),quest:summarize(q),tools:summarize(tools),board:summarize(board),
+     return {header:summarize(m),quest:summarize(q),tools:{...summarize(tools),
+       parent:tools.parentElement?.id,rootMatches:tools.matches('html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar'),
+       border:getComputedStyle(tools).borderTopColor,
+       rule:[...document.styleSheets].flatMap(sheet=>{try{return [...sheet.cssRules].filter(rule=>rule.selectorText?.includes('mission1')&&rule.selectorText?.includes('circuit-toolbar')).slice(-2).map(rule=>rule.cssText.slice(0,350));}catch{return[]}}).slice(-3)
+       },board:summarize(board),
        contacts:points.map(el=>{const r=el.getBoundingClientRect(),before=getComputedStyle(el,"::before"),
          after=getComputedStyle(el,"::after");return {id:el.dataset.t,aria:el.getAttribute("aria-label"),
            width:r.width,height:r.height,metal:before.backgroundImage,metalWidth:before.width,mark:after.content};})};
