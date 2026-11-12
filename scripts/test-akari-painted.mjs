@@ -91,6 +91,29 @@ try{
     })));
    });
    await state(false);
+   const finishHud=await page.evaluate(()=>{
+     const q=document.querySelector(".quest-head"),tools=document.querySelector(".circuit-toolbar"),
+       board=document.querySelector(".circuit-board"),points=[...document.querySelectorAll(".circuit-inner .terminal")],
+       m=document.querySelector(".topbar");
+     const summarize=el=>{const r=el.getBoundingClientRect(),st=getComputedStyle(el);return {top:r.top,bottom:r.bottom,height:r.height,bg:st.backgroundImage};};
+     return {header:summarize(m),quest:summarize(q),tools:summarize(tools),board:summarize(board),
+       contacts:points.map(el=>{const r=el.getBoundingClientRect(),before=getComputedStyle(el,"::before"),
+         after=getComputedStyle(el,"::after");return {id:el.dataset.t,aria:el.getAttribute("aria-label"),
+           width:r.width,height:r.height,metal:before.backgroundImage,metalWidth:before.width,mark:after.content};})};
+   });
+   assert.ok(finishHud.header.height<=54,"Game chrome takes less space than the experiment: "+JSON.stringify(finishHud));
+   assert.ok(finishHud.quest.height<=105,"Mission title remains compact even with real HUD texture: "+JSON.stringify(finishHud));
+   assert.ok(finishHud.tools.bottom<=finishHud.board.top+8,
+     "The live instruction belongs directly to the physical stage, not a detached webpage card");
+   assert.ok(finishHud.tools.bg.includes("hud-panel.webp"),"The actual interactive toolbar reuses the painted HUD asset");
+   assert.equal(finishHud.contacts.length,4);
+   assert.ok(finishHud.contacts.every(c=>c.width>=44&&c.height>=44&&c.metal.includes("gradient")&&
+     c.aria&&c.metalWidth==="32px"&&c.mark!=="none"),
+     "Four illustrated metal sockets retain their real tap areas and spoken identification: "+JSON.stringify(finishHud.contacts));
+   assert.equal(await page.locator(".painted-village-revival").count(),1,
+     "The actual village has one noninteractive restoration light");
+   assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"0",
+     "The restoration glow is OFF before a closed circuit");
    const layout=await page.evaluate(()=>{
     const inner=document.querySelector(".circuit-inner"),r=inner.getBoundingClientRect();
     const expected={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
@@ -121,12 +144,21 @@ try{
    }
    // One wire is not a loop.
    await connect("P","L");await state(false);
-   await connect("R","N");await state(true);await snapshot("painted-lit");
+   await connect("R","N");await state(true);
+   assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"1",
+     "The village's new glow only appears after a genuine circuit");
+   assert.equal(await page.locator(".painted-desk").evaluate(el=>getComputedStyle(el,"::after").opacity),"0.62",
+     "Reflected light reaches the actual wooden desk, not an unrelated illustration");
+   assert.ok((await page.locator("#thinkStep").evaluate(el=>getComputedStyle(el).backgroundImage)).includes("hud-panel.webp"),
+     "The actual reasoning step uses the same crafted HUD material");
+   await snapshot("painted-lit");
    assert.equal(await page.locator(".painted-wire-sheen").count(),2,"Each real cable has a material highlight");
    assert.equal(await page.locator(".wire.lit").first().evaluate(el=>getComputedStyle(el).stroke),"rgb(52, 139, 150)","Only the measured bulb is luminous; the insulated wire keeps its material");
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-lit.png",animations:"disabled"});
    // Cutting a real connected wire immediately extinguishes the scene.
    await page.locator("[data-unwire]").first().click();await state(false);
+   assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"0",
+     "Cutting a necessary wire immediately extinguishes the village restoration glow");
    // A battery short never lights the bulb, even alongside a closed lamp loop.
    await reset();await connect("P","N");await state(false,true);
    await page.locator(".painted-short-frame").waitFor({state:"visible"});
@@ -178,6 +210,9 @@ try{
    await op.goto(pathToFileURL(join(root,"artifacts/akari-mission1-painted.html")).href,{waitUntil:"networkidle"});
    await op.waitForFunction(()=>document.body.dataset.paintedMission==="1");
    assert.ok((await op.locator(".painted-bulb-image").getAttribute("href")).startsWith("data:image/webp;base64,"));
+   assert.ok((await op.locator(".circuit-toolbar").evaluate(el=>getComputedStyle(el).backgroundImage))
+     .includes("data:image/webp;base64,"),
+     "The locally downloaded playable game carries the SAME HUD texture, never a flat CSS fallback");
    for(const t of ["P","L","N","R"])await op.locator('[data-t="'+t+'"]').click();
    assert.equal(await op.locator(".circuit-board.is-lit").count(),1,"Offline deliverable uses the actual engine");
    await op.locator('.circuit-inner').scrollIntoViewIfNeeded();
