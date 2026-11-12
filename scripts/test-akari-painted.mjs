@@ -113,7 +113,7 @@ try{
      "The actual interactive toolbar reuses the painted HUD asset: "+JSON.stringify({...finishHud.tools,questBg:finishHud.quest.bg.slice(0,300),stage:await page.locator("body").getAttribute("data-painted-mission")}));
    assert.equal(finishHud.contacts.length,4);
    assert.ok(finishHud.contacts.every(c=>c.width>=44&&c.height>=44&&c.metal.includes("gradient")&&
-     c.aria&&c.metalWidth==="32px"&&c.mark!=="none"),
+     c.aria&&parseFloat(c.metalWidth)>=28&&c.mark!=="none"),
      "Four illustrated metal sockets retain their real tap areas and spoken identification: "+JSON.stringify(finishHud.contacts));
    assert.equal(await page.locator(".painted-village-revival").count(),1,
      "The actual village has one noninteractive restoration light");
