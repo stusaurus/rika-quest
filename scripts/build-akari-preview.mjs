@@ -1,7 +1,14 @@
 import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
 import {createHash} from "node:crypto";
 const html=readFileSync("games/akari/index.html","utf8");
-const css=readFileSync("games/akari/style.css","utf8");
+const sourceCss=readFileSync("games/akari/style.css","utf8");
+const fontFiles={"Kosugi Maru":"kosugi-maru-game.woff",Nunito:"nunito-latin.woff"};
+const localFontFaces=Object.entries(fontFiles).map(([family,file])=>
+ '@font-face{font-family:"'+family+'";font-style:normal;font-weight:'+(family==="Nunito"?'200 1000':'400')+
+ ';font-display:swap;src:url("data:font/woff;base64,'+readFileSync("games/akari/assets/fonts/"+file).toString("base64")+'") format("woff")}').join("\n");
+const css=sourceCss.replace(/^@import url\([^)]*fonts\.googleapis\.com[^)]*\);/,localFontFaces);
+if(css===sourceCss)throw new Error("Expected the original external font import before embedding identical typefaces");
+const fontLicenses={KosugiMaru:readFileSync("games/akari/assets/fonts/kosugi-LICENSE.txt","utf8"),Nunito:readFileSync("games/akari/assets/fonts/nunito-OFL.txt","utf8")};
 const polish=readFileSync("games/akari/design-polish.css","utf8");
 const referenceCss=readFileSync("games/akari/reference-layout.css","utf8");
 const wireCss=readFileSync("games/akari/wire-effects.css","utf8");
@@ -112,6 +119,7 @@ if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
 
 output=output.replace('href="../../index.html"','href="https://stusaurus.github.io/rika-quest/"');
 output=output.replace("<title>あかりクエスト | Rika Quest</title>","<title>あかりクエスト｜試遊版</title>");
+output=replaceOne(output,"</body>",'<script type="application/json" id="akari-font-licenses">'+JSON.stringify(fontLicenses)+'</script>\n</body>');
 mkdirSync("artifacts",{recursive:true});
 writeFileSync("artifacts/akari-preview.html",output,"utf8");
 console.log("Created standalone playable HTML:",Buffer.byteLength(output),"bytes");
@@ -150,6 +158,7 @@ for(const name of ["index.html","akari-mission1-complete.html"]){
  writeFileSync("artifacts/akari-review/"+name,paintedOutput,"utf8");
 }
 writeFileSync("artifacts/akari-review/robots.txt","User-agent: *\nDisallow: /\n");
+writeFileSync("artifacts/akari-review/font-licenses.txt",Object.entries(fontLicenses).map(([name,text])=>name+"\n\n"+text).join("\n\n"));
 writeFileSync("artifacts/akari-review/build-manifest.json",JSON.stringify({
  sourceCommit:previewCommit||null,
  htmlSha256:createHash("sha256").update(paintedOutput).digest("hex"),

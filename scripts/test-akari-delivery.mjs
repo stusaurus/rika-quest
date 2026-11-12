@@ -47,9 +47,12 @@ function cutStroke(path){
 async function operate(browser,engine,width,height,transport,url){
  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,
   hasTouch:width<741,isMobile:width<741,reducedMotion:"reduce"});
- const p=await context.newPage(),errors=[],failures=[];
+ if(transport==="file")await context.setOffline(true);
+ const p=await context.newPage(),errors=[],failures=[],externalAssets=[];
  p.on("pageerror",e=>errors.push(String(e)));
  p.on("requestfailed",r=>failures.push(r.url().slice(0,180)));
+ p.on("request",r=>{if(/^https?:/.test(r.url())&&new URL(r.url()).origin!==new URL(url).origin&&
+  ['font','stylesheet','script','image'].includes(r.resourceType()))externalAssets.push(r.url().slice(0,180));});
  const snap=async state=>{
   if(transport==="file")return;
   await p.evaluate(()=>scrollTo(0,0));
@@ -69,6 +72,9 @@ async function operate(browser,engine,width,height,transport,url){
   const response=await p.goto(url,{waitUntil:"networkidle"});
   if(transport!=="file")assert.equal(response.status(),200);
   await p.waitForFunction(()=>document.body.dataset.paintedMission==="1");
+  await p.evaluate(()=>document.fonts.ready);
+  assert.equal(await p.evaluate(()=>document.fonts.check('16px "Kosugi Maru"','あかり')&&document.fonts.check('700 16px "Nunito"','MISSION 01')),true,
+   'The original Japanese and Latin typefaces load without a font CDN');
   await p.evaluate(async()=>{
    await Promise.all([...document.querySelectorAll('.painted-village img')].map(i=>i.decode()));
    await Promise.all([...document.querySelectorAll('.circuit-svg-v2 image')].map(el=>new Promise((resolve,reject)=>{
@@ -123,7 +129,7 @@ async function operate(browser,engine,width,height,transport,url){
   assert.equal(await p.locator('.painted-world,.painted-battery,.painted-bulb').count(),0);
   await p.reload({waitUntil:'networkidle'});
   assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'2',"Progress persists on the same delivery route");
-  assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);
+  assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);assert.deepEqual(externalAssets,[]);
   results.push({engine,width,height,transport,status:'pass',layout,reasonContrast:contrasts,
    savedVersion:saved.version,checks:['start','one-wire','lit','swipe-cut','short','reason-wrong','reason-correct','complete','reload','stage-2-original']});
   console.log('DELIVERY PASS',engine,width,transport);
