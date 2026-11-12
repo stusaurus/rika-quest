@@ -138,6 +138,7 @@ try{
    for(const group of await page.locator('.lead-on-top').all()){
     assert.equal(await group.locator('.painted-wire-sheen').getAttribute('d'),await group.locator('.wire').getAttribute('d'),"Cable highlight follows the player's actual drawing");
    }
+   await page.locator('.circuit-inner').scrollIntoViewIfNeeded();
    const cut=await page.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
     const p=path.getPointAtLength(path.getTotalLength()/2),matrix=path.getScreenCTM();
     const q=new DOMPoint(p.x,p.y).matrixTransform(matrix);return{x:q.x,y:q.y};
@@ -165,6 +166,7 @@ try{
    assert.ok((await op.locator(".painted-bulb-image").getAttribute("href")).startsWith("data:image/webp;base64,"));
    for(const t of ["P","L","N","R"])await op.locator('[data-t="'+t+'"]').click();
    assert.equal(await op.locator(".circuit-board.is-lit").count(),1,"Offline deliverable uses the actual engine");
+   await op.locator('.circuit-inner').scrollIntoViewIfNeeded();
    const fileCut=await op.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
     const q=path.getPointAtLength(path.getTotalLength()/2),p=new DOMPoint(q.x,q.y).matrixTransform(path.getScreenCTM());return{x:p.x,y:p.y};
    });
