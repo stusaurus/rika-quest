@@ -108,6 +108,73 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery summary{
  min-height:44px;display:flex;align-items:center;
 }
+/* True in-game lighting reveal: the town's LIT bitmap grows outward from
+   the actual lamp/cabin region; no decorative 'electrical path' is invented.
+   The finished image is still always controlled by the physics .is-lit state. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-world-lit{
+ clip-path:circle(0% at 66% 76%);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-world-lit{
+ clip-path:circle(155% at 66% 76%);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .painted-light-enter .painted-world-lit{
+ animation:mission1-town-awakens 1.18s cubic-bezier(.23,.78,.21,1) both!important;
+}
+@keyframes mission1-town-awakens{
+ 0%{opacity:0;clip-path:circle(0% at 66% 76%)}
+ 32%{opacity:.88}
+ 100%{opacity:1;clip-path:circle(155% at 66% 76%)}
+}
+/* Earlier gesture-first styles used an ivory summary button. Its white text
+   was invisible against ivory. Make the actual discovery control readable. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more>summary{
+ display:flex!important;align-items:center;min-height:44px!important;
+ padding:8px 14px!important;max-width:100%;width:max-content!important;
+ background:linear-gradient(#45685e,#203e45)!important;color:#fff1ce!important;
+ border:2px solid #d9ba7f!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #fff5d35f,0 3px 0 #0f2a32!important;
+ text-shadow:0 1px 2px #0c242b!important;font-size:14px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more>summary:focus-visible{
+ outline:3px solid #ffdf83!important;outline-offset:3px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more[open]>summary{
+ background:linear-gradient(#f0d8a1,#bc9759)!important;color:#273c3c!important;
+ text-shadow:0 1px 0 #fff2d48a!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more p{
+ color:#f8ebd0!important;line-height:1.7!important;
+ padding:10px 12px!important;margin:10px 0 0!important;
+ background:#102d37d9!important;border:1px solid #ac936c!important;
+ border-radius:8px!important;
+}
+/* Victory has to celebrate the ACTUAL circuit result, not mask the bulb
+   or wires. The persistent in-game feedback and Next button remain visible. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration:not([hidden]){
+ top:clamp(135px,16vh,185px)!important;max-width:280px!important;
+ padding:11px 14px!important;min-height:0!important;
+ animation:mission1-reward-burst 2.1s cubic-bezier(.16,.85,.22,1) forwards!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration strong{
+ font-size:clamp(14px,2vw,18px)!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration .celebration-stars{
+ font-size:29px!important;line-height:1.1!important;
+}
+@keyframes mission1-reward-burst{
+ 0%{opacity:0;scale:.88;filter:brightness(1.85)}
+ 16%{opacity:1;scale:1.03;filter:brightness(1.25)}
+ 33%,73%{opacity:1;scale:1;filter:brightness(1)}
+ 100%{opacity:0;scale:1;filter:brightness(1)}
+}
 /* The real scene, interactive toolbar and science question read as one
    handcrafted instrument; decorative art is never an inert screenshot. */
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace{
@@ -377,6 +444,12 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  }
 }
 @media(prefers-reduced-motion:reduce){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-world-lit{animation:none!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration:not([hidden]){
+  animation:none!important;opacity:1!important;scale:1!important;
+  max-width:245px!important;
+ }
+ 
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village-revival,
  html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-desk::after{
   transition:none!important;
