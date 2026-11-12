@@ -24,10 +24,22 @@ if(online){
  // A login/interstitial page must not be mistaken for a successfully deployed game.
  const deadline=Date.now()+Number(process.env.AKARI_DELIVERY_WAIT_MS||0);
  let verified=false,lastStatus;
+ let mismatch;
  do{
   const response=await fetch(online,{redirect:"manual"});lastStatus=response.status;
   const actual=Buffer.from(await response.arrayBuffer());
-  verified=response.status===200&&createHash("sha256").update(actual).digest("hex")===hash;
+  const actualHash=createHash("sha256").update(actual).digest("hex");
+  verified=response.status===200&&actualHash===hash;
+  if(response.status===200&&!verified){
+   let first=0;while(first<Math.min(actual.length,bytes.length)&&actual[first]===bytes[first])first++;
+   mismatch={expectedHash:hash,actualHash,expectedLength:bytes.length,actualLength:actual.length,
+    firstDifference:first,expectedContext:bytes.subarray(Math.max(0,first-100),first+300).toString(),
+    actualContext:actual.subarray(Math.max(0,first-100),first+300).toString()};
+   writeFileSync(`${out}/online-byte-mismatch.json`,JSON.stringify(mismatch,null,2));
+   writeFileSync(`${out}/online-response.html`,actual);
+   console.log("Public HTML mismatch diagnostics",JSON.stringify(mismatch));
+   break;
+  }
   if(verified||Date.now()>=deadline)break;
   console.log("Waiting for the approved public artifact; status",lastStatus);
   await new Promise(resolve=>setTimeout(resolve,3000));
