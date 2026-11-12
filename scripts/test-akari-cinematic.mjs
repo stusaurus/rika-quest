@@ -28,7 +28,7 @@ try{
    assert.equal(await page.locator("html.akari-cinematic").count(),1,"Opt-in cinematic look must initialize before original game scripts");
    await page.waitForFunction(()=>{
      const board=document.querySelector(".circuit-town-board");
-     return !!board&&getComputedStyle(board).borderTopColor==="rgb(198, 165, 116)";
+     return !!board&&getComputedStyle(board).borderTopColor==="rgb(189, 160, 127)";
    },null,{timeout:7000}).catch(async error=>{
      const diagnostics=await page.evaluate(()=>{
        const board=document.querySelector(".circuit-town-board");
@@ -70,7 +70,7 @@ try{
      "Actual progress status moves into the mission HUD without duplicating state");
    assert.equal(await page.locator("body>#stageCelebration").count(),1,
      "Victory art is decoupled from the clipped scenic banner");
-   assert.equal(stageOne.frame,"rgb(198, 165, 116)","Real circuit should sit within the new cinematic warm-metal frame");
+   assert.equal(stageOne.frame,"rgb(189, 160, 127)","Real circuit should sit within the new cinematic warm-metal frame");
    assert.ok(stageOne.touch>=44,"Electrical contacts remain thumb-sized");
    assert.equal(await page.locator("#workspace>.circuit-board").count(),1,
      "The real circuit is a single interactive scene, not a redundant decorative thumbnail");
@@ -106,7 +106,7 @@ try{
      return {frame:getComputedStyle(el).borderTopColor,
        width:r.width,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
    });
-   assert.equal(stageThree.frame,"rgb(198, 165, 116)","Stage 3 should use the same game-world frame");
+   assert.equal(stageThree.frame,"rgb(189, 160, 127)","Stage 3 should use the same game-world frame");
    assert.equal(await page.locator(".bridge-circuit-svg .bridge-repair-fixtures").count(),1,
      "The battery and bulb share the same crafted hardware language in repair mode");
    assert.equal(await page.locator(".circuit-town-repair .town-stone-bridge").count(),1,
