@@ -76,7 +76,8 @@
   '<linearGradient id="tcCopper" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#29394b"/><stop offset=".25" stop-color="#9b9a8c"/><stop offset=".51" stop-color="#d2bc95"/><stop offset="1" stop-color="#42525b"/></linearGradient>'+
   '<radialGradient id="tcGlow"><stop stop-color="#fff8bf" stop-opacity=".93"/><stop offset=".23" stop-color="#ffdb87" stop-opacity=".53"/><stop offset=".67" stop-color="#f9c375" stop-opacity=".14"/><stop offset="1" stop-color="#ffd58e" stop-opacity="0"/></radialGradient>'+
   '<radialGradient id="tcSunset" cx=".7" cy=".70" r=".58"><stop stop-color="#ffd69d" stop-opacity=".7"/><stop offset=".65" stop-color="#e8a47c" stop-opacity=".19"/><stop offset="1" stop-color="#df977f" stop-opacity="0"/></radialGradient>'+
-  '<linearGradient id="tcWood" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8a6b66"/><stop offset=".22" stop-color="#896361"/><stop offset=".65" stop-color="#735861"/><stop offset="1" stop-color="#46475a"/></linearGradient>'+
+  '<linearGradient id="tcWood" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b5865f"/><stop offset=".24" stop-color="#916746"/><stop offset=".65" stop-color="#78503d"/><stop offset="1" stop-color="#4f3c3a"/></linearGradient>'+
+  '<linearGradient id="tcWoodRim" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7dba5"/><stop offset=".55" stop-color="#c69d70"/><stop offset="1" stop-color="#674b43"/></linearGradient>'+
   '<radialGradient id="tcMoon" cx=".33" cy=".28" r=".8"><stop stop-color="#fff8d9"/><stop offset=".68" stop-color="#ffdfa9"/><stop offset="1" stop-color="#f3bb8d"/></radialGradient>'+
   '</defs>';
  // Three parallax planes. All illumination tied to .is-lit in CSS.
@@ -117,19 +118,32 @@
   '</g>';
  const flower=(x,y,c)=>'<g transform="translate('+x+' '+y+')"><path d="M0 0v-17" stroke="#648b75" stroke-width="3"/>'+
   '<circle cy="-18" r="8" fill="'+c+'"/><circle cy="-18" r="3.5" fill="#f9d8a2"/></g>';
+ // A true working stage: distant village / warm instrument bench / touchable
+ // circuit in three distinct planes. No false conducting connection is painted.
+ const table='<g class="town-play-surface" pointer-events="none" aria-hidden="true">'+
+  '<path d="M-30 200Q450 184 930 201L935 350H-35Z" fill="url(#tcWood)" stroke="#eed0a5" stroke-width="4"/>'+
+  '<path d="M-25 201Q450 184 925 201" fill="none" stroke="url(#tcWoodRim)" stroke-width="12" stroke-linecap="round"/>'+
+  '<path d="M-10 212Q450 201 907 212" fill="none" stroke="#f5cd91" stroke-width="2.6" opacity=".55"/>'+
+  '<path d="M0 239Q168 225 345 237T900 238M0 282Q235 266 434 281T900 278M0 316Q239 305 500 317T900 314" fill="none" stroke="#442c2b" opacity=".23" stroke-width="3"/>'+
+  '<path d="M0 246Q190 232 379 244T900 241M0 299Q235 287 434 299T900 296" fill="none" stroke="#f0b77f" opacity=".19" stroke-width="2"/>'+
+  '<path d="M-20 332H920" stroke="#312c36" stroke-width="12" opacity=".8"/>'+
+  '<g fill="#c3a28b" stroke="#4d4244" stroke-width="2" opacity=".7"><circle cx="26" cy="226" r="5"/><circle cx="875" cy="224" r="5"/><circle cx="26" cy="317" r="5"/><circle cx="875" cy="317" r="5"/></g>'+
+  '<path d="M23 222L29 230M29 222L23 230M870 221l10 6m0-6l-10 6M23 312l7 8m0-8l-7 8M870 313l9 8m0-8l-9 8" stroke="#554b4c" stroke-width="1.7"/>'+
+  '</g>';
  const world=(stage)=>{
   const s=Number(stage);
   return sky+
    river+bridge+
-   H(145,285,.74,"#80667b","#c6b0ac")+
-   H(451,293,.89,"#596b84","#d2b8af")+
-   H(744,284,.76,"#976c70","#c2a999")+
-   T(45,306,.82)+T(855,305,.91)+
+   H(148,228,.68,"#80667b","#c6b0ac")+
+   H(451,230,.72,"#596b84","#d2b8af")+
+   H(752,228,.68,"#976c70","#c2a999")+
+   T(42,246,.58)+T(863,245,.60)+
    path+
-   flower(275,307,"#c48c9e")+flower(332,311,"#e2b274")+flower(608,307,"#d89caa")+
-   (s===1?L(559,306,.84):s===2?L(338,302,.79)+L(618,302,.81):L(501,308,1.04))+
-   '<g class="town-power-reflections"><path d="M464 271Q483 268 501 270M461 280Q505 276 535 280" stroke="#ffda93" stroke-width="3" fill="none" opacity=".65"/>'+
-   '<ellipse cx="501" cy="318" rx="105" ry="17" fill="url(#tcGlow)" opacity=".25"/></g>';
+   flower(275,240,"#c48c9e")+flower(332,242,"#e2b274")+flower(608,241,"#d89caa")+
+   (s===1?L(565,280,.69):s===2?L(332,279,.68)+L(627,278,.69):L(501,282,.77))+
+   table+
+   '<g class="town-power-reflections"><path d="M446 221Q483 217 525 221M426 233Q501 228 552 233" stroke="#ffdf9a" stroke-width="3" fill="none" opacity=".70"/>'+
+   '<ellipse cx="501" cy="250" rx="137" ry="43" fill="url(#tcGlow)" opacity=".35"/></g>';
  };
  window.AkariCinematicScenery={render:stage=>world(stage)};
 })();
