@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#122744">
+<script>
+if(new URLSearchParams(location.search).get("visual")==="cinematic")
+ document.documentElement.classList.add("akari-cinematic");
+</script>
 <meta name="description" content="Rika Quest 明かりをつけよう。配線・実験・故障修理をしながら明かりのひみつを解き明かそう。">
 <title>あかりクエスト | Rika Quest</title>
 <link rel="stylesheet" href="./style.css">
@@ -19,15 +23,18 @@
 <link rel="stylesheet" href="./wire-focus.css?v=reason-flow-2">
 <link rel="stylesheet" href="./side-drawers.css?v=piece18">
 <link rel="stylesheet" href="./storybook-skin.css?v=4">
-<script src="./art.js?v=pro-battery1" defer></script>
-<script src="./cute-town.js?v=storybook2" defer></script>
+<link rel="stylesheet" href="./cinematic-direction.css?v=prototype1">
+<link rel="stylesheet" href="./cinematic-scenery.css?v=paint1">
+<script src="./art.js?v=cinematic-mount1" defer></script>
+<script src="./cinematic-scenery.js?v=layered1" defer></script>
+<script src="./cute-town.js?v=cinematic2" defer></script>
 <script src="./circuit-village.js?v=inside1" defer></script>
 <script src="./scenes.js?v=streetlamp3" defer></script>
 <script src="./transfer.js" defer></script>
 <script src="./builder.js" defer></script>
 <script src="./switch-lab.js" defer></script>
 <script src="./safety-lab.js" defer></script>
-<script src="./bridge-lab.js?v=pro-reasons1" defer></script>
+<script src="./bridge-lab.js?v=cinematic-mount1" defer></script>
 <script src="./side-drawers.js?v=pro-inspect1" defer></script>
 <script src="./garden-lab.js" defer></script>
 <script src="./battery-lab.js" defer></script>
@@ -43,6 +50,7 @@
 <script src="./free-lab-model.js?v=drawer1" defer></script>
 <script src="./free-lab.js?v=discovery1" defer></script>
 <script src="./short-effects.js" defer></script>
+<script src="./cinematic-layout.js?v=prototype2" defer></script>
 </head>
 <body class="reading-easy" data-visual-theme="reference-rebuild">
 <div class="sky-particles" aria-hidden="true"></div>

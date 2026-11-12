@@ -99,9 +99,24 @@ function circuit(slots={},isLit=false){
   const caption=id?'<text class="bridge-sample-label" x="'+x+'" y="'+(y+43)+'" text-anchor="middle" font-size="13" font-weight="900" fill="#fff9ec" stroke="#254658" stroke-width="3" paint-order="stroke">'+specimen.name+'</text>':"";
   return '<g class="bridge-gap-visual" data-bridge-gap="'+letter.toLowerCase()+'" data-bridge-gap-state="'+status+'">'+terminals+bridge+placard+caption+'</g>';
  };
- return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない。">'+
- '<defs><linearGradient id="akariRepairBattery" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#265e6d"/><stop offset=".3" stop-color="#5ca9ad"/><stop offset=".75" stop-color="#317e8e"/><stop offset="1" stop-color="#215666"/></linearGradient></defs><g id="akari-bridge-drawing">'+
- '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+
+ const cinematic=!!document?.documentElement?.classList?.contains("akari-cinematic");
+ const mount=cinematic?
+  '<g class="bridge-repair-fixtures" pointer-events="none" aria-hidden="true">'+
+  '<ellipse cx="89" cy="276" rx="88" ry="14" fill="#091b29" opacity=".45"/>'+
+  '<path d="M24 79H148L161 93V258L148 273H24L12 257V95Z" fill="#68555c" stroke="#e1bc8d" stroke-width="3"/>'+
+  '<path d="M23 93H149V257H23Z" fill="#425c64" opacity=".74"/>'+
+  '<path d="M19 96H153M19 259H153" stroke="#ecd0a6" opacity=".5" stroke-width="3"/>'+
+  '<g fill="#b19c85" stroke="#f6dfae" stroke-width="2"><circle cx="25" cy="94" r="5"/><circle cx="149" cy="94" r="5"/><circle cx="25" cy="259" r="5"/><circle cx="149" cy="259" r="5"/></g>'+
+  '<ellipse cx="533" cy="242" rx="75" ry="15" fill="#061b2b" opacity=".46"/>'+
+  '<path d="M478 232Q532 244 588 232L598 249Q532 262 466 249Z" fill="#5c5961" stroke="#d5b58c" stroke-width="3"/>'+
+  '<path d="M478 237Q531 248 587 237" stroke="#d3b79b" opacity=".57" stroke-width="3" fill="none"/>'+
+  '<circle cx="480" cy="243" r="5" fill="#ad9a86" stroke="#f3d8ab"/>'+
+  '<circle cx="586" cy="243" r="5" fill="#ad9a86" stroke="#f3d8ab"/>'+
+  '</g>':'';
+ const bloom=cinematic&&isLit?'<circle class="bridge-bulb-bloom" cx="533" cy="170" r="97" fill="url(#akariRepairGlow)" pointer-events="none"/>':'';
+ return '<svg class="bridge-circuit-svg" viewBox="0 0 680 340" role="img" aria-label="乾電池のプラス極から修理Aと豆電球を通り修理Bからマイナス極へ戻る回路図。修理が不足すると点灯しない.">'+
+ '<defs><linearGradient id="akariRepairBattery" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#265e6d"/><stop offset=".3" stop-color="#5ca9ad"/><stop offset=".75" stop-color="#317e8e"/><stop offset="1" stop-color="#215666"/></linearGradient><radialGradient id="akariRepairGlow"><stop stop-color="#ffecb5" stop-opacity=".68"/><stop offset=".39" stop-color="#ffcb7b" stop-opacity=".28"/><stop offset="1" stop-color="#ffe2a0" stop-opacity="0"/></radialGradient><radialGradient id="akariRepairGlass" cx=".32" cy=".25" r=".83"><stop stop-color="#fffbea"/><stop offset=".52" stop-color="#d9f0e8"/><stop offset="1" stop-color="#8eafc4"/></radialGradient></defs><g id="akari-bridge-drawing">'+
+ '<rect width="680" height="340" rx="19" fill="#b7dcdf"/>'+(window.AkariCircuitVillage?.repair()||'')+'<rect width="680" height="340" rx="19" fill="#12344d" opacity=".22" pointer-events="none"/>'+mount+
  '<rect class="bridge-battery-body" x="31" y="85" width="112" height="172" rx="16" fill="url(#akariRepairBattery)" stroke="#d4ede5" stroke-width="4"/>'+
  '<path d="M43 102V239" stroke="#dcf6ed" stroke-opacity=".44" stroke-width="6" stroke-linecap="round"/>'+
  '<rect x="45" y="137" width="85" height="72" rx="11" fill="#fcf8e9" stroke="#b4d2c1" stroke-width="2"/>'+
@@ -113,7 +128,8 @@ function circuit(slots={},isLit=false){
  wire("M87 74V55H236",true)+wire("M352 55H533V112",true)+
  wire("M533 228V287H352",true)+wire("M236 287H87V265",true)+
  gap(294,55,slots.a,"修理 A")+gap(294,287,slots.b,"修理 B")+
- '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":"#dcebee")+'" stroke="#e8f4ee" stroke-width="6"/>'+
+ bloom+
+ '<circle cx="533" cy="170" r="62" fill="'+(isLit?"#ffeab2":cinematic?"url(#akariRepairGlass)":"#dcebee")+'" stroke="'+(cinematic?"#f4e1c8":"#e8f4ee")+'" stroke-width="6"/>'+
  '<path d="M499 129Q514 116 526 117" fill="none" stroke="#fffef6" stroke-width="8" stroke-linecap="round" opacity=".8"/>'+
  '<circle cx="533" cy="170" r="57" fill="none" stroke="#88aeb4" stroke-width="2.5" opacity=".7"/>'+
  '<circle cx="533" cy="170" r="27" fill="none" stroke="'+(isLit?"#b67932":"#9abac8")+'" stroke-width="5"/>'+

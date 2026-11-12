@@ -298,6 +298,10 @@ try{
    assert.equal(await page.locator(".circuit-town-board .battery-model").count(),1,"Physical battery stays over the scenery");
    assert.equal(await page.locator(".circuit-town-board .bulb-model").count(),1,"Physical bulb stays over the scenery");
    assert.equal(await page.locator(".circuit-town-board .terminal").count(),4,"All four real wiring terminals remain usable");
+   await page.waitForFunction(()=>{
+     const art=document.querySelector(".main.town-immersive .scene-props");
+     return !!art&&getComputedStyle(art).display==="none";
+   },null,{timeout:3000});
    assert.equal(await page.locator(".main.town-immersive .scene-props").evaluate(e=>getComputedStyle(e).display),"none","Exterior scenic panel is not the artwork focus");
    assert.equal(await page.locator(".circuit-town-board .town-lamp").count(),1,"Stage 1 has its streetlamp INSIDE the wiring board");
    assert.equal(await page.locator(".circuit-town-board .town-stage-lights").first().evaluate(e=>getComputedStyle(e).opacity),"0","The streetlamp INSIDE the circuit starts dark");

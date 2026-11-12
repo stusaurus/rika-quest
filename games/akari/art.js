@@ -204,8 +204,19 @@ function workbench(wires,lit){
   '<path d="M313 187V209" stroke="#c5d1d6" stroke-width="7" stroke-linecap="round"/>'+
   '<circle cx="313" cy="210" r="5.2" fill="#f9dba0" stroke="#c2a166" stroke-width="1.4"/>'+
   '</g>';
+ const gameMount=!!document?.documentElement?.classList?.contains("akari-cinematic")?
+ '<g class="workbench-fixture" aria-hidden="true" pointer-events="none">'+
+ '<defs><linearGradient id="tcLabRail" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e5c89e"/><stop offset=".18" stop-color="#a7886c"/><stop offset=".58" stop-color="#6b5e61"/><stop offset="1" stop-color="#38475c"/></linearGradient></defs>'+
+ '<ellipse cx="111" cy="202" rx="82" ry="11" fill="#031b2c" opacity=".39"/>'+
+ '<path d="M34 117L44 105H177L185 117V189H34Z" fill="url(#tcLabRail)" stroke="#f0d09a" stroke-width="2.2" opacity=".86"/>'+
+ '<path d="M40 119H178M41 182H179" fill="none" stroke="#f9dbb3" opacity=".36" stroke-width="2"/>'+
+ '<circle cx="43" cy="122" r="4" fill="#b9a68b" stroke="#f4dcaf"/>'+
+ '<circle cx="178" cy="122" r="4" fill="#b9a68b" stroke="#f4dcaf"/>'+
+ '<path d="M274 216Q311 228 351 216L347 225H277Z" fill="#424c5a" stroke="#c9ab83" stroke-width="2" opacity=".92"/>'+
+ '<path d="M285 204H340" stroke="#a8afac" stroke-width="3" stroke-linecap="round" opacity=".55"/>'+
+ '</g>':''; 
  return '<svg class="circuit-svg circuit-svg-v2" viewBox="0 0 400 250" aria-label="乾電池の左が＋極、右が−極。豆電球は横の金属と底の接点につなぐ" role="img">'+
-  scheme+battery+bulb+leads+'</svg>';
+  scheme+gameMount+battery+bulb+leads+'</svg>';
 }
 
 // The very same original vector paths used by the material cards can now

@@ -1,0 +1,154 @@
+/* Purpose-made cinematic world art for Akari stages 1–3.
+   The town remains a DECORATIVE layer; contacts and student-drawn wires
+   stay above it. The .is-lit class is the ONLY permission for electric light. */
+html.akari-cinematic .main.town-immersive .circuit-village-backdrop{
+ isolation:isolate;
+ border-radius:13px!important;
+ background:#132b43!important
+}
+html.akari-cinematic .main.town-immersive .circuit-village-art{
+ filter:saturate(.90) contrast(1.065)!important;
+ opacity:1;transform:translateZ(0);
+}
+html.akari-cinematic .main.town-immersive .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#031a2905 0%,#183f5316 45%,#071b32b2 100%)!important;
+ transition:background-color .6s,opacity .6s;
+}
+html.akari-cinematic .main.town-immersive .circuit-board.is-lit:not(.is-short)
+ .circuit-village-backdrop::after{
+ background:linear-gradient(180deg,#f9c5810d 0%,#ffc27218 55%,#0d21387a 100%)!important;
+}
+html.akari-cinematic .main.town-immersive .circuit-village-art .town-house{
+ filter:drop-shadow(0 5px 5px #0c283e55)
+}
+html.akari-cinematic .main.town-immersive .circuit-village-art .town-window-set{
+ filter:drop-shadow(0 2px 2px #162b4058)
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair) .town-window{
+ fill:#365569!important;
+ stroke:none!important;
+ filter:none!important;
+ transition:fill .55s ease-out,filter .55s ease-out
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-lit .town-window{
+ fill:#ffe2a0!important;
+ filter:drop-shadow(0 0 6px #ffd18b)!important
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair) .town-home-glow{
+ opacity:0!important;filter:blur(13px);pointer-events:none;
+ transition:opacity .8s ease-out
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-lit .town-home-glow{
+ opacity:.34!important
+}
+html.akari-cinematic .main.town-immersive .town-lantern-glass{
+ fill:#526979!important;transition:fill .55s,filter .55s
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-lit .town-lantern-glass{
+ fill:#fff1bb!important;filter:drop-shadow(0 0 9px #fbd27e)!important
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair) .town-stage-lights{
+ opacity:0!important;transition:opacity .6s ease-out
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-lit .town-stage-lights{
+ opacity:1!important
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair) .town-power-reflections{
+ opacity:0;transition:opacity .8s ease-out;pointer-events:none
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-lit .town-power-reflections{
+ opacity:.75
+}
+html.akari-cinematic .main.town-immersive :is(.circuit-town-board,.circuit-town-repair).is-short
+ :is(.town-stage-lights,.town-home-glow,.town-power-reflections){
+ opacity:0!important
+}
+/* Wood-and-brass stage outline: large scale visual hierarchy, no fake wires. */
+html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive .circuit-board.circuit-town-board,
+html.akari-cinematic .main.town-immersive .akari-dock-center>.bridge-circuit.circuit-town-repair{
+ border:4px solid #bda07f!important;
+ outline:2px solid #071e32;
+ border-radius:19px!important;
+ box-shadow:
+   inset 0 0 0 2px #fff2cd47,
+   0 5px 0 #6e5453,
+   0 8px 0 #342e39,
+   0 21px 35px #020f1bc7!important;
+ overflow:hidden;
+}
+html.akari-cinematic .main.town-immersive .circuit-board .circuit-inner{
+ isolation:isolate;z-index:3;pointer-events:auto
+}
+html.akari-cinematic .main.town-immersive :is(.battery-model,.bulb-model){
+ filter:drop-shadow(2px 9px 7px #061b2fdd)!important
+}
+html.akari-cinematic .main.town-immersive .circuit-board .terminal-label{
+ background:#0c2c43e6!important;color:#fff2ca!important;
+ border:1px solid #c6ae82b4!important;box-shadow:0 2px 4px #051a30a6!important
+}
+html.akari-cinematic .main.town-immersive .circuit-board .wire-chip{
+ background:#0e3249f2!important;border-color:#c0a77c!important;
+ box-shadow:0 4px 7px #071d2ec4!important
+}
+html.akari-cinematic .main.town-immersive #thinkStep{
+ background:linear-gradient(145deg,#f5e7cb,#e4d5bb)!important;
+ border:2px solid #bb9667!important;color:#293f4a!important;
+ box-shadow:0 4px 0 #826550,0 15px 24px #071d2f9c!important;
+ border-radius:13px!important;
+}
+html.akari-cinematic .main.town-immersive #thinkStep h3{
+ color:#26475b!important
+}
+html.akari-cinematic .main.town-immersive #thinkStep p{
+ color:#3c5862!important
+}
+html.akari-cinematic .main.town-immersive #thinkStep .reason-option{
+ background:linear-gradient(#fffdf3,#f2ece0)!important;
+ color:#244653!important;border:2px solid #acbdb6!important;
+ box-shadow:0 3px 0 #9a967f42!important
+}
+html.akari-cinematic .main.town-immersive #thinkStep .reason-option[aria-pressed="true"]{
+ background:#ffefbe!important;border-color:#b58b49!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .akari-inspection-pin{
+ background:linear-gradient(#ffe0a4,#c58f5a)!important;
+ color:#203b4e!important;border-color:#ffefd3!important;
+ box-shadow:0 0 0 2px #614947,0 4px 7px #0b283eb8!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .akari-inspection-pin.found{
+ background:linear-gradient(#e9f5df,#b7d2ba)!important;
+ box-shadow:0 0 0 2px #507667,0 2px 6px #0b283eb8!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .akari-dock-readout .akari-observation{
+ color:#264656!important;background:#fff1d6!important;border:1px solid #d9c39f!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .akari-dock-gap{
+ background:#fff6df!important;color:#234453!important;
+ border:2px solid #b79260!important;min-height:44px!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .akari-dock-gap.is-ready{
+ background:#ffdf9a!important;border-color:#ac793a!important;
+ box-shadow:0 0 0 3px #f6d3988c,0 3px 0 #815d42!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .bridge-outcome.lit{
+ background:#e8f5d7!important;color:#28543e!important
+}
+html.akari-cinematic .main.town-immersive .akari-dock .bridge-outcome.dark{
+ background:#fae3ce!important;color:#643e36!important
+}
+@media(max-width:740px){
+ html.akari-cinematic body[data-wire-focus="true"] .main.town-immersive .circuit-board.circuit-town-board,
+ html.akari-cinematic .main.town-immersive .akari-dock-center>.bridge-circuit.circuit-town-repair{
+  border-width:3px!important;border-radius:13px!important;
+  box-shadow:0 3px 0 #6e5453,0 6px 0 #342e39,0 11px 19px #020f1bba!important
+ }
+ html.akari-cinematic .main.town-immersive .circuit-board .terminal-label{
+  font-size:12px!important;padding:2px 4px!important
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-cinematic .main.town-immersive
+ :is(.town-stage-lights,.town-home-glow,.town-window,.town-power-reflections,.town-lantern-glass){
+  transition:none!important;animation:none!important
+ }
+}

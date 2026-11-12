@@ -2,9 +2,10 @@
 /* Illustrated hometown for the first three lessons. The real circuit and its
    science live in the interactive workbench, not in this decorative SVG. */
 (function(){
+ const twilight=document.documentElement.classList.contains('akari-cinematic');
  const sky='<defs>'+
- '<linearGradient id="tcSky" x2="0" y2="1"><stop stop-color="#7bc6ec"/><stop offset=".60" stop-color="#c5e8ee"/><stop offset="1" stop-color="#f2e5cf"/></linearGradient>'+
- '<linearGradient id="tcHill" x2=".2" y2="1"><stop stop-color="#a5c6ae"/><stop offset="1" stop-color="#5f9c8a"/></linearGradient>'+
+ '<linearGradient id="tcSky" x2="0" y2="1"><stop stop-color="'+(twilight?"#172f4f":"#7bc6ec")+'"/><stop offset=".60" stop-color="'+(twilight?"#466984":"#c5e8ee")+'"/><stop offset="1" stop-color="'+(twilight?"#c88772":"#f2e5cf")+'"/></linearGradient>'+
+ '<linearGradient id="tcHill" x2=".2" y2="1"><stop stop-color="'+(twilight?"#416c76":"#a5c6ae")+'"/><stop offset="1" stop-color="'+(twilight?"#254f61":"#5f9c8a")+'"/></linearGradient>'+
  '<linearGradient id="tcWater" x2="0" y2="1"><stop stop-color="#8dcfd8"/><stop offset="1" stop-color="#398ba5"/></linearGradient>'+
  '<linearGradient id="tcStone" x2=".5" y2="1"><stop stop-color="#faecd4"/><stop offset="1" stop-color="#b7aaa4"/></linearGradient>'+
  '<linearGradient id="tcCopper" x2=".4" y2="1"><stop stop-color="#f6deaa"/><stop offset=".4" stop-color="#8b8171"/><stop offset="1" stop-color="#516874"/></linearGradient>'+
@@ -13,12 +14,15 @@
  '<linearGradient id="tcWarmWindow" x2="0" y2="1"><stop stop-color="#fffaf1" stop-opacity=".6"/><stop offset="1" stop-color="#ffe49d" stop-opacity="0"/></linearGradient>'+
  '</defs>'+
  '<rect width="900" height="340" fill="url(#tcSky)"/>'+
- '<path d="M0 218Q135 148 259 189T520 166T900 193V340H0Z" fill="#d9e7d7" opacity=".56"/>'+
- '<g class="town-sky-sparkles" fill="#fff9df" opacity=".7"><circle cx="68" cy="52" r="2.4"/><circle cx="302" cy="40" r="1.7"/><circle cx="626" cy="70" r="2.1"/><circle cx="827" cy="109" r="1.6"/></g>'+
- '<circle cx="735" cy="65" r="41" fill="#fff4da" opacity=".8"/>'+
- '<g fill="#fffaf1" opacity=".72"><ellipse cx="130" cy="64" rx="69" ry="16"/><ellipse cx="105" cy="53" rx="31" ry="21"/><ellipse cx="510" cy="53" rx="50" ry="13"/><ellipse cx="485" cy="44" rx="25" ry="16"/></g>'+
+ (twilight?'<path d="M0 195Q135 153 287 181T620 171T900 197V262H0Z" fill="#75959d" opacity=".16"/>'+
+ '<g fill="#fff1bd" opacity=".86"><circle cx="32" cy="32" r="1.7"/><circle cx="96" cy="82" r="1.4"/><circle cx="176" cy="38" r="2.3"/><circle cx="261" cy="88" r="1.7"/><circle cx="333" cy="34" r="1.9"/><circle cx="414" cy="78" r="1.3"/><circle cx="544" cy="24" r="2"/><circle cx="615" cy="61" r="1.5"/><circle cx="795" cy="28" r="1.8"/><circle cx="868" cy="88" r="1.2"/></g>'+
+ '<circle cx="735" cy="65" r="69" fill="url(#tcGlow)" opacity=".46"/>':'')+
+ '<path d="M0 218Q135 148 259 189T520 166T900 193V340H0Z" fill="'+(twilight?"#527788":"#d9e7d7")+'" opacity=".56"/>'+
+ '<g class="town-sky-sparkles" fill="'+(twilight?"#fff0c0":"#fff9df")+'" opacity=".7"><circle cx="68" cy="52" r="2.4"/><circle cx="302" cy="40" r="1.7"/><circle cx="626" cy="70" r="2.1"/><circle cx="827" cy="109" r="1.6"/></g>'+
+ '<circle cx="735" cy="65" r="41" fill="'+(twilight?"#fff1c9":"#fff4da")+'" opacity=".8"/>'+
+ '<g fill="'+(twilight?"#b1c5d2":"#fffaf1")+'" opacity="'+(twilight?".27":".72")+'"><ellipse cx="130" cy="64" rx="69" ry="16"/><ellipse cx="105" cy="53" rx="31" ry="21"/><ellipse cx="510" cy="53" rx="50" ry="13"/><ellipse cx="485" cy="44" rx="25" ry="16"/></g>'+
  '<path d="M0 216Q115 158 232 198Q333 151 447 206Q598 140 719 195Q814 163 900 195V340H0Z" fill="url(#tcHill)"/>'+
- '<path d="M0 247Q99 211 216 243Q344 198 470 239Q622 206 900 244V340H0Z" fill="#7fb2a4"/>';
+ '<path d="M0 247Q99 211 216 243Q344 198 470 239Q622 206 900 244V340H0Z" fill="'+(twilight?"#376675":"#7fb2a4")+'"/>';
  const house=(x,y,k,roof,wall)=>{
   const windows=[[-37,-68],[23,-68]].map(([wx,wy])=>
    '<rect class="town-window" x="'+wx+'" y="'+wy+'" width="29" height="36" rx="6" stroke="#f8edd6" stroke-width="5"/>'+
@@ -75,15 +79,15 @@
  const littleFlower=(x,y,hue)=>
   '<g transform="translate('+x+' '+y+')"><path d="M0 0V-19" stroke="#4b8b6e" stroke-width="3"/>'+
   '<circle cy="-21" r="9" fill="'+hue+'"/><circle cy="-21" r="4" fill="#fff4bb"/></g>';
- const path='<path d="M0 317Q150 277 310 298Q490 320 659 286Q773 269 900 303V340H0Z" fill="#c8b9a8"/>'+
+ const path='<path d="M0 317Q150 277 310 298Q490 320 659 286Q773 269 900 303V340H0Z" fill="'+(twilight?"#5a686c":"#c8b9a8")+'"/>'+
   '<path d="M0 319Q235 289 450 313T900 302" stroke="#aeaa98" stroke-width="2" opacity=".6" fill="none"/>'+
   '<g fill="#ece2d0" opacity=".87"><ellipse cx="150" cy="319" rx="14" ry="4"/><ellipse cx="240" cy="327" rx="12" ry="3"/><ellipse cx="518" cy="325" rx="17" ry="4"/><ellipse cx="802" cy="322" rx="19" ry="4"/></g>'+
   '<path d="M0 317Q230 301 454 320T900 303" fill="none" stroke="#f8ead2" stroke-width="6"/>'+
   '<g fill="#e8dbc9" opacity=".6"><ellipse cx="340" cy="318" rx="20" ry="5"/><ellipse cx="710" cy="314" rx="29" ry="5"/></g>';
  const town=sky+
-  house(208,276,0.80,"#d98281","#f5dcc3")+
-  house(455,278,1.09,"#749db4","#fbebd2")+
-  house(722,280,.79,"#cc917b","#f1dcc7")+
+  house(208,276,0.80,twilight?"#9a6b76":"#d98281",twilight?"#c9a7a1":"#f5dcc3")+
+  house(455,278,1.09,twilight?"#567c91":"#749db4",twilight?"#dbc9b4":"#fbebd2")+
+  house(722,280,.79,twilight?"#a57b6d":"#cc917b",twilight?"#ceb6a4":"#f1dcc7")+
   tree(60,294,.84)+tree(842,288,.87)+
   path+
   '<path d="M0 326Q165 293 310 318T640 318T900 313" fill="none" stroke="#ab9f91" stroke-width="2.5" opacity=".44"/>'+
@@ -97,5 +101,5 @@
   2:town+lantern(325,286,.94,false)+lantern(605,286,.91,false),
   3:streetlamp
  };
- window.AkariTownArt={render:stage=>art[Number(stage)]||art[2]};
+ window.AkariTownArt={render:stage=>(twilight&&window.AkariCinematicScenery)?window.AkariCinematicScenery.render(stage):(art[Number(stage)]||art[2])};
 })();
