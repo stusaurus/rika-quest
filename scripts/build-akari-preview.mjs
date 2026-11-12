@@ -47,7 +47,7 @@ function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
  return source.replace(what,withText);
 }
-function inlineScript(source){return "<script>"+source+"</script>";}
+function inlineScript(source){return "<script data-akari-preview-script>"+source+"</script>";}
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./mission1-art.css?v=1">',"<style>\n"+paintedCss+"\n</style>");
 output=replaceOne(output,'<script src="./mission1-art.js?v=1" defer></script>',inlineScript(paintedArt));
@@ -91,6 +91,14 @@ output=replaceOne(output,'<script src="./free-lab-model.js?v=drawer1" defer></sc
 output=replaceOne(output,'<script src="./free-lab.js?v=discovery1" defer></script>',inlineScript(freeLab));
 output=replaceOne(output,'<script src="./short-effects.js" defer></script>',inlineScript(shortEffects));
 output=replaceOne(output,'<script src="./cinematic-layout.js?v=prototype2" defer></script>',inlineScript(cinematicLayoutJs));
+// An inline script does not honor `defer`. Preserve the production script order
+// at the end of the body, where wire-cut and other DOM-bound modules can attach
+// to the same real workspace instead of silently returning from an empty head.
+const readyScripts=[];
+output=output.replace(/<script data-akari-preview-script>([\s\S]*?)<\/script>/g,(_match,source)=>{
+ readyScripts.push("<script>"+source+"</script>");return "";
+});
+output=replaceOne(output,"</body>",readyScripts.join("\n")+"\n</body>");
 const previewCommit=process.env.AKARI_PREVIEW_SHA;
 if(previewCommit&&/^[a-f0-9]{40}$/.test(previewCommit)){
  output=output.replace(
@@ -108,7 +116,7 @@ console.log("Created standalone playable HTML:",Buffer.byteLength(output),"bytes
 // Embed the exact production assets, including CSS textures and SVG <image>
 // hrefs. This preview must be genuinely playable offline with no art downgrade.
 let paintedOutput=output;
-for(const name of ["battery","bulb-dark","bulb-lit","hud-panel","village-dark","village-lit","workbench"]){
+for(const name of ["battery","bulb-dark","bulb-lit","hud-panel","village-dark","village-lit","workbench","short-burst-sheet"]){
  const relative="./assets/mission1/"+name+".webp";
  const bytes=readFileSync("games/akari/assets/mission1/"+name+".webp");
  paintedOutput=paintedOutput.replaceAll(relative,"data:image/webp;base64,"+bytes.toString("base64"));

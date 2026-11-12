@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {createServer} from "node:http";
 import {readFileSync,mkdirSync,writeFileSync} from "node:fs";
 import {join,normalize,extname} from "node:path";
+import {pathToFileURL} from "node:url";
 import {chromium,webkit} from "playwright";
 
 // Real inputs, real lesson state. The artwork does not get a separate demo engine.
@@ -19,7 +20,7 @@ if(!process.env.AKARI_BROWSER_ORIGIN){
  await new Promise(resolve=>server.listen(8767,"127.0.0.1",resolve));
 }
 mkdirSync("artifacts/akari",{recursive:true});
-const results=[];
+const results=[],motionResults=[];
 try{
  for(const [engine,width,height] of [["chromium",320,740],["chromium",390,844],["chromium",1440,1000],["webkit",390,844],["webkit",1440,1000]]){
   const browser=await (engine==="webkit"?webkit:chromium).launch({headless:true});
@@ -42,16 +43,28 @@ try{
      const board=document.querySelector(".circuit-board");
      return {lit:board.classList.contains("is-lit"),short:board.classList.contains("is-short"),
       village:Number(getComputedStyle(board.querySelector(".painted-world-lit")).opacity),
+      pool:Number(getComputedStyle(board.querySelector(".painted-light-pool")).opacity),
       bulb:board.querySelector(".painted-bulb-image").getAttribute("href")};
     });
     assert.equal(actual.lit,lit,JSON.stringify(actual));assert.equal(actual.short,short,JSON.stringify(actual));
     assert.equal(actual.village,lit&&!short?1:0,"Village must follow actual circuit truth");
+    assert.equal(actual.pool,lit&&!short?1:0,"Table illumination must follow actual circuit truth");
     assert.ok(actual.bulb.endsWith(lit&&!short?"bulb-lit.webp":"bulb-dark.webp"),"The actual sprite must follow circuit truth");
    };
    // Same PR34 view, same browser, same viewport, same unlit initial circuit.
    await page.goto(origin+"/games/akari/?visual=cinematic",{waitUntil:"networkidle"});
    await page.locator(".circuit-svg-v2").waitFor();await snapshot("before-pr34");
    assert.equal(await page.locator(".painted-world").count(),0);
+   // Compare the new feedback to the already delivered PR35 raster build.
+   await page.goto(origin+"/artifacts/akari-art-baseline/games/akari/?visual=painted",{waitUntil:"networkidle"});
+   await page.waitForFunction(()=>document.body.dataset.paintedMission==="1");
+   for(const t of ["P","L","R","N"])await tap(t);
+   await snapshot("before-feedback-lit");
+   await page.locator(".circuit-board").screenshot({path:prefix+"-before-feedback-board-lit.png",animations:"disabled"});
+   await page.locator("#resetBtn").click();await connect("P","N");
+   await page.locator(".short-event").waitFor({state:"visible"});
+   await snapshot("before-feedback-short");
+   await page.evaluate(()=>localStorage.clear());
    await page.goto(origin+"/games/akari/?visual=painted",{waitUntil:"networkidle"});
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="1");
    await page.evaluate(async()=>{
@@ -92,11 +105,19 @@ try{
    // One wire is not a loop.
    await connect("P","L");await state(false);
    await connect("R","N");await state(true);await snapshot("painted-lit");
+   assert.equal(await page.locator(".painted-wire-sheen").count(),2,"Each real cable has a material highlight");
+   assert.equal(await page.locator(".wire.lit").first().evaluate(el=>getComputedStyle(el).stroke),"rgb(52, 139, 150)","Only the measured bulb is luminous; the insulated wire keeps its material");
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-lit.png",animations:"disabled"});
    // Cutting a real connected wire immediately extinguishes the scene.
    await page.locator("[data-unwire]").first().click();await state(false);
    // A battery short never lights the bulb, even alongside a closed lamp loop.
-   await reset();await connect("P","N");await state(false,true);await snapshot("painted-short");
+   await reset();await connect("P","N");await state(false,true);
+   await page.locator(".painted-short-frame").waitFor({state:"visible"});
+   assert.equal(await page.locator(".painted-short-event .short-flames,.painted-short-event .short-smoke").count(),0,"The real warning uses painted artwork, not emoji placeholders");
+   assert.equal(await page.locator(".painted-short-frame").evaluate(el=>getComputedStyle(el).animationName),"none","Reduced motion uses one clear static warning");
+   await snapshot("painted-short");
+   await page.locator("[data-unwire]").first().click();await state(false);
+   assert.equal(await page.locator(".painted-short-event").count(),0,"Disconnecting immediately removes stale fire");
    await reset();await connect("P","L");await connect("N","R");await connect("P","N");await state(false,true);
    // An incandescent bulb works with the two poles swapped.
    await reset();await connect("P","R");await connect("N","L");await state(true);
@@ -114,6 +135,16 @@ try{
    await stroke([[42,151],[25,130],[25,94],[225,94],[244,120],[268,152]]);
    assert.equal(await page.locator(".wire-chip").count(),1,"Drawing a wire connects actual terminals");
    await stroke([[313,210],[285,230],[235,230],[220,190],[178,151]]);await state(true);
+   for(const group of await page.locator('.lead-on-top').all()){
+    assert.equal(await group.locator('.painted-wire-sheen').getAttribute('d'),await group.locator('.wire').getAttribute('d'),"Cable highlight follows the player's actual drawing");
+   }
+   const cut=await page.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
+    const p=path.getPointAtLength(path.getTotalLength()/2),matrix=path.getScreenCTM();
+    const q=new DOMPoint(p.x,p.y).matrixTransform(matrix);return{x:q.x,y:q.y};
+   });
+   await page.mouse.move(cut.x,cut.y-28);await page.mouse.down();await page.mouse.move(cut.x,cut.y+28,{steps:10});await page.mouse.up();
+   await state(false);assert.equal(await page.locator('.wire-chip').count(),1,"Swiping the painted cable cuts only the crossed wire");
+   await connect('P','L');await state(true);
    // The explanation stays with the experiment; wrong reasons cannot complete it.
    await page.locator('[data-first-reason="cut"]').click();
    assert.equal(await page.locator("#nextBtn").isVisible(),false);
@@ -129,11 +160,21 @@ try{
    await context.close();
    const offline=await browser.newContext({viewport:{width,height},reducedMotion:"reduce"});
    const op=await offline.newPage();
-   await op.goto(origin+"/artifacts/akari-mission1-painted.html",{waitUntil:"networkidle"});
+   await op.goto(pathToFileURL(join(root,"artifacts/akari-mission1-painted.html")).href,{waitUntil:"networkidle"});
    await op.waitForFunction(()=>document.body.dataset.paintedMission==="1");
    assert.ok((await op.locator(".painted-bulb-image").getAttribute("href")).startsWith("data:image/webp;base64,"));
    for(const t of ["P","L","N","R"])await op.locator('[data-t="'+t+'"]').click();
    assert.equal(await op.locator(".circuit-board.is-lit").count(),1,"Offline deliverable uses the actual engine");
+   const fileCut=await op.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
+    const q=path.getPointAtLength(path.getTotalLength()/2),p=new DOMPoint(q.x,q.y).matrixTransform(path.getScreenCTM());return{x:p.x,y:p.y};
+   });
+   await op.mouse.move(fileCut.x,fileCut.y-28);await op.mouse.down();await op.mouse.move(fileCut.x,fileCut.y+28,{steps:10});await op.mouse.up();
+   assert.equal(await op.locator('.circuit-board.is-lit').count(),0,'Downloaded local HTML preserves swipe-to-cut, rather than offering a reduced interaction');
+   assert.equal(await op.locator('.wire-chip').count(),1);
+   await op.locator('#resetBtn').click();
+   for(const t of ['P','N'])await op.locator('[data-t="'+t+'"]').click();
+   await op.locator('.painted-short-frame').waitFor({state:'visible'});
+   assert.ok((await op.locator('.painted-short-frame').evaluate(el=>getComputedStyle(el).backgroundImage)).includes('data:image/webp;base64,'));
    await offline.close();
    assert.deepEqual(errors,[]);assert.deepEqual(failedResources,[]);
    results.push({engine,width,height,status:"pass",layout});
@@ -141,4 +182,35 @@ try{
   }finally{await browser.close();}
  }
  writeFileSync("artifacts/akari/painted-qa.json",JSON.stringify(results,null,2));
+ // Inspect actual animation and cancellation with motion enabled as well.
+ for(const [engine,width,height] of [["chromium",390,844],["chromium",1440,1000],["webkit",390,844],["webkit",1440,1000]]){
+  const browser=await(engine==="webkit"?webkit:chromium).launch({headless:true});
+  try{
+   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:"no-preference",hasTouch:width<741,isMobile:width<741});
+   const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(String(e)));
+   await p.goto(origin+'/games/akari/?visual=painted',{waitUntil:'networkidle'});
+   await p.waitForFunction(()=>document.body.dataset.paintedMission==='1');
+   const press=async t=>{const b=p.locator('[data-t="'+t+'"]');if(width<741)await b.tap();else await b.click();};
+   for(const t of ['P','L','R','N'])await press(t);
+   await p.waitForFunction(()=>document.querySelector('.painted-light-enter'));
+   await p.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.painted-light-pool')).opacity)===1);
+   await p.locator('[data-unwire]').first().click();
+   assert.equal(await p.locator('.painted-light-pool').evaluate(el=>getComputedStyle(el).opacity),'0','Light disappears immediately on cutting, without a lingering animation');
+   await p.locator('#resetBtn').click();await press('P');await press('N');
+   await p.locator('.painted-short-frame').waitFor({state:'visible'});
+   const warning=await p.locator('.painted-short-frame').evaluate(el=>({animation:getComputedStyle(el).animationName,image:getComputedStyle(el).backgroundImage}));
+   assert.equal(warning.animation,'painted-short-frames');assert.ok(warning.image.includes('short-burst-sheet.webp'));
+   await p.locator('.circuit-board').screenshot({path:`artifacts/akari/${engine}-${width}-motion-short.png`,animations:'allow'});
+   await p.locator('#resetBtn').click();
+   assert.equal(await p.locator('.painted-short-event').count(),0,'Reset cancels the in-flight fire animation');
+   await press('P');await press('N');await p.locator('.painted-short-event').waitFor({state:'visible'});
+   await p.locator('.painted-short-event').waitFor({state:'detached',timeout:4000});
+   assert.equal(await p.locator('.circuit-board.is-short').count(),1,'Transient fire ends, but a genuine short keeps its persistent warning');
+   await p.locator('[data-unwire]').click();
+   assert.equal(await p.locator('.circuit-board.is-short').count(),0);
+   assert.deepEqual(errors,[]);motionResults.push({engine,width,height,status:'pass',warning});
+   console.log('PAINTED MOTION PASS',engine,width);await context.close();
+  }finally{await browser.close();}
+ }
+ writeFileSync("artifacts/akari/painted-motion-qa.json",JSON.stringify(motionResults,null,2));
 }finally{if(server)await new Promise(resolve=>server.close(resolve));}
