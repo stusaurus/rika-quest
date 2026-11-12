@@ -37,6 +37,13 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  border:1.5px solid #bba97f!important;border-radius:11px!important;
  box-shadow:inset 0 1px 0 #e1e5b02e,0 2px 0 #0a1d2c!important;
 }
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar .map-toggle{
+ min-width:44px!important;min-height:44px!important;padding:6px 11px!important;
+ background:linear-gradient(#3d6258,#17333d)!important;color:#fff0d3!important;
+ border:1.5px solid #c4a978!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #ffe9b142,0 2px 0 #0a2229!important;
+ font-size:13px;font-weight:900;
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .layout{
  max-width:1180px;padding:0 clamp(5px,2vw,22px) 25px!important;
 }
