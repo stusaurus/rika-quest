@@ -21,6 +21,23 @@ if(!process.env.AKARI_BROWSER_ORIGIN){
 }
 mkdirSync("artifacts/akari",{recursive:true});
 const results=[],motionResults=[];
+function visibleCutStroke(path){
+ const length=path.getTotalLength(),matrix=path.getScreenCTM();
+ const board=path.closest('.circuit-board');
+ const screen=at=>{const p=path.getPointAtLength(at);return new DOMPoint(p.x,p.y).matrixTransform(matrix);};
+ const clear=p=>p.x>0&&p.x<innerWidth&&p.y>0&&p.y<innerHeight&&
+  !!document.elementFromPoint(p.x,p.y)?.closest('.circuit-board')&&
+  !document.elementFromPoint(p.x,p.y)?.closest('button,a,input,select,summary,[role="button"]');
+ for(const fraction of [.5,.4,.6]){
+  const at=length*fraction,p=screen(at),a=screen(Math.max(0,at-3)),b=screen(Math.min(length,at+3));
+  const dx=b.x-a.x,dy=b.y-a.y,mag=Math.hypot(dx,dy)||1,n={x:-dy/mag,y:dx/mag};
+  for(const [from,to] of [[-12,36],[-8,36],[12,-36],[8,-36],[-26,26],[-42,42]]){
+   const start={x:p.x+n.x*from,y:p.y+n.y*from},end={x:p.x+n.x*to,y:p.y+n.y*to};
+   if(clear(start)&&clear(end))return{start,end};
+  }
+ }
+ throw new Error('No visible wire-cut stroke avoids the actual control buttons: '+board.getBoundingClientRect().toJSON());
+}
 try{
  for(const [engine,width,height] of [["chromium",320,740],["chromium",390,844],["chromium",1440,1000],["webkit",390,844],["webkit",1440,1000]]){
   const browser=await (engine==="webkit"?webkit:chromium).launch({headless:true});
@@ -139,11 +156,8 @@ try{
     assert.equal(await group.locator('.painted-wire-sheen').getAttribute('d'),await group.locator('.wire').getAttribute('d'),"Cable highlight follows the player's actual drawing");
    }
    await page.locator('.circuit-inner').scrollIntoViewIfNeeded();
-   const cut=await page.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
-    const p=path.getPointAtLength(path.getTotalLength()/2),matrix=path.getScreenCTM();
-    const q=new DOMPoint(p.x,p.y).matrixTransform(matrix);return{x:q.x,y:q.y};
-   });
-   await page.mouse.move(cut.x,cut.y-28);await page.mouse.down();await page.mouse.move(cut.x,cut.y+28,{steps:10});await page.mouse.up();
+   const cut=await page.locator('[data-visual-wire="LP"] .wire').evaluate(visibleCutStroke);
+   await page.mouse.move(cut.start.x,cut.start.y);await page.mouse.down();await page.mouse.move(cut.end.x,cut.end.y,{steps:10});await page.mouse.up();
    await state(false);assert.equal(await page.locator('.wire-chip').count(),1,"Swiping the painted cable cuts only the crossed wire");
    await connect('P','L');await state(true);
    // The explanation stays with the experiment; wrong reasons cannot complete it.
@@ -167,10 +181,8 @@ try{
    for(const t of ["P","L","N","R"])await op.locator('[data-t="'+t+'"]').click();
    assert.equal(await op.locator(".circuit-board.is-lit").count(),1,"Offline deliverable uses the actual engine");
    await op.locator('.circuit-inner').scrollIntoViewIfNeeded();
-   const fileCut=await op.locator('[data-visual-wire="LP"] .wire').evaluate(path=>{
-    const q=path.getPointAtLength(path.getTotalLength()/2),p=new DOMPoint(q.x,q.y).matrixTransform(path.getScreenCTM());return{x:p.x,y:p.y};
-   });
-   await op.mouse.move(fileCut.x,fileCut.y-28);await op.mouse.down();await op.mouse.move(fileCut.x,fileCut.y+28,{steps:10});await op.mouse.up();
+   const fileCut=await op.locator('[data-visual-wire="LP"] .wire').evaluate(visibleCutStroke);
+   await op.mouse.move(fileCut.start.x,fileCut.start.y);await op.mouse.down();await op.mouse.move(fileCut.end.x,fileCut.end.y,{steps:10});await op.mouse.up();
    assert.equal(await op.locator('.circuit-board.is-lit').count(),0,'Downloaded local HTML preserves swipe-to-cut, rather than offering a reduced interaction');
    assert.equal(await op.locator('.wire-chip').count(),1);
    await op.locator('#resetBtn').click();
