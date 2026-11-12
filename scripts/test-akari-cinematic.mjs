@@ -58,6 +58,8 @@ try{
      "Painted depth includes the three actual village houses, not a static screenshot");
    assert.equal(await page.locator(".circuit-town-board .town-roof-detail").count(),6,
      "Each painted gabled roof has two vector detail layers");
+   assert.equal(await page.locator(".circuit-town-board .town-play-surface").count(),1,
+     "The physical circuit has a separate illustrated wood surface IN FRONT of the village");
    assert.equal(await page.locator(".circuit-town-board .town-stone-bridge").count(),1,
      "The river bridge is painted behind, not substituted for, any electrical wire");
    assert.equal(await page.locator(".circuit-town-board .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0",
@@ -109,6 +111,8 @@ try{
    assert.equal(stageThree.frame,"rgb(189, 160, 127)","Stage 3 should use the same game-world frame");
    assert.equal(await page.locator(".bridge-circuit-svg .bridge-repair-fixtures").count(),1,
      "The battery and bulb share the same crafted hardware language in repair mode");
+   assert.equal(await page.locator(".circuit-town-repair .town-play-surface").count(),1,
+     "Stage 3 uses the same foreground workbench as the wiring mission");
    assert.equal(await page.locator(".circuit-town-repair .town-stone-bridge").count(),1,
      "The repair experiment uses the SAME painted 2.5D village as the early missions");
    assert.equal(await page.locator(".circuit-town-repair .town-power-reflections").first().evaluate(el=>getComputedStyle(el).opacity),"0",
