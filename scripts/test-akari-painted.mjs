@@ -224,11 +224,13 @@ try{
      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
      const banner=document.getElementById("stageCelebration").getBoundingClientRect();
      const bulb=document.querySelector(".painted-bulb-image").getBoundingClientRect();
-     return {bannerBottom:banner.bottom,bulbTop:bulb.top,
-       bannerPointerEvents:getComputedStyle(document.getElementById("stageCelebration")).pointerEvents};
+     const toolbar=document.querySelector(".circuit-toolbar").getBoundingClientRect();
+     return {bannerTop:banner.top,bannerBottom:banner.bottom,toolbarBottom:toolbar.bottom,
+       bulbTop:bulb.top,bannerPointerEvents:getComputedStyle(document.getElementById("stageCelebration")).pointerEvents};
    });
-   assert.ok(clearPlakat.bannerBottom<clearPlakat.bulbTop&&clearPlakat.bannerPointerEvents==="none",
-     "Victory reward must not obscure the lit bulb or intercept input: "+JSON.stringify(clearPlakat));
+   assert.ok(clearPlakat.bannerTop>=clearPlakat.toolbarBottom-9&&
+     clearPlakat.bannerBottom<clearPlakat.bulbTop&&clearPlakat.bannerPointerEvents==="none",
+     "Compact in-world victory reward must leave the input toolbar and lit bulb visible: "+JSON.stringify(clearPlakat));
    await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
