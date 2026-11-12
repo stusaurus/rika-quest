@@ -84,6 +84,18 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  background-size:cover,100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
  box-shadow:inset 0 1px 0 #f3cb9255!important;
 }
+/* Override legacy gesture-first rules with higher specificity, while
+   preserving full 44px toolbar buttons and the interactive wiring board. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"].gesture-first[data-wire-focus="true"]
+ .main.town-immersive #workspace:not(:has(.circuit-board.zoomed))>.circuit-toolbar{
+ background-image:linear-gradient(90deg,#142f37fa,#28504df2),url("./assets/mission1/hud-panel.webp")!important;
+ background-size:cover,100% 100%!important;
+ background-position:center!important;background-repeat:no-repeat!important;
+ border:2px solid #be9b62!important;border-bottom:0!important;
+ border-radius:14px 14px 0 0!important;
+ padding:5px 12px!important;min-height:46px!important;margin:0 0 -2px!important;
+ box-shadow:inset 0 1px 0 #f3cb9255!important;
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
  color:#ffe8b6!important;text-shadow:0 1px 3px #05161b;
  font-size:clamp(13px,1.75vw,17px)!important;
