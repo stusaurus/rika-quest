@@ -46,6 +46,18 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  border:1.5px solid #bba97f!important;border-radius:11px!important;
  box-shadow:inset 0 1px 0 #e1e5b02e,0 2px 0 #0a1d2c!important;
 }
+/* The old muted music note is a combining-character cluster that some fonts
+   shape as a blank. Keep the real button/pressed state and use a readable label. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn{
+ position:relative;font-size:0!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn::before{
+ content:"音";font-size:17px;font-weight:900;color:#f9e9c6;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn[aria-pressed="false"]::after{
+ content:"";position:absolute;left:10px;top:21px;width:22px;height:2px;
+ background:#f9e9c6;box-shadow:0 0 2px #102d38;transform:rotate(-45deg);
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar .map-toggle{
  min-width:44px!important;min-height:44px!important;padding:6px 11px!important;
  background:linear-gradient(#3d6258,#17333d)!important;color:#fff0d3!important;

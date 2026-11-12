@@ -13,6 +13,11 @@ on:
       - 'scripts/build-akari-preview.mjs'
       - '.github/workflows/akari-qa.yml'
   workflow_dispatch:
+    inputs:
+      online_review_url:
+        description: 'Optional deployed review URL; must serve the tested HTML without an authentication wall'
+        required: false
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -68,7 +73,7 @@ jobs:
       - name: Build self-contained playable preview
         if: always()
         env:
-          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
         run: node scripts/build-akari-preview.mjs
       - name: Upload playable preview
@@ -99,7 +104,7 @@ jobs:
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Build identical offline art preview
         env:
-          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
         run: node scripts/build-akari-preview.mjs
       - name: Prepare immutable PR35 art comparison
@@ -129,6 +134,7 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
     env:
       AKARI_REVIEW_URL: https://akari-mission1-review-20261112.jyoker.chatgpt.site/
+      AKARI_DELIVERY_ONLINE_URL: ${{ inputs.online_review_url || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -138,7 +144,7 @@ jobs:
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Build identical online and offline review
         env:
-          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
+          AKARI_PREVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/build-akari-preview.mjs
       - name: Operate delivered HTML over file and HTTP, including saves
         run: node scripts/test-akari-delivery.mjs

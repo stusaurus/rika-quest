@@ -47,7 +47,10 @@ function cutStroke(path){
 async function operate(browser,engine,width,height,transport,url){
  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,
   hasTouch:width<741,isMobile:width<741,reducedMotion:"reduce"});
- if(transport==="file")await context.setOffline(true);
+ // WebKit 1.56.1 throws an internal navigation error for file:// when its
+ // global offline flag is set. Block every possible network request instead;
+ // the downloaded file must still run without any remote asset or font.
+ if(transport==="file")await context.route(/^https?:/,route=>route.abort());
  const p=await context.newPage(),errors=[],failures=[],externalAssets=[];
  p.on("pageerror",e=>errors.push(String(e)));
  p.on("requestfailed",r=>failures.push(r.url().slice(0,180)));
@@ -82,6 +85,10 @@ async function operate(browser,engine,width,height,transport,url){
    })));
   });
   assert.equal(await p.locator('#startupFallback').count(),0,"The real workspace replaces the fallback");
+  assert.ok((await p.locator('#soundBtn').evaluate(el=>getComputedStyle(el,'::before').content)).includes('音'),
+   'The mute control stays visible when the font cannot shape the original combining note');
+  await p.locator('#soundBtn').click();assert.equal(await p.locator('#soundBtn').getAttribute('aria-pressed'),'true');
+  await p.locator('#soundBtn').click();assert.equal(await p.locator('#soundBtn').getAttribute('aria-pressed'),'false');
   const layout=await p.locator('.circuit-inner').evaluate(inner=>{
    const r=inner.getBoundingClientRect(),expected={P:[42,151],N:[178,151],L:[268,152],R:[313,210]};
    return{overflow:document.documentElement.scrollWidth-innerWidth,contacts:[...inner.querySelectorAll('.terminal')].map(b=>{
