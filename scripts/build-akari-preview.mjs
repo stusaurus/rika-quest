@@ -116,6 +116,7 @@ for(const name of ["battery","bulb-dark","bulb-lit","hud-panel","village-dark","
 writeFileSync("artifacts/akari-preview.html",paintedOutput,"utf8");
 paintedOutput=paintedOutput.replace('new URLSearchParams(location.search).get("visual")==="painted"',
  '(new URLSearchParams(location.search).get("visual")||"painted")==="painted"');
+paintedOutput=paintedOutput.replace(/(https:\/\/rawcdn\.githack\.com\/stusaurus\/rika-quest\/[a-f0-9]+\/games\/akari\/index\.html)(?=")/g,"$1?visual=painted");
 if(paintedOutput.includes('./assets/mission1/'))throw new Error("Painted preview contains an external image reference");
 writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
 console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");

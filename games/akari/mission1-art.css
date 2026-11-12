@@ -67,7 +67,7 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  flex:0 0 auto!important;transform:none!important;margin-left:auto!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn::after{display:none!important}
-html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav){
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar:has(.circuit-quicknav){
  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-question{grid-column:1/-1}
@@ -76,7 +76,7 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav button{
  min-height:44px!important;background:#183d47!important;color:#f5e8cb!important;
- border:1px solid #9ca18b!important;box-shadow:none!important;font-size:12px!important;
+ border:1px solid #9ca18b!important;box-shadow:none!important;font-size:12px!important;min-width:0!important;width:auto!important;padding:6px!important;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .circuit-board.circuit-town-board{
  min-height:0!important;height:auto!important;overflow:hidden;
