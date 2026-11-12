@@ -5,6 +5,7 @@ import {join} from "node:path";
 import {pathToFileURL} from "node:url";
 import {createHash} from "node:crypto";
 import {chromium,webkit} from "playwright";
+import {publicHTMLProof} from "./akari-public-html.mjs";
 
 // Test the deliverable itself, not only the source page that generated it.
 const trial=process.env.AKARI_TRIAL_MODE==="1";
@@ -20,19 +21,20 @@ const server=createServer((_req,res)=>{
 await new Promise(resolve=>server.listen(8768,"127.0.0.1",resolve));
 const transports=trial&&online?[]:[["http",origin+"/"],["file",pathToFileURL(htmlPath).href]];
 const results=[],storageResults=[],fallbackResults=[];
+let onlineVerification=null;
 if(online){
  // A login/interstitial page must not be mistaken for a successfully deployed game.
  const deadline=Date.now()+Number(process.env.AKARI_DELIVERY_WAIT_MS||0);
  let verified=false,lastStatus;
- let mismatch;
  do{
   const response=await fetch(online,{redirect:"manual"});lastStatus=response.status;
   const actual=Buffer.from(await response.arrayBuffer());
-  const actualHash=createHash("sha256").update(actual).digest("hex");
-  verified=response.status===200&&actualHash===hash;
+  const proof=publicHTMLProof(bytes,actual),actualHash=proof.responseSha256;
+  verified=response.status===200&&proof.matches;
+  if(verified)onlineVerification={status:response.status,...proof};
   if(response.status===200&&!verified){
    let first=0;while(first<Math.min(actual.length,bytes.length)&&actual[first]===bytes[first])first++;
-   mismatch={expectedHash:hash,actualHash,expectedLength:bytes.length,actualLength:actual.length,
+   const mismatch={expectedHash:hash,actualHash,expectedLength:bytes.length,actualLength:actual.length,
     firstDifference:first,expectedContext:bytes.subarray(Math.max(0,first-100),first+300).toString(),
     actualContext:actual.subarray(Math.max(0,first-100),first+300).toString()};
    writeFileSync(`${out}/online-byte-mismatch.json`,JSON.stringify(mismatch,null,2));
@@ -44,7 +46,14 @@ if(online){
   console.log("Waiting for the approved public artifact; status",lastStatus);
   await new Promise(resolve=>setTimeout(resolve,3000));
  }while(true);
- assert.ok(verified,"The anonymous online URL must serve the tested HTML bytes, not a sign-in, download or interstitial page; status "+lastStatus);
+ assert.ok(verified,"The anonymous online URL must serve the unchanged game payload, not a sign-in or interstitial page; status "+lastStatus);
+ const downloadable=await fetch(new URL('akari-mission1-complete.html',online),{redirect:'manual'});
+ const downloadProof=publicHTMLProof(bytes,Buffer.from(await downloadable.arrayBuffer()));
+ assert.equal(downloadable.status,200);assert.ok(downloadProof.matches,'The public download contains the same mission-1-only game');
+ const robots=await fetch(new URL('robots.txt',online),{redirect:'manual'});
+ assert.equal(robots.status,200);assert.equal((await robots.text()).trim(),'User-agent: *\nDisallow: /');
+ onlineVerification.download={status:downloadable.status,...downloadProof};
+ onlineVerification.robots='User-agent: *; Disallow: /';
  transports.push(["online",online]);
 }
 
@@ -228,6 +237,6 @@ try{
   }finally{await browser.close();}
  }
 }finally{
- writeFileSync(out+'/delivery-qa.json',JSON.stringify({htmlSha256:hash,onlineRequested:!!online,trialOnly:trial,onlineURL:online||null,results,storageResults,fallbackResults},null,2));
+ writeFileSync(out+'/delivery-qa.json',JSON.stringify({htmlSha256:hash,onlineRequested:!!online,onlineVerification,trialOnly:trial,onlineURL:online||null,results,storageResults,fallbackResults},null,2));
  await new Promise(resolve=>server.close(resolve));
 }

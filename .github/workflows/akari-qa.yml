@@ -140,6 +140,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check public payload identity verification
+        run: node --test tests/akari-public-html.test.mjs
       - name: Install matching Playwright client
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Build identical online and offline review
