@@ -1,5 +1,6 @@
 "use strict";
-/* The first-mission art pilot is opt-in. This module only replaces rendering;
+/* The first two approved-village missions use one shared painted art system.
+ * This module only replaces illustration and scene presentation;
  * graph connectivity, device obstacles, input, scoring and saves belong to the
  * existing lesson engines. All four contacts retain the 400 x 250 coordinates. */
 (function(){
@@ -10,7 +11,7 @@
  const originalVillage=window.AkariCircuitVillage.board;
  window.AkariArt.workbench=function(wires,lit,stage){
   const svg=originalWorkbench(wires,lit);
-  if(stage!==1)return svg;
+  if(stage!==1&&stage!==2)return svg;
   const battery='<g class="battery-model painted-battery" role="group" aria-label="1.5ボルト乾電池。左の出っぱりが＋極、右の平らな面が−極">'+
    '<image class="painted-battery-image" href="'+images.battery+'" x="40" y="124" width="138" height="55" preserveAspectRatio="none"/></g>';
   const bulb='<g class="bulb-model painted-bulb" role="group" aria-label="豆電球。ねじの金属と底の金属が別々の接点。間の黒い部分は電気を通さない">'+
@@ -32,13 +33,14 @@
    });
  };
  window.AkariCircuitVillage.board=function(stage){
-  if(stage!==1)return originalVillage(stage);
-  return '<div class="painted-world" aria-hidden="true">'+
+  if(stage!==1&&stage!==2)return originalVillage(stage);
+  const repair=stage===2;
+  return '<div class="painted-world" data-painted-scene="'+stage+'" aria-hidden="true">'+
    '<div class="painted-village"><img class="painted-world-dark" src="'+images.villageDark+'" alt="" width="1536" height="456" draggable="false">'+
    '<img class="painted-world-lit" style="opacity:0" src="'+images.villageLit+'" alt="" width="1536" height="456" draggable="false">'+
    '<span class="painted-village-revival" aria-hidden="true"></span>'+
-   '<span class="painted-place">ひかりの村</span><span class="painted-live-state">'+
-   '<span class="painted-off-label">あかりを ともそう</span><span class="painted-on-label">ひかりが もどった！</span></span></div>'+
+   '<span class="painted-place">'+(repair?'ひかりの村・2':'ひかりの村')+'</span><span class="painted-live-state">'+
+   '<span class="painted-off-label">'+(repair?'きれた どう線を なおそう':'あかりを ともそう')+'</span><span class="painted-on-label">'+(repair?'まちの あかりが もどった！':'ひかりが もどった！')+'</span></span></div>'+
    '<div class="painted-desk"></div></div>';
  };
  document.addEventListener("DOMContentLoaded",()=>requestAnimationFrame(()=>{
@@ -90,8 +92,9 @@
    }));
   };
   function sync(){
-   const active=!!workspace.querySelector(".painted-world");
-   const value=active?"1":"";
+   const scene=workspace.querySelector(".painted-world[data-painted-scene]");
+   const active=!!scene;
+   const value=scene?.dataset.paintedScene||"";
    if(document.body.dataset.paintedMission!==value)document.body.dataset.paintedMission=value;
    const board=workspace.querySelector(".circuit-board:has(.painted-world)");
    const lit=!!board?.classList.contains("is-lit")&&!board?.classList.contains("is-short");
