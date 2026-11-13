@@ -4,7 +4,49 @@
 (function(){
  const root=document.getElementById("workspace");
  if(!root)return;
- let gesture=null,marked=null;
+ let gesture=null,marked=null,cutMode=false;
+ // Only the painted first mission gets the optional, visible scissors tool.
+ // Legacy cross-swipe, keyboard and two-tap connection remain unchanged.
+ const activePaintedBoard=()=>{
+  const board=root.querySelector(".circuit-board.circuit-town-board");
+  return document.documentElement.classList.contains("akari-painted")&&board?.querySelector(".painted-world")?board:null;
+ };
+ const scissorsMarkup='<svg viewBox="0 0 24 24" width="18" height="18" focusable="false" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 8l11 11M8 16L19 5"/></svg><span>きる</span>';
+ function updateScissors(){
+  const board=activePaintedBoard(),toolbar=root.querySelector(".circuit-toolbar");
+  if(!board||!toolbar){
+   cutMode=false;return;
+  }
+  const hasWires=!!board.querySelector('.lead-on-top[data-visual-wire] .wire');
+  if(!hasWires)cutMode=false;
+  let button=toolbar.querySelector("[data-wire-cut-mode]");
+  if(!button){
+   button=document.createElement("button");
+   button.type="button";button.className="circuit-scissors";
+   button.dataset.wireCutMode="";button.setAttribute("aria-label","はさみ：どう線を よこぎって きる");
+   button.title="はさみをえらんで、どう線をよこぎるようにスライド";
+   button.innerHTML=scissorsMarkup;
+   toolbar.querySelector(".circuit-zoom-btn")?.before(button);
+  }
+  button.hidden=!hasWires;
+  button.setAttribute("aria-pressed",String(cutMode));
+  board.classList.toggle("wire-cut-mode",cutMode);
+  const help=board.querySelector(".circuit-help");
+  if(help)help.textContent=cutMode?"✂ せんを よこぎって ゆびで スライド":hasWires?"✂「きる」で どう線を きれるよ":"まるを 2つ つないでみよう";
+  const question=toolbar.querySelector(".circuit-question");
+  if(question){
+   if(!question.dataset.scissorsPrompt)question.dataset.scissorsPrompt=question.textContent;
+   question.textContent=cutMode?"✂ せんを よこぎって きろう":question.dataset.scissorsPrompt;
+  }
+ }
+ root.addEventListener("click",e=>{
+  const toggle=e.target.closest("[data-wire-cut-mode]");
+  if(!toggle||!activePaintedBoard())return;
+  cutMode=!cutMode;
+  updateScissors();
+ });
+ new MutationObserver(updateScissors).observe(root,{childList:true});
+ updateScissors();
  const viewportPaths=board=>{
   if(board.matches(".circuit-board"))
    return [...board.querySelectorAll(".lead-on-top[data-visual-wire] .wire")]
@@ -99,9 +141,13 @@
   const position=vec(e.clientX,e.clientY);
   clear();gesture=null;
   if(!item)return;
+  // The physics engine removes the connection; never fake a successful cut.
+  // Switch off scissors first, so the newly rendered board restores scrolling.
+  cutMode=false;
   const result=root.dispatchEvent(new CustomEvent("akari-wire-cut",{bubbles:false,detail:{
    kind:item.kind,key:item.key
   }}));
+  updateScissors();
   if(result)cutBurst(position.x,position.y);
   if(e.cancelable)e.preventDefault();
  };
