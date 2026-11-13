@@ -317,6 +317,26 @@ try{
    assert.equal(await page.locator("#nextBtn").isVisible(),false,
      "An incorrect electrical explanation must never complete mission 2");
    await page.locator('[data-first-reason="joined"]').click();
+   // Mission 2 has a mandatory transfer challenge: genuine understanding of
+   // the closed electrical loop on three DIFFERENT circuits, not a free pass.
+   await page.locator(".transfer-puzzle").waitFor({state:"visible"});
+   assert.equal(await page.locator("#nextBtn").isVisible(),false,
+     "Stage 2 cannot be completed without its transfer-of-understanding questions");
+   assert.equal(await page.locator("body").getAttribute("data-painted-mission"),"2",
+     "The transfer challenge retains the painted second-mission identity");
+   assert.ok((await page.locator(".transfer-heading").evaluate(el=>getComputedStyle(el).backgroundImage)).includes("hud-panel.webp"),
+     "Science-transfer UI must remain part of the painted game design");
+   await snapshot("stage2-painted-transfer");
+   await page.locator('[data-transfer-answer="a"][data-transfer-value="dark"]').click();
+   await page.locator('[data-transfer-answer="b"][data-transfer-value="lit"]').click();
+   await page.locator('[data-transfer-answer="c"][data-transfer-value="lit"]').click();
+   await page.locator('[data-transfer-reason="plus"]').click();
+   await page.locator('[data-transfer-verify]').click();
+   assert.equal(await page.locator("#nextBtn").isVisible(),false,
+     "A guessed but scientifically wrong transfer reason cannot clear the mission");
+   assert.equal(await page.locator(".transfer-puzzle").count(),1);
+   await page.locator('[data-transfer-reason="path"]').click();
+   await page.locator('[data-transfer-verify]').click();
    await page.locator("#nextBtn").waitFor({state:"visible"});
    await snapshot("stage2-painted-complete");
    await page.locator("#nextBtn").click();
