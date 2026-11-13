@@ -93,8 +93,12 @@
   };
   function sync(){
    const scene=workspace.querySelector(".painted-world[data-painted-scene]");
-   const active=!!scene;
-   const value=scene?.dataset.paintedScene||"";
+   const stage2Transfer=!!workspace.querySelector(".transfer-puzzle")&&
+     document.getElementById("storyScene")?.dataset.stage==="2";
+   const active=!!scene||stage2Transfer;
+   // The science transfer is still part of mission 2: never drop back to
+   // unrelated webpage styling between repairing the wire and explaining it.
+   const value=scene?.dataset.paintedScene||(stage2Transfer?"2":"");
    if(document.body.dataset.paintedMission!==value)document.body.dataset.paintedMission=value;
    const board=workspace.querySelector(".circuit-board:has(.painted-world)");
    const lit=!!board?.classList.contains("is-lit")&&!board?.classList.contains("is-short");
