@@ -1,0 +1,272 @@
+/* Raster art belongs to the actual playable mission. Opt-in, mission 1 only. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{
+ --painted-village-height:144px;
+ --painted-hud:url("./assets/mission1/hud-panel.webp");
+ color:#f7ecd3;background:linear-gradient(#102938eb,#071c2bf7),url("./assets/mission1/village-dark.webp") center/cover fixed!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .sky-particles{display:none}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
+ min-height:60px;height:60px;padding-inline:24px;
+ background:#102e38 var(--painted-hud) center/100% 100% no-repeat!important;
+ border:0;box-shadow:0 7px 30px #03101980;color:#fff0cd;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{
+ color:#fff1cc!important;background:none!important;border:0!important;box-shadow:none!important;
+ font-size:20px;letter-spacing:.05em;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand small{color:#a8c4ba}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .star-count{
+ background:#172c31;border:1px solid #a88851;color:#f4cf85;box-shadow:none;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.icon-btn,.map-toggle){
+ min-width:44px;min-height:44px;color:#f9e9c6;background:#183d47;border:1px solid #8e9e8c;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .layout{max-width:1080px;margin-inline:auto}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive{
+ max-width:1080px;padding:14px 22px 26px;row-gap:8px!important;background:transparent;
+ grid-template-areas:"heading" "task" "workplace" "steps" "feedback" "actions" "free" "journal" "discovery" "report" "footer"!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive>.story-scene{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head{
+ padding:16px 22px!important;min-height:90px!important;gap:12px!important;
+ background:var(--painted-hud) center/100% 100% no-repeat!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;color:#fff0ce!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .eyebrow{
+ padding:0!important;background:none!important;border:0!important;
+ color:#dbb677!important;font-size:11px!important;letter-spacing:.13em;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head h2{
+ color:#fff1d8!important;font-size:clamp(20px,2.5vw,28px)!important;text-shadow:0 2px 4px #06171e;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-stars{color:#dcb97a!important;font-size:22px}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .scene-progress{
+ position:static!important;align-self:center;font-size:11px!important;background:#102f39!important;
+ color:#efcd8c!important;border:1px solid #879a85!important;padding:4px 8px!important;
+ border-radius:20px!important;white-space:nowrap;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(#readingToggle,#readTaskBtn,.circuit-zoom-btn){
+ min-height:44px!important;background:#183d47!important;border:1px solid #9ca18b!important;
+ color:#f5e8cb!important;box-shadow:0 2px 0 #071f28!important;border-radius:10px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace{
+ display:block!important;min-height:0!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar{
+ display:flex!important;align-items:center;justify-content:space-between;gap:8px;
+ padding:0 4px!important;margin:0 0 8px!important;min-height:44px!important;
+ background:none!important;border:0!important;box-shadow:none!important;
+ flex-wrap:nowrap!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
+ display:block!important;flex:1 1 190px!important;color:#f2dfb9!important;font-size:15px!important;
+ min-width:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn{
+ position:static!important;inset:auto!important;width:auto!important;min-width:96px!important;
+ flex:0 0 auto!important;transform:none!important;margin-left:auto!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn::after{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar:has(.circuit-quicknav){
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-question{grid-column:1/-1}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav{
+ display:flex;gap:6px;margin:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav button{
+ min-height:44px!important;background:#183d47!important;color:#f5e8cb!important;
+ border:1px solid #9ca18b!important;box-shadow:none!important;font-size:12px!important;min-width:0!important;width:auto!important;padding:6px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .circuit-board.circuit-town-board{
+ min-height:0!important;height:auto!important;overflow:hidden;
+ background:#774b31!important;border:3px solid #ae8c59!important;border-radius:16px!important;
+ box-shadow:0 3px 0 #513e31,0 7px 0 #172b2e,0 18px 30px #020e1ca6!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board::before{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-world{
+ position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village{
+ position:relative;height:var(--painted-village-height);overflow:hidden;background:#264568;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village>img{
+ position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-world-lit{opacity:0;transition:opacity .45s ease-out}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-world-lit{opacity:1}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-desk{
+ position:absolute;top:var(--painted-village-height);bottom:0;left:0;right:0;
+ background:#9a5c36 url("./assets/mission1/workbench.webp") center top/100% 115% no-repeat;
+ box-shadow:inset 0 5px 7px #ebc27a50;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.painted-place,.painted-live-state){
+ position:absolute;top:12px;z-index:2;padding:5px 10px;background:#102b3bd9;
+ color:#ffe3ad;border:1px solid #a28c62;border-radius:20px;font-size:11px;letter-spacing:.06em;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-place{left:13px}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-live-state{right:13px;color:#dce8de}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-on-label{display:none}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-on-label{display:inline}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-off-label{display:none}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board:not(.zoomed) .circuit-inner{
+ position:relative!important;left:auto!important;top:auto!important;transform:none!important;
+ width:min(600px,calc(100% - 20px))!important;max-width:none!important;
+ aspect-ratio:400/250;margin:var(--painted-village-height) auto 40px!important;z-index:3;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed{
+ overflow-x:auto!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .painted-world{width:max(100%,640px)}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .circuit-help{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.zoomed .circuit-inner{
+ width:640px!important;max-width:none!important;position:relative!important;left:auto!important;top:auto!important;
+ margin:var(--painted-village-height) auto 40px!important;transform:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.battery-model,.bulb-model){
+ filter:drop-shadow(2px 7px 4px #311b1990)!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .lead-on-top{
+ filter:drop-shadow(0 2px 1px #3120189c);
+}
+/* Dimensional insulated leads stay visible without pretending that the cable
+ * itself is a lamp. The measured bulb and its light pool carry the lit state. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-svg-v2 .wire-outline{
+ stroke:#243b40!important;stroke-width:10!important;opacity:.96;filter:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-svg-v2 .wire,
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-svg-v2 .wire-freehand-trace{
+ stroke:#348b96!important;stroke-width:6.5!important;filter:none!important;animation:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-svg-v2 .wire.danger{
+ stroke:#dd6948!important;stroke-dasharray:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-wire-sheen{
+ stroke:#b9e1d9;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;
+ opacity:.58;transform:translateY(-1px);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-cut-target .wire{stroke:#ffc46f!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-pool{opacity:0}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-light-pool{opacity:1}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-world-lit,
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-light-pool{
+ animation:painted-light-arrives .48s ease-out both;
+}
+@keyframes painted-light-arrives{from{opacity:0}to{opacity:1}}
+/* One painted VFX sheet, placed at the real battery in both normal and zoom
+ * views. All input passes through it, so the learner can cut the short at once. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-event{
+ inset:0;z-index:12;pointer-events:none;overflow:visible;animation:none;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-source{
+ position:absolute;pointer-events:none;animation:painted-short-fades 1.65s ease-out both;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-frame{
+ width:100%;height:100%;background:url("./assets/mission1/short-burst-sheet.webp") 0 0/300% 200% no-repeat;
+ animation:painted-short-frames 1.4s steps(1,end) both;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-alert{
+ position:absolute;transform:translateX(-50%);display:grid;gap:2px;max-width:calc(100% - 20px);
+ padding:7px 14px;border:1px solid #ffc481;border-radius:10px;background:#682b23f2;
+ color:#fff0cd;box-shadow:0 3px 12px #4e1b2355;text-align:center;white-space:nowrap;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-alert strong{font-size:17px}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-alert small{font-size:12px}
+@keyframes painted-short-frames{
+ 0%{background-position:0% 0%}16.67%{background-position:50% 0%}33.34%{background-position:100% 0%}
+ 50%{background-position:0% 100%}66.67%{background-position:50% 100%}83.34%,100%{background-position:100% 100%}
+}
+@keyframes painted-short-fades{0%,65%{opacity:1}100%{opacity:0}}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal{
+ width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+ background:#245762!important;border:3px solid #e3d5ac!important;color:#fff4cf!important;
+ box-shadow:0 0 0 3px #614b32,0 3px 6px #20190f80!important;font-size:15px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal[data-t="P"]{left:10.5%!important;top:60.4%!important;background:#a64734!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal[data-t="N"]{left:44.5%!important;top:60.4%!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal[data-t="L"]{left:67%!important;top:60.8%!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal[data-t="R"]{left:78.25%!important;top:84%!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal.selected{
+ background:#ffdf9a!important;color:#3f3525!important;border-color:#fff2c9!important;
+ box-shadow:0 0 0 6px #ffcf7790,0 0 20px #ffd47e70!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal-label{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .component-tag{
+ position:absolute!important;display:block!important;transform:translateX(-50%);
+ background:#173d43e8!important;color:#fae4bc!important;border:1px solid #cead7c!important;
+ border-radius:16px!important;padding:4px 10px!important;font-size:11px!important;box-shadow:0 2px 4px #452d2355;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag.battery-tag{left:28%!important;top:31%!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag.bulb-tag{left:78%!important;top:0!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip-list{top:calc(var(--painted-village-height) + 8px);left:12px;right:auto;max-width:60%}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip{
+ background:#153a42eb!important;color:#ffedc8;border:1px solid #cdaf7a;min-height:44px;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board .circuit-help{
+ background:#173b40ed!important;color:#ffedcc!important;border:1px solid #c3a46e!important;
+ bottom:10px!important;border-radius:8px!important;font-size:12px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-legend{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #freeLabToggle{
+ grid-area:free;
+ justify-self:end;margin:4px 0!important;min-height:44px!important;
+ border:1px solid #75978c!important;background:#163741!important;color:#d7e4d8!important;
+ box-shadow:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.journal,.feedback){
+ color:#efe2c5!important;border:1px solid #6f8d83!important;background:#15323c!important;box-shadow:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .journal summary{color:#f3e8ce!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .journal-count{background:#234d54!important;color:#e0eddc!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row .btn{
+ min-height:44px!important;background:#183c43!important;border:1px solid #8da18a!important;
+ color:#fae9c8!important;box-shadow:0 3px 0 #081e29!important;border-radius:10px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row #resetBtn{width:auto!important;padding:8px 14px!important;font-size:13px!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #resetBtn::before{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row #nextBtn{
+ background:#b7833e!important;color:#fff8dd!important;border-color:#f6d795!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar{background:#14343f;color:#fff1d5}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep{
+ background:#173b44!important;color:#fff0cc!important;border:1px solid #bba378!important;
+ border-radius:12px!important;box-shadow:0 5px 15px #061c2855!important;padding:12px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep :is(h3,p){color:#fff0cc!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-option{
+ min-height:54px!important;background:#f7f0df!important;color:#284953!important;border:2px solid #92aaa0!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-option[aria-pressed="true"]{
+ background:#ffe7ac!important;border-color:#d0a355!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board.is-short{
+ border-color:#ff8861!important;box-shadow:0 0 0 4px #f2583c70,0 10px 30px #6e2b2b88!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-short .painted-desk{box-shadow:inset 0 0 60px #a6250f88}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .footer{color:#9db5b0}
+@media(max-width:740px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{--painted-village-height:126px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{height:58px;min-height:58px;padding-inline:10px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{font-size:15px;letter-spacing:0}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive{padding:10px 8px 22px;row-gap:6px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head{
+  padding:14px 13px!important;min-height:90px!important;gap:6px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head h2{font-size:19px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .quest-stars{font-size:17px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .scene-progress{display:none!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{font-size:13px!important;flex-basis:150px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn{font-size:11px!important;padding:6px 8px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village>img{object-position:48% 55%}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-live-state{font-size:10px;right:8px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-place{font-size:10px;left:8px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .component-tag{font-size:10px!important;padding:3px 8px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .wire-chip{min-height:44px;padding:3px 7px}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-board .circuit-help{font-size:10px!important;padding:5px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-choices{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-world-lit{transition:none}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] :is(.painted-light-enter .painted-world-lit,.painted-light-pool,.painted-short-source,.painted-short-frame){animation:none!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-short-frame{background-position:100% 0%}
+}

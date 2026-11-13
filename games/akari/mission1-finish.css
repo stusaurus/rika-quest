@@ -1,0 +1,563 @@
+/* Mission 1, final visual-system pass. Existing WebP art is the art source;
+   this file composes its REAL controls into one coherent game surface.
+   Every selector is opt-in, only while mission 1 is actually active. */
+/* Full-page captures and long scrolls must never reveal the white canvas
+   beyond the first mobile viewport when the source image uses fixed sizing. */
+html.akari-painted:has(body[data-painted-mission="1"]){
+ background:#0b2431!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{
+ background-color:#0b2431!important;
+ background-attachment:scroll!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]{
+ --mission1-brass:#d7b883;--mission1-ink:#102d38;--mission1-parchment:#f8ebcd;
+ --mission1-hud:url("./assets/mission1/hud-panel.webp");
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
+ height:48px!important;min-height:48px!important;padding:4px clamp(9px,2.5vw,28px)!important;
+ border-bottom:1px solid #d5b27c87!important;
+ box-shadow:0 3px 16px #06182692!important;
+ background:linear-gradient(180deg,#122d36f7,#122d35f7),var(--mission1-hud) center/cover!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{
+ min-height:40px;flex:0 1 auto;max-width:190px;
+ font-size:16px!important;line-height:1!important;padding:0 5px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand small{
+ display:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand-symbol{
+ font-size:23px!important;margin-right:5px!important;color:#ffd88c;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .top-actions{
+ gap:5px;min-width:0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .star-count{
+ display:flex;align-items:center;justify-content:center;min-height:39px;
+ background:linear-gradient(#3f3029,#1b3337)!important;
+ border:1px solid #c8a66f!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #ffe3aa55!important;
+ font-size:16px!important;padding:3px 8px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .icon-btn{
+ min-width:44px!important;min-height:44px!important;width:44px;height:44px;
+ background:linear-gradient(135deg,#3d615d,#193945)!important;
+ border:1.5px solid #bba97f!important;border-radius:11px!important;
+ box-shadow:inset 0 1px 0 #e1e5b02e,0 2px 0 #0a1d2c!important;
+}
+/* The old muted music note is a combining-character cluster that some fonts
+   shape as a blank. Keep the real button/pressed state and use a readable label. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn{
+ position:relative;font-size:0!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn::before{
+ content:"音";font-size:17px;font-weight:900;color:#f9e9c6;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #soundBtn[aria-pressed="false"]::after{
+ content:"";position:absolute;left:10px;top:21px;width:22px;height:2px;
+ background:#f9e9c6;box-shadow:0 0 2px #102d38;transform:rotate(-45deg);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar .map-toggle{
+ min-width:44px!important;min-height:44px!important;padding:6px 11px!important;
+ background:linear-gradient(#3d6258,#17333d)!important;color:#fff0d3!important;
+ border:1.5px solid #c4a978!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #ffe9b142,0 2px 0 #0a2229!important;
+ font-size:13px;font-weight:900;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .layout{
+ max-width:1180px;padding:0 clamp(5px,2vw,22px) 25px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive{
+ max-width:1180px;padding:8px clamp(4px,1vw,12px) 20px!important;row-gap:4px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head{
+ position:relative;z-index:4;
+ padding:10px 20px!important;min-height:72px!important;
+ gap:9px!important;
+ background:linear-gradient(90deg,#102f39c9,#1d4547ad),var(--mission1-hud) center/100% 100% no-repeat!important;
+ border:1px solid #bd9e6b!important;border-bottom:2px solid #e0b77b!important;
+ border-radius:16px 16px 4px 4px!important;
+ box-shadow:inset 0 1px 0 #f9dca356,0 4px 13px #051a27a8!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .eyebrow{
+ color:#f0c989!important;font-size:10px!important;letter-spacing:.17em!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head h2{
+ font-size:clamp(19px,2.7vw,28px)!important;line-height:1.23!important;
+ color:#fff6e2!important;text-shadow:0 2px 5px #05161d!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .quest-stars{
+ font-size:20px!important;letter-spacing:1px!important;white-space:nowrap;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .scene-progress{
+ border-radius:9px!important;background:linear-gradient(#57432f,#233e3f)!important;
+ border-color:#a78c60!important;min-height:31px;display:inline-flex;align-items:center;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head #readingToggle{
+ min-height:44px!important;border:1px solid #d4af75!important;
+ background:linear-gradient(#355f5d,#214049)!important;
+ color:#ffeed0!important;box-shadow:0 2px 0 #0b2028!important;
+}
+/* Eliminate the underlying pale webpage sheet from the lesson.
+   Stage, question, actions and observations all live over the SAME dusk world. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-panel{
+ background:transparent!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;padding:0!important;overflow:visible!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery{
+ margin:8px 4px 0!important;padding:12px 17px!important;
+ border:2px solid #c2a36c!important;border-radius:14px!important;
+ background:linear-gradient(120deg,#173e42ef,#122e3cef),url("./assets/mission1/hud-panel.webp") center/cover no-repeat!important;
+ color:#f5e4c4!important;box-shadow:inset 0 1px 0 #f5d79b55,0 5px 12px #071a288e!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery .discovery-badge{
+ color:#ffe09c!important;text-shadow:0 1px 3px #061b24;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery :is(summary,p){
+ color:#fff0cd!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #discovery summary{
+ min-height:44px;display:flex;align-items:center;
+}
+/* True in-game lighting reveal: the town's LIT bitmap grows outward from
+   the actual lamp/cabin region; no decorative 'electrical path' is invented.
+   The finished image is still always controlled by the physics .is-lit state. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-world-lit{
+ clip-path:circle(0% at 66% 76%);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-world-lit{
+ clip-path:circle(155% at 66% 76%);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .painted-light-enter .painted-world-lit{
+ animation:mission1-town-awakens 1.18s cubic-bezier(.23,.78,.21,1) both!important;
+}
+@keyframes mission1-town-awakens{
+ 0%{opacity:0;clip-path:circle(0% at 66% 76%)}
+ 32%{opacity:.88}
+ 100%{opacity:1;clip-path:circle(155% at 66% 76%)}
+}
+/* Earlier gesture-first styles used an ivory summary button. Its white text
+   was invisible against ivory. Make the actual discovery control readable. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more>summary{
+ display:flex!important;align-items:center;min-height:44px!important;
+ padding:8px 14px!important;max-width:100%;width:max-content!important;
+ background:linear-gradient(#45685e,#203e45)!important;color:#fff1ce!important;
+ border:2px solid #d9ba7f!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #fff5d35f,0 3px 0 #0f2a32!important;
+ text-shadow:0 1px 2px #0c242b!important;font-size:14px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more>summary:focus-visible{
+ outline:3px solid #ffdf83!important;outline-offset:3px!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more[open]>summary{
+ background:linear-gradient(#f0d8a1,#bc9759)!important;color:#273c3c!important;
+ text-shadow:0 1px 0 #fff2d48a!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #discovery .discovery-more p{
+ color:#f8ebd0!important;line-height:1.7!important;
+ padding:10px 12px!important;margin:10px 0 0!important;
+ background:#102d37d9!important;border:1px solid #ac936c!important;
+ border-radius:8px!important;
+}
+/* Victory has to celebrate the ACTUAL circuit result, not mask the bulb
+   or wires. The persistent in-game feedback and Next button remain visible. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration:not([hidden]){
+ top:190px!important;width:min(305px,calc(100vw - 32px))!important;max-width:305px!important;
+ padding:9px 12px!important;min-height:56px!important;
+ display:flex!important;align-items:center;justify-content:center;flex-wrap:wrap;
+ gap:6px!important;white-space:normal;line-height:1.25!important;
+ animation:mission1-reward-burst 2.1s cubic-bezier(.16,.85,.22,1) forwards!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration strong{
+ font-size:clamp(14px,2vw,18px)!important;line-height:1.3!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration .celebration-sparks{
+ display:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration .celebration-stars{
+ font-size:23px!important;line-height:1.1!important;letter-spacing:1px!important;
+}
+@keyframes mission1-reward-burst{
+ 0%{opacity:0;scale:.88;filter:brightness(1.85)}
+ 16%{opacity:1;scale:1.03;filter:brightness(1.25)}
+ 33%,73%{opacity:1;scale:1;filter:brightness(1)}
+ 100%{opacity:0;scale:1;filter:brightness(1)}
+}
+/* The real scene, interactive toolbar and science question read as one
+   handcrafted instrument; decorative art is never an inert screenshot. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace{
+ padding:0 4px;overflow:visible;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar{
+ padding:5px 12px!important;min-height:46px!important;margin:0 0 -2px!important;
+ border:2px solid #be9b62!important;border-bottom:0!important;
+ border-radius:14px 14px 0 0!important;
+ background-image:linear-gradient(90deg,#142f37fa,#28504df2),url("./assets/mission1/hud-panel.webp")!important;
+ background-size:cover,100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ box-shadow:inset 0 1px 0 #f3cb9255!important;
+}
+/* Override legacy gesture-first rules with higher specificity, while
+   preserving full 44px toolbar buttons and the interactive wiring board. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"].gesture-first[data-wire-focus="true"]
+ .main.town-immersive #workspace:not(:has(.circuit-board.zoomed))>.circuit-toolbar{
+ background-image:linear-gradient(90deg,#142f37fa,#28504df2),url("./assets/mission1/hud-panel.webp")!important;
+ background-size:cover,100% 100%!important;
+ background-position:center!important;background-repeat:no-repeat!important;
+ border:2px solid #be9b62!important;border-bottom:0!important;
+ border-radius:14px 14px 0 0!important;
+ padding:5px 12px!important;min-height:46px!important;margin:0 0 -2px!important;
+ box-shadow:inset 0 1px 0 #f3cb9255!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
+ color:#ffe8b6!important;text-shadow:0 1px 3px #05161b;
+ font-size:clamp(13px,1.75vw,17px)!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn,
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-quicknav button{
+ min-height:44px!important;background:linear-gradient(#4a6359,#1b3944)!important;
+ color:#fce8c5!important;border:1.5px solid #bdad83!important;
+ border-radius:10px!important;box-shadow:0 2px 0 #10252b!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .circuit-board.circuit-town-board{
+ border:3px solid #c4a16c!important;border-top:2px solid #c4a16c!important;
+ border-radius:0 0 15px 15px!important;
+ box-shadow:inset 0 0 0 2px #efca9066,0 4px 0 #674b36,0 11px 23px #061925b9!important;
+}
+/* 44px square input bounds. The VISIBLE parts are smaller metal socket heads,
+   visually attached to the art underneath instead of looking like floating UI.
+   Full Japanese accessible labels remain on the original real controls. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal{
+ width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+ color:transparent!important;font-size:0!important;
+ border-radius:50%;isolation:isolate;display:grid;place-items:center;
+ transition:none!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal::before{
+ content:"";position:absolute;inset:6px;z-index:-1;border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,#fff6dd 0,#e3d4b6 27%,#9aaca5 54%,#5b767a 84%,#344e57 100%);
+ border:2px solid #e4cda2;
+ box-shadow:inset 0 0 0 2px #445c65,0 2px 3px #161e27ad,0 0 0 1px #3b4a4be0;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal::after{
+ position:absolute;inset:6px;display:grid;place-items:center;z-index:1;
+ color:#172f3d;font-size:12px;font-weight:950;line-height:1;content:"";
+ text-shadow:0 1px 0 #fff4d67c;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal[data-t="P"]::before{
+ background:radial-gradient(circle at 32% 28%,#fff1d2,#ebaa79 29%,#a74e3a 65%,#622e30 100%);
+ border-color:#f7d6a4;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal[data-t="P"]::after{content:"＋";color:#fff2d4}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal[data-t="N"]::after{content:"−"}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal[data-t="L"]::after{content:"横"}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .terminal[data-t="R"]::after{content:"底"}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal.selected::before{
+ background:radial-gradient(circle at 30% 24%,#fff8da,#ffe49d 32%,#c99749 70%,#8c6236);
+ border-color:#fff1bb;box-shadow:inset 0 0 0 2px #8d6634,0 0 0 4px #ffc774b8,0 0 18px #ffd38fc9;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal:focus-visible{
+ outline:3px solid #fff0b1!important;outline-offset:0!important;
+ background:#f2ba6336!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal:hover::before{
+ border-color:#fff4ce;box-shadow:0 0 0 3px #ffe4a28f,0 3px 5px #1a303eb0;
+}
+/* Cutting is a discoverable physical tool, not a hidden or mouse-only gesture.
+   The visible control is keyboard/touch accessible and shares the game HUD. */
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors{
+ display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:3px;
+ min-width:57px;min-height:44px;padding:5px 6px;border-radius:10px;
+ border:1.5px solid #cfb180;background:linear-gradient(#365b54,#183740);
+ color:#fff0cf;font-size:12px;font-weight:900;line-height:1;
+ box-shadow:inset 0 1px 0 #ffe4b447,0 2px 0 #10272b;
+ touch-action:manipulation;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors[hidden]{
+ display:none!important
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors[aria-pressed="true"]{
+ background:linear-gradient(#ffe1a7,#d59a58);color:#3f321f;
+ border-color:#fff5cf;box-shadow:0 0 0 3px #ffcd7994,0 3px 0 #604635;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors:focus-visible{
+ outline:3px solid #fff0a5;outline-offset:2px
+}
+/* Prevent iOS/WebKit panning from cancelling the active touch gesture.
+   Ordinary play keeps native vertical scrolling, especially on short phones. */
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode,
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-inner,
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-svg-v2{
+ touch-action:none!important;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .lead-on-top .wire{
+ cursor:crosshair;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-help{
+ color:#ffebbf!important;background:#1a4344ed!important;
+ border:1px solid #e9bb70!important;border-radius:9px!important;
+ font-weight:900;max-width:calc(100% - 26px);
+}
+html.akari-painted body[data-painted-mission="1"] .wire-cut-target .painted-wire-sheen{
+ stroke:#ffe8aa!important;opacity:1!important;stroke-width:2.5;
+}
+@media(max-width:740px){
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors{
+  min-width:52px;gap:2px;padding:4px 5px;font-size:11px
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors svg{
+  width:17px;height:17px;flex-shrink:0
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-scissors{
+  grid-column:1;grid-row:2;justify-self:start
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-zoom-btn{
+  grid-column:2;grid-row:2
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-quicknav{
+  grid-column:1/-1;grid-row:3
+ }
+}
+/* A reward can enhance the real electric change without falsely showing
+   a conducting wire between buildings. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village{
+ isolation:isolate;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village-revival{
+ position:absolute;inset:0;opacity:0;z-index:1;pointer-events:none;
+ background:radial-gradient(ellipse 50% 74% at 64% 65%,#ffdf8d5c 0,transparent 85%);
+ mix-blend-mode:screen;transition:opacity .65s ease-out;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-village-revival{
+ opacity:1;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village-revival::after{
+ content:"";display:block;position:absolute;inset:-35% -20%;opacity:0;
+ background:radial-gradient(ellipse 16% 55% at 50% 50%,#fff4c49d,transparent 95%);
+ transform:translateX(-47%);pointer-events:none;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-village-revival::after{
+ animation:painted-revival 1.1s ease-out both;
+}
+@keyframes painted-revival{
+ 0%{opacity:0;transform:translateX(-47%)}
+ 25%{opacity:.85}
+ 100%{opacity:0;transform:translateX(48%)}
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-desk::after{
+ content:"";position:absolute;inset:0;opacity:0;pointer-events:none;
+ background:radial-gradient(ellipse 37% 45% at 77% 48%,#ffe6ad9b 0,#efbb6d44 40%,transparent 100%);
+ mix-blend-mode:screen;transition:opacity .4s ease-out;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-desk::after{opacity:.62}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-live-state{
+ background:#183b3be0;border:1px solid #a98758;color:#fff0bf;
+ border-radius:9px;padding:5px 8px;box-shadow:inset 0 1px 0 #e8dbb34a;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .is-lit:not(.is-short) .painted-live-state{
+ background:linear-gradient(#73592e,#3c5c48);border-color:#f3ca76;
+ box-shadow:0 0 18px #ffce754e,inset 0 1px 0 #fff0b478;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-place{
+ border-radius:9px;background:#183b3be0;border-color:#a98758;
+}
+/* The question, observations and actions belong to the SAME crafted HUD.
+   Actual learning choices and their disabled/selected semantics are unchanged. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep{
+ margin:0 4px!important;padding:12px clamp(10px,2.2vw,22px)!important;
+ border:2px solid #c0a273!important;border-radius:14px!important;
+ background:linear-gradient(110deg,#173c42ed,#12323aef),var(--mission1-hud) center/cover no-repeat!important;
+ box-shadow:inset 0 2px 0 #efd7a54d,0 4px 0 #4c4539,0 12px 16px #0519289c!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep :is(h3,p){
+ color:#fff0cc!important;text-shadow:0 1px 2px #132d36;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .step-index{
+ color:#263e42;background:#e7c783!important;border:1px solid #f4d9a4;
+ box-shadow:0 2px 0 #6f5433;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-option{
+ background:linear-gradient(135deg,#fcf3dd,#f2e3c6)!important;
+ color:#23454b!important;border:2px solid #b69b72!important;
+ box-shadow:inset 0 1px 0 #fff9e7,0 3px 0 #65513cd6!important;
+ border-radius:10px!important;min-height:54px;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #thinkStep .reason-option[aria-pressed="true"]{
+ background:linear-gradient(#ffe9b4,#e3c181)!important;
+ border-color:#f4d18d!important;
+ box-shadow:0 0 0 2px #e5bf80,0 2px 0 #766044!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .feedback{
+ margin:3px 4px 0!important;min-height:42px!important;
+ border:1px solid #8f9981!important;border-left:4px solid #d7b575!important;
+ border-radius:9px!important;padding:7px 11px!important;
+ background:linear-gradient(95deg,#1c4545,#17333e)!important;color:#ffe8bb!important;
+ font-size:13px!important;box-shadow:0 2px 5px #061c2b87!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row{
+ margin:0 4px!important;padding:6px 9px!important;gap:7px!important;
+ border:1px solid #9a825d;border-top:0;border-radius:0 0 12px 12px;
+ background:linear-gradient(#2d4844,#172e38);
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row .btn{
+ min-height:44px!important;border-radius:10px!important;
+ background:linear-gradient(#3d6258,#22434a)!important;color:#ffeed0!important;
+ border:1.5px solid #b8a277!important;
+ box-shadow:inset 0 1px 0 #f7dfaa40,0 3px 0 #10242b!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row #nextBtn{
+ background:linear-gradient(#f3d58e,#c18d45)!important;color:#463322!important;
+ border:2px solid #ffe7b0!important;
+ box-shadow:inset 0 1px 0 #fff1cb,0 3px 0 #694b33!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #freeLabToggle{
+ background:#183940e6!important;border:1px solid #8c9579!important;
+ color:#efdfbd!important;border-radius:10px;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #journalPanel{
+ margin:2px 4px!important;border:1px solid #aa9168!important;
+ border-radius:12px!important;background:linear-gradient(#253f41,#122f3b)!important;
+ box-shadow:0 5px 12px #0518279a!important;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #journalPanel summary{
+ padding:11px 14px;color:#f7e5bb!important;min-height:44px;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration:not([hidden]){
+ position:fixed!important;top:190px!important;left:50%!important;
+ transform:translateX(-50%)!important;width:min(335px,calc(100vw - 34px))!important;
+ padding:11px 14px!important;border:3px solid #f7d390!important;border-radius:18px!important;
+ background:linear-gradient(#1b4d50ed,#142e3bef),var(--mission1-hud) center/cover!important;
+ box-shadow:0 0 0 6px #e3bd773e,0 20px 50px #04131fd8,0 0 40px #ffd99378!important;
+ z-index:100!important;pointer-events:none!important;color:#fff3d1!important;
+ animation:mission1-victory .6s cubic-bezier(.2,.8,.25,1) both;
+}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration .celebration-stars{
+ color:#ffe29d!important;font-size:clamp(30px,6vw,43px);
+ text-shadow:0 0 15px #ffd27caf;
+}
+@keyframes mission1-victory{
+ from{opacity:0;filter:brightness(1.8);translate:0 16px}
+ to{opacity:1;filter:brightness(1);translate:0 0}
+}
+/* On wide screens a fixed four-slot game HUD prevents browser-specific
+   flex wrapping from turning the mission title into stacked website cards. */
+@media(min-width:741px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto auto!important;
+  grid-template-rows:auto!important;align-items:center!important;
+  min-height:74px!important;padding:8px 16px!important;column-gap:10px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head>div:first-child{
+  grid-column:1;grid-row:1;min-width:0;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head #readingToggle{grid-column:2;grid-row:1}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head .quest-stars{grid-column:3;grid-row:1}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ .main.town-immersive .quest-head .scene-progress{grid-column:4;grid-row:1}
+}
+@media(min-width:741px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"]
+ #stageCelebration:not([hidden]){top:234px!important}
+}
+@media(max-width:740px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
+  height:46px!important;min-height:46px!important;padding-inline:8px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{
+  max-width:146px;font-size:13px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand-symbol{font-size:19px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .star-count{
+  min-height:40px;font-size:14px!important;padding:3px 7px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive{
+  padding:5px 4px 16px!important;row-gap:4px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head{
+  min-height:70px!important;padding:9px 11px!important;gap:5px!important;
+  border-radius:12px 12px 4px 4px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive .quest-head h2{
+  font-size:clamp(17px,4.5vw,20px)!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .quest-head .quest-stars{
+  font-size:15px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace{
+  padding:0 1px;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .main.town-immersive #workspace>.circuit-toolbar{
+  padding:4px 7px!important;min-height:44px!important;gap:4px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-toolbar>.circuit-question{
+  font-size:12px!important;line-height:1.4!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-zoom-btn{
+  min-width:91px!important;font-size:11px!important;padding:5px 7px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village-revival::after{
+  display:none;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row{
+  padding:6px 6px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .action-row .btn{
+  font-size:12px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-world-lit{animation:none!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration:not([hidden]){
+  animation:none!important;opacity:1!important;scale:1!important;
+  max-width:245px!important;
+ }
+ 
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village-revival,
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-desk::after{
+  transition:none!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-light-enter .painted-village-revival::after,
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #stageCelebration:not([hidden]){
+  animation:none!important;
+ }
+}
+/* Narrow phones must keep the map control in the real header row. A fixed
+   46px header with wrapping children previously placed it over MISSION 01. */
+@media(max-width:360px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar{
+  flex-wrap:nowrap!important;gap:3px!important;padding-inline:5px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand{
+  flex:1 1 auto!important;min-width:0;max-width:none!important;
+  padding:0!important;font-size:11px!important;white-space:nowrap;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .brand-symbol{
+  font-size:17px!important;margin-right:3px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .top-actions{
+  flex:0 0 auto;flex-wrap:nowrap;gap:3px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar .star-count{
+  font-size:12px!important;padding:3px 4px!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .topbar #sidebar{
+  flex:0 0 auto!important;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] #sidebar .map-toggle{
+  width:44px!important;min-width:44px!important;padding:4px!important;font-size:11px!important;
+ }
+}

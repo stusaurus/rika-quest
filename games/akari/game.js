@@ -371,7 +371,7 @@ function circuitStatus(wires){
 }
 function renderWire(){
  const stat=circuitStatus(ui.wires),lit=stageComplete||stat.lit;
- const svg=Art.workbench(ui.wires,lit);
+ const svg=Art.workbench(ui.wires,lit,current().id);
  // One dynamic question; every experiment is performed on this same circuit.
  const wirePrompt=stat.short?"⚠ あぶない 近道！ どの線を はずす？":
   lit?"💡 ついた！ どうして 光った？":
