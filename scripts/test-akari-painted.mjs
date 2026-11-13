@@ -289,13 +289,45 @@ try{
      "Compact in-world victory reward must leave the input toolbar and lit bulb visible: "+JSON.stringify(clearPlakat));
    await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
+   await page.waitForFunction(()=>document.body.dataset.paintedMission==="2");
+   assert.equal(await page.locator("[data-painted-scene='2']").count(),1,
+     "Mission 2 stays in the approved village with its own painterly camera");
+   assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),3,
+     "Mission 2 reuses the same high-quality physical art, not CSS stand-ins");
+   assert.equal(await page.locator(".wire-chip").count(),1,
+     "Mission 2 must start with exactly one genuine connected lead");
+   assert.equal(await page.locator('[data-visual-wire="LP"]').count(),1,
+     "The real prefilled wire runs from battery positive to bulb side");
+   assert.equal(await page.locator('[data-visual-wire="NR"]').count(),0,
+     "Missing wire must NOT be silently fabricated by the artwork");
+   await state(false);
+   assert.equal(await page.locator(".painted-village>img").first().evaluate(el=>getComputedStyle(el).objectPosition),
+     width<741?"81% 60%":"74% 64%",
+     "The second mission gets its own framing of the same photographed village");
+   const secondScissors=page.locator("[data-wire-cut-mode]");
+   await secondScissors.waitFor({state:"visible"});
+   await secondScissors.click();assert.equal(await secondScissors.getAttribute("aria-pressed"),"true");
+   await secondScissors.click();assert.equal(await secondScissors.getAttribute("aria-pressed"),"false");
+   await snapshot("stage2-painted-start");
+   await connect("N","R");await state(true);
+   assert.equal(await page.locator(".painted-world-lit").evaluate(el=>Number(getComputedStyle(el).opacity)),1,
+     "Repairing the missing lead restores the second part of town");
+   await snapshot("stage2-painted-lit");
+   await page.locator('[data-first-reason="removed"]').click();
+   assert.equal(await page.locator("#nextBtn").isVisible(),false,
+     "An incorrect electrical explanation must never complete mission 2");
+   await page.locator('[data-first-reason="joined"]').click();
+   await page.locator("#nextBtn").waitFor({state:"visible"});
+   await snapshot("stage2-painted-complete");
+   await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
+   assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),0,
+     "Mission 3 remains unpainted until separately approved");
    assert.equal(await page.locator("[data-wire-cut-mode]").count(),0,
-     "Scissors mode must not leak into other missions");
-   assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),0,"Pilot MUST stop at mission 1");
-   assert.equal(await page.locator("#storyScene #sceneProgress").count(),1,"Original HUD is restored for mission 2");
-   assert.equal(await page.locator("#storyScene #spark").count(),1,"Original short warning is restored");
-   await snapshot("stage2-unchanged");
+     "Temporary scissors and painted village restore the unmodified mission 3 UI");
+   assert.equal(await page.locator("#storyScene #sceneProgress").count(),1);
+   assert.equal(await page.locator("#storyScene #spark").count(),1);
+   await snapshot("stage3-unchanged");
    // A single-file deliverable must contain the very same art and usable inputs.
    await context.close();
    const offline=await browser.newContext({viewport:{width,height},reducedMotion:"reduce"});
