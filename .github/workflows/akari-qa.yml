@@ -150,7 +150,12 @@ jobs:
         run: node scripts/build-akari-preview.mjs
       - name: Operate delivered HTML over file and HTTP, including saves
         run: node scripts/test-akari-delivery.mjs
+      # PR builds are intentionally *not* deployed to the public trial URL.
+      # Check built HTML over file:// and HTTP on every PR; perform strict
+      # anonymous-public payload verification only after a reviewed release,
+      # through an explicit workflow_dispatch on the published revision.
       - name: Operate the approved public mission in fresh anonymous browsers
+        if: github.event_name == 'workflow_dispatch'
         env:
           AKARI_TRIAL_MODE: '1'
           AKARI_DELIVERY_HTML: artifacts/akari-review/index.html
