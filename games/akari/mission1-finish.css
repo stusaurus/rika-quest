@@ -272,6 +272,61 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .circuit-inner .terminal:hover::before{
  border-color:#fff4ce;box-shadow:0 0 0 3px #ffe4a28f,0 3px 5px #1a303eb0;
 }
+/* Cutting is a discoverable physical tool, not a hidden or mouse-only gesture.
+   The visible control is keyboard/touch accessible and shares the game HUD. */
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors{
+ display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:3px;
+ min-width:57px;min-height:44px;padding:5px 6px;border-radius:10px;
+ border:1.5px solid #cfb180;background:linear-gradient(#365b54,#183740);
+ color:#fff0cf;font-size:12px;font-weight:900;line-height:1;
+ box-shadow:inset 0 1px 0 #ffe4b447,0 2px 0 #10272b;
+ touch-action:manipulation;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors[hidden]{
+ display:none!important
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors[aria-pressed="true"]{
+ background:linear-gradient(#ffe1a7,#d59a58);color:#3f321f;
+ border-color:#fff5cf;box-shadow:0 0 0 3px #ffcd7994,0 3px 0 #604635;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors:focus-visible{
+ outline:3px solid #fff0a5;outline-offset:2px
+}
+/* Prevent iOS/WebKit panning from cancelling the active touch gesture.
+   Ordinary play keeps native vertical scrolling, especially on short phones. */
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode,
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-inner,
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-svg-v2{
+ touch-action:none!important;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .lead-on-top .wire{
+ cursor:crosshair;
+}
+html.akari-painted body[data-painted-mission="1"] .circuit-board.wire-cut-mode .circuit-help{
+ color:#ffebbf!important;background:#1a4344ed!important;
+ border:1px solid #e9bb70!important;border-radius:9px!important;
+ font-weight:900;max-width:calc(100% - 26px);
+}
+html.akari-painted body[data-painted-mission="1"] .wire-cut-target .painted-wire-sheen{
+ stroke:#ffe8aa!important;opacity:1!important;stroke-width:2.5;
+}
+@media(max-width:740px){
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors{
+  min-width:52px;gap:2px;padding:4px 5px;font-size:11px
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar .circuit-scissors svg{
+  width:17px;height:17px;flex-shrink:0
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-scissors{
+  grid-column:1;grid-row:2;justify-self:start
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-zoom-btn{
+  grid-column:2;grid-row:2
+ }
+ html.akari-painted body[data-painted-mission="1"] .circuit-toolbar:has(.circuit-quicknav) .circuit-quicknav{
+  grid-column:1/-1;grid-row:3
+ }
+}
 /* A reward can enhance the real electric change without falsely showing
    a conducting wire between buildings. */
 html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="1"] .painted-village{
