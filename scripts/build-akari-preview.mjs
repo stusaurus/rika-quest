@@ -52,6 +52,7 @@ const shortEffects=readFileSync("games/akari/short-effects.js","utf8");
 const cinematicLayoutJs=readFileSync("games/akari/cinematic-layout.js","utf8");
 const paintedCss=readFileSync("games/akari/mission1-art.css","utf8");
 const paintedFinishCss=readFileSync("games/akari/mission1-finish.css","utf8");
+const mission2SceneCss=readFileSync("games/akari/mission2-scene.css","utf8");
 const paintedArt=readFileSync("games/akari/mission1-art.js","utf8");
 function replaceOne(source,what,withText){
  if(!source.includes(what))throw new Error("Missing expected HTML resource: "+what);
@@ -61,6 +62,7 @@ function inlineScript(source){return "<script data-akari-preview-script>"+source
 let output=replaceOne(html,'<link rel="stylesheet" href="./style.css">',"<style>\n"+css+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./mission1-art.css?v=1">',"<style>\n"+paintedCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./mission1-finish.css?v=1">',"<style>\n"+paintedFinishCss+"\n</style>");
+output=replaceOne(output,'<link rel="stylesheet" href="./mission2-scene.css?v=1">',"<style>\n"+mission2SceneCss+"\n</style>");
 output=replaceOne(output,'<script src="./mission1-art.js?v=1" defer></script>',inlineScript(paintedArt));
 output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./reference-layout.css">',"<style>\n"+referenceCss+"\n</style>");
