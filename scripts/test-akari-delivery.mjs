@@ -232,7 +232,8 @@ try{
    await context.addInitScript(({key,fixture})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(fixture));},{key,fixture});
    const p=await context.newPage();await p.goto(fixtureURL,{waitUntil:'networkidle'});
    assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),trial?'1':'2');
-   assert.equal(await p.locator('.painted-world').count(),trial?1:0);
+   assert.equal(await p.locator('.painted-world').count(),1,
+     'The local public trial remains stage 1, while the full saved game continues in the painted stage 2');
    await p.locator('#soundBtn').click();
    const saved=await p.evaluate(key=>JSON.parse(localStorage.getItem(key)),key);
    assert.deepEqual(saved.completed,fixture.completed);assert.deepEqual(saved.notes,fixture.notes);
