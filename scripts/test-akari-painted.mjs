@@ -169,7 +169,58 @@ try{
    assert.equal(await page.locator(".painted-wire-sheen").count(),2,"Each real cable has a material highlight");
    assert.equal(await page.locator(".wire.lit").first().evaluate(el=>getComputedStyle(el).stroke),"rgb(52, 139, 150)","Only the measured bulb is luminous; the insulated wire keeps its material");
    await page.locator(".circuit-board").screenshot({path:prefix+"-painted-board-lit.png",animations:"disabled"});
-   // Cutting a real connected wire immediately extinguishes the scene.
+   // The visible scissors tool is an optional *real* mode, not a fake button.
+   // A direct cross-swipe without the mode and the existing X button still work.
+   const scissors=page.locator("[data-wire-cut-mode]");
+   await scissors.waitFor({state:"visible"});
+   assert.equal(await scissors.getAttribute("aria-pressed"),"false");
+   if(width<741)await scissors.tap();else await scissors.click();
+   assert.equal(await scissors.getAttribute("aria-pressed"),"true");
+   assert.equal(await page.locator(".circuit-board.wire-cut-mode").count(),1);
+   assert.equal(await page.locator(".circuit-board").evaluate(el=>getComputedStyle(el).touchAction),"none",
+     "Scissors must disable native panning during the finger-cross gesture");
+   await page.locator(".circuit-inner").scrollIntoViewIfNeeded();
+   const scissorsCut=await page.locator('[data-visual-wire="LP"] .wire').evaluate(visibleCutStroke);
+   if(engine==="chromium"&&width<741){
+     // Chromium's actual touch pipeline (not mouse events): detect finger
+     // swipe, browser gesture cancellation and physical lamp response.
+     const cdp=await context.newCDPSession(page);
+     await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x:scissorsCut.start.x,y:scissorsCut.start.y,id:1}]});
+     for(let i=1;i<=10;i++){
+       const t=i/10;
+       await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{
+         x:scissorsCut.start.x+(scissorsCut.end.x-scissorsCut.start.x)*t,
+         y:scissorsCut.start.y+(scissorsCut.end.y-scissorsCut.start.y)*t,id:1
+       }]});
+     }
+     await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+     await cdp.detach();
+   }else if(engine==="webkit"&&width<741){
+     // Playwright WebKit has no swipe API: exercise the native PointerEvent
+     // handler with pointerType=touch and assert touch-action separately.
+     await page.evaluate(({start,end})=>{
+       const args=(x,y)=>({bubbles:true,cancelable:true,composed:true,pointerId:17,
+         pointerType:"touch",isPrimary:true,button:0,buttons:1,clientX:x,clientY:y});
+       const target=document.elementFromPoint(start.x,start.y);
+       target.dispatchEvent(new PointerEvent("pointerdown",args(start.x,start.y)));
+       for(let i=1;i<=10;i++){
+         const t=i/10;
+         document.dispatchEvent(new PointerEvent("pointermove",args(
+           start.x+(end.x-start.x)*t,start.y+(end.y-start.y)*t)));
+       }
+       document.dispatchEvent(new PointerEvent("pointerup",{...args(end.x,end.y),buttons:0}));
+     },scissorsCut);
+   }else{
+     await page.mouse.move(scissorsCut.start.x,scissorsCut.start.y);
+     await page.mouse.down();await page.mouse.move(scissorsCut.end.x,scissorsCut.end.y,{steps:10});await page.mouse.up();
+   }
+   await state(false);
+   assert.equal(await page.locator(".wire-chip").count(),1,"Scissors cut ONE connected wire, not the whole circuit");
+   await scissors.waitFor({state:"visible"});
+   assert.equal(await scissors.getAttribute("aria-pressed"),"false","Cutting returns to normal scrolling");
+   await snapshot("painted-scissors-cut");
+   await connect("P","L");await state(true);
+   // The old one-tap X removal remains available as an alternative.
    await page.locator("[data-unwire]").first().click();await state(false);await snapshot("painted-cut");
    assert.equal(await page.locator(".painted-village-revival").evaluate(el=>getComputedStyle(el).opacity),"0",
      "Cutting a necessary wire immediately extinguishes the village restoration glow");
@@ -239,6 +290,8 @@ try{
    await snapshot("painted-complete");
    await page.locator("#nextBtn").click();
    await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
+   assert.equal(await page.locator("[data-wire-cut-mode]").count(),0,
+     "Scissors mode must not leak into other missions");
    assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),0,"Pilot MUST stop at mission 1");
    assert.equal(await page.locator("#storyScene #sceneProgress").count(),1,"Original HUD is restored for mission 2");
    assert.equal(await page.locator("#storyScene #spark").count(),1,"Original short warning is restored");
@@ -255,6 +308,8 @@ try{
      "The locally downloaded playable game carries the SAME HUD texture, never a flat CSS fallback");
    for(const t of ["P","L","N","R"])await op.locator('[data-t="'+t+'"]').click();
    assert.equal(await op.locator(".circuit-board.is-lit").count(),1,"Offline deliverable uses the actual engine");
+   assert.equal(await op.locator("[data-wire-cut-mode]").count(),1,
+     "The offline version must retain the optional scissors mode");
    await op.locator('.circuit-inner').scrollIntoViewIfNeeded();
    const fileCut=await op.locator('[data-visual-wire="LP"] .wire').evaluate(visibleCutStroke);
    await op.mouse.move(fileCut.start.x,fileCut.start.y);await op.mouse.down();await op.mouse.move(fileCut.end.x,fileCut.end.y,{steps:10});await op.mouse.up();
