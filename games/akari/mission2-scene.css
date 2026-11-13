@@ -6,7 +6,7 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
 }
 /* Camera moves along the SAME illustrated street, keeping the actual asset
    and lamp-on/lamp-off bitmaps perfectly registered. */
-html.akari-painted body[data-painted-mission="2"] .painted-village>img{
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"] .painted-village>img{
  object-position:74% 64%;
 }
 html.akari-painted body[data-painted-mission="2"] .painted-village{
@@ -48,7 +48,7 @@ html.akari-painted body[data-painted-mission="2"] .is-short .painted-village-rev
  html.akari-painted body[data-painted-mission="2"]{
   --painted-village-height:126px;
  }
- html.akari-painted body[data-painted-mission="2"] .painted-village>img{
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"] .painted-village>img{
   object-position:81% 60%;
  }
  html.akari-painted body[data-painted-mission="2"] .painted-live-state{
