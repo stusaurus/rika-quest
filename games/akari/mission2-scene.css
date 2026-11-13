@@ -1,0 +1,66 @@
+/* Mission 2 — the missing connection. This is a second scene IN the approved
+   painted village, not a new visual language. All science/contact coordinates
+   are still owned by the existing lesson engine. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"]{
+ --painted-village-height:144px;
+}
+/* Camera moves along the SAME illustrated street, keeping the actual asset
+   and lamp-on/lamp-off bitmaps perfectly registered. */
+html.akari-painted body[data-painted-mission="2"] .painted-village>img{
+ object-position:74% 64%;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-village{
+ border-bottom:2px solid #e4b77866;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-place{
+ background:linear-gradient(100deg,#293843ee,#5f4b3dd9)!important;
+ border-color:#d9b68a!important;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-live-state{
+ border-color:#a99d9c!important;
+ color:#fff0d5!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-village{
+ filter:saturate(.8);
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board.is-lit:not(.is-short) .painted-village{
+ filter:saturate(1.08);
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board.is-lit:not(.is-short) .painted-live-state{
+ border-color:#f7d399!important;
+ box-shadow:0 0 18px #f7d27c6b!important;
+}
+/* Restore status appears as a mission badge above an in-world table,
+   not a fake drawn cable between physically disconnected endpoints. */
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-off-label{
+ color:#ffe0b0!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-inner .terminal.selected::before{
+ box-shadow:inset 0 0 0 2px #846137,0 0 0 4px #ffca70b0,0 0 17px #ffdb96df!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-desk::after{
+ opacity:0!important;
+}
+html.akari-painted body[data-painted-mission="2"] .is-short .painted-village-revival{
+ opacity:0!important;
+}
+@media(max-width:740px){
+ html.akari-painted body[data-painted-mission="2"]{
+  --painted-village-height:126px;
+ }
+ html.akari-painted body[data-painted-mission="2"] .painted-village>img{
+  object-position:81% 60%;
+ }
+ html.akari-painted body[data-painted-mission="2"] .painted-live-state{
+  font-size:10px!important;
+  right:7px;
+ }
+ html.akari-painted body[data-painted-mission="2"] .painted-place{
+  font-size:10px!important;left:7px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-painted body[data-painted-mission="2"] .painted-village{
+  transition:none!important;
+ }
+}
