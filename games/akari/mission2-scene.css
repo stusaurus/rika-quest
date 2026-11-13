@@ -1,0 +1,181 @@
+/* Mission 2 — the missing connection. This is a second scene IN the approved
+   painted village, not a new visual language. All science/contact coordinates
+   are still owned by the existing lesson engine. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"]{
+ --painted-village-height:144px;
+}
+/* Camera moves along the SAME illustrated street, keeping the actual asset
+   and lamp-on/lamp-off bitmaps perfectly registered. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"] .painted-village>img{
+ object-position:74% 64%;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-village{
+ border-bottom:2px solid #e4b77866;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-place{
+ background:linear-gradient(100deg,#293843ee,#5f4b3dd9)!important;
+ border-color:#d9b68a!important;
+}
+html.akari-painted body[data-painted-mission="2"] .painted-live-state{
+ border-color:#a99d9c!important;
+ color:#fff0d5!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-village{
+ filter:saturate(.8);
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board.is-lit:not(.is-short) .painted-village{
+ filter:saturate(1.08);
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board.is-lit:not(.is-short) .painted-live-state{
+ border-color:#f7d399!important;
+ box-shadow:0 0 18px #f7d27c6b!important;
+}
+/* Restore status appears as a mission badge above an in-world table,
+   not a fake drawn cable between physically disconnected endpoints. */
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-off-label{
+ color:#ffe0b0!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-inner .terminal.selected::before{
+ box-shadow:inset 0 0 0 2px #846137,0 0 0 4px #ffca70b0,0 0 17px #ffdb96df!important;
+}
+html.akari-painted body[data-painted-mission="2"] .circuit-board:not(.is-lit) .painted-desk::after{
+ opacity:0!important;
+}
+html.akari-painted body[data-painted-mission="2"] .is-short .painted-village-revival{
+ opacity:0!important;
+}
+@media(max-width:740px){
+ html.akari-painted body[data-painted-mission="2"]{
+  --painted-village-height:126px;
+ }
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="2"] .painted-village>img{
+  object-position:81% 60%;
+ }
+ html.akari-painted body[data-painted-mission="2"] .painted-live-state{
+  font-size:10px!important;
+  right:7px;
+ }
+ html.akari-painted body[data-painted-mission="2"] .painted-place{
+  font-size:10px!important;left:7px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html.akari-painted body[data-painted-mission="2"] .painted-village{
+  transition:none!important;
+ }
+}
+
+/* The original reasoning-transfer challenge is part of mission 2. Its three
+   scientifically exact schematics remain fully interactive, but they must
+   not suddenly revert to pale browser-style cards after the street lights up. */
+html.akari-painted body[data-painted-mission="2"] .transfer-puzzle{
+ color:#f8e8c8;gap:10px!important;padding:8px 5px 14px;
+ animation:none!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-heading{
+ background:linear-gradient(100deg,#183b44e9,#244c4aed),
+  url("./assets/mission1/hud-panel.webp") center/cover no-repeat!important;
+ border:2px solid #c6a16d!important;border-radius:15px!important;
+ box-shadow:inset 0 1px 0 #f2d79e55,0 5px 15px #071b2b8a!important;
+ padding:12px clamp(12px,2vw,20px)!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-heading>span{
+ background:#e4c68a!important;color:#4a3829!important;
+ border:1px solid #ffebbf;border-radius:8px;padding:4px 9px;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-heading :is(h3,p){
+ color:#fff0cb!important;text-shadow:0 2px 3px #132b30;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-steps{
+ gap:6px!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-steps button{
+ min-height:44px!important;border:1.5px solid #bba276!important;
+ background:linear-gradient(#32534c,#183741)!important;
+ color:#f5e5c5!important;border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #fff5ce38;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-steps button.active{
+ background:linear-gradient(#f3dca2,#bb9151)!important;
+ border-color:#fff0c6!important;color:#40342b!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-steps button.answered:not(.active){
+ background:linear-gradient(#386e5f,#254a43)!important;
+ color:#e8f5dd!important;border-color:#9fc997!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-probe,
+html.akari-painted body[data-painted-mission="2"] .transfer-review{
+ background:linear-gradient(135deg,#e9dac0,#f7eddb)!important;
+ color:#233d42!important;border:3px solid #cfac73!important;
+ border-radius:14px!important;
+ box-shadow:inset 0 1px 0 #fff8e9,0 5px 0 #735436,0 10px 18px #06162582!important;
+ padding:12px clamp(10px,2vw,20px)!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-probe>strong,
+html.akari-painted body[data-painted-mission="2"] .transfer-review>strong,
+html.akari-painted body[data-painted-mission="2"] .transfer-prompt,
+html.akari-painted body[data-painted-mission="2"] .transfer-next-hint{
+ color:#28434b!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-diagram{
+ border:2px solid #be9b67;border-radius:12px;
+ box-shadow:0 4px 0 #a68355;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-answers button,
+html.akari-painted body[data-painted-mission="2"] .transfer-reason button{
+ min-height:47px!important;
+ background:linear-gradient(#fff7e8,#e7dac2)!important;
+ color:#274852!important;border:2px solid #b89f79!important;
+ border-radius:10px!important;
+ box-shadow:inset 0 1px 0 #fff9f1,0 2px 0 #957f62;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-answers button.selected,
+html.akari-painted body[data-painted-mission="2"] .transfer-reason button.selected{
+ background:linear-gradient(#ffe9af,#dfc086)!important;
+ color:#51402b!important;border-color:#d8a855!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-reason{
+ background:linear-gradient(#21474a,#142f3b)!important;
+ color:#f9eccc!important;border:2px solid #c0a374!important;
+ border-radius:13px!important;box-shadow:0 4px 10px #0418248c!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-reason :is(strong,p){
+ color:#fff2d2!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-review-row{
+ border-bottom:1px solid #c4ab83;
+ padding-bottom:12px;margin-bottom:10px;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-review-head button{
+ min-height:44px;border:1px solid #b48c5a;
+ background:#315754;color:#fff0cc;border-radius:8px;padding:6px 11px;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-verify{
+ min-height:50px!important;
+ background:linear-gradient(#f4d995,#c08e47)!important;
+ color:#4a321c!important;border:2px solid #fff1c0!important;
+ border-radius:12px!important;box-shadow:0 4px 0 #6f5335!important;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-verify:disabled{
+ opacity:.5;
+}
+html.akari-painted body[data-painted-mission="2"] .transfer-heading .transfer-progress{
+ color:#fff0c6!important;
+}
+@media(max-width:740px){
+ html.akari-painted body[data-painted-mission="2"] .transfer-puzzle{
+  padding:6px 2px 10px!important;gap:8px!important;
+ }
+ html.akari-painted body[data-painted-mission="2"] .transfer-heading{
+  padding:10px 11px!important;
+ }
+ html.akari-painted body[data-painted-mission="2"] .transfer-heading h3{
+  font-size:19px!important;
+ }
+ html.akari-painted body[data-painted-mission="2"] .transfer-diagram{
+  width:100%!important;height:auto;
+ }
+ html.akari-painted body[data-painted-mission="2"] .transfer-answers{
+  grid-template-columns:1fr 1fr!important;
+ }
+}

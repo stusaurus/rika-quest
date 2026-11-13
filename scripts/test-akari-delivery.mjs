@@ -202,14 +202,18 @@ async function operate(browser,engine,width,height,transport,url){
    assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'1');
    assert.equal(await p.evaluate(()=>localStorage.getItem('rika-akari-quest-v2')),null,'The public trial never writes the full-game save');
   }else{
-   await p.waitForFunction(()=>document.body.dataset.paintedMission==='');
-   assert.equal(await p.locator('.painted-world,.painted-battery,.painted-bulb').count(),0);
+   await p.waitForFunction(()=>document.body.dataset.paintedMission==='2');
+   assert.equal(await p.locator('.painted-world,.painted-battery,.painted-bulb').count(),3,
+     'Next mission shares the finished painted village and physical equipment');
+   assert.equal(await p.locator('.wire-chip').count(),1,
+     'Reloading the second mission must preserve its initial broken-circuit challenge');
    await p.reload({waitUntil:'networkidle'});
    assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'2',"Progress persists on the same delivery route");
+   await p.waitForFunction(()=>document.body.dataset.paintedMission==='2');
   }
   assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);assert.deepEqual(externalAssets,[]);
   results.push({engine,width,height,transport,status:'pass',initialCookies,layout,reasonContrast:contrasts,
-   savedVersion:saved.version,checks:['start','one-wire','lit','swipe-cut','short','reason-wrong','reason-correct','complete','reload',trial?'mission-1-only-replay':'stage-2-original']});
+   savedVersion:saved.version,checks:['start','one-wire','lit','swipe-cut','short','reason-wrong','reason-correct','complete','reload',trial?'mission-1-only-replay':'stage-2-painted-and-presaved']});
   console.log('DELIVERY PASS',engine,width,transport);
  }finally{await context.close();}
 }
@@ -228,7 +232,8 @@ try{
    await context.addInitScript(({key,fixture})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(fixture));},{key,fixture});
    const p=await context.newPage();await p.goto(fixtureURL,{waitUntil:'networkidle'});
    assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),trial?'1':'2');
-   assert.equal(await p.locator('.painted-world').count(),trial?1:0);
+   assert.equal(await p.locator('.painted-world').count(),1,
+     'The local public trial remains stage 1, while the full saved game continues in the painted stage 2');
    await p.locator('#soundBtn').click();
    const saved=await p.evaluate(key=>JSON.parse(localStorage.getItem(key)),key);
    assert.deepEqual(saved.completed,fixture.completed);assert.deepEqual(saved.notes,fixture.notes);
