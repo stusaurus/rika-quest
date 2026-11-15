@@ -43,7 +43,7 @@ try{
     const source=p.locator(remove?'[data-m3-gap]':'[data-m3-item="'+id+'"]');
     const r=await bounds(source),c=await p.locator('.m3-circuit').boundingBox();
     const start={x:r.x+r.width/2,y:r.y+r.height/2};
-    const end=remove?{x:c.x+15,y:c.y+c.height-5}:{x:c.x+c.width*({both:180,left:100,right:260}[contact]/400),y:c.y+c.height*65/250};
+    const end=remove?{x:c.x+15,y:c.y+c.height-5}:{x:c.x+c.width*({both:180,left:60,right:300}[contact]/400),y:c.y+c.height*65/250};
     const scrollBefore=await p.evaluate(()=>scrollY);
     if(nativeTouch&&engine==='chromium'){
      const cdp=await context.newCDPSession(p);

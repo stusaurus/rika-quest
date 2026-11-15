@@ -9,7 +9,7 @@
   {id:"wood",name:"かわいた木",shortName:"木",conductive:false,x:20,y:70},
   {id:"plastic",name:"プラスチック",shortName:"プラスチック",conductive:false,x:85,y:70}
  ];
- const points={P:[42,151],N:[178,151],L:[268,152],R:[313,210],A:[140,65],B:[220,65]};
+ const points={P:[42,151],N:[178,151],L:[268,152],R:[313,210],A:[120,65],B:[240,65]};
  const reference=[["P","A"],["B","L"],["R","N"]];
  const sample=id=>samples.find(x=>x.id===id);
  const edge=(a,b)=>[a,b].sort().join("-");
@@ -51,7 +51,7 @@
   return s;
  }
  const compared=s=>samples.some(m=>m.conductive&&s.tests[m.id]?.actual==="lit")&&samples.some(m=>!m.conductive&&s.tests[m.id]?.actual==="dark");
- const canFinish=s=>s.inspected&&compared(s)&&s.contact==="both"&&evaluate(s).lit&&s.reason==="metal";
+ const canFinish=s=>s.inspected&&compared(s)&&s.contact==="both"&&!!sample(s.installed)?.conductive&&signature(s.wires)===signature(reference)&&evaluate(s).lit&&s.reason==="metal";
  function record(s){
   const m=sample(s.installed),guess=s.guesses[s.installed],e=evaluate(s);
   if(!m||!guess||s.contact!=="both"||signature(s.wires)!==signature(reference)||e.short)return;

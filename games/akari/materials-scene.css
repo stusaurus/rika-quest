@@ -118,3 +118,25 @@ html.akari-painted body[data-painted-mission="3"] #stageCelebration{display:none
  .m3-victory strong{font-size:21px}
 }
 @media(prefers-reduced-motion:reduce){.m3-village-lit{transition:none}.m3-find,.m3-installed-image{animation:none}}
+
+/* Explicit mission-3 composition beats the legacy two-column lesson shell.
+   The stage-1/2 styles are intentionally left unchanged. */
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .layout{display:block!important;grid-template-columns:none!important;width:100%!important;max-width:1180px!important;margin-inline:auto!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .main.town-immersive{width:100%!important;min-width:0!important;grid-template-columns:minmax(0,1fr)!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #workspace .m3-bench.circuit-board:not(.zoomed) .m3-circuit.circuit-inner{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;transform:none!important;width:100%!important;max-width:600px!important;aspect-ratio:400/250!important;margin:14px auto 38px!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #workspace .m3-circuit .component-tag{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #stageCelebration{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] :is(#readTaskBtn,#readingToggle,#sceneProgress,#freeLabToggle){display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .topbar #sidebar{position:relative!important;inset:auto!important;transform:none!important;width:auto!important;max-width:none!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #sidebar :is(.map-illustration,.side-note,.side-heading>span){display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #sidebar .mission-list{display:none!important}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #sidebar.open .mission-list{position:absolute!important;display:grid!important;z-index:100;right:0;top:48px;width:min(320px,92vw);max-height:75vh;overflow:auto;background:#153a42;border:2px solid #c8aa76;padding:8px;border-radius:12px}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] #workspace .m3-circuit .m3-terminal:is([data-m3-terminal="A"],[data-m3-terminal="B"])::before{inset:14px;border-width:1px}
+.m3-terminal:is([data-m3-terminal="A"],[data-m3-terminal="B"]){font-size:9px}
+html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .feedback{display:none!important}
+@media(max-width:740px){
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .m3-bench.circuit-board{min-height:220px!important}
+ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-mission="3"] .m3-village{aspect-ratio:2.7/1}
+ .m3-memo p br{display:none}
+ .m3-memo p{white-space:normal}
+}

@@ -1362,6 +1362,7 @@ window.AkariLiveWire={
 };
 function boot(){
  ui=restoreMissionUI(current());
+ if(ui.materials&&state.completed[3]&&window.AkariMaterials.canFinish(ui.materials))stageComplete=true;
  // Upgrade incomplete saved drafts without fabricating observations for other settings.
  if(ui.switchLab)observeNetwork(ui.switchLab);
  if(ui.builder)observeBuilder(ui.builder,ui.builderTask==="direct");

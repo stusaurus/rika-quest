@@ -43,3 +43,9 @@ test('malformed saves cannot invent material results or unknown wires',()=>{
  const s=M.normalize({version:1,found:['wood','fake','wood'],installed:'fake',contact:'both',wires:[['P','N'],['N','P'],['fake','L']],tests:{wood:{guess:'lit',actual:'lit'}}});
  assert.equal(s.found.length,1);assert.equal(s.installed,null);assert.equal(s.wires.length,1);assert.equal(s.tests.wood,undefined);
 });
+
+test('a bypass around the sample cannot substitute for repairing the gap with metal',()=>{
+ let s=place(ready(),'wood');s=place(s,'clip');s=place(s,'wood');s=M.act(s,{type:'wire',from:'A',to:'B'});
+ assert.equal(M.evaluate(s).lit,true,'The graph honestly shows the bypassed bulb lighting');
+ s=M.act(s,{type:'reason',id:'metal'});assert.equal(M.canFinish(s),false,'Final repair must use the tested conducting specimen');
+});

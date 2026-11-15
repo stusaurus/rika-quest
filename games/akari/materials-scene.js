@@ -6,7 +6,7 @@
  const image=id=>'<img src="'+asset(id)+'" alt="" draggable="false">';
  const lens='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg>';
  const scissors='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8 8 12 12M8 16 20 4"/></svg>';
- const paths={"A-P":"M42 151V65H140","B-L":"M220 65H246V152H268","N-R":"M178 151H199V228H313V210"};
+ const paths={"A-P":"M42 151V65H120","B-L":"M240 65H246V152H268","N-R":"M178 151H199V228H313V210"};
  function wirePath(a,b){
   const k=M.edge(a,b);if(paths[k])return paths[k];
   const p=M.points[a],q=M.points[b];
@@ -16,12 +16,12 @@
   return 'M'+p[0]+' '+p[1]+'V'+y+'H'+q[0]+'V'+q[1];
  }
  function board(s){
-  const e=M.evaluate(s),center=s.contact==="left"?100:s.contact==="right"?260:180;
+  const e=M.evaluate(s),center=s.contact==="left"?60:s.contact==="right"?300:180;
   let svg=window.AkariArt.workbench([],e.lit,3);
   const wires=s.wires.map(([a,b])=>'<g class="lead-on-top" data-visual-wire="'+M.edge(a,b)+'"><path class="m3-wire-outline" d="'+wirePath(a,b)+'"/><path class="wire m3-wire" d="'+wirePath(a,b)+'"/></g>').join('');
-  const piece=s.installed?'<image class="m3-installed-image" data-specimen="'+s.installed+'" href="'+asset(s.installed)+'" x="'+(center-40)+'" y="52" width="80" height="26" preserveAspectRatio="none"/>':'';
-  svg=svg.replace('</svg>',wires+'<g class="m3-gap-art" aria-hidden="true"><rect x="130" y="42" width="100" height="47" rx="12" fill="#193b36" stroke="#d4b179" stroke-width="1.5"/>'+piece+
-   '<circle cx="140" cy="65" r="4" fill="#e5c183"/><circle cx="220" cy="65" r="4" fill="#e5c183"/>'+
+  const piece=s.installed?'<image class="m3-installed-image" data-specimen="'+s.installed+'" href="'+asset(s.installed)+'" x="'+(center-60)+'" y="44" width="120" height="42" preserveAspectRatio="xMidYMid meet"/>':'';
+  svg=svg.replace('</svg>',wires+'<g class="m3-gap-art" aria-hidden="true"><rect x="110" y="39" width="140" height="47" rx="12" fill="#193b36" stroke="#d4b179" stroke-width="1.5"/>'+piece+
+   '<circle cx="120" cy="65" r="4" fill="#e5c183"/><circle cx="240" cy="65" r="4" fill="#e5c183"/>'+
    (!s.installed?'<path d="m174 60 12 10m0-10-12 10" stroke="#f2c27e" stroke-width="2"/>':'')+'</g></svg>');
   const controls=Object.entries(M.points).map(([id,p])=>
    '<button type="button" class="m3-terminal" style="left:'+p[0]/4+'%;top:'+p[1]/2.5+'%" data-m3-terminal="'+id+'" aria-label="'+({P:'電池のプラス',N:'電池のマイナス',L:'電球の横',R:'電球の底',A:'切れ目の左の接点',B:'切れ目の右の接点'}[id])+'">'+({P:'＋',N:'−',L:'横',R:'底',A:'A',B:'B'}[id])+'</button>').join('');
@@ -59,7 +59,7 @@
    const svg=root.querySelector('.m3-circuit svg'),matrix=svg?.getScreenCTM();
    if(!matrix)return null;const p=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());return {x:p.x,y:p.y};
   };
-  const contact=p=>!p||Math.abs(p.y-65)>31?'none':p.x>=128&&p.x<=232?'both':p.x>=72&&p.x<128?'left':p.x>232&&p.x<=288?'right':'none';
+  const contact=p=>!p||Math.abs(p.y-65)>31?'none':p.x>=128&&p.x<=232?'both':p.x>=28&&p.x<128?'left':p.x>232&&p.x<=332?'right':'none';
   const clear=()=>{ghost?.remove();ghost=null;preview?.remove();preview=null;root.querySelector('.m3-gap')?.classList.remove('drop-ready');};
   root.addEventListener('click',e=>{
    if(!scene())return;
