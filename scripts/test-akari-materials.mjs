@@ -100,7 +100,8 @@ try{
    const cut=await p.locator('[data-visual-wire="N-R"] .wire').evaluate(visibleCutStroke);
    console.log('M3 cut geometry',engine,width,JSON.stringify(cut));
    await p.mouse.move(cut.start.x,cut.start.y);await p.mouse.down();await p.mouse.move(cut.end.x,cut.end.y,{steps:10});await p.mouse.up();await shot('cut-attempt');await state('dark');checks.push('scissors cut actual reference wire');
-   await click('[data-m3-terminal="R"]');await click('[data-m3-terminal="N"]');await state('lit');checks.push('wire reconnects by input');
+   const from=await bounds(p.locator('[data-m3-terminal="R"]')),to=await bounds(p.locator('[data-m3-terminal="N"]'));
+   await p.mouse.move(from.x+from.width/2,from.y+from.height/2);await p.mouse.down();await p.mouse.move(to.x+to.width/2,to.y+to.height/2,{steps:12});await p.mouse.up();await p.waitForTimeout(230);await state('lit');checks.push('wire reconnects by actual drawn gesture');
    await click('[data-m3-reason="metal"]');await p.locator('#nextBtn').waitFor({state:'visible'});assert.equal(await p.locator('.m3-victory').isVisible(),true);await shot('complete');checks.push('correct evidence-based reason clears');
    const layout=await p.evaluate(()=>{
     const rail=document.querySelector('.m3-inventory').getBoundingClientRect(),board=document.querySelector('.m3-bench').getBoundingClientRect(),svg=document.querySelector('.m3-circuit svg');
@@ -111,7 +112,7 @@ try{
    assert.ok(layout.overflow<=1,JSON.stringify(layout));assert.ok(layout.rail.x>=layout.board.right-1,'Inventory does not cover circuit');assert.ok(layout.buttons.every(b=>b.width>=43.9&&b.height>=43.9),'44px interaction targets');assert.ok(layout.contacts.every(d=>d<1),'Art and touch geometry match');
    assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
    const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('rika-akari-quest-v2')));assert.ok(saved.completed[3]);
-   await p.reload({waitUntil:'networkidle'});assert.equal(await p.locator('.m3-records li').count(),4);checks.push('completed record persists');
+   await p.reload({waitUntil:'networkidle'});assert.equal(await p.locator('.m3-records li').count(),4);assert.equal(await p.locator('.m3-victory').isVisible(),true);checks.push('completed record and clear display persist');
    results.push({engine,width,status:'pass',touch:width<741?(engine==='chromium'?'CDP native touch pipeline':'synthetic touch PointerEvents; no physical iPhone'):'mouse',checks,layout,errors,failed});
    console.log('MATERIALS PASS',engine,width,checks.length);await context.close();
   }
@@ -122,7 +123,7 @@ try{
   await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-find="wood"]').click();await p.locator('[data-m3-guess="dark"]').click();await p.locator('[data-m3-gap]').click();
   assert.equal(await p.locator('.m3-bench').getAttribute('data-m3-status'),'dark');
   await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-find="aluminum"]').click();await p.locator('[data-m3-guess="lit"]').click();await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-reason="metal"]').click();
-  await p.locator('.m3-victory').waitFor({state:'visible'});assert.deepEqual(external,[]);await p.screenshot({path:out+'/'+engine+'-offline-complete.png',fullPage:true});results.push({engine,transport:'file',status:'pass',external});await c.close();
+  await p.locator('.m3-victory').waitFor({state:'visible'});assert.deepEqual(external,[]);await p.screenshot({path:out+'/'+engine+'-offline-complete.png',fullPage:true});await p.locator('#nextBtn').click();assert.equal(await p.locator('.m3-installed-image').count(),0);assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'3');assert.equal(await p.locator('#nextBtn').isVisible(),false);results.push({engine,transport:'file',status:'pass',external,replay:'mission 3 resets and stays playable'});await c.close();
   }finally{await browser.close();}
  }
 }finally{writeFileSync(out+'/results.json',JSON.stringify(results,null,2));server.close();}

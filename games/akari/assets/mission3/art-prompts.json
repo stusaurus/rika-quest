@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-16",
+  "method": "built-in image_gen",
+  "styleReference": "../mission1/village-dark.webp",
+  "assets": [
+    {
+      "files": [
+        "village-dark.webp"
+      ],
+      "prompt": "Same approved painterly 2D village. New nearby lane with blue tiled cottages, hydrangeas, leafy tree, violet dusk, two unlit street lanterns, dry-wood basket and outdoor craft supply table. No people, text, circuit, battery or UI. New scene in the same art direction."
+    },
+    {
+      "files": [
+        "village-lit.webp"
+      ],
+      "prompt": "Edit the exact dark village background: only illuminate both street lanterns and cottage windows with warm pools of light, retaining the same composition and geometry, sky and painterly style."
+    },
+    {
+      "files": [
+        "clip.webp",
+        "aluminum.webp",
+        "wood.webp",
+        "plastic.webp"
+      ],
+      "prompt": "Transparent four-row atlas, matching polished painterly game items: bare steel paperclip, uncoated aluminum strip, dry straight twig, turquoise plastic strip. Long horizontal silhouettes, material detail, no labels, no backgrounds. Extract rows and resize to WebP, retaining RGBA."
+    }
+  ],
+  "invariants": [
+    "Original approved mission1 assets remain unchanged.",
+    "Inventory, discovery, drag ghost and circuit use exactly the same corresponding item bitmap.",
+    "Scientific connectivity is computed separately from artwork."
+  ]
+}

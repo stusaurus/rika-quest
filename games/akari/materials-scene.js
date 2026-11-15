@@ -98,9 +98,9 @@
     preview.setAttribute('d','M'+from[0]+' '+from[1]+'L'+p.x+' '+p.y);
    }else{
     if(!ghost){ghost=document.createElement('div');ghost.className='m3-drag-ghost';ghost.innerHTML=image(drag.id);document.body.append(ghost);}
-    // The grip is always the visible object's center, independent of the
-    // original press position. A small vertical lift keeps it above a finger.
-    ghost.style.left=e.clientX+'px';ghost.style.top=(e.clientY-20)+'px';
+    // The ghost, pointer and drop geometry share one center. No visual
+    // offset makes the specimen appear to touch before the real contacts do.
+    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
     root.querySelector('.m3-gap')?.classList.toggle('drop-ready',contact(point(e))==='both');
    }
    if(e.cancelable)e.preventDefault();
