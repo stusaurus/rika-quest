@@ -140,3 +140,10 @@ html.akari-painted body[data-visual-theme="reference-rebuild"][data-painted-miss
  .m3-memo p br{display:none}
  .m3-memo p{white-space:normal}
 }
+
+/* Keep initial notes in the wide memo column, even before the first test. */
+@media(max-width:740px){.m3-records:empty{display:none}.m3-memo p{grid-column:2;grid-row:1}}
+/* Trigger a soft recovery only on the circuit's actual dark-to-lit transition. */
+.m3-lab:has(.m3-bench.painted-light-enter) .m3-village-lit{animation:m3-village-recovery .9s ease-out both}
+@keyframes m3-village-recovery{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.m3-lab .m3-village-lit{animation:none!important;transition:none!important}}
