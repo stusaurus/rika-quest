@@ -11,7 +11,7 @@
  const originalVillage=window.AkariCircuitVillage.board;
  window.AkariArt.workbench=function(wires,lit,stage){
   const svg=originalWorkbench(wires,lit);
-  if(stage!==1&&stage!==2)return svg;
+  if(stage!==1&&stage!==2&&stage!==3)return svg;
   const battery='<g class="battery-model painted-battery" role="group" aria-label="1.5ボルト乾電池。左の出っぱりが＋極、右の平らな面が−極">'+
    '<image class="painted-battery-image" href="'+images.battery+'" x="40" y="124" width="138" height="55" preserveAspectRatio="none"/></g>';
   const bulb='<g class="bulb-model painted-bulb" role="group" aria-label="豆電球。ねじの金属と底の金属が別々の接点。間の黒い部分は電気を通さない">'+

@@ -78,11 +78,12 @@ function applyReading(){
  if(all)all.setAttribute("aria-pressed",String(allYomi));
 }
 
+const paintedMaterials=(id)=>id===3&&!!window.AkariMaterials&&!!document.documentElement?.classList?.contains("akari-painted");
 const materials=[{id:"clip",name:"鉄のクリップ",conductive:true},{id:"foil",name:"アルミはく",conductive:true},{id:"wood",name:"乾いた木",conductive:false},{id:"plastic",name:"プラスチックの定規",conductive:false}];
 
-function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},finaleDraft:d.finaleDraft&&typeof d.finaleDraft==="object"&&!Array.isArray(d.finaleDraft)?d.finaleDraft:null,doubleFaultDraft:d.doubleFaultDraft&&typeof d.doubleFaultDraft==="object"&&!Array.isArray(d.doubleFaultDraft)?d.doubleFaultDraft:null,batteryDrafts:d.batteryDrafts&&typeof d.batteryDrafts==="object"&&!Array.isArray(d.batteryDrafts)?Object.fromEntries(Object.entries(d.batteryDrafts).filter(([key,value])=>[9,10,11].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},batteryDrafts:{},doubleFaultDraft:null,finaleDraft:null,notes:[]};}
+function readSave(){try{const d=JSON.parse(localStorage.getItem(storageKey)||"null");if(d&&d.version===2&&d.completed&&typeof d.completed==="object")return{version:2,completed:d.completed,active:Math.min(14,Math.max(1,+d.active||1)),sound:!!d.sound,masteries:d.masteries&&typeof d.masteries==="object"&&!Array.isArray(d.masteries)?Object.fromEntries(Object.entries(d.masteries).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value===true)): {},drafts:d.drafts&&typeof d.drafts==="object"&&!Array.isArray(d.drafts)?Object.fromEntries(Object.entries(d.drafts).filter(([key,value])=>[2,5,7,8,12,14].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},builderDraft:d.builderDraft&&typeof d.builderDraft==="object"&&!Array.isArray(d.builderDraft)?d.builderDraft:null,practiceDraft:d.practiceDraft&&typeof d.practiceDraft==="object"&&!Array.isArray(d.practiceDraft)?d.practiceDraft:null,switchDrafts:d.switchDrafts&&typeof d.switchDrafts==="object"&&!Array.isArray(d.switchDrafts)?d.switchDrafts:{},finaleDraft:d.finaleDraft&&typeof d.finaleDraft==="object"&&!Array.isArray(d.finaleDraft)?d.finaleDraft:null,doubleFaultDraft:d.doubleFaultDraft&&typeof d.doubleFaultDraft==="object"&&!Array.isArray(d.doubleFaultDraft)?d.doubleFaultDraft:null,batteryDrafts:d.batteryDrafts&&typeof d.batteryDrafts==="object"&&!Array.isArray(d.batteryDrafts)?Object.fromEntries(Object.entries(d.batteryDrafts).filter(([key,value])=>[9,10,11].includes(+key)&&value&&typeof value==="object"&&!Array.isArray(value))):{},gardenDrafts:d.gardenDrafts&&typeof d.gardenDrafts==="object"&&!Array.isArray(d.gardenDrafts)?Object.fromEntries(Object.entries(d.gardenDrafts).filter(([key,val])=>[4,5].includes(+key)&&val&&typeof val==="object"&&!Array.isArray(val))):{},materialDraft:d.materialDraft&&typeof d.materialDraft==="object"?d.materialDraft:null,bridgeDraft:d.bridgeDraft&&typeof d.bridgeDraft==="object"&&!Array.isArray(d.bridgeDraft)?d.bridgeDraft:null,safetyDraft:d.safetyDraft&&typeof d.safetyDraft==="object"&&!Array.isArray(d.safetyDraft)?d.safetyDraft:null,notes:Array.isArray(d.notes)?d.notes.filter(n=>n&&Number.isInteger(n.mission)&&typeof n.key==="string"&&typeof n.text==="string").slice(-100):[]};}catch(e){}return{version:2,completed:{},active:1,sound:false,masteries:{},drafts:{},builderDraft:null,practiceDraft:null,switchDrafts:{},safetyDraft:null,bridgeDraft:null,gardenDrafts:{},batteryDrafts:{},doubleFaultDraft:null,finaleDraft:null,materialDraft:null,notes:[]};}
 function current(){return M[state.active-1]}
-function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{garden:window.AkariGarden?window.AkariGarden.initial(m.id):null};case"repair":return m.id===13?{doubleFault:window.AkariDoubleFault?window.AkariDoubleFault.initial():null}:{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{batteryLab:window.AkariBatteryLab?window.AkariBatteryLab.initial(m.id):null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{finale:window.AkariFinaleLab?window.AkariFinaleLab.initial():null}}}
+function initial(m){switch(m.mode){case"wire":return{wires:(m.prefill||[]).map(a=>a.slice()),selected:null,zoomed:false};case"explore":if(paintedMaterials(m.id))return{materials:window.AkariMaterials.initial()};return{bridge:window.AkariBridge?window.AkariBridge.initial():null};case"material":return{garden:window.AkariGarden?window.AkariGarden.initial(m.id):null};case"repair":return m.id===13?{doubleFault:window.AkariDoubleFault?window.AkariDoubleFault.initial():null}:{inspected:[],fixed:[],suspected:[],diagnosed:false};case"logic":return{design:"series",a:false,b:false,trials:{},conclusion:null};case"battery":case"polarity":return{batteryLab:window.AkariBatteryLab?window.AkariBatteryLab.initial(m.id):null};case"cut":return{safety:window.AkariSafety?window.AkariSafety.empty():null};default:return{finale:window.AkariFinaleLab?window.AkariFinaleLab.initial():null}}}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){}}
 function saveSafetyDraft(){if(current().id===12&&ui.safety){state.safetyDraft=window.AkariSafety.restore(ui.safety);persist();}}
 function clearSafetyDraft(){state.safetyDraft=null;persist();}
@@ -121,6 +122,7 @@ function clearFinaleDraft(){state.finaleDraft=null;persist();}
 function restoreMissionUI(m){
  const base=initial(m),puzzle=window.AkariTransfer?.get(m.id),draft=state.drafts?.[m.id];
  if(m.id===14&&window.AkariFinaleLab)base.finale=window.AkariFinaleLab.normalize(state.completed[14]?null:state.finaleDraft);
+ if(paintedMaterials(m.id)){base.materials=window.AkariMaterials.normalize(state.materialDraft);return base;}
  if(m.id===3&&window.AkariBridge){base.bridge=window.AkariBridge.normalize(state.completed[3]?null:state.bridgeDraft);return base;}
  if(m.id===13&&window.AkariDoubleFault){base.doubleFault=window.AkariDoubleFault.normalize(state.completed[13]?null:state.doubleFaultDraft);return base;}
  if([9,10,11].includes(m.id)&&window.AkariBatteryLab){base.batteryLab=window.AkariBatteryLab.normalize(m.id,state.completed[m.id]?null:state.batteryDrafts?.[m.id]);return base;}
@@ -385,7 +387,7 @@ function renderWire(){
  +'<div class="circuit-help">丸を2つタップして どう線をつなごう。外すときは「×」。</div></div><div class="circuit-legend"><span>🔋 <b>乾電池</b><small>＋極・−極</small></span><span>💡 <b>豆電球</b><small>金属の横・底の接点</small></span></div>';
 }
 function choice(id,label,picture,selected,extra=""){return'<button type="button" class="choice'+(selected?' chosen':'')+' '+extra+'" data-choice="'+id+'" aria-pressed="'+!!selected+'"><span class="choice-picture">'+picture+'</span><span>'+escapeHtml(label)+'</span></button>';}
-function renderExplore(){return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>街灯の実験画面を読み込めませんでした。再読み込みしてください。</p>';}
+function renderExplore(){if(ui.materials)return window.AkariMaterials.render(ui.materials,stageComplete);return window.AkariBridge?window.AkariBridge.render(ui.bridge):'<p>街灯の実験画面を読み込めませんでした。再読み込みしてください。</p>';}
 function renderMaterial(){return window.AkariGarden?window.AkariGarden.render(current().id,ui.garden):'<div class="lab-panel">実験工房を読み込めませんでした。再読み込みしてください。</div>';}
 function repairParts(){return current().id===6?[{id:"battery",name:"乾電池",broken:false,detail:"1.5V・残量あり。問題なし。"},{id:"wire",name:"導線のつなぎ目",broken:true,detail:"接触がはずれている！"},{id:"bulb",name:"豆電球",broken:false,detail:"フィラメントは切れていない。"}]:[{id:"wire",name:"導線",broken:true,detail:"途中で切れていた！"},{id:"bulb",name:"豆電球の接点",broken:true,detail:"底が端子に触れていない！"},{id:"battery",name:"乾電池",broken:false,detail:"十分な電気がある。"}];}
 function renderRepair(){
@@ -477,6 +479,10 @@ function renderAll(){renderMenu();renderScene();renderHeader();renderWorkspace()
 function check(){
  if(stageComplete)return;const m=current();if(ui.switchLab){setFeedback("4通りの通電実験と理由の確認を完成させよう。");return;}if(ui.builder){setFeedback("導線をつなぎ、OFFとONの両方を実験してから完成ボタンを押そう。");return;}if(ui.transfer){setFeedback("追加依頼の3つの予想と理由を選び、最後の「街を救う」を押そう。");return;}
  if(m.mode==="wire"){const s=circuitStatus(ui.wires);if(s.short){fail("⚠ ショート！ 豆電球を通らず＋と−がつながっています。実物では絶対にまねしないでね。",true);return;}if(s.lit){success();return;}fail("まだ回路がつながっていないよ。電気が豆電球を通って電池に戻る道をつくろう。");return;}
+ if(ui.materials){
+  if(!window.AkariMaterials.canFinish(ui.materials)){setFeedback("ついた・つかないを くらべて、光った わけを 考えよう。","warning");return;}
+  recordObservation("materials:proof","金ぞくで2つの接点をつなぎ、木・プラスチックの結果と比べて電気の通り道を説明した。");success();return;
+ }
  if(m.mode==="explore"){
   if(!window.AkariBridge?.canFinish(ui.bridge)){setFeedback("A と B に 材料を はめて、まめ電球を 光らせよう。光った わけも えらぼう。","warning");return;}
   recordObservation("bridge:proof","【街灯の回路】"+ui.bridge.slots.a+"と"+ui.bridge.slots.b+"を使い、乾電池＋→修理A→豆電球→修理B→乾電池−の通り道を復旧した。");
@@ -1276,9 +1282,22 @@ function modal(open){const box=$("helpModal");box.hidden=!open;if(open){helpRetu
 function bind(){
  $("missionList").addEventListener("click",e=>{const b=e.target.closest("[data-mission]");if(b)changeMission(+b.dataset.mission)});
  $("workspace").addEventListener("click",handleWorkspace);
+ $("workspace").addEventListener("akari-material-action",e=>{
+  if(!ui.materials||stageComplete||!e.detail)return;
+  const B=window.AkariMaterials,was=B.evaluate(ui.materials);
+  ui.materials=B.act(ui.materials,e.detail);state.materialDraft=B.normalize(ui.materials);persist();
+  for(const t of ui.materials.log)recordObservation("materials:trial:"+t.id,B.sample(t.id).name+"：よそう "+(t.guess==="lit"?"つく":"つかない")+" → "+(t.actual==="lit"?"ついた":"つかない"));
+  const now=B.evaluate(ui.materials);renderWorkspace();
+  if(now.short&&!was.short)fail("ショート！ 電球を 通らない 近道だよ。せんを はずそう。",true);
+  else if(ui.materials.notice)setFeedback(ui.materials.notice);
+  if(e.detail.type==="reason"&&B.canFinish(ui.materials))check();
+ });
  $("workspace").addEventListener("akari-wire-cut",e=>{
   if(stageComplete||!e.detail)return;
   const {kind,key}=e.detail;
+  if(ui.materials&&kind==="wire"){
+   ui.materials=window.AkariMaterials.act(ui.materials,{type:"cut",key});state.materialDraft=window.AkariMaterials.normalize(ui.materials);persist();renderWorkspace();setFeedback("1本 きったよ。まるから まるへ つなぎ直せるよ。");return;
+  }
   if(typeof key!=="string")return;
   if(kind==="wire"&&!ui.builder&&!ui.switchLab&&current().mode==="wire"){
    const index=ui.wires.findIndex(w=>w.slice().sort().join("")===key);
@@ -1321,7 +1340,7 @@ function bind(){
   applyReading();
  });
  $("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)));
- $("resetBtn").addEventListener("click",()=>{stopReadingTask();clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3)clearBridgeDraft();if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
+ $("resetBtn").addEventListener("click",()=>{stopReadingTask();clearTransferDraft(current().id);clearBuilderDraft();ui=initial(current());if(current().id===12)clearSafetyDraft();if(current().id===3){clearBridgeDraft();state.materialDraft=null;persist();}if([4,5].includes(current().id))clearGardenDraft(current().id);if([9,10,11].includes(current().id))clearBatteryDraft(current().id);if(current().id===13)clearDoubleFaultDraft();if(current().id===14)clearFinaleDraft();stageComplete=false;hintIndex=0;failures=0;resetPresentation();renderAll()});
  $("hintBtn").addEventListener("click",()=>{if(stageComplete)return;if(ui.switchLab){setFeedback("💡 2つのスイッチそれぞれの入口・出口から電池と豆電球までの道をたどろう。片方だけONでもつながる道はあるかな？","success");reactCharacter("think");return;}if(ui.builder){setFeedback(ui.builderTask==="direct"?"💡 乾電池の＋から豆電球の金属の横・底を通って−に戻れるかな？ ガラスでは電気を通さないよ。":"💡 電気の道を指でたどろう。ONでだけ閉じる道を通り、豆電球の横と底を経て電池に戻れるかな？ 直接＋と−をつなぐ道は作らないでね。","success");reactCharacter("think","どの道を通るノン？");return;}if(ui.transfer){setFeedback("💡 "+(window.AkariTransfer?.hint(current().id)||"3つの回路の電気の道をたどってみよう。"),"success");reactCharacter("think","通り道をたどるノン！");hintIndex=Math.max(hintIndex,1);return;}const h=current().hints;setFeedback("💡 "+h[Math.min(hintIndex,h.length-1)],"success");reactCharacter("think","ヒントを見てみるノン");hintIndex=Math.min(hintIndex+1,h.length)});
  $("mapToggle").addEventListener("click",()=>{const s=$("sidebar"),open=s.classList.toggle("open");$("mapToggle").setAttribute("aria-expanded",String(open));$("mapToggle").textContent=open?"閉じる ▴":"開く ▾"});
  $("soundBtn").addEventListener("click",()=>{state.sound=!state.sound;persist();renderHeader();playTone(true)});
