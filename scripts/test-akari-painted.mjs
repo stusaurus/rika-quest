@@ -340,14 +340,10 @@ try{
    await page.locator("#nextBtn").waitFor({state:"visible"});
    await snapshot("stage2-painted-complete");
    await page.locator("#nextBtn").click();
-   await page.waitForFunction(()=>document.body.dataset.paintedMission==="");
-   assert.equal(await page.locator(".painted-world,.painted-battery,.painted-bulb").count(),0,
-     "Mission 3 remains unpainted until separately approved");
-   assert.equal(await page.locator("[data-wire-cut-mode]").count(),0,
-     "Temporary scissors and painted village restore the unmodified mission 3 UI");
-   assert.equal(await page.locator("#storyScene #sceneProgress").count(),1);
-   assert.equal(await page.locator("#storyScene #spark").count(),1);
-   await snapshot("stage3-unchanged");
+   await page.waitForFunction(()=>document.body.dataset.paintedMission==="3");
+   assert.equal(await page.locator(".m3-lab").count(),1,"The authorized third mission follows the same painted world");
+   assert.equal(await page.locator("[data-wire-cut-mode]").count(),1,"Mission 3 preserves scissors");
+   await snapshot("stage3-materials-entry");
    // A single-file deliverable must contain the very same art and usable inputs.
    await context.close();
    const offline=await browser.newContext({viewport:{width,height},reducedMotion:"reduce"});

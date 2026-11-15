@@ -177,3 +177,34 @@ jobs:
           name: akari-delivery-qa
           path: artifacts/akari-delivery/
           if-no-files-found: error
+
+  materials-mission3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify material contact and circuit logic
+        run: node --test tests/akari-materials.test.cjs
+      - name: Install matching Playwright client
+        run: npm install --no-save --no-audit --no-fund playwright@1.56.1
+      - name: Build self-contained game
+        run: node scripts/build-akari-preview.mjs
+      - name: Operate missions 1 to 3 and compare four materials
+        run: node scripts/test-akari-materials.mjs
+      - name: Export screenshot contact sheets for visual inspection
+        if: always()
+        run: node scripts/akari-qa-images.mjs
+      - name: Save mission 3 review HTML and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: akari-mission3-materials-qa
+          path: |
+            artifacts/akari-materials/
+            artifacts/akari-mission3.html
+          if-no-files-found: error

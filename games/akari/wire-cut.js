@@ -111,7 +111,9 @@
  };
  const cutBurst=(x,y)=>{
   const el=document.createElement("span");
-  el.className="wire-cut-burst";el.textContent="✂️";
+  el.className="wire-cut-burst";
+  if(document.body.dataset.paintedMission==="3")el.innerHTML=scissorsMarkup;
+  else el.textContent="✂️";
   el.style.left=x+"px";el.style.top=y+"px";
   el.setAttribute("aria-hidden","true");document.body.append(el);
   setTimeout(()=>el.remove(),520);

@@ -64,6 +64,8 @@ output=replaceOne(output,'<link rel="stylesheet" href="./mission1-art.css?v=1">'
 output=replaceOne(output,'<link rel="stylesheet" href="./mission1-finish.css?v=1">',"<style>\n"+paintedFinishCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./mission2-scene.css?v=1">',"<style>\n"+mission2SceneCss+"\n</style>");
 output=replaceOne(output,'<script src="./mission1-art.js?v=1" defer></script>',inlineScript(paintedArt));
+output=replaceOne(output,'<link rel="stylesheet" href="./materials-scene.css">',"<style>"+readFileSync("games/akari/materials-scene.css","utf8")+"</style>");
+for(const file of ["materials-model.js","materials-scene.js"])output=replaceOne(output,'<script src="./'+file+'" defer></script>',inlineScript(readFileSync("games/akari/"+file,"utf8")));
 output=replaceOne(output,'<link rel="stylesheet" href="./design-polish.css">',"<style>\n"+polish+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./reference-layout.css">',"<style>\n"+referenceCss+"\n</style>");
 output=replaceOne(output,'<link rel="stylesheet" href="./wire-effects.css?v=4690ff5">',"<style>\n"+wireCss+"\n</style>");
@@ -135,6 +137,12 @@ for(const name of ["battery","bulb-dark","bulb-lit","hud-panel","village-dark","
  const bytes=readFileSync("games/akari/assets/mission1/"+name+".webp");
  paintedOutput=paintedOutput.replaceAll(relative,"data:image/webp;base64,"+bytes.toString("base64"));
 }
+const mission3Assets={};
+for(const name of ["clip","aluminum","wood","plastic","village-dark","village-lit"]){
+ const relative="./assets/mission3/"+name+".webp";
+ mission3Assets[name]="data:image/webp;base64,"+readFileSync("games/akari/assets/mission3/"+name+".webp").toString("base64");
+ paintedOutput=paintedOutput.replaceAll(relative,mission3Assets[name]);
+}
 writeFileSync("artifacts/akari-preview.html",paintedOutput,"utf8");
 paintedOutput=paintedOutput.replace('new URLSearchParams(location.search).get("visual")==="painted"',
  '(new URLSearchParams(location.search).get("visual")||"painted")==="painted"');
@@ -152,7 +160,12 @@ if(reviewURL){
 }
 paintedOutput=paintedOutput.replace("</head>",'<meta name="robots" content="noindex,nofollow">\n</head>');
 if(paintedOutput.includes('./assets/mission1/'))throw new Error("Painted preview contains an external image reference");
+paintedOutput=paintedOutput.replace('const assets="./assets/mission3/";','window.AkariMaterialAssets='+JSON.stringify(mission3Assets)+';\nconst assets="./assets/mission3/";');
 writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
+let mission3Output=paintedOutput.replace('storageKey="rika-akari-quest-v2"','storageKey="rika-akari-mission3-review-v1"').replace('let state=readSave(),','let state=Object.assign(readSave(),{active:3}),').replace('function changeMission(id){','function changeMission(id){if(id===3)state.active=3;').replace('if(id>unlocked()&&!state.completed[id])return;','if(id!==3&&id>unlocked()&&!state.completed[id])return;');
+mission3Output=mission3Output.replace('<title>あかりクエスト｜試遊版</title>','<title>あかりクエスト｜第3ミッション試遊</title>').replace('$("nextBtn").textContent="つぎへ すすむ ➜"','$("nextBtn").textContent="もういちど あそぶ ↻"').replace('$("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)))','$("nextBtn").addEventListener("click",()=>$("resetBtn").click())');
+mission3Output=mission3Output.replace(/<div id="startupFallback"[\s\S]*?<\/div>/,'<div id="startupFallback" class="startup-fallback" role="status"><strong>第3ミッションの HTMLを ブラウザで ひらいてね</strong><p>Chromeや Safariなどで このファイルを ひらいてください。アプリ内の ファイルプレビューでは、ゲームが 動かないことが あります。</p></div>');
+writeFileSync("artifacts/akari-mission3.html",mission3Output,"utf8");
 console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");
 // Public review + its downloadable copy are limited to the approved mission.
 // The full 14-mission painted preview above is retained for regression testing.
