@@ -9,6 +9,23 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp
 const server=createServer((req,res)=>{const path=normalize(join(root,new URL(req.url,origin).pathname));if(!path.startsWith(root+'/'))return res.writeHead(403).end();try{const file=path.endsWith('/')?path+'index.html':path;res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream'});res.end(readFileSync(file));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(8773,'127.0.0.1',r));
 const out='artifacts/akari-materials';mkdirSync(out,{recursive:true});const results=[];
+function visibleCutStroke(path){
+ const length=path.getTotalLength(),matrix=path.getScreenCTM();
+ const board=path.closest('.circuit-board');
+ const screen=at=>{const p=path.getPointAtLength(at);return new DOMPoint(p.x,p.y).matrixTransform(matrix);};
+ const clear=p=>p.x>0&&p.x<innerWidth&&p.y>0&&p.y<innerHeight&&
+  !!document.elementFromPoint(p.x,p.y)?.closest('.circuit-board')&&
+  !document.elementFromPoint(p.x,p.y)?.closest('button,a,input,select,summary,[role="button"]');
+ for(const fraction of [.5,.4,.6]){
+  const at=length*fraction,p=screen(at),a=screen(Math.max(0,at-3)),b=screen(Math.min(length,at+3));
+  const dx=b.x-a.x,dy=b.y-a.y,mag=Math.hypot(dx,dy)||1,n={x:-dy/mag,y:dx/mag};
+  for(const [from,to] of [[-12,36],[-8,36],[12,-36],[8,-36],[-26,26],[-42,42]]){
+   const start={x:p.x+n.x*from,y:p.y+n.y*from},end={x:p.x+n.x*to,y:p.y+n.y*to};
+   if(clear(start)&&clear(end))return{start,end};
+  }
+ }
+ throw new Error('No visible wire-cut stroke avoids the actual control buttons: '+board.getBoundingClientRect().toJSON());
+}
 try{
  for(const[engine,type]of[['chromium',chromium],['webkit',webkit]]){
   const browser=await type.launch({headless:true,...(engine==='chromium'&&process.env.AKARI_CHROMIUM_PATH?{executablePath:process.env.AKARI_CHROMIUM_PATH}: {})});
@@ -79,8 +96,10 @@ try{
    await click('[data-m3-terminal="P"]');await click('[data-m3-terminal="N"]');await state('short');await p.locator('.painted-short-event').waitFor({state:'visible'});await shot('short');checks.push('short suppresses bulb and runs approved VFX');
    await click('[data-m3-terminal="P"]');await click('[data-m3-terminal="N"]');await state('lit');
    await click('[data-wire-cut-mode]');
-   const cut=await p.locator('[data-visual-wire="N-R"] .wire').evaluate(path=>{const m=path.getScreenCTM();const q=new DOMPoint(251,228).matrixTransform(m);return{x:q.x,y:q.y};});
-   await p.mouse.move(cut.x,cut.y-20);await p.mouse.down();await p.mouse.move(cut.x,cut.y+20,{steps:10});await p.mouse.up();await state('dark');checks.push('scissors cut actual reference wire');
+   await p.locator('.m3-circuit').scrollIntoViewIfNeeded();
+   const cut=await p.locator('[data-visual-wire="N-R"] .wire').evaluate(visibleCutStroke);
+   console.log('M3 cut geometry',engine,width,JSON.stringify(cut));
+   await p.mouse.move(cut.start.x,cut.start.y);await p.mouse.down();await p.mouse.move(cut.end.x,cut.end.y,{steps:10});await p.mouse.up();await shot('cut-attempt');await state('dark');checks.push('scissors cut actual reference wire');
    await click('[data-m3-terminal="R"]');await click('[data-m3-terminal="N"]');await state('lit');checks.push('wire reconnects by input');
    await click('[data-m3-reason="metal"]');await p.locator('#nextBtn').waitFor({state:'visible'});assert.equal(await p.locator('.m3-victory').isVisible(),true);await shot('complete');checks.push('correct evidence-based reason clears');
    const layout=await p.evaluate(()=>{

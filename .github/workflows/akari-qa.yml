@@ -196,6 +196,9 @@ jobs:
         run: node scripts/build-akari-preview.mjs
       - name: Operate missions 1 to 3 and compare four materials
         run: node scripts/test-akari-materials.mjs
+      - name: Export screenshot contact sheets for visual inspection
+        if: always()
+        run: node scripts/akari-qa-images.mjs
       - name: Save mission 3 review HTML and screenshots
         if: always()
         uses: actions/upload-artifact@v4
