@@ -82,7 +82,8 @@
   if(a.type==="cut"){s.wires=s.wires.filter(p=>edge(...p)!==a.key);s.reason=null;s.wireSelected=null;}
   if(a.type==="reason"&&compared(s)&&evaluate(s).lit){
    s.reason=["metal","shiny","one"].includes(a.id)?a.id:null;
-   s.notice=s.reason==="metal"?"金ぞくで 2つの まるを つなぐと、電気の 道が できた！":"メモを 見よう。木も 同じ形で はめたけれど、ついたかな？";
+   const dark=samples.find(m=>!m.conductive&&s.tests[m.id])?.shortName||"ほかの 材料";
+   s.notice=s.reason==="metal"?"金ぞくで 2つの まるを つなぐと、電気の 道が できた！":"メモを 見よう。"+dark+"を はめたときは、ついたかな？";
   }
   return s;
  }

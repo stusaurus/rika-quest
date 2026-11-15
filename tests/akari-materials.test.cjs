@@ -49,3 +49,8 @@ test('a bypass around the sample cannot substitute for repairing the gap with me
  assert.equal(M.evaluate(s).lit,true,'The graph honestly shows the bypassed bulb lighting');
  s=M.act(s,{type:'reason',id:'metal'});assert.equal(M.canFinish(s),false,'Final repair must use the tested conducting specimen');
 });
+
+test('reason feedback names an insulator the child actually tested',()=>{
+ let s=place(ready(),'plastic');s=place(s,'clip');s=M.act(s,{type:'reason',id:'shiny'});
+ assert.match(s.notice,/プラスチック/);assert.doesNotMatch(s.notice,/木/);
+});
