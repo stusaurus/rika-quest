@@ -2,7 +2,7 @@
 // Full-resolution captures stay in the ordinary run artifact.
 import{chromium}from'playwright';import{readdirSync,readFileSync,mkdirSync,writeFileSync}from'node:fs';
 const dir='artifacts/akari-materials';mkdirSync(dir,{recursive:true});
-const files=readdirSync(dir).filter(n=>n.endsWith('.png')&&/exploration|experiment-wood|lamp-lit|complete|one-contact|short/.test(n));
+const files=readdirSync(dir).filter(n=>n.endsWith('.png')&&/exploration|material-search|experiment-wood|lamp-lit|complete|one-contact|short/.test(n));
 const b=await chromium.launch({headless:true});try{
  for(const engine of ['chromium','webkit']){
   const chosen=files.filter(f=>f.startsWith(engine+'-'));if(!chosen.length)continue;

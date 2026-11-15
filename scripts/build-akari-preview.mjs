@@ -164,6 +164,7 @@ paintedOutput=paintedOutput.replace('const assets="./assets/mission3/";','window
 writeFileSync("artifacts/akari-mission1-painted.html",paintedOutput,"utf8");
 let mission3Output=paintedOutput.replace('storageKey="rika-akari-quest-v2"','storageKey="rika-akari-mission3-review-v1"').replace('let state=readSave(),','let state=Object.assign(readSave(),{active:3}),').replace('function changeMission(id){','function changeMission(id){if(id===3)state.active=3;').replace('if(id>unlocked()&&!state.completed[id])return;','if(id!==3&&id>unlocked()&&!state.completed[id])return;');
 mission3Output=mission3Output.replace('<title>あかりクエスト｜試遊版</title>','<title>あかりクエスト｜第3ミッション試遊</title>').replace('$("nextBtn").textContent="つぎへ すすむ ➜"','$("nextBtn").textContent="もういちど あそぶ ↻"').replace('$("nextBtn").addEventListener("click",()=>changeMission(Math.min(14,state.active+1)))','$("nextBtn").addEventListener("click",()=>$("resetBtn").click())');
+mission3Output=mission3Output.replace(/<div id="startupFallback"[\s\S]*?<\/div>/,'<div id="startupFallback" class="startup-fallback" role="status"><strong>第3ミッションの HTMLを ブラウザで ひらいてね</strong><p>Chromeや Safariなどで このファイルを ひらいてください。アプリ内の ファイルプレビューでは、ゲームが 動かないことが あります。</p></div>');
 writeFileSync("artifacts/akari-mission3.html",mission3Output,"utf8");
 console.log("Created offline painted mission 1 preview:",Buffer.byteLength(paintedOutput),"bytes");
 // Public review + its downloadable copy are limited to the approved mission.

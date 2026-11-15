@@ -74,7 +74,7 @@ try{
    await p.waitForFunction(()=>document.body.dataset.paintedMission==='3');checks.push('1→2→3 actual progression');
    await shot('exploration');
    assert.equal(await p.locator('[data-m3-find]').count(),0,'Investigate the visible break first');
-   await click('[data-m3-gap]');assert.ok((await p.locator('.m3-memo').innerText()).includes('ここが きれている'));checks.push('discovery and matching memo');
+   await click('[data-m3-gap]');assert.ok((await p.locator('.m3-memo').innerText()).includes('ここが きれている'));checks.push('discovery and matching memo');await shot('material-search');
    for(const id of ['wood','clip','aluminum','plastic'])await click('[data-m3-find="'+id+'"]');
    assert.equal(await p.locator('[data-m3-item]').count(),4);checks.push('find four specimens');await shot('materials-found');
    // A prediction can be incorrect; the measured result must be honest.
@@ -124,6 +124,14 @@ try{
   assert.equal(await p.locator('.m3-bench').getAttribute('data-m3-status'),'dark');
   await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-find="aluminum"]').click();await p.locator('[data-m3-guess="lit"]').click();await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-reason="metal"]').click();
   await p.locator('.m3-victory').waitFor({state:'visible'});assert.deepEqual(external,[]);await p.screenshot({path:out+'/'+engine+'-offline-complete.png',fullPage:true});await p.locator('#nextBtn').click();assert.equal(await p.locator('.m3-installed-image').count(),0);assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'3');assert.equal(await p.locator('#nextBtn').isVisible(),false);results.push({engine,transport:'file',status:'pass',external,replay:'mission 3 resets and stays playable'});await c.close();
+  const motion=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'}),mp=await motion.newPage();
+  await mp.goto(pathToFileURL(join(root,'artifacts/akari-mission3.html')).href,{waitUntil:'networkidle'});
+  await mp.locator('[data-m3-gap]').click();await mp.locator('[data-m3-find="aluminum"]').click();await mp.locator('[data-m3-guess="lit"]').click();await mp.locator('[data-m3-gap]').click();
+  await mp.waitForFunction(()=>getComputedStyle(document.querySelector('.m3-village-lit')).animationName==='m3-village-recovery');
+  await mp.waitForTimeout(950);assert.equal(await mp.locator('.m3-village-lit').evaluate(el=>getComputedStyle(el).opacity),'1');
+  await mp.locator('[data-m3-gap]').click();assert.equal(await mp.locator('.m3-village-lit').evaluate(el=>getComputedStyle(el).opacity),'0');
+  results.push({engine,mode:'normal motion',status:'pass',checks:['real dark-to-lit recovery animation','removal immediately extinguishes scene']});await motion.close();
+
   }finally{await browser.close();}
  }
 }finally{writeFileSync(out+'/results.json',JSON.stringify(results,null,2));server.close();}
