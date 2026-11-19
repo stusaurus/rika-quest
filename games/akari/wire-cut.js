@@ -32,7 +32,7 @@
   button.setAttribute("aria-pressed",String(cutMode));
   board.classList.toggle("wire-cut-mode",cutMode);
   const help=board.querySelector(".circuit-help");
-  if(help)help.textContent=cutMode?"✂ せんを よこぎって ゆびで スライド":hasWires?"✂「きる」で どう線を きれるよ":"まるを 2つ つないでみよう";
+  if(help)help.textContent=cutMode?"✂ せんを よこぎって ゆびで スライド":board.classList.contains("is-short")?"あぶない！ せんを はずそう":board.classList.contains("is-lit")?"ついた！ あかりを 見てみよう":hasWires?"せんが ない まるを さがそう":"まるを 2つ つないでみよう";
   const question=toolbar.querySelector(".circuit-question");
   if(question){
    if(!question.dataset.scissorsPrompt)question.dataset.scissorsPrompt=question.textContent;
