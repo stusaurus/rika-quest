@@ -4,7 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Script} from 'node:vm';
 
-const source=readFileSync('artifacts/akari-fourteen.html','utf8');
+const source=readFileSync('artifacts/akari-mission1-painted.html','utf8');
 const game=readFileSync('games/akari/game.js','utf8');
 const exact=(text,needle,replacement)=>{
   if(text.split(needle).length!==2)throw new Error('Review boundary changed: '+needle.slice(0,80));
@@ -12,11 +12,10 @@ const exact=(text,needle,replacement)=>{
 };
 // The fourteen build has isolated storage and freehand state already. Match
 // that exact script, then narrow only the standalone deliverable.
-const baseGame=game.replace('storageKey="rika-akari-quest-v2"','storageKey="akari-workshops-v1"')
-  .replaceAll('rika-akari-other-handdrawn-v1','akari-workshops-freehand-v1');
-if(baseGame===game)throw new Error('Missing fourteen-mission storage boundary');
+const baseGame=game;
+if(!source.includes(baseGame))throw new Error('Expected original game in painted preview');
 let limited=baseGame;
-limited=exact(limited,'storageKey="akari-workshops-v1"','storageKey="rika-akari-three-netlify-v1"');
+limited=exact(limited,'storageKey="rika-akari-quest-v2"','storageKey="rika-akari-three-netlify-v1"');
 limited=exact(limited,'function changeMission(id){','function changeMission(id){if(id<1||id>3)return;');
 limited=exact(limited,'$("missionList").innerHTML=M.map(','$("missionList").innerHTML=M.filter(m=>m.id<=3).map(');
 limited=exact(limited,'lampMap.innerHTML=M.map(','lampMap.innerHTML=M.filter(m=>m.id<=3).map(');
@@ -26,6 +25,16 @@ limited=exact(limited,'$("nextBtn").addEventListener("click",()=>changeMission(M
   '$("nextBtn").addEventListener("click",()=>changeMission(state.active>=3?1:state.active+1))');
 new Script(limited,{filename:'akari-three-scoped-game.js'});
 let html=exact(source,baseGame,limited);
+// The first-step feedback observer reads the mission number from the header.
+// Scope its parser and progress display to three, or mission 2 would be
+// misclassified as mission 1 when the header changes from "/14" to "/3".
+const reference=readFileSync('games/akari/reference-layout.js','utf8');
+let localReference=exact(reference,
+  String.raw\`match(/(\\d+)\\s*\\/\\s*14/)\`,
+  String.raw\`match(/(\\d+)\\s*\\/\\s*3/)\`);
+localReference=localReference.replaceAll(' / 14',' / 3')
+  .replaceAll('rika-akari-first-reasons-v1','rika-akari-three-first-reasons-v1');
+html=exact(html,reference,localReference);
 html=exact(html,'<title>あかりクエスト｜試遊版</title>',
   '<title>あかりクエスト｜第1〜3ミッション試遊</title>');
 html=exact(html,'<small>/ 42</small>','<small>/ 9</small>');
