@@ -47,3 +47,12 @@
 .village-workshop #workspace .dual-heading{box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
 .village-workshop #workspace .dual-heading>strong{
  box-sizing:border-box;min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}
+
+/* M13: labels are grid items; the original min-content size of the final
+   long Japanese label can project ~10px beyond the viewport in WebKit.
+   Allow each label to wrap within its actual button/summary width. */
+.village-workshop #workspace :is(.dual-part,.dual-repairs button,.dual-note)>:is(strong,small,span){
+ min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere;white-space:normal}
+.village-workshop #workspace .dual-parts,
+.village-workshop #workspace .dual-repairs{
+ min-inline-size:0;max-inline-size:100%}
