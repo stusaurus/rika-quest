@@ -159,11 +159,14 @@ html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-
  inset:0;z-index:12;pointer-events:none;overflow:visible;animation:none;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .painted-short-source{
- position:absolute;pointer-events:none;animation:painted-short-fades 1.65s ease-out both;
+ position:absolute;pointer-events:none;animation:none;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .painted-short-frame{
  width:100%;height:100%;background:url("./assets/mission1/short-burst-sheet.webp") 0 0/300% 200% no-repeat;
- animation:painted-short-frames 1.4s steps(1,end) both;
+ /* Ignite once, then continuously cycle original fire frames 2-4.
+    The circuit state (not a timer) removes the overlay on repair. */
+ animation:painted-short-ignite .64s steps(1,end) 1 both,
+           painted-short-burning 1.35s steps(1,end) .64s infinite;
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .painted-short-alert{
  position:absolute;transform:translateX(-50%);display:grid;gap:2px;max-width:calc(100% - 20px);
@@ -172,11 +175,18 @@ html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-
 }
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .painted-short-alert strong{font-size:17px}
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .painted-short-alert small{font-size:12px}
-@keyframes painted-short-frames{
- 0%{background-position:0% 0%}16.67%{background-position:50% 0%}33.34%{background-position:100% 0%}
- 50%{background-position:0% 100%}66.67%{background-position:50% 100%}83.34%,100%{background-position:100% 100%}
+@keyframes painted-short-ignite{
+ 0%,24.99%{background-position:0% 0%}
+ 25%,49.99%{background-position:50% 0%}
+ 50%,74.99%{background-position:100% 0%}
+ 75%,100%{background-position:50% 0%}
 }
-@keyframes painted-short-fades{0%,65%{opacity:1}100%{opacity:0}}
+@keyframes painted-short-burning{
+ 0%,24.99%{background-position:50% 0%}
+ 25%,49.99%{background-position:100% 0%}
+ 50%,74.99%{background-position:0% 100%}
+ 75%,100%{background-position:100% 0%}
+}
 html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-mission="1"],[data-painted-mission="2"],[data-painted-mission="3"]) .circuit-inner .terminal{
  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
  background:#245762!important;border:3px solid #e3d5ac!important;color:#fff4cf!important;

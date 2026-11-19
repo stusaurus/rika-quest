@@ -106,7 +106,7 @@ try{
    await click('[data-m3-gap]');await select('plastic','dark');await drag('plastic');await state('dark');checks.push('plastic stays dark');
    await click('[data-m3-gap]');await select('clip');await drag('clip');await state('lit');
    // The real wire-input surface creates a real short; no model rewrite.
-   await click('[data-m3-terminal="P"]');await click('[data-m3-terminal="N"]');await state('short');await p.locator('.painted-short-event').waitFor({state:'visible'});await shot('short');checks.push('short suppresses bulb and runs approved VFX');
+   await click('[data-m3-terminal="P"]');await click('[data-m3-terminal="N"]');await state('short');await p.locator('.painted-short-event').waitFor({state:'visible'});await shot('short');await p.waitForTimeout(2200);assert.equal(await p.locator('.painted-short-event').count(),1,'Short fire remains until repair');checks.push('short suppresses bulb and stays alight until repair');
    await click('[data-m3-terminal="P"]');await click('[data-m3-terminal="N"]');await state('lit');
    await click('[data-wire-cut-mode]');
    await p.locator('.m3-circuit').scrollIntoViewIfNeeded();

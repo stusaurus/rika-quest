@@ -230,6 +230,9 @@ try{
    assert.equal(await page.locator(".painted-short-event .short-flames,.painted-short-event .short-smoke").count(),0,"The real warning uses painted artwork, not emoji placeholders");
    assert.equal(await page.locator(".painted-short-frame").evaluate(el=>getComputedStyle(el).animationName),"none","Reduced motion uses one clear static warning");
    await snapshot("painted-short");
+   await page.waitForTimeout(2200);
+   assert.equal(await page.locator(".painted-short-event").count(),1,
+     "The fire must persist beyond the former 1.75-second timeout while shorted");
    await page.locator("[data-unwire]").first().click();await state(false);
    assert.equal(await page.locator(".painted-short-event").count(),0,"Disconnecting immediately removes stale fire");
    await reset();await connect("P","L");await connect("N","R");await connect("P","N");await state(false,true);
