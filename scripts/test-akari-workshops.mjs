@@ -37,7 +37,7 @@ async function experiment(stage){
     const name='data-'+k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
     return v==='1'?'['+name+']':'['+name+'="'+v+'"]';
    }).join('');
-   const loc=page.locator(selector).first();
+   const loc=page.locator(selector+':visible:not(:disabled)').last();
    // Some probes represent intentionally unavailable actions. Completion
    // below requires the real game's persisted success for this mission.
    if(await loc.isVisible()&&await loc.isEnabled())await press(loc);

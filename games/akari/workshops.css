@@ -11,3 +11,5 @@
 .workshop-hit rect{fill:#ffe39f;fill-opacity:.04;stroke:#edcf89;stroke-width:2;stroke-dasharray:5 4}
 .workshop-hit:is(:focus-visible,:hover,:active) rect{fill-opacity:.18;stroke:#fff3cb}
 @media(max-width:740px){.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section){min-width:0}}
+.village-workshop .quest-head::before{content:"";display:block;grid-column:1/-1;flex-basis:100%;width:100%;height:clamp(60px,8vw,100px);border-radius:10px;background:var(--location) center/cover}
+.village-workshop .quest-head{flex-wrap:wrap}

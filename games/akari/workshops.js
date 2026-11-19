@@ -26,7 +26,17 @@
  }
  function paint(svg,stage){
   const hit=(x,y,w,h,sel)=>hotspot(svg,x,y,w,h,sel);
-  const fixedCell=(x,y,len,dia)=>cell(svg,x,y,len,dia,90);
+  const fixedCell=(x,y,len,dia)=>{
+   const plate=svg.querySelector('rect:nth-of-type(2)');
+   if(plate && Math.abs(plate.getBBox().x+plate.getBBox().width/2-x)<4){
+    for(const text of svg.querySelectorAll('text')){
+     const pos=Number(text.getAttribute('y'));
+     if(Math.abs(Number(text.getAttribute('x'))-x)<3&&Math.abs(pos-y)<len/2)text.remove();
+    }
+    plate.remove();
+   }
+   cell(svg,x,y,len,dia,90);
+  };
   if(svg.matches('.battery-lab-svg')){
    for(const part of svg.querySelectorAll('[data-cell]')){
     const body=part.querySelector('rect'),tip=body.nextElementSibling;
@@ -64,6 +74,9 @@
   const stage=Number(document.querySelector('#storyScene').dataset.stage);
   document.body.classList.toggle('village-workshop',stage>=4);
   if(stage<4)return;
+  let scene=document.querySelector('#storyScene');
+  let heading=document.querySelector('.quest-head');
+  if(scene&&heading&&assets.scenery[scene.dataset.place])heading.style.setProperty('--location','url('+assets.scenery[scene.dataset.place]+')');
   for(const svg of root.querySelectorAll('.garden-circuit-svg,.garden-design-svg,.builder-board>svg,.battery-lab-svg,.safety-svg,.dual-circuit-svg,.finale-circuit-svg')){
    if(!svg.dataset.workshop){svg.dataset.workshop='true';paint(svg,stage);}
   }
