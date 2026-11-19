@@ -19,3 +19,11 @@
 .village-workshop #storyScene{background:linear-gradient(0deg,#132b3980,transparent 65%),var(--location) center/cover!important}
 .village-workshop #storyScene :is(.landmark,.scene-props,.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){visibility:hidden}
 .village-workshop .repair-card:has([data-inspect]){border-inline-start:4px solid var(--brass)}
+/* The large circuit stays pannable inside its frame, including in WebKit grid tracks. */
+.village-workshop #workspace :is(.safety-lab,.dual-lab,.dual-section,.dual-testbench,.dual-predict,.dual-reasoning,.dual-notes){
+ grid-template-columns:minmax(0,1fr);min-inline-size:0}
+.village-workshop #workspace :is(.safety-lab,.dual-lab) > *,
+.village-workshop #workspace :is(.safety-diagram,.dual-diagram){
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace :is(.safety-diagram,.dual-diagram){contain:inline-size}
+.village-workshop #workspace .safety-heading{flex-wrap:wrap}

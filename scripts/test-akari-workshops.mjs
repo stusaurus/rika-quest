@@ -80,7 +80,11 @@ try{
   if(await first.isVisible())await first.scrollIntoViewIfNeeded();
   await page.screenshot({path:folder+'/mission-'+stage+'.jpg',quality:72});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-  metrics.push({stage,overflow});assert.ok(overflow<=1,'page overflow in '+stage);
+  metrics.push({stage,overflow});
+  if(overflow>1){
+   console.log('Layout bounds',await page.evaluate(()=>[...document.querySelectorAll('body *')].filter(e=>e instanceof HTMLElement&&e.getBoundingClientRect().right>innerWidth+1&&!e.closest('.safety-diagram,.dual-diagram')).map(e=>[e.tagName,e.className,Math.round(e.getBoundingClientRect().right)]).slice(0,35)));
+  }
+  assert.ok(overflow<=1,'page overflow in '+stage+' by '+overflow+'px');
   if(stage===9&&width===768){
    await page.setViewportSize({width:1024,height:768});await page.reload();
    await page.waitForSelector('#storyScene[data-stage="9"]',{state:'attached'});
