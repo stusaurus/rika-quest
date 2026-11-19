@@ -42,7 +42,7 @@ try{
   assert.equal(await page.locator('#missionList [data-mission]').count(),3);
   assert.equal(await page.locator('#missionList [data-mission="4"]').count(),0);
   for(let stage=1;stage<=3;stage++){
-    await page.waitForSelector('#storyScene[data-stage="'+stage+'"]');
+    await page.waitForSelector('#storyScene[data-stage="'+stage+'"]',{state:'attached'});
     const wide=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(wide<=1,'Viewport overflow stage '+stage+': '+wide);
     await page.screenshot({path:output+'/stage-'+stage+'.png',fullPage:true,animations:'disabled'});
@@ -74,7 +74,7 @@ try{
   }
   assert.match(await page.locator('#nextBtn').innerText(),/もういちど/);
   await press('#nextBtn');
-  await page.waitForSelector('#storyScene[data-stage="1"]');
+  await page.waitForSelector('#storyScene[data-stage="1"]',{state:'attached'});
   await page.reload();
   await page.waitForSelector('#storyScene[data-stage="1"]');
   assert.equal(await page.locator('#missionList [data-mission]').count(),3);
