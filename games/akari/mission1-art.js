@@ -6,6 +6,7 @@
 (function(){
  if(!document.documentElement.classList.contains("akari-painted"))return;
  const images={battery:"./assets/mission1/battery.webp",bulbDark:"./assets/mission1/bulb-dark.webp",bulbLit:"./assets/mission1/bulb-lit.webp",villageDark:"./assets/mission1/village-dark.webp",villageLit:"./assets/mission1/village-lit.webp",shortBurst:"./assets/mission1/short-burst-sheet.webp"};
+ // Load the original six-frame spark/fire/smoke art before it is needed.
  const shortArt=new Image();shortArt.src=images.shortBurst;
  const originalWorkbench=window.AkariArt.workbench;
  const originalVillage=window.AkariCircuitVillage.board;
@@ -51,45 +52,48 @@
   const steps=document.getElementById("learningSteps");
   if(!workspace||!main||!heading||!scene)return;
   const originalShort=window.AkariEffects?.shortCircuit;
-  let wasLit=false,effectTicket=0,shortPending=false,clearShort=null;
+  let wasLit=false,shortBoard=null,clearShort=null;
   const stopShort=()=>{
-   effectTicket++;shortPending=false;clearShort?.();clearShort=null;
+   clearShort?.();clearShort=null;shortBoard=null;
+  };
+  const showPersistentShort=()=>{
+   // Only the real circuit's short state controls the fire; there is no
+   // timeout. Re-rendered boards get the same warning until repaired.
+   const board=workspace.querySelector(".circuit-board.is-short:has(.painted-world)");
+   if(!board){stopShort();return;}
+   if(shortBoard===board&&board.querySelector(".painted-short-event"))return;
+   stopShort();
+   const event=document.createElement("div");
+   event.className="short-event painted-short-event";
+   event.setAttribute("data-short-event","");
+   event.setAttribute("role","img");
+   event.setAttribute("aria-label","ショート。あぶない発熱を表す炎の演出。せんを はずそう。");
+   event.innerHTML='<div class="painted-short-source" aria-hidden="true"><div class="painted-short-frame"></div></div>'+
+    '<div class="painted-short-alert"><strong>ショート！</strong><small>あぶない！ せんを はずそう</small></div>';
+   board.append(event);
+   shortFlash?.classList.remove("active");
+   const layout=()=>{
+    const svg=board.querySelector(".circuit-svg-v2"),matrix=svg?.getScreenCTM();
+    if(!matrix)return;
+    const point=new DOMPoint(108,150).matrixTransform(matrix),r=board.getBoundingClientRect();
+    const size=svg.getBoundingClientRect().width/400*155;
+    const source=event.querySelector(".painted-short-source"),alert=event.querySelector(".painted-short-alert");
+    source.style.cssText='width:'+size+'px;height:'+size+'px;left:'+(point.x-r.left+board.scrollLeft-size/2)+'px;top:'+(point.y-r.top+board.scrollTop-size*.76)+'px';
+    alert.style.left=(board.scrollLeft+board.clientWidth/2)+'px';
+    alert.style.top=(parseFloat(getComputedStyle(board).getPropertyValue("--painted-village-height"))||126)+7+'px';
+   };
+   layout();
+   const controller=new AbortController();
+   board.addEventListener("scroll",layout,{passive:true,signal:controller.signal});
+   const resize=new ResizeObserver(layout);resize.observe(board);
+   shortBoard=board;
+   clearShort=()=>{controller.abort();resize.disconnect();event.remove();};
   };
   if(originalShort)window.AkariEffects.shortCircuit=function(){
    const freePanel=document.getElementById("freeLabPanel");
    if(!workspace.querySelector(".painted-world")||(freePanel&&!freePanel.hidden))return originalShort();
-   stopShort();shortPending=true;const ticket=effectTicket;
-   // The lesson calls its warning before replacing the workspace. Render the
-   // effect on the measured NEW board, never the detached pre-short circuit.
-   const ready=shortArt.complete&&shortArt.naturalWidth?Promise.resolve():shortArt.decode().catch(()=>{});
-   ready.then(()=>requestAnimationFrame(()=>{
-    if(ticket!==effectTicket)return;
-    shortPending=false;
-    const board=workspace.querySelector(".circuit-board.is-short:has(.painted-world)");
-    if(!board)return;
-    const event=document.createElement("div");
-    event.className="short-event painted-short-event";
-    event.setAttribute("data-short-event","");event.setAttribute("role","img");
-    event.setAttribute("aria-label","ショート。電池があぶない。線を外そう。");
-    event.innerHTML='<div class="painted-short-source" aria-hidden="true"><div class="painted-short-frame"></div></div>'+
-     '<div class="painted-short-alert"><strong>ショート！</strong><small>あぶない！ せんを はずそう</small></div>';
-    board.append(event);shortFlash?.classList.remove("active");
-    const layout=()=>{
-     const svg=board.querySelector(".circuit-svg-v2"),matrix=svg?.getScreenCTM();
-     if(!matrix)return;
-     const point=new DOMPoint(108,150).matrixTransform(matrix),r=board.getBoundingClientRect();
-     const size=svg.getBoundingClientRect().width/400*155;
-     const source=event.querySelector(".painted-short-source"),alert=event.querySelector(".painted-short-alert");
-     source.style.cssText='width:'+size+'px;height:'+size+'px;left:'+(point.x-r.left+board.scrollLeft-size/2)+'px;top:'+(point.y-r.top+board.scrollTop-size*.76)+'px';
-     alert.style.left=(board.scrollLeft+board.clientWidth/2)+'px';
-     alert.style.top=(parseFloat(getComputedStyle(board).getPropertyValue("--painted-village-height"))||126)+7+'px';
-    };
-    layout();const controller=new AbortController();
-    board.addEventListener("scroll",layout,{passive:true,signal:controller.signal});
-    const resize=new ResizeObserver(layout);resize.observe(board);
-    const timer=setTimeout(()=>{clearShort?.();clearShort=null;},1750);
-    clearShort=()=>{clearTimeout(timer);controller.abort();resize.disconnect();event.remove();};
-   }));
+   // The lesson may trigger the effect before replacing its board.
+   requestAnimationFrame(showPersistentShort);
   };
   function sync(){
    // Keep the artwork element distinct from the existing #storyScene
@@ -109,9 +113,9 @@
     if(!wasLit)board.classList.add("painted-light-enter");
    }
    wasLit=lit;
-   // Restarting or cutting must cancel stale fire immediately. A re-rendered
-   // short board can discard the transient effect but keeps its persistent warning.
-   if(!board?.classList.contains("is-short")&&(clearShort||shortPending))stopShort();
+   // Keep fire tied to current connectivity, including re-renders and reloads.
+   // Cutting or leaving a shorted board removes the warning immediately.
+   showPersistentShort();
    if(active){
     if(progress&&!heading.contains(progress))heading.append(progress);
     for(const el of [celebration,shortFlash])if(el&&el.parentElement!==document.body)document.body.append(el);

@@ -8,6 +8,8 @@ on:
       - 'scripts/test-akari-browser.mjs'
       - 'scripts/test-akari-cinematic.mjs'
       - 'scripts/test-akari-painted.mjs'
+      - 'scripts/test-akari-materials.mjs'
+      - 'scripts/akari-qa-images.mjs'
       - 'scripts/test-akari-delivery.mjs'
       - 'scripts/build-akari-art-baseline.mjs'
       - 'scripts/build-akari-preview.mjs'
@@ -194,6 +196,12 @@ jobs:
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Build self-contained game
         run: node scripts/build-akari-preview.mjs
+      - name: Capture the same scenes on the reviewed mission 3 baseline
+        run: |
+          git -c safe.directory="$GITHUB_WORKSPACE" fetch --depth=1 origin e1516fc87c6dc4e13b93569812362687ae70b785
+          mkdir -p /tmp/akari-reviewed
+          git -c safe.directory="$GITHUB_WORKSPACE" archive FETCH_HEAD games/akari | tar -x -C /tmp/akari-reviewed
+          AKARI_BASELINE_DIR=/tmp/akari-reviewed node scripts/test-akari-materials.mjs
       - name: Operate missions 1 to 3 and compare four materials
         run: node scripts/test-akari-materials.mjs
       - name: Export screenshot contact sheets for visual inspection
@@ -205,6 +213,8 @@ jobs:
         with:
           name: akari-mission3-materials-qa
           path: |
+            artifacts/akari-before/
             artifacts/akari-materials/
+            artifacts/akari-mission1-painted.html
             artifacts/akari-mission3.html
           if-no-files-found: error

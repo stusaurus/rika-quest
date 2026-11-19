@@ -230,6 +230,9 @@ try{
    assert.equal(await page.locator(".painted-short-event .short-flames,.painted-short-event .short-smoke").count(),0,"The real warning uses painted artwork, not emoji placeholders");
    assert.equal(await page.locator(".painted-short-frame").evaluate(el=>getComputedStyle(el).animationName),"none","Reduced motion uses one clear static warning");
    await snapshot("painted-short");
+   await page.waitForTimeout(2200);
+   assert.equal(await page.locator(".painted-short-event").count(),1,
+     "The fire must persist beyond the former 1.75-second timeout while shorted");
    await page.locator("[data-unwire]").first().click();await state(false);
    assert.equal(await page.locator(".painted-short-event").count(),0,"Disconnecting immediately removes stale fire");
    await reset();await connect("P","L");await connect("N","R");await connect("P","N");await state(false,true);
@@ -394,13 +397,14 @@ try{
    await p.locator('#resetBtn').click();await press('P');await press('N');
    await p.locator('.painted-short-frame').waitFor({state:'visible'});
    const warning=await p.locator('.painted-short-frame').evaluate(el=>({animation:getComputedStyle(el).animationName,image:getComputedStyle(el).backgroundImage}));
-   assert.equal(warning.animation,'painted-short-frames');assert.ok(warning.image.includes('short-burst-sheet.webp'));
+   assert.ok(warning.animation.includes('painted-short-burning'),'The live warning continuously cycles the painted flame');assert.ok(warning.image.includes('short-burst-sheet.webp'));
    await p.locator('.circuit-board').screenshot({path:`artifacts/akari/${engine}-${width}-motion-short.png`,animations:'allow'});
    await p.locator('#resetBtn').click();
    assert.equal(await p.locator('.painted-short-event').count(),0,'Reset cancels the in-flight fire animation');
    await press('P');await press('N');await p.locator('.painted-short-event').waitFor({state:'visible'});
-   await p.locator('.painted-short-event').waitFor({state:'detached',timeout:4000});
-   assert.equal(await p.locator('.circuit-board.is-short').count(),1,'Transient fire ends, but a genuine short keeps its persistent warning');
+   await p.waitForTimeout(2200);
+   assert.equal(await p.locator('.painted-short-event').count(),1,'A genuine short keeps the flame burning beyond the former timeout');
+   assert.equal(await p.locator('.circuit-board.is-short').count(),1,'The real short remains until the learner removes the dangerous wire');
    await p.locator('[data-unwire]').click();
    assert.equal(await p.locator('.circuit-board.is-short').count(),0);
    assert.deepEqual(errors,[]);motionResults.push({engine,width,height,status:'pass',warning});

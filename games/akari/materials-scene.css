@@ -54,7 +54,11 @@ html.akari-painted body[data-painted-mission="3"] .m3-bench .m3-circuit.circuit-
 .m3-terminal::before{content:"";position:absolute;inset:8px;z-index:-1;background:radial-gradient(circle at 30% 25%,#fff5c9,#d3b272 55%,#857148 100%);border:2px solid #6d6847;border-radius:50%;box-shadow:0 2px 3px #152c31a8}
 .m3-terminal.selected::before{outline:3px solid #fff0af;box-shadow:0 0 15px #ffe3a9}
 .m3-gap{position:absolute;z-index:5;width:26%;height:50px;min-width:74px;min-height:44px;transform:translate(-50%,-50%);border:0;background:transparent;color:#ffebbb;touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;gap:4px;font:11px "Kosugi Maru",sans-serif}
-.m3-gap:not(.inspected){background:#153a41ed;border:2px solid #e5bd79;border-radius:12px;box-shadow:0 0 18px #ffde9270;min-width:100px}
+.m3-gap:not(.inspected){width:44px;min-width:44px;background:transparent;border:0}
+.m3-inspect-label{position:absolute;bottom:calc(50% + 12px);display:flex;align-items:center;gap:3px;white-space:nowrap;padding:3px 7px;border:1px solid #e5bd79;border-radius:9px;background:#153a41;color:#ffebbb}
+.m3-inspect-label svg{width:14px;height:14px}
+.m3-inspect-label::after{content:"";position:absolute;left:50%;top:100%;border:4px solid transparent;border-top-color:#e5bd79;transform:translateX(-50%)}
+.m3-lab:has(.m3-gap:not(.inspected)) .m3-toolbar [data-wire-cut-mode],.m3-complete .m3-toolbar [data-wire-cut-mode]{display:none!important}
 .m3-gap.inspected{width:14%;min-width:44px}
 .m3-gap.inspected>span{margin-top:64px;padding:2px 6px;border-radius:7px;background:#163a3ce8;white-space:nowrap;border:1px solid #d1af77}
 .m3-gap .m3-remove-label{opacity:0}
