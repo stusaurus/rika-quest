@@ -1,0 +1,13 @@
+.village-workshop{--timber:#805733;--brass:#cfaf73;--ink:#173e42}
+.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section,.battery-controls,.dual-panel,.finale-panel){
+ border:2px solid var(--brass);border-radius:14px;background:linear-gradient(140deg,#fffae9,#e8dcc1);color:#233c40;box-shadow:0 3px 0 #73573e}
+.village-workshop #workspace :is(.builder-heading,.garden-heading,.battery-head,.dual-heading,.safety-heading,.finale-head,.network-heading){
+ background:linear-gradient(110deg,#173a3deb,#173a3dcd),var(--workshop-wood) center/cover;color:#fff0c8;padding:12px;border:2px solid var(--brass);border-radius:12px}
+.village-workshop #workspace button:enabled:focus-visible,.workshop-hit:focus-visible{outline:3px solid #d79730;outline-offset:2px}
+.village-workshop #workspace :is(.garden-rig,.garden-schematic,.safety-diagram,.dual-diagram,.finale-circuit,.builder-viewport):not(button){
+ border:4px solid #94724a;border-radius:10px;background:var(--workshop-wood) center/cover}
+.village-workshop #workspace button:not(.builder-terminal){min-height:44px}
+.workshop-hit{cursor:pointer;touch-action:manipulation}
+.workshop-hit rect{fill:#ffe39f;fill-opacity:.04;stroke:#edcf89;stroke-width:2;stroke-dasharray:5 4}
+.workshop-hit:is(:focus-visible,:hover,:active) rect{fill-opacity:.18;stroke:#fff3cb}
+@media(max-width:740px){.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section){min-width:0}}
