@@ -16,6 +16,7 @@ async function press(loc){await loc.scrollIntoViewIfNeeded();if(width<=1024)awai
 const click=sel=>press(page.locator(sel).first());
 const connect=async(a,b)=>{await click('[data-t="'+a+'"]');await click('[data-t="'+b+'"]')};
 const completed=[],metrics=[],direct=new Set();
+let sawClockShort=false;
 async function directAction(loc,stage){
  const selector=await loc.evaluate(b=>[...document.querySelectorAll('.workshop-hit')].find(g=>document.querySelector('#workspace').querySelector(g.dataset.workshopControl)===b)?.dataset.workshopControl);
  if(!selector)return false;
@@ -51,7 +52,9 @@ async function experiment(stage){
    // below requires the real game's persisted success for this mission.
    if(await loc.isVisible()&&await loc.isEnabled()){
     if(baseline||!(await directAction(loc,stage)))await press(loc);
-    if(!baseline&&stage===6&&action.builderCause==='short'){
+    const clock=page.locator('.builder-direct svg[data-lamp-state]');
+    if(!baseline&&stage===6&&action.builderCause==='short'&&await clock.getAttribute('data-lamp-state')==='short'){
+     sawClockShort=true;
      await page.waitForTimeout(1200);
      assert.equal(await page.locator('.workshop-fire').count(),1,'Fire lasts while terminals remain shorted');
     }
@@ -81,6 +84,7 @@ try{
   completed.push(stage);
   if(stage<14)await click('#nextBtn');
  }
+ if(!baseline)assert.ok(sawClockShort,'Observed clock short');
  if(!baseline)assert.ok(direct.size>=8,'Diagram actions: '+[...direct]);
  console.log('Verified diagram actions',Array.from(direct));
  assert.deepEqual(errors,[]);assert.deepEqual(network,[]);console.log('Completed',completed,'Layout',JSON.stringify(metrics));
