@@ -29,9 +29,7 @@ let html=exact(source,baseGame,limited);
 // Scope its parser and progress display to three, or mission 2 would be
 // misclassified as mission 1 when the header changes from "/14" to "/3".
 const reference=readFileSync('games/akari/reference-layout.js','utf8');
-let localReference=exact(reference,
-  String.raw`match(/(\\d+)\\s*\\/\\s*14/)`,
-  String.raw`match(/(\\d+)\\s*\\/\\s*3/)`);
+let localReference=exact(reference,'14/)','3/)');
 localReference=localReference.replaceAll(' / 14',' / 3')
   .replaceAll('rika-akari-first-reasons-v1','rika-akari-three-first-reasons-v1');
 html=exact(html,reference,localReference);
