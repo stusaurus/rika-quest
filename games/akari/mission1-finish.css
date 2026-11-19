@@ -561,3 +561,9 @@ html.akari-painted body[data-visual-theme="reference-rebuild"]:is([data-painted-
   width:44px!important;min-width:44px!important;padding:4px!important;font-size:11px!important;
  }
 }
+
+/* A brass rim marks an unused socket while the player builds the loop. */
+html.akari-painted .circuit-inner .terminal.open-contact:not(.selected)::before {
+ outline: 2px dashed #ffe3a3;
+ outline-offset: 2px;
+}

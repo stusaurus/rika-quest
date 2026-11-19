@@ -4,11 +4,12 @@ import{createServer}from'node:http';
 import{readFileSync,writeFileSync,mkdirSync}from'node:fs';
 import{join,normalize,extname}from'node:path';
 import{pathToFileURL}from'node:url';
-const root=process.cwd(),origin='http://127.0.0.1:8773';
+const baseline=process.env.AKARI_BASELINE_DIR;
+const root=baseline||process.cwd(),origin='http://127.0.0.1:8773';
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.woff':'font/woff'};
 const server=createServer((req,res)=>{const path=normalize(join(root,new URL(req.url,origin).pathname));if(!path.startsWith(root+'/'))return res.writeHead(403).end();try{const file=path.endsWith('/')?path+'index.html':path;res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream'});res.end(readFileSync(file));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(8773,'127.0.0.1',r));
-const out='artifacts/akari-materials';mkdirSync(out,{recursive:true});const results=[];
+const out=baseline?'artifacts/akari-before':'artifacts/akari-materials';mkdirSync(out,{recursive:true});const results=[];
 function visibleCutStroke(path){
  const length=path.getTotalLength(),matrix=path.getScreenCTM();
  const board=path.closest('.circuit-board');
@@ -65,13 +66,25 @@ try{
    }
    await p.goto(origin+'/games/akari/?visual=painted',{waitUntil:'networkidle'});
    await p.waitForFunction(()=>document.body.dataset.paintedMission==='1');
+   const captureBoard=async name=>{
+    const region=p.locator('#workspace .circuit-board').first();
+    await region.screenshot({path:prefix+'-'+name+'.png',animations:'disabled'});
+    assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow on '+name);
+   };
+   if(!baseline)assert.equal(await p.locator('.open-contact').count(),4);
+   await captureBoard('first-sockets');
    await connect('P','L');await connect('R','N');await click('[data-first-reason="loop"]');await click('#nextBtn');
    await p.waitForFunction(()=>document.body.dataset.paintedMission==='2');
+   if(!baseline)assert.equal(await p.locator('.open-contact').count(),2);
+   await captureBoard('repair-sockets');
    assert.equal(await p.locator('.wire-chip').count(),1);
    await connect('R','N');await click('[data-first-reason="joined"]');
    for(const[id,value]of[['a','dark'],['b','lit'],['c','lit']])await click('[data-transfer-answer="'+id+'"][data-transfer-value="'+value+'"]');
    await click('[data-transfer-reason="path"]');await click('[data-transfer-verify]');await click('#nextBtn');
    await p.waitForFunction(()=>document.body.dataset.paintedMission==='3');checks.push('1→2→3 actual progression');
+   await p.locator('.m3-lab').screenshot({path:prefix+'-first-look.png',animations:'disabled'});
+   if(baseline){await context.close();continue;}
+   assert.equal(await p.locator('.m3-predict').count(),0);
    await shot('exploration');
    assert.equal(await p.locator('[data-m3-find]').count(),0,'Investigate the visible break first');
    await click('[data-m3-gap]');assert.ok((await p.locator('.m3-memo').innerText()).includes('ここが きれている'));checks.push('discovery and matching memo');await shot('material-search');
@@ -99,7 +112,7 @@ try{
    await p.locator('.m3-circuit').scrollIntoViewIfNeeded();
    const cut=await p.locator('[data-visual-wire="N-R"] .wire').evaluate(visibleCutStroke);
    console.log('M3 cut geometry',engine,width,JSON.stringify(cut));
-   await p.mouse.move(cut.start.x,cut.start.y);await p.mouse.down();await p.mouse.move(cut.end.x,cut.end.y,{steps:10});await p.mouse.up();await shot('cut-attempt');await state('dark');checks.push('scissors cut actual reference wire');
+   await p.mouse.move(cut.start.x,cut.start.y);await p.mouse.down();await p.mouse.move(cut.end.x,cut.end.y,{steps:10});await p.mouse.up();await shot('cut-attempt');await state('dark');assert.ok(!(await p.locator('.m3-live').innerText()).includes('メモに'));checks.push('scissors cut actual reference wire');
    const from=await bounds(p.locator('[data-m3-terminal="R"]')),to=await bounds(p.locator('[data-m3-terminal="N"]'));
    await p.mouse.move(from.x+from.width/2,from.y+from.height/2);await p.mouse.down();await p.mouse.move(to.x+to.width/2,to.y+to.height/2,{steps:12});await p.mouse.up();await p.waitForTimeout(230);await state('lit');checks.push('wire reconnects by actual drawn gesture');
    await click('[data-m3-reason="metal"]');await p.locator('#nextBtn').waitFor({state:'visible'});assert.equal(await p.locator('.m3-victory').isVisible(),true);await shot('complete');checks.push('correct evidence-based reason clears');
@@ -117,13 +130,14 @@ try{
    console.log('MATERIALS PASS',engine,width,checks.length);await context.close();
   }
   // Self-contained HTML: no remote art, script or font request is allowed.
+  if(baseline)continue;
   const c=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),p=await c.newPage();const external=[];
   await c.route(/^https?:/,route=>{external.push(route.request().url());return route.abort();});
   await p.goto(pathToFileURL(join(root,'artifacts/akari-mission3.html')).href,{waitUntil:'networkidle'});
   await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-find="wood"]').click();await p.locator('[data-m3-guess="dark"]').click();await p.locator('[data-m3-gap]').click();
   assert.equal(await p.locator('.m3-bench').getAttribute('data-m3-status'),'dark');
   await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-find="aluminum"]').click();await p.locator('[data-m3-guess="lit"]').click();await p.locator('[data-m3-gap]').click();await p.locator('[data-m3-reason="metal"]').click();
-  await p.locator('.m3-victory').waitFor({state:'visible'});assert.deepEqual(external,[]);await p.screenshot({path:out+'/'+engine+'-offline-complete.png',fullPage:true});await p.locator('#nextBtn').click();assert.equal(await p.locator('.m3-installed-image').count(),0);assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'3');assert.equal(await p.locator('#nextBtn').isVisible(),false);results.push({engine,transport:'file',status:'pass',external,replay:'mission 3 resets and stays playable'});await c.close();
+  await p.locator('.m3-victory').waitFor({state:'visible'});assert.equal(await p.locator('[data-m3-find],.m3-predict').count(),0);assert.deepEqual(external,[]);await p.screenshot({path:out+'/'+engine+'-offline-complete.png',fullPage:true});await p.locator('#nextBtn').click();assert.equal(await p.locator('.m3-installed-image').count(),0);assert.equal(await p.locator('#storyScene').getAttribute('data-stage'),'3');assert.equal(await p.locator('#nextBtn').isVisible(),false);results.push({engine,transport:'file',status:'pass',external,replay:'mission 3 resets and stays playable'});await c.close();
   const motion=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'}),mp=await motion.newPage();
   await mp.goto(pathToFileURL(join(root,'artifacts/akari-mission3.html')).href,{waitUntil:'networkidle'});
   await mp.locator('[data-m3-gap]').click();await mp.locator('[data-m3-find="aluminum"]').click();await mp.locator('[data-m3-guess="lit"]').click();await mp.locator('[data-m3-gap]').click();
