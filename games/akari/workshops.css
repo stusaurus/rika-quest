@@ -17,7 +17,9 @@
 @media(prefers-reduced-motion:reduce){.workshop-fire{animation:none;background-position:50% 0}}
 
 .village-workshop #storyScene{background:linear-gradient(0deg,#132b3980,transparent 65%),var(--location) center/cover!important}
-.village-workshop #storyScene :is(.landmark,.scene-props,.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){visibility:hidden}
+/* The painted location replaces these scenery nodes; visibility:hidden still
+   leaves the wide 130%-hills contributing to document.scrollWidth in WebKit. */
+.village-workshop #storyScene :is(.landmark,.scene-props,.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){display:none}
 .village-workshop .repair-card:has([data-inspect]){border-inline-start:4px solid var(--brass)}
 /* The large circuit stays pannable inside its frame, including in WebKit grid tracks. */
 .village-workshop #workspace :is(.safety-lab,.dual-lab,.dual-section,.dual-testbench,.dual-predict,.dual-reasoning,.dual-notes){
@@ -27,3 +29,21 @@
  box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
 .village-workshop #workspace :is(.safety-diagram,.dual-diagram){contain:inline-size}
 .village-workshop #workspace .safety-heading{flex-wrap:wrap}
+
+/* M12: keep the two repair columns and their labels inside their grid tracks.
+   The original .cut-wire strong white-space:nowrap forced the 768px WebKit
+   grid's min-content width beyond the page. The science controls stay usable. */
+.village-workshop #workspace .safety-wires{
+ grid-template-columns:repeat(2,minmax(0,1fr));min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace .safety-wires .cut-wire{
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%;flex-wrap:wrap}
+.village-workshop #workspace .safety-wires .cut-wire strong{
+ white-space:normal;overflow-wrap:anywhere;min-inline-size:0}
+@media(max-width:740px){
+ .village-workshop #workspace .safety-wires{grid-template-columns:minmax(0,1fr)}
+}
+/* M13: the large translated scenic hills were the dominant overflow; also
+   permit the mission heading to shrink instead of expanding the parent flex. */
+.village-workshop #workspace .dual-heading{box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace .dual-heading>strong{
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}
