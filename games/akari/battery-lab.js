@@ -145,7 +145,7 @@ function svg(stage,c,showResult){
   '<text x="'+(x+unitWidth+15)+'" y="96" text-anchor="middle" fill="#ffefd0" font-size="13">'+(reversed?"−":"＋")+'</text></g>';
  }
  if(count===2)source+='<path d="M'+(start+unitWidth)+' 69H'+(start+unitWidth+space)+'" stroke="#f0ddbb" stroke-width="7"/>';
- return '<svg class="battery-lab-svg" role="img" aria-label="乾電池の端子から導線、豆電球の金属接点を通り、乾電池に戻る回路。電池2個の場合は直列つなぎ。" viewBox="0 0 660 300">'+
+ return '<svg class="battery-lab-svg" data-lamp-state="' + (showResult?result?.kind:'dark') + '" role="img" aria-label="乾電池の端子から導線、豆電球の金属接点を通り、乾電池に戻る回路。電池2個の場合は直列つなぎ。" viewBox="0 0 660 300">'+
  '<rect width="660" height="300" rx="18" fill="#123146"/>'+
  '<path d="M'+start+' 69H92V254H521V206M521 94V69H'+end+'" stroke="'+wireInk+'" stroke-width="7" fill="none" stroke-linejoin="round" stroke-linecap="round"/>'+
  source+

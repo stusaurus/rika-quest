@@ -15,7 +15,16 @@ const key=baseline?'rika-akari-quest-v2':'akari-workshops-v1';
 async function press(loc){await loc.scrollIntoViewIfNeeded();if(width<=1024)await loc.tap({timeout:4500});else await loc.click({timeout:4500});}
 const click=sel=>press(page.locator(sel).first());
 const connect=async(a,b)=>{await click('[data-t="'+a+'"]');await click('[data-t="'+b+'"]')};
-const completed=[],metrics=[];
+const completed=[],metrics=[],direct=new Set();
+async function directAction(loc,stage){
+ const selector=await loc.evaluate(b=>[...document.querySelectorAll('.workshop-hit')].find(g=>document.querySelector('#workspace').querySelector(g.dataset.workshopControl)===b)?.dataset.workshopControl);
+ if(!selector)return false;
+ const target=page.locator('.workshop-hit').filter({visible:true});
+ for(const g of await target.all()){
+  if(await g.getAttribute('data-workshop-control')===selector){await press(g);direct.add(stage);return true;}
+ }
+ return false;
+}
 async function experiment(stage){
  if(stage===1||stage===2){
   if(stage===1)await connect('P','L');
@@ -40,7 +49,13 @@ async function experiment(stage){
    const loc=page.locator(selector+':visible:not(:disabled)').last();
    // Some probes represent intentionally unavailable actions. Completion
    // below requires the real game's persisted success for this mission.
-   if(await loc.isVisible()&&await loc.isEnabled())await press(loc);
+   if(await loc.isVisible()&&await loc.isEnabled()){
+    if(baseline||!(await directAction(loc,stage)))await press(loc);
+    if(!baseline&&stage===6&&action.builderCause==='short'){
+     await page.waitForTimeout(1200);
+     assert.equal(await page.locator('.workshop-fire').count(),1,'Fire lasts while terminals remain shorted');
+    }
+   }
   }
  }
 }
@@ -55,10 +70,18 @@ try{
   if(await first.isVisible())await first.scrollIntoViewIfNeeded();
   await page.screenshot({path:folder+'/mission-'+stage+'.jpg',quality:72});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-  metrics.push({stage,overflow});await experiment(stage);
+  metrics.push({stage,overflow});assert.ok(overflow<=1,'page overflow in '+stage);
+  if(stage===9&&width===768){
+   await page.setViewportSize({width:1024,height:768});await page.reload();
+   await page.waitForSelector('#storyScene[data-stage="9"]',{state:'attached'});
+   await page.setViewportSize({width,height:1024});
+  }
+  await experiment(stage);
   assert.ok(await page.evaluate(([k,s])=>JSON.parse(localStorage.getItem(k))?.completed[s],[key,stage]),'Missing real completion for '+stage+' / '+await page.locator('#feedbackText').innerText());
   completed.push(stage);
   if(stage<14)await click('#nextBtn');
  }
+ if(!baseline)assert.ok(direct.size>=8,'Diagram actions: '+[...direct]);
+ console.log('Verified diagram actions',Array.from(direct));
  assert.deepEqual(errors,[]);assert.deepEqual(network,[]);console.log('Completed',completed,'Layout',JSON.stringify(metrics));
-}finally{writeFileSync(folder+'/results.json',JSON.stringify({completed,metrics,errors,network}));await browser.close();}
+}finally{writeFileSync(folder+'/results.json',JSON.stringify({completed,metrics,errors,network,direct:[...direct]}));await browser.close();}

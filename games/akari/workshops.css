@@ -13,3 +13,9 @@
 @media(max-width:740px){.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section){min-width:0}}
 .village-workshop .quest-head::before{content:"";display:block;grid-column:1/-1;flex-basis:100%;width:100%;height:clamp(60px,8vw,100px);border-radius:10px;background:var(--location) center/cover}
 .village-workshop .quest-head{flex-wrap:wrap}
+.workshop-fire{width:100%;height:100%;background-size:300% 200%;pointer-events:none;animation:painted-short-burning 1.35s steps(1,end) infinite}
+@media(prefers-reduced-motion:reduce){.workshop-fire{animation:none;background-position:50% 0}}
+
+.village-workshop #storyScene{background:linear-gradient(0deg,#132b3980,transparent 65%),var(--location) center/cover!important}
+.village-workshop #storyScene :is(.landmark,.scene-props,.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){visibility:hidden}
+.village-workshop .repair-card:has([data-inspect]){border-inline-start:4px solid var(--brass)}

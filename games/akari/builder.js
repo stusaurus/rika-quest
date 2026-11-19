@@ -205,7 +205,7 @@ function render(wires=[],selected=null,switchOn=false,tests={},task="switch",tra
  '<div class="builder-layout"><div class="builder-panel"><p class="builder-help">丸から丸へ指で線を引こう。丸を2回タップしてもつなげるよ。画面を左右に動かせるよ。</p>'+
  '<div class="builder-nav"><button type="button" data-builder-view="battery">◀ 乾電池側</button><button type="button" data-builder-view="bulb">豆電球側 ▶</button></div>'+
  '<div class="builder-viewport" tabindex="0" aria-label="回路図。左右にスクロールして端子を選べます"><div class="builder-board">'+
- '<svg viewBox="0 0 1000 460" role="img" aria-label="'+(direct?'乾電池と豆電球の4端子':'乾電池・スイッチ・豆電球の6端子')+'をつなぐ回路の模式図">'+
+ '<svg viewBox="0 0 1000 460" data-lamp-state="' + (simulation.short?'short':glow?'lit':'dark') + '" role="img" aria-label="'+(direct?'乾電池と豆電球の4端子':'乾電池・スイッチ・豆電球の6端子')+'をつなぐ回路の模式図">'+
  '<rect width="1000" height="460" rx="27" fill="#183c55"/>'+
  '<g><rect x="39" y="164" width="92" height="125" rx="15" fill="#d7a96b" stroke="#ffdeab" stroke-width="5"/>'+
  '<text x="85" y="226" text-anchor="middle" font-size="28" fill="#fff6d3" font-weight="bold">1.5V</text>'+
