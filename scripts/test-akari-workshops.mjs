@@ -15,7 +15,8 @@ const key=baseline?'rika-akari-quest-v2':'akari-workshops-v1';
 async function press(loc){await loc.scrollIntoViewIfNeeded();if(width<=1024)await loc.tap({timeout:4500});else await loc.click({timeout:4500});}
 const click=sel=>press(page.locator(sel).first());
 const connect=async(a,b)=>{await click('[data-t="'+a+'"]');await click('[data-t="'+b+'"]')};
-const completed=[],metrics=[],direct=new Set();
+const completed=[],metrics=[],direct=new Set(),captured=new Set();
+const boardSelectors={5:'.garden-design-svg',6:'.builder-direct .builder-board',7:'.network-board',8:'.network-board',13:'.dual-circuit-svg'};
 let sawClockShort=false;
 async function directAction(loc,stage){
  const selector=await loc.evaluate(b=>[...document.querySelectorAll('.workshop-hit')].find(g=>document.querySelector('#workspace').querySelector(g.dataset.workshopControl)===b)?.dataset.workshopControl);
@@ -52,6 +53,12 @@ async function experiment(stage){
    // below requires the real game's persisted success for this mission.
    if(await loc.isVisible()&&await loc.isEnabled()){
     if(baseline||!(await directAction(loc,stage)))await press(loc);
+    if(boardSelectors[stage]&&!captured.has(stage)){
+     const board=page.locator(boardSelectors[stage]).first();
+     if(await board.isVisible()){
+      await board.scrollIntoViewIfNeeded();await page.screenshot({path:folder+'/mission-'+stage+'.jpg',quality:72});captured.add(stage);
+     }
+    }
     const clock=page.locator('.builder-direct svg[data-lamp-state]');
     if(!baseline&&stage===6&&action.builderCause==='short'&&await clock.getAttribute('data-lamp-state')==='short'){
      sawClockShort=true;
@@ -85,7 +92,7 @@ try{
   if(stage<14)await click('#nextBtn');
  }
  if(!baseline)assert.ok(sawClockShort,'Observed clock short');
- if(!baseline)assert.ok(direct.size>=8,'Diagram actions: '+[...direct]);
+ if(!baseline)assert.ok([4,5,7,8,9,10,11,12,13,14].every(s=>direct.has(s)),'Diagram actions: '+[...direct]);
  console.log('Verified diagram actions',Array.from(direct));
  assert.deepEqual(errors,[]);assert.deepEqual(network,[]);console.log('Completed',completed,'Layout',JSON.stringify(metrics));
 }finally{writeFileSync(folder+'/results.json',JSON.stringify({completed,metrics,errors,network,direct:[...direct]}));await browser.close();}

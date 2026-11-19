@@ -86,7 +86,7 @@
    }
   }else if(svg.matches('.dual-circuit-svg')){
    fixedCell(84,178,130,65);
-   for(const [x,y,key] of [[84,178,'battery'],[291,90,'wire'],[524,175,'filament'],[291,270,'contact']])hit(x,y,100,62,'[data-dual-part="'+key+'"]');
+   for(const [x,y,key] of [[84,178,'battery'],[291,90,'wire'],[524,175,'filament'],[291,270,'contact']])hit(x,y,100,62,'[data-dual-fix="'+key+'"]');
   }else if(svg.matches('.finale-circuit-svg')){
    for(const [x,y,key] of [[259,63,'battery'],[485,63,'material'],[485,265,'contact']])hit(x,y,130,60,'[data-finale-station="'+key+'"]');
   }else if(svg.closest('.builder-board')){
