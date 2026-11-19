@@ -76,7 +76,7 @@ try{
   await press('#nextBtn');
   await page.waitForSelector('#storyScene[data-stage="1"]',{state:'attached'});
   await page.reload();
-  await page.waitForSelector('#storyScene[data-stage="1"]');
+  await page.waitForSelector('#storyScene[data-stage="1"]',{state:'attached'});
   assert.equal(await page.locator('#missionList [data-mission]').count(),3);
   assert.deepEqual(pageErrors,[]);
   assert.deepEqual(requests,[]);
