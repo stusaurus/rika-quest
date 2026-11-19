@@ -77,7 +77,7 @@ function svg(index,removed,measured){
  const nodes=[
  ["P",85,89,"＋"],["N",85,276,"−"],["L",475,89,"横"],["R",475,276,"底"]
  ];
- return '<svg class="safety-svg" viewBox="0 0 590 365" role="img" aria-label="乾電池のプラス・マイナス、豆電球の横と底、導線AからEのつながりを示す回路図">'+
+ return '<svg class="safety-svg" data-lamp-state="' + (measured?.actual||'dark') + '" viewBox="0 0 590 365" role="img" aria-label="乾電池のプラス・マイナス、豆電球の横と底、導線AからEのつながりを示す回路図">'+
  '<rect x="8" y="8" width="574" height="349" rx="23" fill="#112e42"/>'+
  '<path d="M85 109V153M85 215V258" stroke="#f0d8a3" stroke-width="6" fill="none"/>'+
  '<line x1="63" y1="163" x2="107" y2="163" stroke="#f8d9a6" stroke-width="7"/><line x1="74" y1="190" x2="96" y2="190" stroke="#f8d9a6" stroke-width="6"/>'+

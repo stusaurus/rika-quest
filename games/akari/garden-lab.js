@@ -138,7 +138,7 @@ function notes(raw,stage){
 function testDiagram(id,clamp,measured=false,labelOverride=null){
  const result=measured?experiment(id,clamp):null,lit=Boolean(result?.lit);
  const ink=lit?"#ffe9a2":"#a4c9d5",open=clamp==="loose";
- return '<svg class="garden-circuit-svg" role="img" aria-label="電池の＋極、調査材料と2つの金属接点、豆電球の横・底、電池の−極を順番につなぐ仮想回路。片方の接点が浮くとすき間ができる。" viewBox="0 0 610 290">'+
+ return '<svg class="garden-circuit-svg" data-lamp-state="' + (lit?'lit':'dark') + '" role="img" aria-label="電池の＋極、調査材料と2つの金属接点、豆電球の横・底、電池の−極を順番につなぐ仮想回路。片方の接点が浮くとすき間ができる。" viewBox="0 0 610 290">'+
  '<rect width="610" height="290" rx="18" fill="#112f45"/>'+
  '<rect x="25" y="93" width="100" height="118" rx="12" fill="#b96856" stroke="#ffe4b6" stroke-width="4"/>'+
  '<text x="75" y="128" text-anchor="middle" fill="white" font-size="17">乾電池</text><text x="75" y="158" text-anchor="middle" fill="white" font-size="16">1.5V</text>'+
@@ -213,7 +213,7 @@ function schematic5(raw){
  '<text x="210" y="258" text-anchor="middle" fill="#e3f1e8" font-size="13">仕切り A</text>'+
  '<text x="430" y="258" text-anchor="middle" fill="#e3f1e8" font-size="13">仕切り B</text>'+
  (short?'<text x="354" y="355" text-anchor="middle" fill="#ffbe9e" font-size="15" font-weight="800">⚠ 2本の電極を金属が結ぶ危険な近道</text>':"");
- return '<svg class="garden-design-svg" viewBox="0 0 720 365" role="img" aria-label="電池と豆電球を通る主回路、2本の露出した電極の間に置く仕切りA・Bを示す仮想設計図。">'+base+'</svg>';
+ return '<svg class="garden-design-svg" data-lamp-state="' + (short?'short':lit?'lit':'dark') + '" viewBox="0 0 720 365" role="img" aria-label="電池と豆電球を通る主回路、2本の露出した電極の間に置く仕切りA・Bを示す仮想設計図。">'+base+'</svg>';
 }
 function display5(raw){
  const s=normalize(5,raw),e=evidence5(s),selected=material(s.selected),ready=e.conductors>=1&&e.nonconductors>=2,

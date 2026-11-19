@@ -1,0 +1,58 @@
+.village-workshop{--timber:#805733;--brass:#cfaf73;--ink:#173e42}
+.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section,.battery-controls,.dual-panel,.finale-panel){
+ border:2px solid var(--brass);border-radius:14px;background:linear-gradient(140deg,#fffae9,#e8dcc1);color:#233c40;box-shadow:0 3px 0 #73573e}
+.village-workshop #workspace :is(.builder-heading,.garden-heading,.battery-head,.dual-heading,.safety-heading,.finale-head,.network-heading){
+ background:linear-gradient(110deg,#173a3deb,#173a3dcd),var(--workshop-wood) center/cover;color:#fff0c8;padding:12px;border:2px solid var(--brass);border-radius:12px}
+.village-workshop #workspace button:enabled:focus-visible,.workshop-hit:focus-visible{outline:3px solid #d79730;outline-offset:2px}
+.village-workshop #workspace :is(.garden-rig,.garden-schematic,.safety-diagram,.dual-diagram,.finale-circuit,.builder-viewport):not(button){
+ border:4px solid #94724a;border-radius:10px;background:var(--workshop-wood) center/cover}
+.village-workshop #workspace button:not(.builder-terminal){min-height:44px}
+.workshop-hit{cursor:pointer;touch-action:manipulation}
+.workshop-hit rect{fill:#ffe39f;fill-opacity:.04;stroke:#edcf89;stroke-width:2;stroke-dasharray:5 4}
+.workshop-hit:is(:focus-visible,:hover,:active) rect{fill-opacity:.18;stroke:#fff3cb}
+@media(max-width:740px){.village-workshop #workspace :is(.lab-panel,.builder-panel,.garden-section){min-width:0}}
+.village-workshop .quest-head::before{content:"";display:block;grid-column:1/-1;flex-basis:100%;width:100%;height:clamp(60px,8vw,100px);border-radius:10px;background:var(--location) center/cover}
+.village-workshop .quest-head{flex-wrap:wrap}
+.workshop-fire{width:100%;height:100%;background-size:300% 200%;pointer-events:none;animation:painted-short-burning 1.35s steps(1,end) infinite}
+@media(prefers-reduced-motion:reduce){.workshop-fire{animation:none;background-position:50% 0}}
+
+.village-workshop #storyScene{background:linear-gradient(0deg,#132b3980,transparent 65%),var(--location) center/cover!important}
+/* The painted location replaces these scenery nodes; visibility:hidden still
+   leaves the wide 130%-hills contributing to document.scrollWidth in WebKit. */
+.village-workshop #storyScene :is(.landmark,.scene-props,.scene-cloud,.sun-disc,.far-hills,.near-hills,.scene-floor){display:none}
+.village-workshop .repair-card:has([data-inspect]){border-inline-start:4px solid var(--brass)}
+/* The large circuit stays pannable inside its frame, including in WebKit grid tracks. */
+.village-workshop #workspace :is(.safety-lab,.dual-lab,.dual-section,.dual-testbench,.dual-predict,.dual-reasoning,.dual-notes){
+ grid-template-columns:minmax(0,1fr);min-inline-size:0}
+.village-workshop #workspace :is(.safety-lab,.dual-lab) > *,
+.village-workshop #workspace :is(.safety-diagram,.dual-diagram){
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace :is(.safety-diagram,.dual-diagram){contain:inline-size}
+.village-workshop #workspace .safety-heading{flex-wrap:wrap}
+
+/* M12: keep the two repair columns and their labels inside their grid tracks.
+   The original .cut-wire strong white-space:nowrap forced the 768px WebKit
+   grid's min-content width beyond the page. The science controls stay usable. */
+.village-workshop #workspace .safety-wires{
+ grid-template-columns:repeat(2,minmax(0,1fr));min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace .safety-wires .cut-wire{
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%;flex-wrap:wrap}
+.village-workshop #workspace .safety-wires .cut-wire strong{
+ white-space:normal;overflow-wrap:anywhere;min-inline-size:0}
+@media(max-width:740px){
+ .village-workshop #workspace .safety-wires{grid-template-columns:minmax(0,1fr)}
+}
+/* M13: the large translated scenic hills were the dominant overflow; also
+   permit the mission heading to shrink instead of expanding the parent flex. */
+.village-workshop #workspace .dual-heading{box-sizing:border-box;min-inline-size:0;max-inline-size:100%}
+.village-workshop #workspace .dual-heading>strong{
+ box-sizing:border-box;min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere}
+
+/* M13: labels are grid items; the original min-content size of the final
+   long Japanese label can project ~10px beyond the viewport in WebKit.
+   Allow each label to wrap within its actual button/summary width. */
+.village-workshop #workspace :is(.dual-part,.dual-repairs button,.dual-note)>:is(strong,small,span){
+ min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere;white-space:normal}
+.village-workshop #workspace .dual-parts,
+.village-workshop #workspace .dual-repairs{
+ min-inline-size:0;max-inline-size:100%}

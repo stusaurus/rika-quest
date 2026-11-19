@@ -92,7 +92,7 @@ function circuit(raw){
  const label=(x,y,text)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="13" fill="#d5f4f2">'+text+'</text>';
  const slot=(x,y,title,value)=>'<rect x="'+(x-65)+'" y="'+(y-22)+'" width="130" height="44" rx="11" fill="'+(value?"#deeee2":"#30546c")+'" stroke="'+(value?"#a6d2aa":"#d39b88")+'" stroke-width="3"/><text x="'+x+'" y="'+(y+5)+'" font-size="13" text-anchor="middle" font-weight="800" fill="'+(value?"#244a40":"#fff1dc")+'">'+(value||"まだ設置していない")+'</text>'+label(x,y-34,title);
  const optionLabel=(id,value)=>option(id,value)?.name||null;
- return '<svg class="finale-circuit-svg" viewBox="0 0 790 320" role="img" aria-label="乾電池2個の向きから金属のつなぎ目、豆電球の横・底の接点を経て電池のマイナスへ戻る一周の仮想回路図">'+
+ return '<svg class="finale-circuit-svg" data-lamp-state="' + (lit?'lit':'dark') + '" viewBox="0 0 790 320" role="img" aria-label="乾電池2個の向きから金属のつなぎ目、豆電球の横・底の接点を経て電池のマイナスへ戻る一周の仮想回路図">'+
  '<rect width="790" height="320" rx="18" fill="#112f43"/>'+
  '<rect x="25" y="92" width="109" height="142" rx="12" fill="#a96b5a" stroke="#ffe4b7" stroke-width="4"/>'+
  '<text x="79" y="127" fill="#fff" font-size="16" text-anchor="middle">乾電池×2</text><text x="79" y="154" fill="#fff" font-size="17" text-anchor="middle">1.5V × 2</text>'+

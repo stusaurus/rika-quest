@@ -77,7 +77,7 @@ function circuitSvg(raw){
  const color=lit?"#ffe29e":"#a6d0da";
  const gap=(x,y,fixed,label)=>'<rect x="'+(x-47)+'" y="'+(y-22)+'" width="94" height="44" rx="10" fill="'+(fixed?"#d7eedc":"#344f68")+'" stroke="'+(fixed?"#79b69a":"#efa789")+'" stroke-width="3"/><text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-size="13" fill="'+(fixed?"#285b45":"#ffe4c9")+'" font-weight="800">'+(fixed?"修理済":"すき間")+'</text><text x="'+x+'" y="'+(y-34)+'" text-anchor="middle" font-size="13" fill="#e3f5ee">'+label+'</text>';
  const line=(path,on)=>'<path d="'+path+'" fill="none" stroke="'+(on?color:"#718994")+'" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"'+(on?'':' stroke-dasharray="8 7"')+'/>';
- return '<svg class="dual-circuit-svg" viewBox="0 0 670 350" role="img" aria-label="乾電池のプラス極から導線のすき間、豆電球の横と底、戻り道の接点のすき間を通ってマイナス極に戻る回路図">'+
+ return '<svg class="dual-circuit-svg" data-lamp-state="' + (lit?'lit':'dark') + '" viewBox="0 0 670 350" role="img" aria-label="乾電池のプラス極から導線のすき間、豆電球の横と底、戻り道の接点のすき間を通ってマイナス極に戻る回路図">'+
  '<rect x="0" y="0" width="670" height="350" rx="20" fill="#102f44"/>'+
  '<rect x="28" y="112" width="110" height="131" rx="14" fill="#be7562" stroke="#ffe0b9" stroke-width="4"/>'+
  '<text x="84" y="153" text-anchor="middle" fill="#fffaf5" font-size="18" font-weight="800">乾電池</text>'+

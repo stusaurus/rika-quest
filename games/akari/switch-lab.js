@@ -135,7 +135,7 @@ function render(stage,wires=[],selected=null,a=false,b=false,trials={},reason=nu
    <div class="builder-panel"><p class="builder-help">丸から丸へ線を引こう。2回タップでもつなげるよ。</p>
    <div class="builder-nav"><button type="button" data-net-view="left">◀ 電池・スイッチ</button><button type="button" data-net-view="right">豆電球 ▶</button></div>
    <div class="builder-viewport network-viewport" tabindex="0" aria-label="乾電池、スイッチAとB、豆電球の回路設計図">
-    <div class="builder-board network-board"><svg viewBox="0 0 920 445" role="img" aria-label="8端子の配線と2つのスイッチ">
+    <div class="builder-board network-board"><svg viewBox="0 0 920 445" data-lamp-state="${result.short?'short':result.lit?'lit':'dark'}" role="img" aria-label="8端子の配線と2つのスイッチ">
     <rect width="920" height="445" rx="22" fill="#183d54"/>
     <rect x="39" y="156" width="72" height="122" rx="12" fill="#d6a56b" stroke="#f3dba0" stroke-width="4"/>
     <text x="75" y="222" fill="#fff5dc" font-size="23" text-anchor="middle">1.5V</text>
